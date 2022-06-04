@@ -1,0 +1,40 @@
+<%- include('partials/Head') %>
+<body>
+    <main class="page-wrapper">
+        <%- include('partials/Navbar') %>
+
+
+
+        <section class="pt-2 pt-lg-3 pb-lg-4" >
+            <div class="container align-items-center text-center">
+
+                <nav class="py-4 mb-5" aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                      <li class="breadcrumb-item">
+                        <a href="">...</a>
+                      </li>
+                      <li class="breadcrumb-item">
+                        <a href="">Order</a>
+                      </li>
+                      <li class="breadcrumb-item">
+                        <a href="">Provide Information</a>
+                        </li>
+                      <li class="breadcrumb-item active" aria-current="page">Pay</li>
+                    </ol>
+                  </nav>
+    
+
+                <img src="/default/qr_code.jpg" class="rounded-3" alt="Qr Code" style="max-width: 306px;">
+
+                <p class="mb-3 mt-4">Send <span class="text-primary"><%=order.total_price%>XMR</span> To this address <span class="text-primary"><%=order.address%>XMR</span></p>
+
+        <a href="/order-resume/<%=order.id%>" class="btn btn-primary mt-3 mb-5">Continue</a>
+</div>
+</section>    
+
+
+        <%- include('partials/Footer') %>
+    </main>
+
+</body>
+</html>

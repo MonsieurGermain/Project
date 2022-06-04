@@ -1,0 +1,111 @@
+<% for(let i = orders.length - 1; i > -1; i--) { %>
+    <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
+        <div class="row g-0">
+          <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover">
+              <a href="<%=orders[i].link%>" class="position-absolute top-0 start-0 w-100 h-100" aria-label="Read more">
+
+              <img src="<%=orders[i].product_img%>" style="min-height: 18rem;" alt="Product Img">
+            </a>
+          </div>
+          <div class="col-sm-8">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <p class="mb-1">Status: <span><%- include('./Status-order', {status : orders[i].status}) %></span></p>
+              </div>
+              <h3 class="h4">
+                <a href="<%=orders[i].link%>"><%=orders[i].product_title%></a>
+              </h3>
+
+              <span>
+                <p class="mb-0">Total Price:</p>
+                <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                    <%= orders[i].total_price %> $
+                </p>
+            </span>
+
+             <hr class="my-4">
+
+              <div class="d-flex align-items-center">
+                <span>
+                <p class="mb-0">Vendor:</p>
+                <a href="/profile/<%=orders[i].vendor%>" class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                  <%= orders[i].vendor%>
+                </a>
+            </span>
+            <span class="ms-5">
+                <p class="mb-0">Buyer:</p>
+                <a 
+                <% if (orders[i].privacy === 'default') { %>
+                    href="/profile/<%=orders[i].buyer%>" 
+                <% } %>
+                class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                  <%= orders[i].buyer%>
+                </a>
+            </span>
+
+            <span class="ms-5">
+                <p class="mb-0">Time Left:</p>
+                <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
+                <% if (!orders[i].timer) { %>
+                    Infinite
+                <% } else { %> 
+                    <%= orders[i].Formated_Timers%>
+                <% } %>
+                </p>
+            </span>
+
+            <% if (orders[i].deletelink) { %>
+              <span class="position-absolute top-0 end-0 zindex-2 me-3 mt-3">
+                <form action="/delete-order/<%=orders[i].id%>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-trash"></i>
+                </button>
+              </form>
+                </span> 
+            <% } %>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+<% } %>
+
+<% if (orders.length) { %>
+    <nav class="mt-5 pb-4" aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          <li class="page-item">
+            <a href="#" class="page-link">
+              <i class="bx bx-chevron-left ms-n1 me-1"></i>
+              Prev
+            </a>
+          </li>
+          <li class="page-item disabled d-sm-none">
+            <span class="page-link text-body">1 / 4</span>
+          </li>
+          <li class="page-item active d-none d-sm-block" aria-current="page">
+            <span class="page-link">
+              1
+              <span class="visually-hidden">(current)</span>
+            </span>
+          </li>
+          <li class="page-item d-none d-sm-block">
+            <a href="#" class="page-link">2</a>
+          </li>
+          <li class="page-item d-none d-sm-block">
+            <a href="#" class="page-link">3</a>
+          </li>
+          <li class="page-item d-none d-sm-block">
+            <a href="#" class="page-link">4</a>
+          </li>
+          <li class="page-item">
+            <a href="#" class="page-link">
+              Next
+              <i class="bx bx-chevron-right me-n1 ms-1"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+<% } %>

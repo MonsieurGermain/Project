@@ -1,0 +1,217 @@
+<%- include('partials/Head') %>
+<body>
+
+    
+        <main class="page-wrapper">
+
+            <%- include('partials/Navbar') %>
+
+          <!-- Page content -->
+          <section class="container pt-5">
+            <div class="row">
+    
+      
+              <aside class="col-lg-3 col-md-4 border-end pb-5 mt-n5">
+                <div class="position-sticky top-0">
+                  <div class="text-center pt-5">
+                    <div class="d-table position-relative mx-auto mt-2 mt-lg-4 pt-5 mb-3">
+                      <img src="<%=authuser.img_path%>" class="d-block big-rc rounded-circle" width="120" alt="<%=authuser.username%>">
+                    </div>
+                    <h2 class="h5 mb-1"><%=authuser.username%></h2>
+                    <p class="fs-sm mb-2"><%=authuser.job%></p>
+                    <a href='/edit-profile/<%=authuser.username%>' class="btn btn-primary mb-3">Edit Profile</a>
+                    <hr class="my-2">
+                    <div id="account-menu" class="list-group list-group-flush collapse d-md-block mt-3">
+                        <a href="/settings/<%=authuser.username%>?section=security" class="list-group-item list-group-item-action d-flex align-items-center
+                            <% if(!input_data.section || input_data.section === 'security') { %>
+                                active
+                            <% } %>">
+                            <i class="bx bx-lock-alt fs-xl opacity-60 me-2"></i>
+                            Security Settings
+                          </a>
+                      <a href="/settings/<%=authuser.username%>?section=privacy" class="list-group-item list-group-item-action d-flex align-items-center
+                        <% if(input_data.section === 'privacy') { %>
+                            active
+                        <% } %>">
+                        <i class="bx bx-mask fs-xl opacity-60 me-2"></i>
+                        Privacy Settings
+                      </a>
+                      <a href="/settings/<%=authuser.username%>?section=saved" class="list-group-item list-group-item-action d-flex align-items-center
+                        <% if(input_data.section === 'saved') { %>
+                            active
+                        <% } %>">
+                        <i class="bx bx-bookmark fs-xl opacity-60 me-2"></i>
+                        Saved Items
+                      </a>
+                      <a href="/orders/<%=authuser.username%>" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bx bx-shopping-bag fs-xl opacity-60 me-2"></i>
+                        Orders
+                      </a>
+                      <a href="/logout" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bx bx-log-out fs-xl opacity-60 me-2"></i>
+                        Sign Out
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+    
+    
+              <!-- Account security -->
+              <div class="col-md-8 offset-lg-1 pb-5 mb-lg-2 mb-lg-4 pt-md-5 mt-n3 mt-md-0">
+                <div class="ps-md-3 ps-lg-0 mt-md-2 pt-md-4 pb-md-2">
+
+                  <% if (error.length) { %>
+                    <div class="mb-3">
+                    <%- include('partials/Flash-message', {message: error}) %>
+                  </div>   
+                  <% } %>
+                  <% if (success.length) { %>
+                    <div class="mb-3">
+                    <%- include('partials/Flash-message', {message: success, success: true}) %>
+                  </div>   
+                  <% } %>
+
+                  <% if (!input_data.section || input_data.section === 'security') { %>
+                    <div>
+                    <h1 class="h2 pt-xl-1 pb-3">Security</h1>
+                  
+                    <!-- Password -->
+                    <h2 class="h5 text-primary mb-4">Password</h2>
+                    <form class="needs-validation border-bottom pb-3 pb-lg-4" action="/change-password/<%=authuser.username%>?_method=PUT" method="POST">
+                      <div class="row">
+                        <div class="col-sm-6 mb-4">
+                          <label for="cp" class="form-label fs-base">Current password</label>
+                          <div class="password-toggle">
+                            <input type="password" id="cp" name="password" class="form-control form-control-lg" minlength="8" maxlength="200" required>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row pb-2">
+                        <div class="col-sm-6 mb-4">
+                          <label for="np" class="form-label fs-base">New password</label>
+                          <div class="password-toggle">
+                            <input type="password" id="np" name="newPassword" class="form-control form-control-lg" minlength="8" maxlength="200" required>
+                          </div>
+                        </div>
+                        <div class="col-sm-6 mb-4">
+                          <label for="cnp" class="form-label fs-base">Confirm new password</label>
+                          <div class="password-toggle">
+                            <input type="password" id="cnp" name="confirmPassword" class="form-control form-control-lg" minlength="8" maxlength="200" required>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="d-flex mb-3">
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                      </div>
+                    </form>
+  
+  
+                <!-- Delete account -->
+                <h2 class="h5 text-primary pt-1 pt-lg-3 mt-4">Delete account</h2>
+                <p>This action is irreversible and will result in the lost of all data of your profile expect the reviews that you have posted</p>
+                <form action="/delete-user/<%=authuser.username%>?_method=DELETE" method="POST">
+                <div class="form-check mb-4">
+                  <input type="checkbox" id="delete-account" class="form-check-input" required>
+                  <label for="delete-account" class="form-check-label fs-base">Yes, I want to delete my account</label>
+                </div>
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+              </form>
+                  </div>
+
+
+                  <% } else if (input_data.section === 'privacy') { %>
+                    <div>
+                        <h1 class="h2 pt-xl-1 pb-3">Privacy</h1>
+                        <form action="/change-autodelete/<%=authuser.username%>?_method=PUT" method="POST">
+
+                            <label for="select-input" class="form-label">Automaticly Delete Message after :</label>
+                            <select name="messages" class="form-select mb-4" id="select-input">
+                                <option value="never"
+                                <% if (!authuser.settings.message_expiring) { %>
+                                    selected
+                                <% } %>
+                                >Never</option> 
+                                <option value="1"
+                                <% if (authuser.settings.message_expiring === 1) { %>
+                                    selected
+                                <% } %>
+                                >1 days</option> 
+                                <option value="3"
+                                <% if (authuser.settings.message_expiring === 3) { %>
+                                    selected
+                                <% } %>
+                                >3 days</option> 
+                                <option value="7"
+                                <% if (authuser.settings.message_expiring === 7) { %>
+                                    selected
+                                <% } %>
+                                >1 weeks</option> 
+                                <option value="30"
+                                <% if (authuser.settings.message_expiring === 30) { %>
+                                    selected
+                                <% } %>
+                                >≈ 1 months (30days)</option> 
+                            </select>
+                    
+                            <label for="select-input" class="form-label">Automaticly Delete the info you provide when completing an order after : </label>
+                            <select name="informations" class="form-select mb-4" id="select-input">
+                                <option value="never"
+                                <% if (!authuser.settings.info_expiring) { %>
+                                    selected
+                                <% } %>
+                                >Never</option> 
+                                <option value="0"
+                                <% if (authuser.settings.info_expiring === 0) { %>
+                                    selected
+                                <% } %>
+                                >Instantly</option> 
+                                <option value="1"
+                                <% if (authuser.settings.info_expiring === 1) { %>
+                                    selected
+                                <% } %>
+                                >1 days</option> 
+                                <option value="3"
+                                <% if (authuser.settings.info_expiring === 3) { %>
+                                    selected
+                                <% } %>
+                                >3 days</option> 
+                                <option value="7"
+                                <% if (authuser.settings.info_expiring === 7) { %>
+                                    selected
+                                <% } %>
+                                >1 weeks</option> 
+                                <option value="30"
+                                <% if (authuser.settings.info_expiring === 30) { %>
+                                    selected
+                                <% } %>
+                                >≈ 1 months (30days)</option> 
+                            </select>
+                    
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+
+
+                  <% } else { %>
+                    <div>
+                      <h1 class="h2 pt-xl-1 pb-3">Saved Products</h1>
+                      <% if (!products.length) { %>
+                        <h1 class="h4 pt-xl-1 pb-3">You dont have any saved products...</h1>
+                      <% } %>
+                      <%- include('partials/Products-array', { products , sepc_col: 2 }) %>
+                    </div>
+                  <% } %>
+
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+    
+    
+        <!-- Footer -->
+        <%- include('partials/Footer') %>
+      </body>
+    </html>
+    

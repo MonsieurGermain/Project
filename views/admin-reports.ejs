@@ -1,0 +1,15 @@
+<%- include('partials/Head') %>
+<body>
+<div class="container message-container">
+    <a href="/admin">Admin Page</a>
+    <div class="container-container">
+    <div>
+    <div class="reports">
+        <%- include('partials/Report-list', {reports : reports}) %>
+    </div>
+    <div class="archived">
+        <%- include('partials/Report-list', {reports : archived_report}) %>
+    </div>
+
+</body>
+</html>

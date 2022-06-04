@@ -1,0 +1,331 @@
+<%- include('partials/Head') %>
+
+  <body>
+
+    <%- include('partials/Navbar') %>
+    <!-- Page wrapper for sticky footer -->
+    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+    <main class="page-wrapper">
+        <section class="pt-2 pt-lg-3" >
+        <div class="container">
+        <!-- Breadcrumb -->
+          <nav class="py-4" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a>Profile</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page"><%=vendor.username%></li>
+            </ol>
+          </nav>
+          
+          <% if (input_data.errmsg) { %>
+            <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
+              <%- include('partials/Flash-message', {error_message: input_data.errmsg}) %>
+            </div>
+          <% } %>
+
+
+          <div class="d-flex pt-3 pb-2 py-sm-4 pt-lg-4">
+            <h2><%=vendor.username%> Profile Page</h2>
+          </div>
+
+        </div>
+        </section>
+
+
+      <section class="container">
+        <div class="row">
+          <aside class="col-lg-4 order-md-1 mb-5">
+
+            <form action="/edit-profile/<%=vendor.username%>?_method=PUT" enctype="multipart/form-data" method="POST">
+
+            <div class="card card-body shadow-sm border-0 text-center">
+                <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162" alt="<%=vendor.username%>">
+
+                <label for="file-input" class="form-label">Profile Picture</label>
+                <p class="form-label opacity-60">If you want to keep the current profile picture, leave this field Empty</p>
+                <input class="form-control" type="file" id="file-input" name="profileImg">
+
+                <h5 class="fw-medium fs-lg mb-1 mt-3"><%=vendor.username%></h5>
+                <input class="form-control mt-3 mb-3" id="inline-form-input" type="text" name="job" placeholder="Specialization/Jobs" value="<%=vendor.job%>" maxlength="100">
+
+                <!-- Send Message Form  -->
+                <input type="checkbox" class="d-none" id="contact-checkbox">
+                <label for='contact-checkbox' class="btn btn-primary">
+                  Contact me
+                </label>
+
+                <span class="position-absolute top-0 start-0 zindex-2 ms-3 mt-3">
+                <a href="#" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle" data-bs-toggle="tooltip" data-bs-placement="left" title="Report Vendor">
+                    <i class="bx bx-flag"></i>
+                  </a>
+                </span> 
+                <a href="#" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-4 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Vendor Pgp Key">
+                  <i class="bx bx-key"></i>
+                  </a> 
+              </div>
+
+              <div class="card card-body shadow-sm border-0 mt-4">
+
+                <!-- Description -->
+                <div class="mt-2">
+                  <h5 class="fw-medium fs-lg mb-1">Profile Description</h5>
+                  <p class="fs-sm mb-1">Learn how to style your text<a class="ms-2" href="/docs/style-text">here</a></p>
+                  <textarea class="form-control" rows="5" name="description" placeholder="Descirbe your Profile..." maxlength="3000"><%=vendor.description%></textarea>
+              </div>
+
+              <!-- Achievement -->
+              <div class="mt-2">
+                <hr class="my-2">
+                <h5 class="fw-medium fs-lg mb-1 mt-4">Achievements:</h5>
+                <ul class="list-unstyled mb-3">
+                  <% for(let i = 0; i < 5; i++) { %>
+                    <li class="d-flex align-items-center mb-2">
+                      <input class="form-control mt-1" id="inline-form-input" type="text" name="achievement" maxlength="50" placeholder="Achievement #<%=i + 1%>"
+                      <% if (vendor.achievement[i]) { %>
+                        value='<%=vendor.achievement[i]%>'
+                      <% } %>
+                      >
+                    </li>
+                  <% } %>
+                </ul>
+            </div>
+
+
+            <!-- PGP KEYS -->
+            <div class="mt-2">
+              <hr class="my-2">
+              <h5 class="fw-medium fs-lg mb-1">Pgp Key</h5>
+              <p class="fs-sm"><%=vendor.pgp%></p>
+              
+              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="">Go Here</a></p>
+          </div>
+
+          <!-- Spoken Language -->
+          <div class="mt-2">
+            <hr class="my-2">
+            <h5 class="fw-medium fs-lg mb-1 mt-4">Fluent Languages:</h5>
+            <ul class="list-unstyled mb-3">
+              <% for(let i = 0; i < 5; i++) { %>
+                <li class="d-flex align-items-center mb-2">
+                  <input class="form-control mt-1" id="inline-form-input" type="text" name="languages" maxlength="50" placeholder="Languages #<%=i + 1%>"
+                  <% if (vendor.languages[i]) { %>
+                    value='<%=vendor.languages[i]%>'
+                  <% } %>
+                  >
+                </li>
+              <% } %>
+            </ul>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">Save Changes</button>
+      
+          </div>
+
+        </form>
+
+          </aside>
+
+          <div class="col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
+            <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
+
+            <%- include('partials/Products-array', { products : products, sepc_col : 2}) %>
+            <hr class="my-2">
+      <!-- Review Section -->
+      <section class="container py-lg-4 py-xl-5 mt-3 mb-5">
+        <h2 class="h1 mb-4">Reviews</h2>
+
+        <!-- Single Review -->
+            <div class="py-4">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
+                  <div class="d-flex align-items-center me-3">
+
+                    <img src="/default/default.png" class="rounded-circle" width="48" alt="Dummy Review Img">
+
+                    <div class="d-sm-flex align-items-center ms-2">
+                        <div class="pe-sm-3 me-sm-5">
+                            <h6 class="fw-semibold mb-0">Dummy Username</h6>
+                        </div>
+                        <div class="ps-3 pe-sm-3 me-sm-5">
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                        
+                        <span class="opacity-70">5/5</span>
+                        </div>
+                    </div>
+                      
+                  </div>
+                </div>
+                <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente commodi corporis, optio perspiciatis corrupti error quod fugit rem deserunt beatae possimus voluptates tenetur non odit natus architecto nisi mollitia aperiam!</p>
+              </div>
+              <hr class="my-2">
+
+
+            <!-- Single Review -->
+            <div class="py-4">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
+                  <div class="d-flex align-items-center me-3">
+
+                    <img src="/default/default.png" class="rounded-circle" width="48" alt="Dummy Review Img">
+
+                    <div class="d-sm-flex align-items-center ms-2">
+                        <div class="pe-sm-3 me-sm-5">
+                            <h6 class="fw-semibold mb-0">Joe</h6>
+                        </div>
+                        <div class="ps-3 pe-sm-3 me-sm-5">
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bx-star text-muted opacity-75"></i>
+                            <i class="bx bx-star text-muted opacity-75"></i>
+                            <i class="bx bx-star text-muted opacity-75"></i>
+                        
+                        <span class="opacity-70">2/5</span>
+                        </div>
+                    </div>
+                      
+                  </div>
+                </div>
+                <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum, voluptate?</p>
+              </div>
+              <hr class="my-2">
+
+
+            <!-- Single Review -->
+            <div class="py-4">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
+                  <div class="d-flex align-items-center me-3">
+
+                    <img src="/default/default.png" class="rounded-circle" width="48" alt="Dummy Review Img">
+
+                    <div class="d-sm-flex align-items-center ms-2">
+                        <div class="pe-sm-3 me-sm-5">
+                            <h6 class="fw-semibold mb-0">Elma</h6>
+                        </div>
+                        <div class="ps-3 pe-sm-3 me-sm-5">
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                        
+                        <span class="opacity-70">5/5</span>
+                        </div>
+                    </div>
+                      
+                  </div>
+                </div>
+                <p class="mb-0">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Porro blanditiis, nam dicta expedita sit tempora. Eos, ut! Assumenda eos facere consequuntur totam, voluptatem eveniet suscipit, quo molestias commodi temporibus a vero cum quidem consectetur placeat reiciendis facilis perferendis repudiandae iste. Exercitationem magnam quia deleniti architecto corrupti, et tempore magni provident?</p>
+              </div>
+              <hr class="my-2">
+
+            <!-- Single Review -->
+            <div class="py-4">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
+                  <div class="d-flex align-items-center me-3">
+
+                    <img src="/default/default.png" class="rounded-circle" width="48" alt="Dummy Review Img">
+
+                    <div class="d-sm-flex align-items-center ms-2">
+                        <div class="pe-sm-3 me-sm-5">
+                            <h6 class="fw-semibold mb-0">Marco</h6>
+                        </div>
+                        <div class="ps-3 pe-sm-3 me-sm-5">
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bx-star text-muted opacity-75"></i>
+                        
+                        <span class="opacity-70">4/5</span>
+                        </div>
+                    </div>
+                      
+                  </div>
+                </div>
+                <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum sapiente corporis facilis modi veniam voluptas.</p>
+              </div>
+              <hr class="my-2">
+
+            <!-- Single Review -->
+            <div class="py-4">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
+                  <div class="d-flex align-items-center me-3">
+
+                    <img src="/default/default.png" class="rounded-circle" width="48" alt="Dummy Review Img">
+
+                    <div class="d-sm-flex align-items-center ms-2">
+                        <div class="pe-sm-3 me-sm-5">
+                            <h6 class="fw-semibold mb-0">Magie</h6>
+                        </div>
+                        <div class="ps-3 pe-sm-3 me-sm-5">
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bxs-star text-warning"></i>
+                            <i class="bx bx-star text-muted opacity-75"></i>
+                            <i class="bx bx-star text-muted opacity-75"></i>
+                        
+                        <span class="opacity-70">3/5</span>
+                        </div>
+                    </div>
+                      
+                  </div>
+                </div>
+                <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis officia deserunt ut?</p>
+              </div>
+              <hr class="my-2">
+
+
+              <!-- Pagination -->
+              <nav class="pb-5 mt-5" aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item">
+                    <a href="#" class="page-link">
+                      <i class="bx bx-chevron-left ms-n1 me-1"></i>
+                      Prev
+                    </a>
+                  </li>
+                  <li class="page-item disabled d-sm-none">
+                    <span class="page-link text-body">1 / 4</span>
+                  </li>
+                  <li class="page-item active d-none d-sm-block" aria-current="page">
+                    <span class="page-link">
+                      1
+                      <span class="visually-hidden">(current)</span>
+                    </span>
+                  </li>
+                  <li class="page-item d-none d-sm-block">
+                    <a href="#" class="page-link">2</a>
+                  </li>
+                  <li class="page-item d-none d-sm-block">
+                    <a href="#" class="page-link">3</a>
+                  </li>
+                  <li class="page-item d-none d-sm-block">
+                    <a href="#" class="page-link">4</a>
+                  </li>
+                  <li class="page-item">
+                    <a href="#" class="page-link">
+                      Next
+                      <i class="bx bx-chevron-right me-n1 ms-1"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+      </section>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <%- include('partials/Footer') %>
+    
+  </body>
+</html>

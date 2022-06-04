@@ -1,0 +1,196 @@
+<%- include('partials/Head') %>
+
+
+  <!-- Body -->
+<body>
+
+    <!-- Page wrapper for sticky footer -->
+    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+    <main class="page-wrapper">
+
+      <%- include('partials/Navbar') %>
+
+      <!-- Hero -->
+      <section class="pt-2 pt-lg-3 pb-lg-4" >
+        <div class="container">
+
+          <!-- Breadcrumb -->
+          <nav class="py-4" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a href="/products">Product</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page"><%=product.title%></li>
+            </ol>
+          </nav>
+
+          <!-- Badges -->
+          <div class="d-flex pt-3 pb-4 py-sm-4 pt-lg-4">
+            <span class="badge bg-success fs-sm me-2">Best Seller</span>
+            <a href="#" class="badge bg-white text-dark fs-sm text-decoration-none">Web Development</a>
+          </div>
+
+          <!-- Title -->
+          <h1><%=product.title%></h1>
+
+          <!-- Stats -->
+          <div class="d-sm-flex ">
+            <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">  
+              <div class="text-nowrap me-1">
+                <%- include('partials/Rating', {rating: product.review.average_note}) %>
+              </div>
+            <span class="opacity-70">
+              <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
+            </span>
+            </div>
+          </div>
+
+          <!-- Author -->
+          <div class="d-sm-flex align-items-center  pt-lg-4">
+            <a href="/profile/<%=product.vendor%>">
+              <img src="<%=vendor.img_path%>" class="medium-rc rounded-circle" width="60" alt="<%=vendor.username%>">
+            </a>
+            <div class="ps-3 pe-sm-3 me-sm-5">
+              <div class="opacity-80 mb-1">Vendor</div>
+              <a href="/profile/<%=vendor.username%>"><%=vendor.username%></a>
+            </div>
+            <div class="ps-3 pe-sm-3 me-sm-5">
+              <div class="opacity-80 mb-1">Vendor Rating</div>
+              <div class="d-flex border-sm-end ">
+                <div class="text-nowrap me-1">
+                  <%- include('partials/Rating', {rating: vendor.review.average_note}) %>
+                </div>
+                <span class="opacity-70">
+                  <%- include('partials/Number-Reviews', {number_reviews: vendor.review.number_review}) %>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar (Course summary) -->
+      <!-- MAke it look better when no Details -->
+      <section class="container">
+        <div class="row">
+
+          <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-5">
+            <div style="margin-top: -96px;"></div>
+            <div class="position-sticky top-0 pt-5">
+              <div class="pt-5 mt-md-3">
+                <div class="card shadow-sm p-sm-3">
+                  <div class="card-body">
+                    <% if (product.details.length) { %>
+                      <h4 class="mb-4">About this Product:</h4>
+                    <% } %>
+                    <ul class="list-unstyled pb-3">
+                      <!-- Allow User to Choose SVG -->
+                      <% for(let i = 0; i < product.details.length; i++) { %>
+                        <li class="d-flex align-items-center mb-2">
+                          <i class="bx bx-check-circle text-primary fs-xl me-2"></i>
+                          <b class="me-2"><%=product.details[i]%></b>
+                        </li>
+                      <% } %>
+                    </ul>
+                    <div class="h2 d-flex align-items-center mb-2">
+                      <p class="h4">Price: <%=product.price%>$</p>
+                      <!-- IF SALE ON -->
+                      <!-- <del class="text-muted fs-xl fw-normal ms-2">49.99</del> -->
+                    </div>
+                    <!-- Make Button Take whole wicth of sidebar and be thicker -->
+                  </div>
+                  <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary">Buy This Product</a>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Content -->
+          <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
+            <img src="<%=product.img_path%>" class="card-img-top" style="height: 30rem; object-fit:cover;" alt="Product Image">
+
+            <h2 class="h1 mb-4 mt-4">Product description</h2>
+            <p class="pb-1 mb-1"><%-product.description%></p>
+
+            <!-- Make Text Smaller , Change Color-->
+            <div class="d-sm-flex align-items-center ">
+              <div class="pe-sm-3 me-sm-5">
+                <p><b>Ship From :</b> <%=product.ship_from%></p>
+              </div>
+            </div>
+
+            <% if (product.selection_1) { %>
+              <h3 class="mb-4"><%=product.selection_1.selection_name%></h3>
+            <ul class="list-unstyled mb-5">
+              <!-- Find Better Svg -->
+              <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
+                <li class="d-flex align-items-center mb-2">
+                  <i class="bx bx-spreadsheet text-primary fs-xl me-2"></i>
+                  <%=product.selection_1.selection_choices[i].choice_name%> : + <%=product.selection_1.selection_choices[i].choice_price%>$
+                </li>
+              <% } %>
+            </ul>
+            <% } %>
+
+
+            <% if (product.selection_2) { %>
+              <h3 class="mb-4"><%=product.selection_2.selection_name%></h3>
+            <ul class="list-unstyled mb-5">
+              <!-- Find Better Svg -->
+              <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
+                <li class="d-flex align-items-center mb-2">
+                  <i class="bx bx-spreadsheet text-primary fs-xl me-2"></i>
+                  <%=product.selection_2.selection_choices[i].choice_name%> : + <%=product.selection_2.selection_choices[i].choice_price%>$
+                </li>
+              <% } %>
+            </ul>
+            <% } %>
+
+            <% if (product.shipping_option.length) { %>
+              <h3 class="mb-4">Available Shipping Option</h3>
+            <% } %>
+            <ul class="list-unstyled mb-5">
+              <!-- Find Better Svg -->
+              <% for(let i = 0; i < product.shipping_option.length; i++) { %>
+                <li class="d-flex align-items-center mb-2">
+                  <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
+                  <b class="me-2"><%=product.shipping_option[i].option_description%> :</b> + <%=product.shipping_option[i].option_price%>$
+                </li>
+              <% } %>
+            </ul>
+
+
+            <% if (product.qty_settings) { %>
+              <div class="d-sm-flex align-items-center ">
+                <div class="pe-sm-3 me-sm-5">
+                  <p>Available Quantity : <%=product.qty_settings.available_qty%></p>
+                </div>
+                <% if (product.qty_settings.max_order) { %>
+                  <p>Maximun per Order : <%=product.qty_settings.max_order%></p>
+                <% } %>
+                <div class="ps-3 pe-sm-3 me-sm-5">
+                </div>
+              </div>
+            <% } %>
+
+
+
+            <%- include('partials/Vendor-card', {vendor : vendor}) %>
+
+      <!-- Review Section -->
+      <%- include('partials/Reviews', {reviews : reviews}) %>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <%- include('partials/Footer') %>
+  </body>
+</html>
