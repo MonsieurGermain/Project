@@ -7,13 +7,7 @@ const User = require('../models/user')
 const Product = require('../models/product')
 const { Validate_Reviews } = require('../middlewares/input-validation')
 const { Validate_Params_Id_Order_Buyer } = require('../middlewares/params-validator')
-
-
-function Format_Username_Settings(sender, setting) { 
-    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1]
-    if (setting === 'hidden') return 'Anonymous'
-    return sender   
-}
+const { Format_Username_Settings } = require('../middlewares/function')
 
 
 router.post('/create-review/:id', Need_Authentification, Validate_Params_Id_Order_Buyer, Validate_Reviews,

@@ -6,6 +6,7 @@ const { Need_Authentification } = require('../middlewares/authentication')
 const { Validate_Conversation, Validate_Message } = require('../middlewares/input-validation')
 const { Validate_Params_Username_Conversation, Validate_Params_Id_Conversation, Validate_Params_Username_Conversations, Validate_Query_Id_Conversations, Validate_Params_Message_Id_Conversation } = require('../middlewares/params-validator')
 const { Validate_Send_Message_To_Himself } = require('../middlewares/custom-validation')
+const { Format_Username_Settings } = require('../middlewares/function')
 
 // Perfect that ?
 async function Get_Img(username) {
@@ -55,12 +56,6 @@ function Get_IndexOf(conversations, id) {
     if (id) return conversations.map(function(element) { return element.id; }).indexOf(id); // Return Index of selected Conversation
     if (!id && conversations.length) return conversations.length - 1 // If no Id, Selected Conversation Become Last Element
     return // If no Id and No Conversation return Nothing
-}
-
-function Format_Username_Settings(username, type) { 
-    if (type === 'semi-hidden') return username[0] + '*****' + username[username.length - 1]
-    if (type === 'hidden') return 'Anonymous'
-    return username   
 }
 
 async function Format_Conversation(conversations, username, id) {

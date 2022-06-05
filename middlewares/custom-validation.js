@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const { IsNot_String, compareArray, IsNot_Number} = require('./function')
 
 function Check_If_Selected_ShippingOptions_Valid(selected_opt, available_opt) {
     let taken_opt 
@@ -27,21 +28,7 @@ function Get_Selection(selected_select, available_select) {
     }
     return taken_select
 }
-function compareArray(array, value) {
-    for(let i = 0; i < array.length; i++) {
-      if(array[i] === value) return true
-    }
-    return
-}
-function IsNot_String(value) {
-    if (typeof(value) !== 'string') return true
-    return
-}
-function IsNot_Number(value) {
-    if(isNaN(parseFloat(value))) return true
-    return 
-}
-  
+
 exports.Validate_Send_Message_To_Himself = async (req, res, next) => {
     try { 
         if (req.user.username === req.params.username) throw new Error('You cant send a Message to Yourself')

@@ -1,3 +1,6 @@
+const { Is_Empty, IsNot_String, Is_Shorter, Is_Longuer, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteOld_Img} = require('./function')
+
+
 const Banned_Username = ['Admin', 'admin', 'System', 'system']
 const Conversation_Type = ['default', 'semi-hidden', 'hidden']
 const Rating_Possible = ['1', '2', '3', '4', '5']
@@ -23,33 +26,6 @@ function Make_Selection(options, prices) {
   return selection
 }
 
-function compareArray(array, value) {
-  for(let i = 0; i < array.length; i++) {
-    if(array[i] === value) return true
-  }
-  return
-}
-
-function IsNot_String(value) {
-  if (typeof(value) !== 'string') return true
-  return
-}
-
-function Is_Empty(value) {
-  if (!value) return true
-  return
-}
-
-function Is_Shorter(value, length) {
-  if (value.length < length) return true
-  return
-}
-
-function Is_Longuer(value, length) {
-  if (value.length > length) return true
-  return
-}
-
 function Filter_Empty(value) {
   return value.filter((element) => element)
 }
@@ -59,21 +35,6 @@ function Replace_Empty(value) {
     if (!value[i]) value[i] = '0'
   }
   return value
-}
-
-function IsNot_Number(value) {
-  if(isNaN(parseFloat(value))) return true
-  return 
-}
-
-function Is_Smaller(value, number) {
- if (value < number) return true
- return 
-}
-
-function Is_Bigger(value, number) {
-  if (value > number) return true
-  return 
 }
 
 
@@ -239,9 +200,7 @@ exports.Validate_Profile = (req, res, next) => {
     let url = `${splited_url[0]}`
 
     if (req.file) {
-      unlink(req.file.path, (err) => {
-        if (err) throw err;
-    });
+      deleteOld_Img(req.file.path)
     }
     req.flash('error', e.message)
     res.redirect(url)
@@ -380,9 +339,7 @@ exports.Validate_Product = (req, res, next) => {
     let url = `${req.url}`
 
     if (req.file) {
-      unlink(req.file.path, (err) => {
-        if (err) throw err;
-    });
+      deleteOld_Img(req.file.path)
     }
     req.flash('error', e.message)
     res.redirect(url)

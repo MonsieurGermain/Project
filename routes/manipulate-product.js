@@ -3,15 +3,10 @@ const router = express.Router()
 const Product = require('../models/product')
 const { Need_Authentification } = require('../middlewares/authentication')
 const upload = require('../middlewares/multers')
-const { unlink } = require('fs')
+
 const { Validate_Product } = require('../middlewares/input-validation')
 const { Validate_Query_Product_Slug, Validate_Params_Slug_Product_Vendor} = require('../middlewares/params-validator')
-
-function deleteOld_Img(path) {
-    unlink(path, (err) => {
-        if (err) throw err;
-    });
-}
+const { deleteOld_Img } = require('../middlewares/function')
 
 //POST
 router.post('/create-product', Need_Authentification, upload.single('productImage'), Validate_Query_Product_Slug, Validate_Product,

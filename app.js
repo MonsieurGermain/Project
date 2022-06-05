@@ -71,12 +71,13 @@ app.use('/', SETTINGS)
 app.use('/', ADMIN)
 app.use('/', REPORT)
 
-let x = 'aaa'
+// PRIORITY 
+// PAGINATION
+// XMR ESCROW
+// FUZZY SEARCH
+// ADMIN PAGE AND SYSTEM
 
-x = x.split('x')
 
-if ([].length) console.log('[]')
-if(x.length) console.log(x)
 // To do 
 // fix product array and product img sizing
 
@@ -84,6 +85,8 @@ if(x.length) console.log(x)
 // Totally hidden Message
 // Encrypt Messages
 // Saw or not saw message
+// Register Saw or not saw
+// Delete message after seing
 // Format Currency of Product
 // Discount Product
 // Offline local 

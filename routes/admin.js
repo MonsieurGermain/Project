@@ -3,15 +3,8 @@ const { Need_Authentification } = require('../middlewares/authentication')
 const router = express.Router()
 const Order = require('../models/order') 
 const Report = require('../models/report')
+const { Format_Username_Settings } = require('../middlewares/function')
 
-
-function Format_Username_Settings(disputes) { 
-    for(let i = 0; i < disputes.length; i++) {
-        if (disputes[i].privacy === 'semi-hidden') disputes[i].buyer = disputes[i].buyer[0] + '*****' + disputes[i].buyer[disputes[i].buyer.length - 1]
-        if (disputes[i].privacy === 'hidden') disputes[i].buyer = 'Anonymous' 
-    }
-    return disputes
-}
 
 function Find_SelectedDispute(disputes, id) {
     let dispute

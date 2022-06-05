@@ -7,7 +7,7 @@ const User = require('../models/user')
 const { Validate_ProvidedInfo, Validate_Update_Order } = require('../middlewares/input-validation')
 const { Validate_Params_Slug_Product, Validate_Params_Id_Order, Validate_Params_Id_Order_Buyer, Validate_Params_Username_Order} = require('../middlewares/params-validator')
 const { Validate_Order_Customization } = require('../middlewares/custom-validation')
-
+const { Format_Username_Settings } = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
     let price = base_price + selection_1_price + selection_2_price // Base Price OF Each
@@ -20,11 +20,6 @@ function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, se
     return parseFloat(price) 
 }
 
-function Format_Username_Settings(sender, setting) { 
-    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1]
-    if (setting === 'hidden') return 'Anonymous'
-    return sender   
-}
 
 function sortOrder_PerStatus(orders) {
     const sorted_order = {
@@ -166,7 +161,6 @@ async function Format_Order(order, buyer, order_link) {
     
     return order
 }
-
 async function Format_Orders_Array(orders, buyer = false, order_link = true) {
     for(let i = 0; i < orders.length; i++) {
         orders[i] = await Format_Order(orders[i], buyer, order_link)

@@ -2,19 +2,9 @@ const Product = require('../models/product')
 const Conversation = require('../models/conversation')
 const Order = require('../models/order')
 const User = require('../models/user')
+const { Is_Empty, IsNot_String} = require('./function')
  
-
-function IsNot_String(value) {
-    if (typeof(value) !== 'string') return true
-    return
-}
   
-function Is_Empty(value) {
-    if (!value) return true
-    return
-}
-
-
 // Product
 exports.Validate_Query_Slug_Product_Required = async (req,res, next) => {
     try { 
@@ -209,7 +199,6 @@ exports.Validate_Params_Username_User_ReqUser = async (req, res, next) => {
       if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
 
       if (req.params.username !== req.user.username) throw new Error('Cant Access')
-      req.requser = await User.findOne({username: req.params.username}).orFail(new Error('Username Params Invalid'))
 
       next()
   } catch(e) {

@@ -4,6 +4,7 @@ const Order = require('./order')
 const Review = require('./review')
 const fs = require('fs')
 const { unlink } = require('fs')
+const { deleteOld_Img, isolate_mimetype} = require('../middlewares/function')
 
 const reviewSchema = new mongoose.Schema({
     number_review : {
@@ -147,16 +148,6 @@ function rename_newImg(old_filename, newImg_path) {
     })
 }
 
-function isolate_mimetype(string) {
-    const mimetype = string.split('.')
-    return `.${mimetype[mimetype.length - 1]}`
-}
-
-function deleteOld_Img(path) {
-    unlink(path, (err) => {
-        if (err) throw err;
-    });
-}
 
 productSchema.methods.UploadImg = function(filename, Old_Image) {
     console.log(Old_Image)

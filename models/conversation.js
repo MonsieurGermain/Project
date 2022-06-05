@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const User = require('./user')
 const slugify = require('slugify')
 const { format } = require('date-fns')
+const { Format_Username_Settings } = require('../middlewares/function')
 
 const settingsSchema = new mongoose.Schema({
     type : {
@@ -60,14 +61,6 @@ const conversationSchema = new mongoose.Schema ({
         type : settingsSchema, 
     }
 })
-
-
-
-function Format_Username_Settings(sender, setting) { 
-    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1]
-    if (setting === 'hidden') return 'Anonymous'
-    return sender   
-}
 
 
 function Create_New_Message(Message, Sender, sender_1, Settings, Message_Expiring_Settings) {

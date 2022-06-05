@@ -37,15 +37,15 @@ async (req,res) => {
 router.put('/change-autodelete/:username', Need_Authentification, Validate_Params_Username_User_ReqUser, Validate_AutoDel_Settings, 
 async (req,res) => {
     try { 
-        const { requser } = req
+        const { user } = req
         const { messages , informations } = req.body
 
-        requser.settings.message_expiring = messages
-        requser.settings.info_expiring = informations
+        user.settings.message_expiring = messages
+        user.settings.info_expiring = informations
 
-        await requser.save()
+        await user.save()
 
-        res.redirect(`/settings/${requser.username}?section=privacy`)
+        res.redirect(`/settings/${user.username}?section=privacy`)
     
     } catch(e) {
         console.log(e)
@@ -56,7 +56,7 @@ async (req,res) => {
 router.put('/change-password/:username', Need_Authentification, Validate_Params_Username_User_ReqUser, Validate_Change_Password,
 async (req,res) => {
     try { 
-        const { requser } = req
+        const { user } = req
         const { password, newPassword } = req.body
         
         bcrypt.compare(password, req.user.password, (err, match) => {
@@ -64,12 +64,12 @@ async (req,res) => {
             if (!match) throw new Error('Invalid Password')
         })
 
-        requser.password = await bcrypt.hash(newPassword, 10)
+        user.password = await bcrypt.hash(newPassword, 10)
 
-        await requser.save()
+        await user.save()
 
         req.flash('success', 'Password Successfully Changed')
-        res.redirect(`/settings/${requser.username}?section=security`)
+        res.redirect(`/settings/${user.username}?section=security`)
 
     } catch(e) {
         console.log(e)
@@ -80,10 +80,10 @@ async (req,res) => {
 router.delete('/delete-user/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
 async (req,res) => {
     try { 
-        const { requser } = req
+        const { user } = req
 
-        await requser.Delete_User_Conversation_Etc()
-        await requser.delete()
+        await user.Delete_User_Conversation_Etc()
+        await user.delete()
 
         res.redirect('/logout')
     } catch(e) {
