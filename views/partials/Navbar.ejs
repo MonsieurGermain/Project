@@ -19,7 +19,7 @@
 
     <% if (authuser) { %> 
     <div class="dropdown order-lg-3 ms-4">
-      <a href="/profile/<%=authuser.username%>" class="d-flex nav-link p-0" data-bs-toggle="dropdown">
+      <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1" class="d-flex nav-link p-0" data-bs-toggle="dropdown">
         <img src="<%=authuser.img_path%>" class="small-rc rounded-circle" width="48" alt="User img">
         <div class="d-none d-sm-block ps-2">
           <div class="fs-xs lh-1 opacity-60">Hey,</div>
@@ -41,7 +41,7 @@
           </a>
         </li>
         <li>
-          <a class="dropdown-item d-flex align-items-center" href="/settings/<%=authuser.username%>?section=saved">
+          <a class="dropdown-item d-flex align-items-center" href="/settings/<%=authuser.username%>?section=saved&productPage=1">
             <i class="bx bx-heart fs-base opacity-60 me-2"></i>
             Saved Product
             <span class="ms-auto fs-xs text-muted"><%=authuser.saved_product.length%></span>
@@ -76,11 +76,11 @@
       <hr class="d-lg-none mt-3 mb-2">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a href="/products" class="nav-link">Products</a>
+          <a href="/products?productPage=1" class="nav-link">Products</a>
         </li>
         <% if (authuser) { %>
           <li class="nav-item">
-            <a href="/profile/<%=authuser.username%>" class="nav-link">Profile</a>
+            <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1" class="nav-link">Profile</a>
           </li>
           <li class="nav-item">
             <a href="/messages" class="nav-link">Messages</a>

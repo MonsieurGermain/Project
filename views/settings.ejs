@@ -19,25 +19,25 @@
                     </div>
                     <h2 class="h5 mb-1"><%=authuser.username%></h2>
                     <p class="fs-sm mb-2"><%=authuser.job%></p>
-                    <a href='/edit-profile/<%=authuser.username%>' class="btn btn-primary mb-3">Edit Profile</a>
+                    <a href='/edit-profile/<%=authuser.username%>?productPage=1' class="btn btn-primary mb-3">Edit Profile</a>
                     <hr class="my-2">
                     <div id="account-menu" class="list-group list-group-flush collapse d-md-block mt-3">
                         <a href="/settings/<%=authuser.username%>?section=security" class="list-group-item list-group-item-action d-flex align-items-center
-                            <% if(!input_data.section || input_data.section === 'security') { %>
+                            <% if(!query.section || query.section === 'security') { %>
                                 active
                             <% } %>">
                             <i class="bx bx-lock-alt fs-xl opacity-60 me-2"></i>
                             Security Settings
                           </a>
                       <a href="/settings/<%=authuser.username%>?section=privacy" class="list-group-item list-group-item-action d-flex align-items-center
-                        <% if(input_data.section === 'privacy') { %>
+                        <% if(query.section === 'privacy') { %>
                             active
                         <% } %>">
                         <i class="bx bx-mask fs-xl opacity-60 me-2"></i>
                         Privacy Settings
                       </a>
-                      <a href="/settings/<%=authuser.username%>?section=saved" class="list-group-item list-group-item-action d-flex align-items-center
-                        <% if(input_data.section === 'saved') { %>
+                      <a href="/settings/<%=authuser.username%>?section=saved&productPage=1" class="list-group-item list-group-item-action d-flex align-items-center
+                        <% if(query.section === 'saved') { %>
                             active
                         <% } %>">
                         <i class="bx bx-bookmark fs-xl opacity-60 me-2"></i>
@@ -55,8 +55,7 @@
                   </div>
                 </div>
               </aside>
-    
-    
+  
               <!-- Account security -->
               <div class="col-md-8 offset-lg-1 pb-5 mb-lg-2 mb-lg-4 pt-md-5 mt-n3 mt-md-0">
                 <div class="ps-md-3 ps-lg-0 mt-md-2 pt-md-4 pb-md-2">
@@ -72,7 +71,7 @@
                   </div>   
                   <% } %>
 
-                  <% if (!input_data.section || input_data.section === 'security') { %>
+                  <% if (!query.section || query.section === 'security') { %>
                     <div>
                     <h1 class="h2 pt-xl-1 pb-3">Security</h1>
                   
@@ -120,7 +119,7 @@
                   </div>
 
 
-                  <% } else if (input_data.section === 'privacy') { %>
+                  <% } else if (query.section === 'privacy') { %>
                     <div>
                         <h1 class="h2 pt-xl-1 pb-3">Privacy</h1>
                         <form action="/change-autodelete/<%=authuser.username%>?_method=PUT" method="POST">
@@ -196,10 +195,12 @@
                   <% } else { %>
                     <div>
                       <h1 class="h2 pt-xl-1 pb-3">Saved Products</h1>
-                      <% if (!products.length) { %>
-                        <h1 class="h4 pt-xl-1 pb-3">You dont have any saved products...</h1>
+                      <% if (!paginatedProducts.results.length) { %>
+                        <h1 class="h4 pt-xl-1 pb-3">You dont have any Saved Products</h1>
+                      <% } else { %>
+                        <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
                       <% } %>
-                      <%- include('partials/Products-array', { products , sepc_col: 2 }) %>
+
                     </div>
                   <% } %>
 

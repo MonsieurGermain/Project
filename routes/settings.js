@@ -7,16 +7,7 @@ const bcrypt = require('bcrypt')
 const { Validate_Change_Password, Validate_AutoDel_Settings} = require('../middlewares/input-validation')
 const { Validate_Params_Username_User_ReqUser, Validate_Params_Slug_Product} = require('../middlewares/params-validator')
 const { Validate_Query_Section_Settings, Validate_Query_Url} = require('../middlewares/custom-validation')
-
-async function Get_Saved_Product(saved_product) {
-    const Saved_Product = []
-
-    for(let i = 0; i < saved_product.length; i++) {
-        const product = await Product.findOne({slug: saved_product[i]})
-        Saved_Product.push(product) 
-    }
-    return Saved_Product
-}
+const { paginatedResults } = require('../middlewares/function')
 
 
 router.get('/settings/:username', Need_Authentification, Validate_Query_Section_Settings,
@@ -24,10 +15,10 @@ async (req,res) => {
     try { 
         const { user } = req
         
-        let products
-        if (req.query.section === 'saved') products = await Get_Saved_Product(user.saved_product)
+        let paginatedProducts
+        if (req.query.section === 'saved') paginatedProducts = await paginatedResults(Product, req.query.productPage, { slug: { $in: user.saved_product }})
 
-        res.render('settings', {user, products})
+        res.render('settings', {user, paginatedProducts})
     } catch(e) {
         console.log(e)
         res.redirect('/error')
@@ -95,13 +86,13 @@ async (req,res) => {
 router.post('/saved_product/:slug', Need_Authentification, Validate_Query_Url, Validate_Params_Slug_Product,
 async (req,res) => {
     try { 
+        console.log(req.query)
         const user = await User.findOne({username: req.user.username})
         user.Add_Remove_Saved_Product(req.params.slug)
 
         await user.save()
-
-        res.redirect(`${req.query.url}`)
-        
+        if (req.query.productPage) res.redirect(`/settings/${req.user.username}?section=saved&productPage=${req.query.productPage}`)
+        else res.redirect(`${req.query.url}`) 
     } catch(e) {
         console.log(e)
         res.redirect('/error')

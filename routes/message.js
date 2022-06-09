@@ -42,11 +42,10 @@ function Format_Username(conversation, username) {
 }
 
 function Create_Link(conversation, username) {
-    if (conversation.sender_1 === username) { 
-        conversation.link = `/profile/${conversation.sender_2}` // if Sender 1 Link to Sender 2
-    } else {
+    if (conversation.sender_1 === username) conversation.link = `/profile/${conversation.sender_2}?productPage=1&reviewPage=1` // if Sender 1 Link to Sender 2
+    else {
         if (conversation.settings.type === 'default') { 
-            conversation.link = `/profile/${conversation.sender_1}` // if Sender 2 and Type : Default Link to Sender 1
+            conversation.link = `/profile/${conversation.sender_1}?productPage=1&reviewPage=1` // if Sender 2 and Type : Default Link to Sender 1
         }
     }
     return conversation
@@ -60,8 +59,8 @@ function Get_IndexOf(conversations, id) {
 
 async function Format_Conversation(conversations, username, id) {
     
-    const index_sel_con = Get_IndexOf(conversations, id) // Get Index of The Selected Conversation
-    if (index_sel_con) conversations[index_sel_con] = Create_Link(conversations[index_sel_con], username) // If Index Format Selected Conversation
+    const indexOf_SelectedConversation = Get_IndexOf(conversations, id) // Get Index of The Selected Conversation
+    if (indexOf_SelectedConversation || indexOf_SelectedConversation === 0) conversations[indexOf_SelectedConversation] = Create_Link(conversations[indexOf_SelectedConversation], username) // If Index Format Selected Conversation
 
     for(let i = 0; i < conversations.length; i++) {
 
@@ -70,7 +69,7 @@ async function Format_Conversation(conversations, username, id) {
     conversations[i] = Format_Username(conversations[i], username) // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
     }
 
-    return {formated_conversations: conversations, index_selected_conversation: index_sel_con}
+    return {formated_conversations: conversations, index_selectedConversation: indexOf_SelectedConversation}
 }
 
 
@@ -122,9 +121,9 @@ Need_Authentification, Validate_Params_Username_Conversations, Validate_Query_Id
 async (req, res) => {
     try {
         let { conversations } = req
-        const {formated_conversations, index_selected_conversation} = await Format_Conversation(conversations, req.user.username, req.query.id) // Function Format All Conversation and Return IndexOf Selected Conversaiotn
+        const {formated_conversations, index_selectedConversation} = await Format_Conversation(conversations, req.user.username, req.query.id) // Function Format All Conversation and Return IndexOf Selected Conversaiotn
 
-        res.render('messages', {conversations: formated_conversations,  selected_conversation: formated_conversations[index_selected_conversation]})
+        res.render('messages', {conversations: formated_conversations,  selected_conversation: formated_conversations[index_selectedConversation]})
 
     } catch (e) {
         console.log(e)

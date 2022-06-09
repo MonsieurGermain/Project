@@ -35,14 +35,19 @@ app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   res.locals.authuser = req.user
-  res.locals.url = req.url
-  res.locals.input_data = req.query
+  const splitedUrl = req.url.split('?')
+  res.locals.url = splitedUrl
+  console.log(req.url)
+  console.log(splitedUrl)
+  res.locals.query = req.query
   next()
 })
 
 
-const { Auto_Delete_Expired_Message } = require('./middlewares/auto-delete')
+const { Auto_Delete_Expired_Message, Auto_Check_Recieved_Payment, Update_Order_ExpiredTimer } = require('./middlewares/auto-delete')
 Auto_Delete_Expired_Message
+Auto_Check_Recieved_Payment
+Update_Order_ExpiredTimer
 
 const HOME_ROUTER = require('./routes/home')
 const LOGIN_ROUTER = require('./routes/login')
@@ -72,11 +77,19 @@ app.use('/', ADMIN)
 app.use('/', REPORT)
 
 // PRIORITY 
-// PAGINATION
 // XMR ESCROW
 // FUZZY SEARCH
 // ADMIN PAGE AND SYSTEM
 
+
+// Saved Product redirect
+
+// Paginate Saved Product
+// redirect paginated button
+
+// Only Product
+// Only review
+// Both
 
 // To do 
 // fix product array and product img sizing

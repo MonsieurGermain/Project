@@ -39,7 +39,7 @@
           </div>
 
           <% if(authuser && vendor.username === authuser.username) { %>
-            <a href="/edit-profile/<%=authuser.username%>" class="btn btn-primary mb-3">
+            <a href="/edit-profile/<%=authuser.username%>?productPage=1" class="btn btn-primary mb-3">
               Edit your Profile
             </a>
           <% } %>
@@ -171,9 +171,14 @@
 
           <div class="col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
             <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
-            <%- include('partials/Products-array', { products , sepc_col : 2}) %>
+            <% if (!paginatedProducts.results.length) { %>
+              <p>This Vendor doesnt have any Product</p>
+            <% } else { %>
+              <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+            <% } %>
+
             <hr class="my-2">
-            <%- include('partials/Reviews', {reviews : reviews}) %>
+            <%- include('partials/Reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage}) %>
           </div>
 
         </div>

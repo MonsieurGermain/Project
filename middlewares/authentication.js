@@ -21,6 +21,6 @@ exports.Is_Vendor = (req,res, next) => {
     }
 
     console.log('Need to be a Vendor')
-    res.redirect(`/profile/${req.user.username}`)
+    res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
 }
 

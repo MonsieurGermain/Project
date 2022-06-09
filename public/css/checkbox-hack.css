@@ -13,7 +13,6 @@
     display: none;
 }
 
-
 #client_order:checked ~ .client_order_container,
 #your_order:checked ~ .your_order_container {
   display: contents;

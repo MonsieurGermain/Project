@@ -7,6 +7,10 @@ const reviewSchema = new mongoose.Schema ({
         type : String,
         required : true
     },
+    vendor : {
+        type : String,
+        required : true
+    },
     sender : {
         type : String,
         required : true

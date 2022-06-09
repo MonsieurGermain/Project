@@ -4,7 +4,7 @@
       <div class="py-5 mx-auto" style="max-width: 530px;">
         <div class="fs-xl opacity-50 mb-2">Vendor:</div>
         <h2 class="h1 mb-4">
-          <a href="/profile/<%=vendor.username%>">
+          <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1">
             <%=vendor.username%>
           </a></h2>
         <p class=" opacity-70 pb-4"><%=vendor.description%>
@@ -13,7 +13,7 @@
         <% } %>
       </p>
         <div class="d-flex flex-column flex-sm-row">
-          <a href="/profile/<%=vendor.username%>" class="btn btn-primary me-sm-4 mb-3 mb-sm-0">
+          <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1" class="btn btn-primary me-sm-4 mb-3 mb-sm-0">
             See Profile
           </a>
         </div>

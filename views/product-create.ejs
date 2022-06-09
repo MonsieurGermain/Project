@@ -20,7 +20,7 @@
                 <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
               </li>
               <li class="breadcrumb-item">
-                <a href="/products">Product</a>
+                <a href="/products?productPage=1">Product</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">Your Product Title</li>
             </ol>
@@ -75,12 +75,12 @@
 
           <!-- Author -->
           <div class="d-sm-flex align-items-center  pt-lg-4">
-            <a href="/profile/<%=authuser.username%>">
+            <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1">
               <img src="<%=authuser.img_path%>" class="medium-rc rounded-circle" width="60" alt="<%=authuser.username%>">
             </a>
             <div class="ps-3 pe-sm-3 me-sm-5">
               <div class="opacity-80 mb-1">Vendor</div>
-              <a href="/profile/<%=authuser.username%>"><%=authuser.username%></a>
+              <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1"><%=authuser.username%></a>
             </div>
             <div class="ps-3 pe-sm-3 me-sm-5">
               <div class="opacity-80 mb-1">Vendor Rating</div>

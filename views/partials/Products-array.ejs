@@ -1,3 +1,4 @@
+          <% const settingsPage = authuser && url[0] === `/settings/${authuser.username}` ? true : false %>
           <!-- Courses grid -->
           <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-<%=sepc_col%> gx-3 gx-md-4 mt-n2 mt-sm-0">
   
@@ -7,7 +8,7 @@
             <div class="col pb-1 pb-lg-3 mb-4">
               <article class="card card-hover h-100 border-0 shadow-sm">
                 <div class="position-relative">
-                  <a href="/product?slug=<%= products[i].slug%>" class="d-block position-absolute w-100 h-100 top-0 start-0"></a>
+                  <a href="/product/<%=products[i].slug%>?reviewPage=1" class="d-block position-absolute w-100 h-100 top-0 start-0"></a>
                   <!-- Badges -->
                   <% if (products[i].qty_settings && !products[i].qty_settings.available_qty) { %>
                     <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sold Out!</span>
@@ -24,8 +25,11 @@
                       <i class="bx bx-edit"></i>
                     </a>
                   <% } else if (authuser) { %>
-
-                      <form action="/saved_product/<%=products[i].slug%>?url=<%=url%>" method="POST">
+                    <% if (settingsPage) { %>
+                      <form action="/saved_product/<%=products[i].slug%>?productPage=<%=query.productPage%>" method="POST">
+                    <% } else { %> 
+                      <form action="/saved_product/<%=products[i].slug%>?url=<%=url[0]%>?<%=url[1]%>" method="POST">
+                    <% } %>
                       <button type="submit" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3">
                         <% if (authuser.saved_product.includes(products[i].slug)) { %>
                           <i class="bx bxs-heart text-danger"></i>
@@ -41,7 +45,7 @@
                 </div>
                 <div class="card-body pb-3">
                   <h3 class="h5 mb-2">
-                    <a href="/product?slug=<%= products[i].slug%>">
+                    <a href="/product/<%=products[i].slug%>?reviewPage=1">
                       <% if (products[i].title.length > 50) { %>
                         <%=products[i].title.slice(0, 50)%>...
                       <% } else { %>
@@ -49,7 +53,7 @@
                       <% } %>
                     </a>
                   </h3>
-                  <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=products[i].vendor%>"><%=products[i].vendor%></a></p>
+                  <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=products[i].vendor%>?productPage=1&reviewPage=1"><%=products[i].vendor%></a></p>
                   <!-- Convert Currency  -->
                   <% if (products[i].onsales) { %>
                     <p class="text-muted mb-0"><span class="fs-lg fw-semibold text-danger me-2">$<%=products[i].price%></span><del>$<%=products[i].old_price%></del></p>
@@ -75,42 +79,7 @@
 
           </div>
   
-          <% if (products.length) { %>
-            <nav class="pb-5" aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <li class="page-item">
-                  <a href="#" class="page-link">
-                    <i class="bx bx-chevron-left ms-n1 me-1"></i>
-                    Prev
-                  </a>
-                </li>
-                <li class="page-item disabled d-sm-none">
-                  <span class="page-link text-body">1 / 4</span>
-                </li>
-                <li class="page-item active d-none d-sm-block" aria-current="page">
-                  <span class="page-link">
-                    1
-                    <span class="visually-hidden">(current)</span>
-                  </span>
-                </li>
-                <li class="page-item d-none d-sm-block">
-                  <a href="#" class="page-link">2</a>
-                </li>
-                <li class="page-item d-none d-sm-block">
-                  <a href="#" class="page-link">3</a>
-                </li>
-                <li class="page-item d-none d-sm-block">
-                  <a href="#" class="page-link">4</a>
-                </li>
-                <li class="page-item">
-                  <a href="#" class="page-link">
-                    Next
-                    <i class="bx bx-chevron-right me-n1 ms-1"></i>
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          <% } %>
+          <%- include('./Pagination', {nextPage, currentPage: parseInt(query.productPage), queryName: 'productPage'}) %>
 
   
   
@@ -120,29 +89,3 @@
 
   
 
-  
-
-    <!--<%  for(let i = 0; i < products.length; i++) {  %>
-        <div class="product">
-            <a href="/product/<%= products[i].slug %>">
-            <img src="/uploads/product-img/<%=products[i].img_path %>" alt="prodcut img">
-            </a>
-            <a href="/product/<%= products[i].slug %>"><%=products[i].title%></a>
-            <a href="/profile/<%=products[i].vendor%>"><%=products[i].vendor%></a>
-            <p>Review: <%=products[i].review.average_note%></p>
-            <p><%=products[i].description%></p>
-            <p><%=products[i].price%></p>
-            <% if (products[i].edit) { %>
-                <a href="<%= products[i].edit %>">Edit</a>
-            <% } %>
-        </div>
-    <% } %> -->
-
-<!-- Best Seller Tag-->
-<!-- <span class="badge bg-success position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Popular</span> -->
-
-<!-- Sales! Tag-->
-<!-- <span class="badge bg-primary  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sale!</span> -->
-
-<!-- Sold Out Tag-->
-<!-- <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sold Out!</span> -->

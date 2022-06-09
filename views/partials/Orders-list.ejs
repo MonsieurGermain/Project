@@ -28,7 +28,7 @@
               <div class="d-flex align-items-center">
                 <span>
                 <p class="mb-0">Vendor:</p>
-                <a href="/profile/<%=orders[i].vendor%>" class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                <a href="/profile/<%=orders[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
                   <%= orders[i].vendor%>
                 </a>
             </span>
@@ -36,7 +36,7 @@
                 <p class="mb-0">Buyer:</p>
                 <a 
                 <% if (orders[i].privacy === 'default') { %>
-                    href="/profile/<%=orders[i].buyer%>" 
+                    href="/profile/<%=orders[i].buyer%>?productPage=1&reviewPage=1" 
                 <% } %>
                 class="d-flex align-items-center fw-bold text-decoration-none me-3">
                   <%= orders[i].buyer%>

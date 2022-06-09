@@ -38,7 +38,7 @@
         </div>
     </div>
       
-<%- include('partials/Products-array', { products , sepc_col: 3 }) %>
+<%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3 }) %>
 
           <!-- Sign up CTA -->
           <div class="card rounded-3 my-2 my-md-4 my-lg-5 py-5 px-3 px-md-0">

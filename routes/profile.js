@@ -6,20 +6,7 @@ const upload = require('../middlewares/multer-user')
 const { Validate_Params_Username_User, Validate_Params_Username_User_ReqUser } = require('../middlewares/params-validator')
 const { Validate_Profile } = require('../middlewares/input-validation')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { sanitizeHTML } = require('../middlewares/function')
-
-
-async function Get_All_Reviews(products) {
-    const reviews = []
-
-    for(let i = 0; i < products.length; i++) {
-        const review = await Review.find({product_slug : products.slug})
-        for(let x = 0; x < review.length; x++) {
-            reviews.push(review[x])
-        }
-    }
-    return reviews
-}
+const { sanitizeHTML, paginatedResults} = require('../middlewares/function')
 
 
 // Route
@@ -27,13 +14,12 @@ router.get('/profile/:username', Validate_Params_Username_User,
 async (req, res) => {
     try { 
         const { vendor } = req 
-        const products = await Product.find({ vendor : vendor.username}).limit(12)
-        
         vendor.description = sanitizeHTML(vendor.description)
 
-        let reviews = await Get_All_Reviews(products)
+        const paginatedProducts = await paginatedResults(Product, req.query.productPage, {vendor : vendor.username})
+        const paginatedReviews = await paginatedResults(Review, req.query.reviewPage, {vendor : vendor.username})
 
-        res.render('profile', { vendor , products, reviews})
+        res.render('profile', { vendor , paginatedProducts, paginatedReviews})
 
     } catch (err) {
         console.log(err.message)
@@ -46,9 +32,8 @@ async (req, res) => {
 router.get('/edit-profile/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
 async (req,res) => {
     const { user } = req 
-    const products = await Product.find({ vendor : user.username})
-
-    res.render('profile-edit', { vendor: user , products})
+    const paginatedProducts = await paginatedResults(Product, req.query.productPage, {vendor : user.username})
+    res.render('profile-edit', { vendor: user , paginatedProducts})
 })
 
 
@@ -69,11 +54,11 @@ async (req,res) => {
         await user.save()
 
         req.flash('success', 'Profile Successfully Edited')
-        res.redirect(`/profile/${user.username}`)
+        res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`)
 
     } catch (e) {
         console.log(e)
-        res.redirect(`/profile/${user.username}`)
+        res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`)
     }
 })
 

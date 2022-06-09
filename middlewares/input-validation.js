@@ -403,6 +403,6 @@ exports.Validate_SearchInput = (req, res, next) => {
     next()
   } catch (e) {
     req.flash('error', e.message)
-    res.redirect(`/products`)
+    res.redirect(`/products?productPage=1`)
   }
 }

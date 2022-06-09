@@ -2,7 +2,7 @@
 <label for="report" style="cursor: pointer;">Report</label>
 
 <div class="report-input">
-    <form action="/report/<%=identifiant%>?type=<%=type%>&url=<%=url%>" method="POST">
+    <form action="/report/<%=identifiant%>?type=<%=type%>&url=<%=url[0]%>?<%=url[1]%>" method="POST">
         <input type="radio" name="reason" id='scam' value="scam" checked>
         <label for="scam">Scam</label>
 

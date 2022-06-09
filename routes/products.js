@@ -3,15 +3,14 @@ const router = express.Router()
 const Product = require('../models/product')
 const Review = require('../models/review')
 const User = require('../models/user')
-const { Validate_Query_Slug_Product_Required } = require('../middlewares/params-validator')
-const { sanitizeHTML } = require('../middlewares/function')
-
+const { Validate_Params_Slug_Product } = require('../middlewares/params-validator')
+const { sanitizeHTML, paginatedResults } = require('../middlewares/function')
 
 router.get('/products', async (req,res) => {
     try {
-        const products = await Product.find().skip(0).limit(24)
+        const paginatedProducts = await paginatedResults(Product, req.query.productPage, {}, 24)
 
-        res.render('products', { products })  
+        res.render('products', { paginatedProducts })  
 
     } catch (err) {
         console.log(err)
@@ -21,16 +20,16 @@ router.get('/products', async (req,res) => {
 })
 
 
-router.get('/product', Validate_Query_Slug_Product_Required,
+router.get('/product/:slug', Validate_Params_Slug_Product,
 async (req,res) => {
     try {
         const { product } = req
         const vendor = await User.findOne({username : product.vendor})
-        let reviews = await Review.find({product_slug : product.slug})
+        const paginatedReviews = await paginatedResults(Review, req.query.reviewPage, {product_slug : product.slug}) 
 
         product.description = sanitizeHTML(product.description)
 
-        res.render('product-single', { product, vendor, reviews })
+        res.render('product-single', { product, vendor, paginatedReviews })
 
     } catch (err) {
         console.log(err)

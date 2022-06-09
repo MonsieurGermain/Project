@@ -21,9 +21,9 @@
             </ol>
           </nav>
           
-          <% if (input_data.errmsg) { %>
+          <% if (query.errmsg) { %>
             <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-              <%- include('partials/Flash-message', {error_message: input_data.errmsg}) %>
+              <%- include('partials/Flash-message', {error_message: query.errmsg}) %>
             </div>
           <% } %>
 
@@ -132,7 +132,11 @@
           <div class="col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
             <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
 
-            <%- include('partials/Products-array', { products : products, sepc_col : 2}) %>
+            <% if (!paginatedProducts.results.length) { %>
+              <p>You dont have any Product</p>
+            <% } else { %>
+              <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+            <% } %>
             <hr class="my-2">
       <!-- Review Section -->
       <section class="container py-lg-4 py-xl-5 mt-3 mb-5">
@@ -290,17 +294,14 @@
                       Prev
                     </a>
                   </li>
-                  <li class="page-item disabled d-sm-none">
-                    <span class="page-link text-body">1 / 4</span>
+                  <li class="page-item d-none d-sm-block">
+                    <a href="#" class="page-link">1</a>
                   </li>
                   <li class="page-item active d-none d-sm-block" aria-current="page">
                     <span class="page-link">
-                      1
+                      2
                       <span class="visually-hidden">(current)</span>
                     </span>
-                  </li>
-                  <li class="page-item d-none d-sm-block">
-                    <a href="#" class="page-link">2</a>
                   </li>
                   <li class="page-item d-none d-sm-block">
                     <a href="#" class="page-link">3</a>

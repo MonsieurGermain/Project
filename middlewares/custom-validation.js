@@ -37,7 +37,7 @@ exports.Validate_Send_Message_To_Himself = async (req, res, next) => {
     } catch(e) {
       console.log(e)
       req.flash('error', e.message)
-      res.redirect(`/profile/${req.user.username}`)
+      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
     }
 }
 

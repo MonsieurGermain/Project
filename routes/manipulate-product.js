@@ -44,14 +44,14 @@ async (req, res) => {
         await product.save()
 
         req.flash('success', success_message)
-        res.redirect(`/profile/${req.user.username}`)
+        res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
 
     } catch (e) {
         console.log(e)
         if (req.file) {
             deleteOld_Img(req.file.path)
         }
-        res.redirect(`/profile/${req.user.username}`);
+        res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
         return
     }
 })
@@ -68,10 +68,10 @@ async (req,res) => {
         await product.delete() // Del the Product itself
 
         req.flash('success', 'Product Successfully Deleted')
-        res.redirect(`/profile/${req.user.username}`)
+        res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
     } catch (e) {
         console.log(e)
-        res.redirect(`/profile/${req.user.username}`);
+        res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
         return
     }
 })

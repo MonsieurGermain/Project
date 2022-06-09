@@ -80,14 +80,10 @@ const productSchema = new mongoose.Schema ({
     title : {
         type : String,
         required : true,
-        minlength : 5,
-        maxlength : 500
     },
     description : {
         type : String, 
-        required : true,
-        minlength : 20, 
-        maxlength : 10000      
+        required : true,  
     },
     message : {
         type : String, 
