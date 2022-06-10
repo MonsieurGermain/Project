@@ -87,8 +87,7 @@ function rename_newImg(old_filename, new_name) {
 
 userSchema.methods.UploadImg = function(file) {
     if (this.img_path) deleteOld_Img(`./public/${this.img_path}`)    
-
-    const newImg_path = `/uploads/user-img/${this.username}${isolate_mimetype(file.mimetype)}`
+    const newImg_path = `/uploads/user-img/${this.username}${isolate_mimetype(file.mimetype, '/')}`
 
     rename_newImg(file.filename, newImg_path)
 

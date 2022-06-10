@@ -32,14 +32,12 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 app.use((req, res, next) => {
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
   res.locals.authuser = req.user
+  res.locals.query = req.query
   const splitedUrl = req.url.split('?')
   res.locals.url = splitedUrl
-  console.log(req.url)
-  console.log(splitedUrl)
-  res.locals.query = req.query
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
   next()
 })
 
@@ -78,86 +76,18 @@ app.use('/', REPORT)
 
 // PRIORITY 
 // XMR ESCROW
-// FUZZY SEARCH
 // ADMIN PAGE AND SYSTEM
-
-
-// Saved Product redirect
-
-// Paginate Saved Product
-// redirect paginated button
-
-// Only Product
-// Only review
-// Both
 
 // To do 
 // fix product array and product img sizing
 
-// Search for... Conversation, Product
 // Totally hidden Message
 // Encrypt Messages
 // Saw or not saw message
-// Register Saw or not saw
 // Delete message after seing
 // Format Currency of Product
 // Discount Product
 // Offline local 
-// Dispute
-
-
-// new CC(
-// 	{
-// 		from: 'BTC',
-// 		to: 'EUR',
-// 		amount: 2
-// 	}
-// ).convert().then((response)=>{
-// 	console.log(2 + " " + 'USD' + " is equal to " + 
-// 		response + " " + 'EUR');
-// });
-
-
-// Admin feature
-// Validation & security
-// Paying System
-
-// function getValues(array, a = array[0]) {
-//   console.log(a)
-// }
-
-
-//let array = [
-//   {id : 'aa'},
-//   {id : 'bb'},
-//   {id : 'cc'},
-// ]
-
-// if (array.find((value) => value.id === "aa")) {
-//   console.log("a")
-// }
-// const x = array.map(function(element) { return element.id; }).indexOf('zz');
-
-// getValues(array)
-
-// function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
-
-//   let price = (base_price + selection_1_price + selection_2_price) * qty + ship_opt_price
-//   price += (price * 0.03)
-//   price = price.toString()
-//   price = price.slice(0, price.indexOf('.') + 3)
-
-//   return parseFloat(price) 
-// }
-
-// console.log(Calculate_Price(20, 1, 5, 5, 5))
-
-//update Message // IMG LINK RIGHT PLACE
-
-// let time = 100.3234
-// time = time.toString()
-// time = time.slice(0, time.indexOf('.') + 0)
-// console.log(time)
 
 
 app.listen('3000', (req,res) => {

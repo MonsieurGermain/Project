@@ -149,7 +149,7 @@ productSchema.methods.UploadImg = function(filename, Old_Image) {
     console.log(Old_Image)
     if (Old_Image) deleteOld_Img(`./public/${this.img_path}`) // 
 
-    const newImg_path = `/uploads/product-img/${this.slug}${isolate_mimetype(filename)}`
+    const newImg_path = `/uploads/product-img/${this.slug}${isolate_mimetype(filename, '.')}`
 
     rename_newImg(filename, newImg_path)
 
@@ -195,7 +195,7 @@ productSchema.methods.Change_Slug = async function(title, vendor) {
     this.slug = new_slug
 
     //
-    const newImg_path = `/uploads/product-img/${this.slug}${isolate_mimetype(this.img_path)}`
+    const newImg_path = `/uploads/product-img/${this.slug}${isolate_mimetype(this.img_path, '.')}`
 
     fs.rename(`./public/${this.img_path}`, `./public/${newImg_path}`, (err) => {
         if (err) throw err

@@ -95,46 +95,44 @@ exports.deleteOld_Img = (path) => {
     });
 }
 
-exports.isolate_mimetype = (string) => {
-    const mimetype = string.split('.')
+exports.isolate_mimetype = (string, symbol) => {
+    const mimetype = string.split(symbol)
     return `.${mimetype[mimetype.length - 1]}`
 }
 
 
 
 // Pagination
-exports.paginatedResults = async (model, page = 1, query = {}, limit = 12) => {
+exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuzzyProduct) => {
     page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page)
 
     const startIndex = (page - 1) * limit
     const endIndex = page * limit
-
+    
     const results = {}
 
+    // Count Document
+    let countedDocuments
+    if (fuzzyProduct) countedDocuments = fuzzyProduct.length 
+    else countedDocuments = await model.countDocuments(query).exec()
+
+    // NextPage Creation
     results.nextPage = [page]
-
-    const countedDocuments = await model.countDocuments(query).exec()
-    if (startIndex > 0) {
-      results.nextPage.unshift(page - 1)
-    }
-
-    if ((page - 2) * limit > 0) {
-      results.nextPage.unshift(page - 2)
-    }
+    if (startIndex > 0) results.nextPage.unshift(page - 1)
+    if ((page - 2) * limit > 0) results.nextPage.unshift(page - 2)
+    if (endIndex < countedDocuments) results.nextPage.push(page + 1)
+    if ((page + 1) * limit < countedDocuments) results.nextPage.push(page + 2)
     
-    if (endIndex < countedDocuments) {
-      results.nextPage.push(page + 1)
-    }
-
-    if ((page + 1) * limit < countedDocuments) {
-      results.nextPage.push(page + 2)
-    }
-    
-
-    try {
-      results.results = await model.find(query).limit(limit).skip(startIndex).exec()
+    if (fuzzyProduct) {
+      results.results = fuzzyProduct.splice(startIndex, endIndex)
       return results
-    } catch (e) {
-      res.status(500).json({ message: e.message })
+    } else { 
+        try {
+          results.results = await model.find(query).limit(limit).skip(startIndex).exec()
+          return results
+        } catch (e) {
+          console.log(e)
+          return
+        }
     }
 }

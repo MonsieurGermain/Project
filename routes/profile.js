@@ -16,8 +16,8 @@ async (req, res) => {
         const { vendor } = req 
         vendor.description = sanitizeHTML(vendor.description)
 
-        const paginatedProducts = await paginatedResults(Product, req.query.productPage, {vendor : vendor.username})
-        const paginatedReviews = await paginatedResults(Review, req.query.reviewPage, {vendor : vendor.username})
+        const paginatedProducts = await paginatedResults(Product, {vendor: vendor.username}, {page: req.query.productPage})
+        const paginatedReviews = await paginatedResults(Review, {vendor : vendor.username}, {page: req.query.reviewPage})
 
         res.render('profile', { vendor , paginatedProducts, paginatedReviews})
 
@@ -32,7 +32,7 @@ async (req, res) => {
 router.get('/edit-profile/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
 async (req,res) => {
     const { user } = req 
-    const paginatedProducts = await paginatedResults(Product, req.query.productPage, {vendor : user.username})
+    const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage})
     res.render('profile-edit', { vendor: user , paginatedProducts})
 })
 
@@ -45,7 +45,7 @@ async (req,res) => {
         const { user } = req 
         const { job, description, achievement, languages } = req.body 
     
-        if (req.file) requser.UploadImg(req.file)
+        if (req.file) user.UploadImg(req.file)
 
         user.job = job
         user.description = description
@@ -58,7 +58,7 @@ async (req,res) => {
 
     } catch (e) {
         console.log(e)
-        res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`)
+        res.redirect(`/error`)
     }
 })
 
