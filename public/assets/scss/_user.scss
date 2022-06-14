@@ -1,38 +1,38 @@
-// 
+//
 // user.scss
 // Use this to write your custom SCSS
 //
-.small-rc { 
+.small-rc {
     width: 2.5rem;
     height: 2.5rem;
 }
 
-.smedium-rc { 
+.smedium-rc {
     width: 3rem;
     height: 3rem;
 }
 
-.medium-rc { 
+.medium-rc {
     width: 3.5rem;
     height: 3.5rem;
 }
 
-.big-rc { 
+.big-rc {
     width: 8rem;
     height: 8rem;
 }
 
-.rounded-circle { 
+.rounded-circle {
     border-radius: 50% !important;
     object-fit: cover;
     overflow: hidden;
-} 
+}
 
 .text-orange {
     color: rgb(202, 125, 37) !important;
 }
 
-.min-heigth-45 { 
+.min-heigth-45 {
     min-height: 40rem;
     max-height: 40rem;
 }

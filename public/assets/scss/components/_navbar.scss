@@ -1,272 +1,459 @@
+@use "sass:map";
 //
 // Navbar
 // --------------------------------------------------
 // Brand
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  padding: $navbar-brand-padding-y * .5 0;
-  font-weight: $navbar-brand-font-weight;
-  > img {
-    margin-right: .4375rem;
-  }
-}
+//  Navbar light
 
+// .navbar-light {
+//     &.navbar-stuck {
+//         background-color: $light;
+//     }
+//     .navbar-toggler-icon {
+//         &,
+//         &::before,
+//         &::after {
+//             background-color: $navbar-light-toggler-bar-color;
+//         }
+//     }
+//     .nav-item {
+//         &:hover > .nav-link:not(.disabled) {
+//             color: $navbar-light-hover-color;
+//         }
+//         &.active > .nav-link:not(.disabled) {
+//             color: $navbar-light-active-color;
+//         }
+//     }
+//     .dropdown:hover > .nav-link {
+//         color: $navbar-light-hover-color;
+//     }
+// }
 
-// Menu toggler
+// // Navbar dark
 
-.navbar-toggler {
-  position: relative;
-  width: $navbar-toggler-bar-width + $navbar-toggler-padding-x * 2;
-  height: $navbar-toggler-bar-height * 3 + $navbar-toggler-bar-spacing * 2 + $navbar-toggler-padding-y * 2;
-}
+// .navbar-dark {
+//     &.navbar-stuck {
+//         background-color: $dark;
+//     }
+//     .navbar-toggler-icon {
+//         &,
+//         &::before,
+//         &::after {
+//             background-color: $navbar-dark-toggler-bar-color;
+//         }
+//     }
+//     .nav-item {
+//         &:hover > .nav-link:not(.disabled) {
+//             color: $navbar-dark-hover-color;
+//         }
+//         &.active > .nav-link:not(.disabled) {
+//             color: $navbar-dark-active-color;
+//         }
+//     }
+//     .dropdown:hover > .nav-link {
+//         color: $navbar-dark-hover-color;
+//     }
+// }
 
-.navbar-toggler-icon {
-  display: block;
-  top: 50%;
-  margin-top: $navbar-toggler-bar-height * -.5;
-  transition-duration: 0.075s;
-  transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
-
-  &, &::before, &::after {
-    position: absolute;
-    width: $navbar-toggler-bar-width;
-    height: $navbar-toggler-bar-height;
-    transition-property: transform .15s ease;
-  }
-
-  &::before, &::after {
-    display: block;
-    content: '';
-  }
-
-  &::before {
-    top: ($navbar-toggler-bar-spacing + $navbar-toggler-bar-height) * -1;
-    transition: top 0.075s 0.12s ease, opacity 0.075s ease;
-  }
-
-  &::after {
-    bottom: ($navbar-toggler-bar-spacing + $navbar-toggler-bar-height) * -1;
-    transition: bottom 0.075s 0.12s ease, transform 0.075s cubic-bezier(0.55, 0.055, 0.675, 0.19);
-  }
-}
-
-[aria-expanded=true] {
-  .navbar-toggler-icon {
-    transform: rotate(45deg);
-    transition-delay: 0.12s;
-    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-
-    &::before {
-      top: 0;
-      opacity: 0;
-      transition: top 0.075s ease, opacity 0.075s 0.12s ease;
+.dropdown-caret {
+    margin-left: 2px;
+    margin-bottom: 3px;
+    margin-right: -3px;
+    transition: 0.2s transform ease-in-out;
+    svg {
+        height: 1.4rem;
+        width: 1.4rem;
     }
-
-    &::after {
-      bottom: 0;
-      transform: rotate(-90deg);
-      transition: bottom 0.075s ease, transform 0.075s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
-    }
-  }
 }
 
-
-// Navbar dropdowns
-
-.navbar {
-  background: $secondary-bg !important;
-  .dropdown-toggle::after {
-    margin-top: .0625rem;
-    font-size: 1.15em;
-  }
-  .navbar-nav .dropdown-menu {
-    background: $secondary-bg;
-    border: 0;
-    border-left: $dropdown-border-width solid $gray-900;
-    @include border-radius(0);
-    @include box-shadow(none);
-    &.dropdown-menu-dark {
-      border-color: $dropdown-dark-border-color;
+[data-popup]:not(.popup-active){
+    &:not([data-popup="mobile-menu"]) {
+        display: none !important;
     }
-    .dropdown-menu {
-      margin: {
-        right: .75rem;
-        left: .75rem;
-      }
+}
+[data-popup="mobile-menu"]:not(.popup-active) {
+    @media (max-width: map.get($grid-breakpoints, "md")) {
+        display: none !important;
     }
-    .dropdown-toggle::after {
-      margin: {
-        top: -.0625rem;
-        right: 0;
-        left: .125rem;
-      }
-      font-size: 1em;
-    }
-    .dropdown-divider { display: none; }
-  }
 }
 
-// Dropdown animation
-@keyframes dropdown-show {
-  from {
-    transform: scale(.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+.popup-active:not([data-popup="mobile-menu"]) .dropdown-caret {
+    transform: rotate(-180deg);
 }
 
-
-// Styles for expanded navbar only
-
-.navbar-expand {
-  @each $breakpoint in map-keys($grid-breakpoints) {
-    $next: breakpoint-next($breakpoint, $grid-breakpoints);
-    $infix: breakpoint-infix($next, $grid-breakpoints);
-
-    &#{$infix} {
-      @include media-breakpoint-up($next) {
-        .navbar-brand { padding: $navbar-brand-padding-y 0; }
-        .offcanvas {
-          @include box-shadow(none);
+.main-navbar {
+    background-color: $secondary-bg;
+    position: fixed;
+    z-index: 200;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    height: $nav-bar-height-mobile;
+    @media (min-width: map.get($grid-breakpoints, "md")) {
+        height: $nav-bar-height-large;
+    }
+    width: 100%;
+    padding: 0 20px;
+    .navbar-brand {
+        margin-right: 40px;
+        display: flex;
+        align-items: center;
+        padding: $navbar-brand-padding-y * 0.5 0;
+        font-weight: $navbar-brand-font-weight;
+        > img {
+            margin-right: 0.4375rem;
         }
-        .offcanvas-header,
-        .offcanvas-footer { display: none; }
-        .dropdown-divider { display: block; }
-        .navbar-nav .dropdown-menu {
-          margin-top: $dropdown-spacer;
-          border: $dropdown-border-width solid $gray-900;
-          @include border-radius($dropdown-border-radius);
-          background-color: $secondary-bg;
-          @include box-shadow($dropdown-box-shadow);
-          &.dropdown-menu-dark {
-            background-color: $dark;
-            background: $dropdown-dark-bg;
-          }
+    }
+    .navbar-link {
+        font-weight: 600;
+        color: #fff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+    .divider {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        > span {
+            height: 70%;
+            width: 2px;
+            background-color: $body-bg;
+            margin: 0px 8px;
         }
-        .dropdown-menu.show { display: none; }
-        .dropdown {
-          &::before {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            height: $dropdown-spacer + .125rem;
-            content: '';
-          }
-          &:hover > .dropdown-menu {
-            display: block;
-            animation: dropdown-show .2s;
-          }
-          .dropdown {
-            .dropdown-toggle {
-              display: flex;
-              align-items: center;
-              &::after {
-                margin: {
-                  top: 0;
-                  right: -.3125rem;
-                  left: auto;
+        &.divider-lg-screen {
+            display: none;
+        }
+    }
+    // mobile specific menu bar (just search and hamburger icon)
+    .mobile-menu-bar {
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        @media (min-width: map.get($grid-breakpoints, "md")) {
+            display: none;
+        }
+        > div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0px 10px;
+            svg {
+                width: 1.6rem;
+                path,
+                polygon {
+                    fill: white;
                 }
-                font-size: 1.25em;
-                content: '\ea50';
-              }
             }
-            .dropdown-menu {
-              top: -($dropdown-item-padding-y + $dropdown-padding-y);
-              left: 100%;
-              margin: {
-                right: 0;
-                left: 0;
-              }
+            .divider span {
+                margin: 0;
             }
-          }
-          .dropdown-menu-end {
-            left: auto;
-            right: 0;
-          }
         }
-        .mega-dropdown-column {
-          width: $mega-dropdown-column-width;
-          padding: 0 .75rem;
-          &:last-child {
-            border-right: 0;
-          }
+        .search-button,
+        .mobile-menu-button {
+            cursor: pointer;
+            &:not(.popup-active) .mobile-cross {
+                display: none;
+            }
+            &.popup-active {
+                .mobile-hamburger {
+                    display: none;
+                }
+            }
         }
-      }
     }
-  }
-}
-
-
-// Sticky navbar
-
-.navbar-stuck {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  width: 100%;
-  animation: navbar-show .25s ease-in-out;
-  @include box-shadow($box-shadow);
-  z-index: $zindex-fixed + 1;
-}
-
-.navbar.position-absolute {
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: $zindex-fixed;
-}
-
-@keyframes navbar-show {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-
-// Navbar light
-
-.navbar-light {
-  &.navbar-stuck {
-    background-color: $light;
-  }
-  .navbar-toggler-icon {
-    &, &::before, &::after {
-      background-color: $navbar-light-toggler-bar-color;
+    .navbar-dropdown {
+        background-color: $secondary-bg;
+        > ul {
+            margin: 0;
+            list-style: none;
+            color: white;
+            padding: 0;
+            width: 100%;
+            li {
+                text-decoration: none;
+                height: 4rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                a {
+                    text-decoration: none;
+                    color: white;
+                    margin-left: 50px;
+                    height: 100%;
+                    display:flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    i {
+                        position: relative;
+                        top: 1px;
+                    }
+                }
+                &.dropdown-divider {
+                    width: 90%;
+                    margin: 0 auto;
+                    background-color: $body-bg;
+                    height: 1px;
+                }
+            }
+        }
     }
-  }
-  .nav-item {
-    &:hover > .nav-link:not(.disabled) { color: $navbar-light-hover-color; }
-    &.active > .nav-link:not(.disabled) { color: $navbar-light-active-color; }
-  }
-  .dropdown:hover > .nav-link { color: $navbar-light-hover-color; }
-}
+    > .nav-content {
+        display: flex;
+        width: 100%;
+        position: fixed;
+        flex-direction: column-reverse;
+        top: 4rem;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        justify-content: start;
+        background-color: $body-bg;
+        .nav-items {
+            flex-direction: column;
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .navbar-right-cluster {
+            display: flex;
+            border-bottom: 7px solid $secondary-bg;
+            .login-signup {
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+                > a {
+                    margin-right: 20px;
+                    margin-left: 20px;
+                }
+            }
+            .search-button {
+                width: 0;
+            }
+        }
+        .user-profile-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            > div {
+                display: flex;
+                .drop-down-user {
+                    display: flex;
+                    flex-grow: 1;
+                    padding-left: 2px;
+                    padding-right: 2px;
+                    right: 20px;
+                    cursor: pointer;
+                    div {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
+                }
+            }
+        }
+        .user-profile-item {
+            padding: 10px 5px 10px 20px;
+        }
 
+        .nav-user-dropdown {
+            background-color: $secondary-bg;
+        }
+        .nav-item {
+            height: 4rem;
+            border-bottom: 1px solid $secondary-bg;
+            > a {
+                height: 100%;
+                padding-left: 2rem;
+            }
+        }
 
-// Navbar dark
+        // search button and pop up search box
+        .search-box {
+            z-index: 101;
+            > div {
+                width: 100%;
+            }
+        }
+        .search-button {
+            cursor: pointer;
+            svg {
+                height: 1.5rem;
+                width: 3rem;
+                path {
+                    fill: white;
+                }
+            }
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            .search-box {
+                width: 100%;
+                position: fixed;
+                top: $nav-bar-height-mobile;
+                @media (min-width: map.get($grid-breakpoints, "md")) {
+                    top: $nav-bar-height-large;
+                }
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                background-color: rgba($body-bg, 0);
+                visibility: hidden;
+                opacity: 0;
+                transition: visibility 0.2s linear, 0.2s opacity linear;
+                -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
+                -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
+                -o-transition: visibility 0.2s linear, 0.2s opacity linear;
+                &.search-box-active {
+                    visibility: visible;
+                    background-color: rgba($body-bg, 0.8);
+                    opacity: 1;
+                }
+                cursor: default;
+                > div {
+                    height: $nav-bar-height-mobile;
+                    @media (min-width: map.get($grid-breakpoints, "md")) {
+                        height: $nav-bar-height-large;
+                        width: 60%;
+                        max-width: 600px;
+                        margin: 0 auto;
+                    }
+                    background-color: $secondary-bg;
 
-.navbar-dark {
-  &.navbar-stuck {
-    background-color: $dark;
-  }
-  .navbar-toggler-icon {
-    &,
-    &::before,
-    &::after {
-      background-color: $navbar-dark-toggler-bar-color;
+                    border-top: 1px solid $body-bg;
+                    display: flex;
+                    > * {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
+                    .search-box-search-icon {
+                        padding-left: 6px;
+                    }
+                    form {
+                        flex-grow: 1;
+                        .nav-search-input {
+                            display: flex;
+                            background-color: transparent;
+                            border: none;
+                            outline: none;
+                            caret-color: white;
+                            color: white;
+                            &::placeholder {
+                                color: white;
+                                opacity: 1;
+                            }
+                        }
+                    }
+
+                    .close-cross {
+                        cursor: pointer;
+                        padding: 0 15px;
+                        path {
+                            fill: $primary;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Below are styles for large screens.
+        @media (min-width: map.get($grid-breakpoints, "md")) {
+            .divider-lg-screen {
+                display: flex;
+            }
+            background-color: $secondary-bg;
+            position: static;
+            justify-content: space-between;
+            flex-direction: row;
+            .nav-item {
+                .navbar-link:not(.user-profile-item):hover::after,
+                &.popup-active .navbar-link::after {
+                    content: "";
+                    width: 100%;
+                    height: 5px;
+                    background: linear-gradient(
+                        0deg,
+                        $info -200%,
+                        $primary 150%
+                    );
+                    position: absolute;
+                    bottom: 0px;
+                    left: 0px;
+                }
+                .navbar-link {
+                    padding: 0.535rem 1rem;
+                    box-sizing: border-box;
+                    height: 100%;
+                    position: relative;
+                }
+            }
+
+            .nav-items {
+                margin: 0;
+                display: flex;
+                flex-direction: row;
+                .nav-item {
+                    height: auto;
+                    border: none;
+                    text-align: center;
+                    display: flex;
+                    flex-direction: column;
+                }
+            }
+            .navbar-dropdown {
+                position: absolute;
+                box-shadow: -6px 10px 16px -17px #800080;
+                width: 237px;
+                top: $nav-bar-height-large;
+                left: 0px;
+                ul li:not(.dropdown-divider) {
+                    a {
+                        margin-left: 0px;
+                        padding-left: 20px;
+                        text-align: left;
+                    }
+                    &:hover {
+                        border-left: 4px solid $primary;
+                        a {
+                            padding-left: 16px;
+                        }
+                    }
+                    
+                }
+            }
+            .navbar-right-cluster {
+                border-bottom: none;
+                .search-button {
+                    height: auto;
+                    width: auto;
+                    display: flex;
+                }
+                display: flex;
+                .sign-up-button {
+                    align-self: center;
+                }
+                .user-profile-container > div:first-child {
+                    height: 100%;
+                }
+                .user-profile-item {
+                    border-bottom: none;
+                    padding: 0;
+                    margin: 0 3px 0 8px;
+                }
+                .search-box-active > div {
+                    box-shadow: 0 10px 16px -17px $primary;
+                }
+                .login-signup > a {
+                    margin-right: 10px;
+                    margin-left: 0px;
+                }
+                .nav-user-dropdown {
+                    border-top: 4px solid #800080;
+                    left: auto;
+                    right: 0px;
+                }
+            }
+        }
     }
-  }
-  .nav-item {
-    &:hover > .nav-link:not(.disabled) { color: $navbar-dark-hover-color; }
-    &.active > .nav-link:not(.disabled) { color: $navbar-dark-active-color; }
-  }
-  .dropdown:hover > .nav-link { color: $navbar-dark-hover-color; }
 }

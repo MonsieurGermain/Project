@@ -1,9 +1,10 @@
 //
 // Reboot
 // --------------------------------------------------
-
+@use "sass:map";
 // Import Google Fonts (Manrope)
 @import url($path-to-fonts);
+
 
 html * {
   -webkit-font-smoothing: antialiased;
@@ -19,7 +20,10 @@ body {
   flex-direction: column;
 }
 .page-wrapper {
-  margin-top: 5rem;
+  margin-top: $nav-bar-height-mobile;
+  @media (min-width: map.get($grid-breakpoints, "md")) {
+    margin-top: $nav-bar-height-large;
+  }
   flex: 1 0 auto;
 }
 .footer {
