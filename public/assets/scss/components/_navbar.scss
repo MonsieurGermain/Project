@@ -1,3 +1,4 @@
+// Be aware of bootsrap css from html classes when changing
 @use "sass:map";
 //
 // Navbar
@@ -57,6 +58,7 @@
 // }
 
 .dropdown-caret {
+    /// You may want to reuse the caret style or use common styles set somewhere to be reused
     margin-left: 2px;
     margin-bottom: 3px;
     margin-right: -3px;
@@ -67,20 +69,31 @@
     }
 }
 
-[data-popup]:not(.popup-active){
-    &:not([data-popup="mobile-menu"]) {
-        display: none !important;
+//// section handles popup for mobile menu and nav drop downs on combination with js for component
+[data-popup]:not(.popup-active) {
+    @media (min-width: map.get($grid-breakpoints, "md")) {
+        [data-trigger]:not(:hover) {
+            [data-popup] {
+                display: none;
+            }
+        }
+    }
+    @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+        &:not([data-popup="mobile-menu"]) {
+            display: none !important;
+        }
     }
 }
 [data-popup="mobile-menu"]:not(.popup-active) {
-    @media (max-width: map.get($grid-breakpoints, "md")) {
+    @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
         display: none !important;
     }
 }
-
 .popup-active:not([data-popup="mobile-menu"]) .dropdown-caret {
     transform: rotate(-180deg);
 }
+
+///////////////////////////////
 
 .main-navbar {
     background-color: $secondary-bg;
@@ -122,11 +135,8 @@
             background-color: $body-bg;
             margin: 0px 8px;
         }
-        &.divider-lg-screen {
-            display: none;
-        }
     }
-    // mobile specific menu bar (just search and hamburger icon)
+    /// Section for mobile specific menu bar (just search and hamburger icon)/////////
     .mobile-menu-bar {
         display: flex;
         width: 100%;
@@ -146,9 +156,6 @@
                     fill: white;
                 }
             }
-            .divider span {
-                margin: 0;
-            }
         }
         .search-button,
         .mobile-menu-button {
@@ -163,6 +170,9 @@
             }
         }
     }
+    //////////////////////////////////
+
+    /// Section for styling the dropdowns from the nav bar and in mobile menu ///
     .navbar-dropdown {
         background-color: $secondary-bg;
         > ul {
@@ -182,7 +192,7 @@
                     color: white;
                     margin-left: 50px;
                     height: 100%;
-                    display:flex;
+                    display: flex;
                     flex-direction: column;
                     justify-content: center;
                     i {
@@ -198,7 +208,105 @@
                 }
             }
         }
+        @media (min-width: map.get($grid-breakpoints, "md")) {
+            position: absolute;
+            box-shadow: -6px 10px 16px -17px #800080;
+            width: 237px;
+            top: $nav-bar-height-large;
+            left: 0px;
+            ul li:not(.dropdown-divider) {
+                a {
+                    margin-left: 0px;
+                    padding-left: 20px;
+                    text-align: left;
+                }
+                &:hover {
+                    border-left: 4px solid $primary;
+                    a {
+                        padding-left: 16px;
+                    }
+                }
+            }
+        }
     }
+    /////////////////////////////////////////////////////
+
+    // Section for popup search box styling ///////////////////
+    .search-box {
+        width: 100%;
+        position: fixed;
+        top: $nav-bar-height-mobile;
+        @media (min-width: map.get($grid-breakpoints, "md")) {
+            top: $nav-bar-height-large;
+        }
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        background-color: rgba($body-bg, 0);
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0.2s linear, 0.2s opacity linear;
+        -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
+        -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
+        -o-transition: visibility 0.2s linear, 0.2s opacity linear;
+        z-index: 101;
+        &.search-box-active {
+            visibility: visible;
+            background-color: rgba($body-bg, 0.8);
+            opacity: 1;
+            div {
+                box-shadow: 0 10px 16px -17px $primary;
+            }
+        }
+        cursor: default;
+        > div {
+            width: 100%;
+            height: $nav-bar-height-mobile;
+            @media (min-width: map.get($grid-breakpoints, "md")) {
+                height: $nav-bar-height-large;
+                width: 60%;
+                max-width: 600px;
+                margin: 0 auto;
+            }
+            background-color: $secondary-bg;
+            border-top: 1px solid $body-bg;
+            display: flex;
+            > * {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .search-box-search-icon {
+                padding-left: 6px;
+            }
+            form {
+                flex-grow: 1;
+                .nav-search-input {
+                    display: flex;
+                    background-color: transparent;
+                    border: none;
+                    outline: none;
+                    caret-color: white;
+                    color: white;
+                    &::placeholder {
+                        color: white;
+                        opacity: 1;
+                    }
+                }
+            }
+
+            .close-cross {
+                cursor: pointer;
+                padding: 0 15px;
+                path {
+                    fill: $primary;
+                }
+            }
+        }
+    }
+    //////////////////////////////////////////////
+
+    //// Section for main nav content in bar and mobile menu //////
     > .nav-content {
         display: flex;
         width: 100%;
@@ -227,33 +335,55 @@
                     margin-left: 20px;
                 }
             }
-            .search-button {
-                width: 0;
+            @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+                .search-button {
+                    display: none;
+                }
             }
         }
+
         .user-profile-container {
             width: 100%;
             display: flex;
             flex-direction: column;
-            > div {
-                display: flex;
-                .drop-down-user {
+            justify-content: center;
+            @media (min-width: map.get($grid-breakpoints, "md")) {
+                .mobile-only {
+                    display: none;
+                }
+                > a {
+                    height: 100%;
                     display: flex;
-                    flex-grow: 1;
-                    padding-left: 2px;
-                    padding-right: 2px;
-                    right: 20px;
-                    cursor: pointer;
-                    div {
+                    span {
                         display: flex;
-                        flex-direction: column;
-                        justify-content: center;
                     }
+                }
+            }
+            @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+                .not-mobile-only {
+                    display: none;
+                }
+                > div {
+                    display: flex;
+                }
+            }
+            .drop-down-user {
+                display: flex;
+                flex-grow: 1;
+                padding-left: 2px;
+                padding-right: 2px;
+                right: 20px;
+                cursor: pointer;
+                div {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
                 }
             }
         }
         .user-profile-item {
             padding: 10px 5px 10px 20px;
+            cursor: pointer;
         }
 
         .nav-user-dropdown {
@@ -268,13 +398,7 @@
             }
         }
 
-        // search button and pop up search box
-        .search-box {
-            z-index: 101;
-            > div {
-                width: 100%;
-            }
-        }
+        // search button
         .search-button {
             cursor: pointer;
             svg {
@@ -287,81 +411,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            .search-box {
-                width: 100%;
-                position: fixed;
-                top: $nav-bar-height-mobile;
-                @media (min-width: map.get($grid-breakpoints, "md")) {
-                    top: $nav-bar-height-large;
-                }
-                left: 0px;
-                right: 0px;
-                bottom: 0px;
-                background-color: rgba($body-bg, 0);
-                visibility: hidden;
-                opacity: 0;
-                transition: visibility 0.2s linear, 0.2s opacity linear;
-                -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
-                -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
-                -o-transition: visibility 0.2s linear, 0.2s opacity linear;
-                &.search-box-active {
-                    visibility: visible;
-                    background-color: rgba($body-bg, 0.8);
-                    opacity: 1;
-                }
-                cursor: default;
-                > div {
-                    height: $nav-bar-height-mobile;
-                    @media (min-width: map.get($grid-breakpoints, "md")) {
-                        height: $nav-bar-height-large;
-                        width: 60%;
-                        max-width: 600px;
-                        margin: 0 auto;
-                    }
-                    background-color: $secondary-bg;
-
-                    border-top: 1px solid $body-bg;
-                    display: flex;
-                    > * {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                    }
-                    .search-box-search-icon {
-                        padding-left: 6px;
-                    }
-                    form {
-                        flex-grow: 1;
-                        .nav-search-input {
-                            display: flex;
-                            background-color: transparent;
-                            border: none;
-                            outline: none;
-                            caret-color: white;
-                            color: white;
-                            &::placeholder {
-                                color: white;
-                                opacity: 1;
-                            }
-                        }
-                    }
-
-                    .close-cross {
-                        cursor: pointer;
-                        padding: 0 15px;
-                        path {
-                            fill: $primary;
-                        }
-                    }
-                }
-            }
         }
 
-        // Below are styles for large screens.
+        // Below are style modifiers for large screens.
         @media (min-width: map.get($grid-breakpoints, "md")) {
-            .divider-lg-screen {
-                display: flex;
-            }
             background-color: $secondary-bg;
             position: static;
             justify-content: space-between;
@@ -372,11 +425,7 @@
                     content: "";
                     width: 100%;
                     height: 5px;
-                    background: linear-gradient(
-                        0deg,
-                        $info -200%,
-                        $primary 150%
-                    );
+                    background: linear-gradient(0deg, $info -200%, $primary 150%);
                     position: absolute;
                     bottom: 0px;
                     left: 0px;
@@ -401,27 +450,6 @@
                     flex-direction: column;
                 }
             }
-            .navbar-dropdown {
-                position: absolute;
-                box-shadow: -6px 10px 16px -17px #800080;
-                width: 237px;
-                top: $nav-bar-height-large;
-                left: 0px;
-                ul li:not(.dropdown-divider) {
-                    a {
-                        margin-left: 0px;
-                        padding-left: 20px;
-                        text-align: left;
-                    }
-                    &:hover {
-                        border-left: 4px solid $primary;
-                        a {
-                            padding-left: 16px;
-                        }
-                    }
-                    
-                }
-            }
             .navbar-right-cluster {
                 border-bottom: none;
                 .search-button {
@@ -441,9 +469,7 @@
                     padding: 0;
                     margin: 0 3px 0 8px;
                 }
-                .search-box-active > div {
-                    box-shadow: 0 10px 16px -17px $primary;
-                }
+
                 .login-signup > a {
                     margin-right: 10px;
                     margin-left: 0px;
@@ -456,4 +482,5 @@
             }
         }
     }
+    //////////////////////////////////
 }

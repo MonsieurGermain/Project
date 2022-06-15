@@ -3,31 +3,23 @@
     // data-trigger=<popupID>
     // data-popup=<popupID>
     function showPopup(e) {
-        const activePopups = document.querySelectorAll("[data-popup].popup-active");
-        const isMobile = document.getElementById("mobile-menu-button").offsetParent; //offset parent is null with display none
+        const isMobile = !!document.getElementById("mobile-menu-button").offsetParent; //checks if page is in mobile mode via mobile menu icon - offset parent is null with display none
         const triggerElem = e.target.closest("[data-trigger]");
-        if (triggerElem && !triggerElem.classList.contains("popup-active")) {
-            setTimeout(function () {
-                const elemToTrigger = triggerElem.dataset.trigger;
-                triggerElem.classList.add("popup-active");
-                document.querySelector("[data-popup='" + elemToTrigger + "']").classList.add("popup-active");
-            }, 0);
-        }
-
-        if (isMobile) {
+        if (isMobile) { //hover activation for desktop 
+            // add active class
+            if (triggerElem && !triggerElem.classList.contains("popup-active")) {
+                setTimeout(function () {
+                    const elemToTrigger = triggerElem.dataset.trigger;
+                    triggerElem.classList.add("popup-active");
+                    document.querySelector("[data-popup='" + elemToTrigger + "']").classList.add("popup-active");
+                }, 0);
+            }
+            // remove active class
             if (triggerElem && triggerElem.classList.contains("popup-active")) {
                 const elemToTrigger = triggerElem.dataset.trigger;
                 triggerElem.classList.remove("popup-active");
                 document.querySelector("[data-popup='" + elemToTrigger + "']").classList.remove("popup-active");
             }
-        } else {
-            Array.from(activePopups).forEach(function (activePopup) {
-                const popupId = activePopup.dataset.popup;
-                if (!activePopup.contains(e.target)) {
-                    activePopup.classList.remove("popup-active");
-                    document.querySelector("[data-trigger='" + popupId + "']").classList.remove("popup-active");
-                }
-            });
         }
     }
     document.addEventListener("click", showPopup);
