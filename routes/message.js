@@ -6,6 +6,7 @@ const { Need_Authentification } = require('../middlewares/authentication')
 const { Validate_Conversation, Validate_Message } = require('../middlewares/input-validation')
 const { Validate_Params_Username_Conversation, Validate_Params_Id_Conversation, Validate_Params_Username_Conversations, Validate_Query_Id_Conversations, Validate_Params_Message_Id_Conversation } = require('../middlewares/params-validator')
 const { Validate_Send_Message_To_Himself } = require('../middlewares/custom-validation')
+const { Validate_Conversation, Validate_Message, Validate_Params_Username_Conversation, Validate_Params_Id_Conversation, Validate_Params_Username_Conversations, Validate_Query_Id_Conversations, Validate_Params_Message_Id_Conversation, Sending_toHimself } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 // Perfect that ?
@@ -77,7 +78,7 @@ async function Format_Conversation(conversations, username, id) {
 
 // CREATE MESSAGE
 router.post('/send-message/:username', 
-Need_Authentification, Validate_Send_Message_To_Himself, Validate_Conversation, Validate_Params_Username_Conversation,
+Need_Authentification, Sending_toHimself, Validate_Conversation, Validate_Params_Username_Conversation,
 async (req, res) => {
     try {       
         const { Found_Conversation } = req

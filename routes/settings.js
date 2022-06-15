@@ -4,13 +4,11 @@ const { Need_Authentification } = require('../middlewares/authentication')
 const User = require('../models/user')
 const Product = require('../models/product')
 const bcrypt = require('bcrypt')
-const { Validate_Change_Password, Validate_AutoDel_Settings} = require('../middlewares/input-validation')
-const { Validate_Params_Username_User_ReqUser, Validate_Params_Slug_Product} = require('../middlewares/params-validator')
-const { Validate_Query_Section_Settings, Validate_Query_Url} = require('../middlewares/custom-validation')
+const { Validate_Change_Password, Validate_AutoDel_Settings,  Validate_Params_Username_User_ReqUser, Validate_Params_Slug_Product,  Validate_SectionQuery, Validate_Query_Url} = require('../middlewares/validation')
 const { paginatedResults } = require('../middlewares/function')
 
 
-router.get('/settings/:username', Need_Authentification, Validate_Query_Section_Settings,
+router.get('/settings/:username', Need_Authentification, Validate_SectionQuery,
 async (req,res) => { 
     try { 
         const { user } = req

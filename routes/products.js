@@ -3,10 +3,10 @@ const router = express.Router()
 const Product = require('../models/product')
 const Review = require('../models/review')
 const User = require('../models/user')
-const { Validate_Params_Slug_Product } = require('../middlewares/params-validator')
+const { Validate_Params_Slug_Product } = require('../middlewares/validation')
 const { sanitizeHTML, paginatedResults } = require('../middlewares/function')
-const Fuse = require('fuse.js')
 
+const Fuse = require('fuse.js')
 // Create Fuzzy Product Collecion
 var fusedProduct 
 Product.find({}).then(products => { 
