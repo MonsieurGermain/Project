@@ -8,21 +8,15 @@ module.exports = function(passport) {
   passport.use(
     new LocalStrategy((username, password, done) => {
       // Match user
-      User.findOne({
-        username: username
-      }).then(user => {
-        if (!user) {
-          return done(null, false, { message: 'Username or Password Invalid' });
-        }
+      User.findOne({ username: username }).then( user => {
+        if (!user) return done(null, false, { message: 'Username or Password Invalid' });
+
 
         // Match password
         bcrypt.compare(password, user.password, (err, isMatch) => {
           if (err) throw err;
-          if (isMatch) {
-            return done(null, user);
-          } else {
-            return done(null, false, { message: 'Username or Password Invalid' });
-          }
+          if (isMatch) return done(null, user);
+          else return done(null, false, { message: 'Username or Password Invalid' });
         });
       });
     })

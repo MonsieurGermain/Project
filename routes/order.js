@@ -1,12 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const { Need_Authentification } = require('../middlewares/authentication')
+
 const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
-const { Validate_ProvidedInfo, Validate_Update_Order } = require('../middlewares/input-validation')
-const { Validate_Params_Slug_Product, Validate_Params_Id_Order, Validate_Params_Id_Order_Buyer, Validate_Params_Username_Order} = require('../middlewares/params-validator')
-const { Validate_Order_Customization } = require('../middlewares/custom-validation')
+const { Need_Authentification } = require('../middlewares/authentication')
+const { Validate_ProvidedInfo, Validate_Update_Order, Validate_Params_Slug_Product, Validate_Params_Id_Order, Validate_Params_Id_Order_Buyer, Validate_Params_Username_Order,  Validate_Order_Customization  } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {

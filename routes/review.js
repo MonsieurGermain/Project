@@ -2,11 +2,9 @@ const express = require('express')
 const router = express.Router()
 const { Need_Authentification } = require('../middlewares/authentication')
 const Review = require('../models/review')
-const Order = require('../models/order')
 const User = require('../models/user')
 const Product = require('../models/product')
-const { Validate_Reviews } = require('../middlewares/input-validation')
-const { Validate_Params_Id_Order_Buyer } = require('../middlewares/params-validator')
+const { Validate_Reviews, Validate_Params_Id_Order_Buyer } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 

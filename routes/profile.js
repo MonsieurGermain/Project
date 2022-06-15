@@ -2,11 +2,9 @@ const express = require('express')
 const router = express.Router()
 const Product = require('../models/product')
 const Review = require('../models/review')
-const upload = require('../middlewares/multer-user')
-const { Validate_Params_Username_User, Validate_Params_Username_User_ReqUser } = require('../middlewares/params-validator')
-const { Validate_Profile } = require('../middlewares/input-validation')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { sanitizeHTML, paginatedResults} = require('../middlewares/function')
+const { Validate_Profile, Validate_Params_Username_User, Validate_Params_Username_User_ReqUser } = require('../middlewares/validation')
+const { uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function')
 
 
 // Route
@@ -38,7 +36,7 @@ async (req,res) => {
 
 
 router.put('/edit-profile/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
-upload.single('profileImg'),
+uploadUserImg.single('profileImg'),
 Validate_Profile,
 async (req,res) => { 
     try { 

@@ -1,15 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const Product = require('../models/product')
 const { Need_Authentification } = require('../middlewares/authentication')
-const upload = require('../middlewares/multers')
-
-const { Validate_Product } = require('../middlewares/input-validation')
-const { Validate_Query_Product_Slug, Validate_Params_Slug_Product_Vendor} = require('../middlewares/params-validator')
-const { deleteOld_Img } = require('../middlewares/function')
+const { Validate_Product, Validate_Params_Slug_Product_Vendor, Validate_Query_Product_Slug } = require('../middlewares/validation')
+const { uploadProductImg, deleteOld_Img } = require('../middlewares/function')
 
 //POST
-router.post('/create-product', Need_Authentification, upload.single('productImage'), Validate_Query_Product_Slug, Validate_Product,
+router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Query_Product_Slug, Validate_Product,
 async (req, res) => { 
     try {
         const { product } = req

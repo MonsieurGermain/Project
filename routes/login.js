@@ -5,8 +5,8 @@ const bcrypt = require('bcrypt')
 const passport = require('passport')
 const fs = require('fs')
 const { Should_Not_Be_Authenticated } = require('../middlewares/authentication')
-const { Validate_Login, Validate_Register } = require('../middlewares/input-validation')
-const { Check_If_Username_Taken } = require('../middlewares/custom-validation')
+const { Validate_Login, Validate_Register, Is_UsernameTaken} = require('../middlewares/validation')
+
 
 
 function Create_Profile_Pic(username) {
@@ -36,7 +36,8 @@ router.get('/register', Should_Not_Be_Authenticated , (req,res) => {
 })
 
 
-router.post('/register', Should_Not_Be_Authenticated , Validate_Register, Check_If_Username_Taken, async (req, res) => {
+
+router.post('/register', Should_Not_Be_Authenticated , Validate_Register, Is_UsernameTaken, async (req, res) => {
     try {
         let { username , password } = req.body
 
