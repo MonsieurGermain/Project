@@ -1,9 +1,5 @@
 const express = require('express')
 const router = express.Router()
-
-const { Validate_Product } = require('../middlewares/input-validation')
-const { Validate_Query_Product_Slug, Validate_Params_Slug_Product_Vendor} = require('../middlewares/params-validator')
-const { deleteOld_Img } = require('../middlewares/function')
 const { Need_Authentification } = require('../middlewares/authentication')
 const { Validate_Product, Validate_Params_Slug_Product_Vendor, Validate_Query_Product_Slug } = require('../middlewares/validation')
 const { uploadProductImg, deleteOld_Img } = require('../middlewares/function')
