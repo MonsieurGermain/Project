@@ -1,0 +1,192 @@
+<%- include('partials/Head') %>
+
+  <body>
+    <%- include('partials/Navbar') %>
+    <!-- Page wrapper for sticky footer -->
+    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+    <main class="page-wrapper">
+
+        <section class="pt-2 pt-lg-3" >
+        <div class="container">
+        <!-- Breadcrumb -->
+          <nav class="py-4" aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+              </li>
+              <li class="breadcrumb-item">
+                <a>Profile</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page"><%=vendor.username%></li>
+            </ol>
+          </nav>
+
+
+          <% if (error.length) { %>
+            <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+            <%- include('partials/Flash-message', {message: error}) %>
+          </div>   
+          <% } %>
+          <% if (success.length) { %>
+            <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+            <%- include('partials/Flash-message', {message: success, success: true}) %>
+          </div>   
+          <% } %>
+
+
+          <div class="d-flex pt-3 pb-4 py-sm-4 pt-lg-4">
+            <h2><%=vendor.username%> Profile Page</h2>
+          </div>
+
+          <% if(authuser && vendor.username === authuser.username) { %>
+            <a href="/edit-profile/<%=authuser.username%>?productPage=1" class="btn btn-primary mb-3">
+              Edit your Profile
+            </a>
+          <% } %>
+
+        </div>
+        </section>
+
+
+
+
+
+      <section class="container">
+        <div class="row">
+
+          <aside class="col-lg-4 order-md-1 mb-5">
+
+            <div class="card card-body shadow-sm border-0 text-center">
+                <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162" height="162" alt="<%=vendor.username%>">
+                <h5 class="fw-medium fs-lg mb-1"><%=vendor.username%></h5>
+                <p class="fs-sm mb-2"><%=vendor.job%></p>
+
+                    <div class="text-nowrap me-1">
+                      <%- include('partials/Rating', {rating: vendor.review.average_note}) %>
+                    </div>
+                  <span class="opacity-70 mb-3">
+                    <%- include('partials/Number-Reviews', {number_reviews: vendor.review.number_review}) %>
+                  </span>
+
+                <!-- Send Message Form  -->
+                <input type="checkbox" class="d-none" id="contact-checkbox">
+                <label for='contact-checkbox' class="btn btn-primary">
+                  Contact me
+                </label>
+
+                <div class="contact-div text-start">
+                  <form action="/send-message/<%=vendor.username%>" method="POST">
+                  <p class="mt-3 mb-1">Conversation Settings</p>
+
+                  <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
+                  <label class='form-check-label' for="default">Default <span class="opacity-70">(Not Recommended)</span></label><br>
+      
+                  <input class='form-check-input' type="radio" name="type" id="semi-hidden" value="semi-hidden" required checked>
+                  <label class='form-check-label' for="semi-hidden">Semi-Hidden</label><br>
+      
+                  <input class='form-check-input' type="radio" name="type" id="Hidden" value="hidden" required>
+                  <label class='form-check-label' for="Hidden">Hidden</label><br>
+
+                  <hr class="my-2">
+                  
+                  <input class='form-check-input' type="checkbox" name="timestamps" id="timestamps">
+                  <label class='form-check-label' for="timestamps">Show timestamps</label><br>
+
+                  <hr class="my-2">
+
+                  <textarea class="form-control" name="message" placeholder="Type your message..." minlength="2" maxlength='1000' required></textarea>
+
+                  <button type="submit" class="btn btn-primary mt-4">Send Message</button>
+            
+                </form>
+                </div>
+
+                <span class="position-absolute top-0 start-0 zindex-2 ms-3 mt-3">
+                <a href="#" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle" data-bs-toggle="tooltip" data-bs-placement="left" title="Report Vendor">
+                    <i class="bx bx-flag"></i>
+                  </a>
+                </span> 
+                <a href="#" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-4 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Vendor Pgp Key">
+                  <i class="bx bx-key"></i>
+                  </a> 
+              </div>
+
+              <div class="card card-body shadow-sm border-0 mt-4">
+
+                <!-- Description -->
+                <div class="mt-2">
+                  <h5 class="fw-medium fs-lg mb-1">Profile Description</h5>
+                  <% if (!vendor.description) { %>
+                    <p class="fs-sm">This User Doesnt have a description</p>
+                  <% } %>
+                  <%-vendor.description%>
+              </div>
+
+              <!-- Achievement -->
+              <% if (vendor.achievement.length) { %>
+              <div class="mt-2">
+                <hr class="my-2">
+                <h5 class="fw-medium fs-lg mb-1 mt-4">Achievements:</h5>
+                <ul class="list-unstyled mb-3">
+                  <% for(let i = 0; i < vendor.achievement.length; i++) { %>
+                    <li class="d-flex align-items-center mt-3">
+                      <i class="bx bx-medal text-primary fs-xl me-2"></i>
+                      <%=vendor.achievement[i]%>
+                    </li>
+                  <% } %>
+                </ul>
+            </div>
+            <% } %>
+
+
+            <!-- PGP KEYS -->
+            <div class="mt-2">
+              <hr class="my-2">
+              <h5 class="fw-medium fs-lg mt-4 mb-1">Pgp Key</h5>
+              <% if (!vendor.pgp) { %>
+                <p class="fs-sm">This User Doesnt have a Pgp Key</p>
+              <% } %>
+              <p class="fs-sm"><%=vendor.pgp%></p>
+          </div>
+
+          <!-- Spoken Language -->
+          <% if (vendor.languages.length) { %>
+            <div class="mt-2">
+              <hr class="my-2">
+              <h5 class="fw-medium fs-lg mb-1 mt-4">Fluent Languages:</h5>
+              <ul class="list-unstyled mb-3">
+                <% for(let i = 0; i < vendor.languages.length; i++) { %>
+                  <li class="d-flex align-items-center mt-3">
+                    <i class="bx bx-book text-primary fs-xl me-2"></i>
+                    <%=vendor.languages[i]%>
+                  </li>
+                <% } %>
+              </ul>
+          </div>
+          <% } %>
+
+            </div>
+
+          </aside>
+
+          <div class="col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
+            <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
+            <% if (!paginatedProducts.results.length) { %>
+              <p>This Vendor doesnt have any Product</p>
+            <% } else { %>
+              <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+            <% } %>
+
+            <hr class="my-2">
+            <%- include('partials/Reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage}) %>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+
+    <!-- Footer -->
+    <%- include('partials/Footer') %>
+  </body>
+</html>

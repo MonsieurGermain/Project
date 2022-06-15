@@ -1,0 +1,134 @@
+<header class="header navbar navbar-expand-lg navbar-sticky navbar-stuck">
+  <div class="container">
+    <a href="/" class="navbar-brand text-light">
+      <img src="/assets/img/logo.svg" width="47" alt="Project">
+      Project
+    </a>
+
+    <% if (!authuser) { %> 
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse1" aria-expanded="false">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <% } %>
+
+    <% if (authuser) { %> 
+      <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse5" aria-expanded="false">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <% } %>
+
+    <% if (authuser) { %> 
+    <div class="dropdown order-lg-3 ms-4">
+      <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1" class="d-flex nav-link p-0" data-bs-toggle="dropdown">
+        <img src="<%=authuser.img_path%>" class="small-rc rounded-circle" width="48" alt="User img">
+        <div class="d-none d-sm-block ps-2">
+          <div class="fs-xs lh-1 opacity-60">Hey,</div>
+          <div class="fs-sm dropdown-toggle"><%=authuser.username%></div>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end my-1" style="width: 14rem;">
+        <li>
+          <a href="/orders/<%=authuser.username%>" class="dropdown-item d-flex align-items-center">
+            <i class="bx bx-shopping-bag fs-base opacity-60 me-2"></i>
+            Orders
+          </a>
+        </li>
+        <li>
+          <a href="/messages" class="dropdown-item d-flex align-items-center">
+            <i class="bx bx-chat fs-base opacity-60 me-2"></i>
+            Messages
+            <!-- <span class="bg-success rounded-circle mt-n2 ms-1" style="width: 5px; height: 5px;"></span> -->
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item d-flex align-items-center" href="/settings/<%=authuser.username%>?section=saved&productPage=1">
+            <i class="bx bx-heart fs-base opacity-60 me-2"></i>
+            Saved Product
+            <span class="ms-auto fs-xs text-muted"><%=authuser.saved_product.length%></span>
+          </a>
+        </li>
+        <li>
+          <a href="/settings/<%=authuser.username%>" class="dropdown-item d-flex align-items-center">
+            <!-- Change Icon -->
+            <i class="bx bx-cog fs-base opacity-60 me-2"></i>
+            Settings
+          </a>
+        </li>
+        <!-- <li>
+          <a href="#" class="dropdown-item d-flex align-items-center">
+            <i class="bx bx-dollar fs-base opacity-60 me-2"></i>
+            Sales
+            <span class="ms-auto fs-xs text-muted">$735.00</span>
+          </a>
+        </li> -->
+        <li class="dropdown-divider"></li>
+        <li>
+          <a class="dropdown-item d-flex align-items-center" href="/logout">
+            <i class="bx bx-log-out fs-base opacity-60 me-2"></i>
+            Sign out
+          </a>
+        </li>
+      </ul>
+    </div>
+    <% } %>
+
+    <nav id="navbarCollapse1" class="collapse navbar-collapse">
+      <hr class="d-lg-none mt-3 mb-2">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a href="/products?productPage=1" class="nav-link">Products</a>
+        </li>
+        <% if (authuser) { %>
+          <li class="nav-item">
+            <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1" class="nav-link">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a href="/messages" class="nav-link">Messages</a>
+          </li>
+          <li class="nav-item">
+            <a href="/create-product" class="nav-link">Create Product</a>
+          </li>
+        <% } %>
+
+        <!-- <li class="nav-item">
+          <a class="nav-link disabled" href="#">Disabled</a>
+        </li> -->
+
+        <li class="nav-item dropdown">
+          <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Docs</a>
+          <ul class="dropdown-menu">
+            <li>
+              <a href="/news" class="dropdown-item">News</a>
+            </li>
+            <li>
+              <a href="/docs" class="dropdown-item">Documentation</a>
+            </li>
+            <li>
+              <a href="/contactus" class="dropdown-item">Contact Us</a>
+            </li>
+            <!--             
+            <li class="dropdown">
+              <a href="#" class="dropdown-item dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Action link</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                <li><a class="dropdown-item" href="#">Yet another link</a></li>
+              </ul>
+            </li> -->
+          </ul>
+        </li>
+      </ul>
+
+      <% if (!authuser) { %>
+        <a href="/login" class="nav-link">Log In</a>
+        <a href="/register" class="btn btn-primary btn-sm fs-sm rounded my-3 my-lg-0">
+          <i class="bx bx-user fs-lg me-2"></i>
+          Sign up
+        </a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+
+

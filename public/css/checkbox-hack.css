@@ -1,0 +1,95 @@
+.label-input input {
+  display: none;
+}
+
+.label-input label {
+  cursor: pointer;
+  padding: 5px 10px;
+  margin: 7px 5px;
+}
+
+.client_order_container,
+.your_order_container {
+    display: none;
+}
+
+#client_order:checked ~ .client_order_container,
+#your_order:checked ~ .your_order_container {
+  display: contents;
+}
+
+.your_order_container-all,
+.your_order_container-awaiting_info,
+.your_order_container-awaiting_payment,
+.your_order_container-awaiting_shipment,
+.your_order_container-shipped,
+.your_order_container-recieved,
+.your_order_container-finalized,
+.your_order_container-rejected,
+.your_order_container-expired,
+.client_order_container-all,
+.client_order_container-awaiting_info,
+.client_order_container-awaiting_payment,
+.client_order_container-awaiting_shipment,
+.client_order_container-shipped,
+.client_order_container-recieved,
+.client_order_container-finalized,
+.client_order_container-rejected,
+.client_order_container-expired{
+  display: none;
+}
+
+#client_order:checked ~ label[for='client_order'],
+#your_order:checked ~ label[for='your_order'],
+#your_order-all:checked ~ label[for='your_order-all'],
+#your_order-awaiting_info:checked ~ label[for='your_order-awaiting_info'],
+#your_order-awaiting_payment:checked ~ label[for='your_order-awaiting_payment'],
+#your_order-awaiting_shipment:checked ~ label[for='your_order-awaiting_shipment'],
+#your_order-shipped:checked ~ label[for='your_order-shipped'],
+#your_order-recieved:checked ~ label[for='your_order-recieved'],
+#your_order-finalized:checked ~ label[for='your_order-finalized'],
+#your_order-rejected:checked ~ label[for='your_order-rejected'],
+#your_order-expired:checked ~ label[for='your_order-expired'],
+#client_order-all:checked ~ label[for='client_order-all'],
+#client_order-awaiting_info:checked ~ label[for='client_order-awaiting_info'],
+#client_order-awaiting_payment:checked ~ label[for='client_order-awaiting_payment'],
+#client_order-awaiting_shipment:checked ~ label[for='client_order-awaiting_shipment'],
+#client_order-shipped:checked ~ label[for='client_order-shipped'],
+#client_order-recieved:checked ~ label[for='client_order-recieved'],
+#client_order-finalized:checked ~ label[for='client_order-finalized'],
+#client_order-rejected:checked ~ label[for='client_order-rejected'],
+#client_order-expired:checked ~ label[for='client_order-expired'] {
+  border-bottom: 5px solid purple;
+}
+
+#your_order-all:checked ~ .your_order_container-all,
+#your_order-awaiting_info:checked ~ .your_order_container-awaiting_info,
+#your_order-awaiting_payment:checked ~ .your_order_container-awaiting_payment,
+#your_order-awaiting_shipment:checked ~ .your_order_container-awaiting_shipment,
+#your_order-shipped:checked ~ .your_order_container-shipped,
+#your_order-recieved:checked ~ .your_order_container-recieved,
+#your_order-finalized:checked ~ .your_order_container-finalized,
+#your_order-rejected:checked ~ .your_order_container-rejected,
+#your_order-expired:checked ~ .your_order_container-expired,
+#client_order-all:checked ~ .client_order_container-all,
+#client_order-awaiting_info:checked ~ .client_order_container-awaiting_info,
+#client_order-awaiting_payment:checked ~ .client_order_container-awaiting_payment,
+#client_order-awaiting_shipment:checked ~ .client_order_container-awaiting_shipment,
+#client_order-shipped:checked ~ .client_order_container-shipped,
+#client_order-recieved:checked ~ .client_order_container-recieved,
+#client_order-finalized:checked ~ .client_order_container-finalized,
+#client_order-rejected:checked ~ .client_order_container-rejected,
+#client_order-expired:checked ~ .client_order_container-expired {
+  display: contents;
+}
+
+
+.quantity-settings,
+.contact-div {
+    display: none;
+}
+
+#quantity-settings-checkbox:checked ~ .quantity-settings,
+#contact-checkbox:checked ~ .contact-div { 
+    display: contents;
+}

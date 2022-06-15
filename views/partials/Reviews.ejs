@@ -1,0 +1,34 @@
+
+      <!-- Not Respnsive -->
+      <section class="py-lg-4 py-xl-5 mt-3 mb-5">
+        <h2 class="h3 mb-4">Reviews</h2>
+        <% if (!reviews.length) { %>
+          <h2 class="h5 mb-4">No review yet...</h2>
+        <% } %>
+
+        <% for(let i = reviews.length - 1; i >= 0; i--) { %>
+            <div class="py-4">
+                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
+                  <div class="d-flex align-items-center me-3">
+
+                    <div class="d-sm-flex align-items-center">
+                        <div class="pe-sm-3 me-sm-5">
+                            <h6 class="fw-semibold mb-0"><%=reviews[i].sender%></h6>
+                        </div>
+                        <div class="ps-3 pe-sm-3 me-sm-5">
+                            <%- include('./Rating', {rating: reviews[i].note}) %>
+                        </div>
+                    </div>
+                      
+                  </div>
+                </div>
+                <p class="mb-0"><%=reviews[i].content%></p>
+              </div>
+              <hr class="my-2">
+        <% } %>
+
+
+        <%- include('./Pagination', {nextPage, currentPage: parseInt(query.reviewPage), queryName: 'reviewPage'}) %>
+        
+
+        </section>

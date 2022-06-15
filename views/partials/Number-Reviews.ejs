@@ -1,0 +1,8 @@
+<% if (number_reviews > 1000) { %>
+    <% number_reviews = number_reviews / 1000 %>
+    <% number_reviews = number_reviews.toString() %>
+    <% number_reviews = number_reviews.slice(0, number_reviews.indexOf('.') + 3) + 'k' %>
+<% } %>
+<span class="opacity-70">
+    (<%=number_reviews%> reviews)
+</span>

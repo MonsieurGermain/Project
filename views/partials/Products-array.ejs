@@ -1,0 +1,91 @@
+          <% const settingsPage = authuser && url[0] === `/settings/${authuser.username}` ? true : false %>
+          <!-- Courses grid -->
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-<%=sepc_col%> gx-3 gx-md-4 mt-n2 mt-sm-0">
+  
+            <!-- Products -->
+
+            <% for(let i = 0; i < products.length; i++) { %>
+            <div class="col pb-1 pb-lg-3 mb-4">
+              <article class="card card-hover h-100 border-0 shadow-sm">
+                <div class="position-relative">
+                  <a href="/product/<%=products[i].slug%>?reviewPage=1" class="d-block position-absolute w-100 h-100 top-0 start-0"></a>
+                  <!-- Badges -->
+                  <% if (products[i].qty_settings && !products[i].qty_settings.available_qty) { %>
+                    <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sold Out!</span>
+                  <% } %>
+                  <% if (products[i].onsales) { %>
+                    <span class="badge bg-primary  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sale!</span>
+                  <% } %>
+                  <% if (products[i].popular) { %>
+                    <span class="badge bg-success position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Popular</span>
+                  <% } %>
+
+                  <% if (authuser && authuser.username === products[i].vendor) { %>
+                    <a href="/create-product?slug=<%=products[i].slug%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit This Product">
+                      <i class="bx bx-edit"></i>
+                    </a>
+                  <% } else if (authuser) { %>
+                    <% if (settingsPage) { %>
+                      <form action="/saved_product/<%=products[i].slug%>?productPage=<%=query.productPage%>" method="POST">
+                    <% } else { %> 
+                      <form action="/saved_product/<%=products[i].slug%>?url=<%=url[0]%>?<%=url[1]%>" method="POST">
+                    <% } %>
+                      <button type="submit" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3">
+                        <% if (authuser.saved_product.includes(products[i].slug)) { %>
+                          <i class="bx bxs-heart text-danger"></i>
+                        <% } else { %> 
+                          <i class="bx bx-heart"></i>
+                        <% } %>
+                        
+                      </button>
+                    </form>
+                  <% } %>
+
+                  <img src="<%=products[i].img_path %>" class="card-img-top" style="max-height: 15rem; object-fit: cover;" alt="Image">
+                </div>
+                <div class="card-body pb-3">
+                  <h3 class="h5 mb-2">
+                    <a href="/product/<%=products[i].slug%>?reviewPage=1">
+                      <% if (products[i].title.length > 50) { %>
+                        <%=products[i].title.slice(0, 50)%>...
+                      <% } else { %>
+                        <%=products[i].title%>
+                      <% } %>
+                    </a>
+                  </h3>
+                  <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=products[i].vendor%>?productPage=1&reviewPage=1"><%=products[i].vendor%></a></p>
+                  <!-- Convert Currency  -->
+                  <% if (products[i].onsales) { %>
+                    <p class="text-muted mb-0"><span class="fs-lg fw-semibold text-danger me-2">$<%=products[i].price%></span><del>$<%=products[i].old_price%></del></p>
+                  <% } %>
+                  <p class="fs-lg fw-semibold text-primary mb-0">$<%=products[i].price%></p>
+
+                </div>
+                <div class="card-footer d-flex align-items-center fs-sm text-muted py-4">
+                  <div class="d-flex align-items-center me-4">
+                    <!-- Change Icon -->
+                    <i class="bx bxs-plane-alt fs-xl me-1"></i>
+                    From : <%=products[i].ship_from%>
+                  </div>
+                  <div class="d-flex align-items-center ms-auto">
+                    <%- include('./Rating', {rating: products[i].review.average_note}) %>
+                  </div>
+                </div>
+              </article>
+            </div>
+          <% } %>
+
+
+
+          </div>
+  
+          <%- include('./Pagination', {nextPage, currentPage: parseInt(query.productPage), queryName: 'productPage'}) %>
+
+  
+  
+
+  
+  
+
+  
+

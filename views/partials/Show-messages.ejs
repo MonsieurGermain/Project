@@ -1,0 +1,97 @@
+
+
+<div class="col-lg-8" style="max-height: 712px;">
+    <div class="card h-100 border-0 bg-transparent pb-3">
+
+    <% if (selected_conversation) { %>
+      <!-- Header -->
+      <div class="card-header navbar-light d-flex align-items-center justify-content-between w-100 p-sm-4 p-3">
+        <div class="d-flex align-items-center pe-3">
+          <button type="button" class="navbar-toggler d-lg-none me-3" data-bs-toggle="offcanvas" data-bs-target="#contactsList" aria-controls="contactsList" aria-label="Toggle contacts list">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <img src="<%=selected_conversation.img_path%>" class="smedium-rc rounded-circle" width="40" alt="<%=selected_conversation.sender_2%>">
+            <a href="<%=selected_conversation.link%>" class="mb-0 px-1 mx-2"><%=selected_conversation.sender_2%></a>
+          <!-- <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div> -->
+        </div>
+        <div class="d-flex">
+        <form action="/delete-conversation/<%=selected_conversation.id%>?_method=DELETE" method="POST">
+          <button type="submit" class="btn btn-outline-danger d-none d-sm-inline-flex px-2 px-sm-3 ms-1">
+            <i class="bx bx-trash-alt fs-xl me-xl-2"></i>
+            <span class="d-none d-xl-inline">Delete Conversation</span>
+          </button>
+        </form>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="card-body swiper scrollbar-hover overflow-hidden w-100 pb-0">
+        <div class="swiper-wrapper mt-auto">
+          <div class="swiper-slide h-auto  ">
+
+            <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
+
+            <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
+            <!-- Own message -->
+            <div class="d-flex align-items-start justify-content-end mb-3">
+                <div class="pe-2 me-1" style="max-width: 348px;">
+                    <div class="bg-primary text-light p-3 mb-1" style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= selected_conversation.messages[i].message %>
+                        <form action="/delete-message/<%= selected_conversation.id %>/<%= selected_conversation.messages[i].id %>?_method=DELETE" method="POST">
+                          <button type="submit" class="btn btn-outline-danger">
+                            <i class="bx bx-trash-alt"></i>
+                          </button>
+                        </form>
+                    </div>
+                    <% if (selected_conversation.settings.timestamps === true) { %>
+                        <div class="d-flex justify-content-end align-items-center fs-sm text-muted">
+                            <%= selected_conversation.messages[i].timestamps %>
+                             </div> 
+                    <% } %>
+
+                    </div>
+            </div>
+            <% } else { %>
+            <!-- User message -->
+            <div class="d-flex align-items-start mb-3">
+                <img src="<%=selected_conversation.img_path%>" class="smedium-rc rounded-circle" width="40" alt="<%=selected_conversation.sender_2%>">
+                <div class="ps-2 ms-1" style="max-width: 348px;">
+                  <div class="p-3 mb-1" style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= selected_conversation.messages[i].message %></div>
+                  <% if (selected_conversation.settings.timestamps === true) { %>
+                    <div class="fs-sm text-muted"><%= selected_conversation.messages[i].timestamps %></div>
+                  <%}%>
+                </div>
+              </div>
+            <% } %>
+            <% } %>
+
+          </div>
+        </div>
+        <div class="swiper-scrollbar end-0"></div>
+      </div>
+    <% } else { %> 
+        <!-- MAke that Pretty -->
+        <div class="d-flex align-items-center justify-content-between mb-1">
+            <h6 class="mb-0 me-2">No Converastion Yet</h6>
+          </div>
+    <% } %>
+
+
+      <!-- Footer (Send message form) -->
+      <% if (selected_conversation) { %>
+        <form method="POST" action="/messages/<%=selected_conversation.id%>">
+      <% } %>
+      <div class="card-footer d-sm-flex w-100 border-0 pt-3 pb-3 px-4">
+        <div class="position-relative w-100 me-2 mb-3 mb-sm-0">
+          <input type="text" class="form-control form-control-lg" style="padding-right: 85px;" placeholder="Message..." minlength="2" maxlength="1000" name="message" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-icon btn-lg d-none d-sm-inline-flex ms-1">
+          <i class="bx bx-send"></i>
+        </button>
+        <button type="submit" class="btn btn-primary btn-lg w-100 d-sm-none">
+          <i class="bx bx-send fs-xl me-2"></i>
+          Send
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>

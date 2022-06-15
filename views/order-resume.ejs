@@ -1,0 +1,205 @@
+<%- include('partials/Head') %>
+<body>
+    <!-- Page wrapper for sticky footer -->
+    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+    <main class="page-wrapper">
+
+        <%- include('partials/Navbar') %>
+  
+        <!-- Hero -->
+        <section class="pt-2 pt-lg-3 pb-lg-4" >
+          <div class="container">
+  
+            <nav class="py-4 mb-5" aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                        <a href="/orders/<%=authuser.username%>">Your Orders</a>
+                    </li>
+                  <li class="breadcrumb-item active" aria-current="page">Order Resume</li>
+                </ol>
+              </nav>
+
+              <% if (error.length) { %>
+                <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
+                <%- include('partials/Flash-message', {message: error}) %>
+              </div>   
+              <% } %>
+
+              <h1>Order Resume</h1>
+
+    
+          </div>
+        </section>
+  
+        <section class="container">
+            <div class="row">
+
+              <aside class="col-lg-4 col-md-5 order-md-2 mb-5">
+                <div style="margin-top: -96px;"></div>
+                <div class="position-sticky top-0 pt-5">
+                  <div class="pt-5 mt-md-3">
+                    <div class="card shadow-sm p-sm-3 text-center">
+                        <%- include('partials/Update-order') %>
+
+                        <div class="mt-4 text-start">
+                        <p class="h6 mb-0">Send XMR PRICE to this address</p>
+                        <p><%= order.address %></p>  
+                
+                        <div class="d-flex">
+                            <div>
+                                <p class="mb-0"><b>Needed Amount :</b></p>
+                                <p>XMR PRICE</p>
+                            </div>
+                            <div class="ms-auto">
+                                <p class="mb-0"><b>Amount Paid : </b></p>
+                                <p>XMR PRICE</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="mt-2 mb-0"><b>Balance : </b></p>
+                            <p>XMR PRICE</p>
+                        </div>
+                        
+                    </div>
+                    </div>
+                  </div>
+                </div>
+
+              </aside>
+    
+              <!-- Content -->
+            <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
+
+            <article class="card border-0 bg-transparent me-xl-3 mb-4">
+              <div class="row g-0">
+                <div class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3">
+                  <a href="/product/<%=product.slug%>?reviewPage=1" class="position-absolute top-0 start-0 w-100 h-100">
+                    <img src="<%=product.img_path%>" style="min-height: 15rem;" alt="Product Img">
+                  </a>
+                </div>
+                <div class="col-sm-7">
+                  <div class="card-body px-0 pt-sm-0 ps-sm-4 pb-0 pb-sm-4">
+                    <a href="#" class="badge fs-sm text-white bg-info shadow-info text-decoration-none mb-3">Category</a>
+                    <h3 class="h4">
+                      <a href="/product/<%=product.slug%>?reviewPage=1"><%=product.title%></a>
+                    </h3>
+                    <p class="mb-4"><%=product.description%></p>
+                    <div class="d-flex align-items-center text-muted">
+                      <div class="d-flex align-items-center me-3">
+                        <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1"><%=product.vendor%></a></p>
+                      </div>
+                      <div class="d-flex align-items-center me-3">
+                        <%- include('partials/Rating', {rating: product.review.average_note}) %>
+                       <span class="opacity-70">
+                      <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
+                       </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+
+
+            
+            <%if (order.status === 'finalized' || order.status === 'recieved') {%>
+              <hr class="my-2">
+              <div class="col-xl-8">
+              <%if (!order.let_review && authuser.username !== order.vendor) {%>
+                  <%- include('./partials/Send-review') %>
+              <%} else { %>
+                  <p class="mt-4">You have already left a review on this order</p>
+              <%}%>
+            </div>
+          <%} %>
+            
+          <hr class="my-2">
+
+
+            <div class="col-xl-8">
+                <p class="h5">Order Information</p>
+
+                <div class="d-sm-flex align-items-center ">
+                      <p>Price: <b><%=order.base_price%></b></p>  
+                      <p class="ms-auto">Quantity Taken: <b><%= order.qty%></b></p>  
+                  </div>
+        
+                <% if (order.shipping_option) { %>
+                <p>Shipping Option: <b><%= order.shipping_option.option_name%> - <%= order.shipping_option.option_price %>$</b></p> 
+                <%}%>
+
+        
+                <% if (order.selection_1) { %>
+                <p><%= order.selection_1.selection_name %>: <b><%= order.selection_1.selected_choice.choice_name%> - <%= order.selection_1.selected_choice.choice_price%>$</b></p>
+                <%}%>
+
+                <% if (order.selection_2) { %>
+                <p><%= order.selection_2.selection_name %>: <b><%= order.selection_2.selected_choice.choice_name%> - <%= order.selection_2.selected_choice.choice_price%>$</b></p>
+                <%}%>
+        
+                <p>Total Price: <b><%= order.total_price %>$</b><span class="opacity-70 ms-2">(Price in XMR)</span></p>
+            </div>
+
+            <hr class="my-2">
+
+
+
+
+<!-- CHAT -->
+<p class="h5 mt-5">Order Chat</p>
+<div class="w-100 mt-5" style="max-height: 712px; height: 400px;">
+    <div class="card shadow-sm h-100 border-0 bg-transparent pb-3">
+
+      <!-- Messages -->
+      <div class="card-body swiper scrollbar-hover overflow-hidden w-100 pb-0" >
+        <div class="swiper-wrapper">
+          <div class="swiper-slide h-auto">
+
+            <% for(let i = 0; i < order.messages.length ; i++) {%>
+
+            <% if (authuser.username !== order.vendor && order.vendor !== order.messages[i].buyer) { %>
+            <!-- Own message -->
+            <div class="d-flex align-items-start justify-content-end mb-3">
+                <div class="pe-2 me-1" style="max-width: 348px;">
+                    <div class="bg-primary text-light p-3 mb-1" style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                    </div>
+            </div>
+            <% } else { %>
+            <!-- User message -->
+            <div class="d-flex align-items-start mb-3">
+                <img src="<%=order.img_path%>" class="rounded-circle" width="40" alt="<%=order.sender_2%>">
+                <div class="ps-2 ms-1" style="max-width: 348px;">
+                  <div class="card p-3 mb-1" style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                </div>
+              </div>
+            <% } %>
+            <% } %>
+
+          </div>
+        </div>
+        <div class="swiper-scrollbar end-0"></div>
+      </div>
+
+
+      <!-- Footer (Send message form) -->
+      <form action="/submit-info/<%=order.id%>" method="POST">
+      <div class="card-footer d-sm-flex w-100 border-0 pt-3 pb-3 px-4">
+        <div class="position-relative w-100 me-2 mb-3 mb-sm-0">
+          <input type="text" class="form-control form-control-lg" style="padding-right: 85px;" placeholder="Message..." name="content">
+        </div>
+        <button type="submit" class="btn btn-primary btn-icon btn-lg d-none d-sm-inline-flex ms-1">
+          <i class="bx bx-send"></i>
+        </button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+</section>
+
+        <%- include('partials/Footer') %>
+      </main>
+  
+</body>
+</html>

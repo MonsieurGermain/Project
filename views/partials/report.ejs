@@ -1,0 +1,28 @@
+<input type="checkbox" id="report" style="display: none;" >
+<label for="report" style="cursor: pointer;">Report</label>
+
+<div class="report-input">
+    <form action="/report/<%=identifiant%>?type=<%=type%>&url=<%=url[0]%>?<%=url[1]%>" method="POST">
+        <input type="radio" name="reason" id='scam' value="scam" checked>
+        <label for="scam">Scam</label>
+
+        <input type="radio" name="reason" id='spam' value="spam">
+        <label for="spam">Spam</label>
+
+        <input type="radio" name="reason" id='false-advertising' value="false-advertising">
+        <label for="false-advertising">False Advertising</label>
+
+        <input type="radio" name="reason" id='blackmail' value="blackmail">
+        <label for="blackmail">Blackmail</label>
+        
+        <input type="radio" name="reason" id='other' value="other">
+        <label for="other">Other</label>
+        <div class="other-input">
+            <input type="text" name="other" placeholder="other">
+        </div>
+
+        <textarea name="explaination" placeholder="Explain..."></textarea>
+
+        <button type="submit">Send Report</button>
+    </form>
+</div>

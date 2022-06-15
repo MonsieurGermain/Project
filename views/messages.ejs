@@ -1,0 +1,76 @@
+<%- include('partials/Head') %>
+<body>
+    <main class="page-wrapper">
+<!-- Fix the Scolling when a lot of conversation are active and when you are in a long conversation -->
+<!-- Make it that the section always take all the screen no matter how much active conversation there are -->
+    <%- include('partials/Navbar') %>
+
+    <section class="container pt-5" style="width: 100%; height: 70%;">
+      <div class="row">
+        <!-- Account messages -->
+        <div class="col-md-8 col-lg-9 pb-5 mb-lg-2 mb-lg-4 pt-md-5 mt-n3 mt-md-0">
+          <div class="ps-md-3 mt-md-2 pt-md-4 pb-md-2">
+            <div class="row g-0 border rounded-3 shadow-sm position-relative overflow-hidden">
+    
+              <!-- Contacts list -->
+              <div class="col-lg-4">
+                <div id="contactsList" class="offcanvas offcanvas-expand-lg offcanvas-start position-absolute position-lg-relative h-100" data-bs-scroll="true" data-bs-backdrop="false" style="max-height: 712px;">
+                  <div class="card-header w-100 border-0 p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-4">
+                      <h1 class="h3 mb-0">Messages</h1>
+                      <button type="button" class="btn btn-link nav-link bg-faded-primary-hover d-lg-none ps-2 pe-3 me-n3" data-bs-dismiss="offcanvas">
+                        <i class="bx bx-x fs-xl me-1"></i>
+                        Close
+                      </button>
+                    </div>
+                    <div class="position-relative">
+                      <input type="text" class="form-control pe-5" placeholder="Search">
+                      <i class="bx bx-search fs-xl text-nav position-absolute top-50 end-0 translate-middle-y me-3"></i>
+                    </div>
+                  </div>
+                  <div class="card-body swiper scrollbar-hover overflow-hidden w-100 p-0">
+                    <div class="swiper-wrapper">
+                      <div class="swiper-slide h-auto">
+    
+    
+                        <% for(let i = conversations.length - 1; i >= 0; i--) { %>
+                          <% if (conversations[i].id === selected_conversation.id) { %>
+                            <a href="/messages/<%= conversations[i].id %>" class="position-relative d-flex align-items-start border-bottom text-decoration-none pe-none py-3 px-4">
+                              <div class="position-absolute top-0 start-0 bg-primary w-2 h-100"></div>
+                              <img src="<%= conversations[i].img_path%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
+                              <div class="w-100 ps-2 ms-1">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                  <h6 class="mb-0 me-2"><%= conversations[i].sender_2 %></h6>
+                                </div>
+                                <p class="fs-sm text-body mb-0"><%= conversations[i].messages[conversations[i].messages.length - 1].message %></p>
+                              </div>
+                            </a>
+                          <% } else { %>
+                            <a href="/messages?id=<%= conversations[i].id %>" class="d-flex align-items-start border-bottom text-decoration-none bg-faded-primary-hover py-3 px-4">
+                              <img src="<%= conversations[i].img_path%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
+                              <div class="w-100 ps-2 ms-1">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                  <h6 class="mb-0 me-2"><%= conversations[i].sender_2 %></h6>
+                                </div>
+                                <p class="fs-sm text-body mb-0"><%= conversations[i].messages[conversations[i].messages.length - 1].message %></p>
+                              </div>
+                            </a>
+                          <% } %>
+                        <% } %>
+    
+    
+                      </div>
+                    </div>
+                    <div class="swiper-scrollbar end-0"></div>
+                  </div>
+                </div>
+              </div>
+    
+              <%- include('partials/Show-messages', {selected_conversation : selected_conversation}) %>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </html>
