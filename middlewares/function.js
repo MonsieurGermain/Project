@@ -52,7 +52,6 @@ exports.sanitizeHTML = (object) => {
 }
 
 
-
 // Pagination
 exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuzzyProduct) => {
   page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page)
@@ -192,5 +191,6 @@ exports.IsNot_Number = (value) => {
     if(isNaN(parseFloat(value))) return true
     return 
   }
+
 
 

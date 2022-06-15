@@ -11,7 +11,6 @@ module.exports = function(passport) {
       User.findOne({ username: username }).then( user => {
         if (!user) return done(null, false, { message: 'Username or Password Invalid' });
 
-
         // Match password
         bcrypt.compare(password, user.password, (err, isMatch) => {
           if (err) throw err;
