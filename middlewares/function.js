@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-// Html Sanitizer Function
-const HtmlFilter = require('html-filter');
-=======
 const multer = require('multer')
 const path = require('path');
 const HtmlFilter = require('html-filter');
@@ -20,7 +16,6 @@ charactersLength));
 }
 
 // Html Sanitizer Function
->>>>>>> 8471efdad8180f8a1756e5931cf5f4df253304a5
 function Text_To_Tags(string, symbol, start_tag, end_tag) {
     let splited_string = string.split(symbol)
     if (splited_string.length <= 1) return string // Return If Nothing To format
@@ -56,9 +51,7 @@ exports.sanitizeHTML = (object) => {
     return object;
 }
 
-<<<<<<< HEAD
-// Pricevy Funciton 
-=======
+
 
 // Pagination
 exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuzzyProduct) => {
@@ -151,7 +144,6 @@ exports.isolate_mimetype = (string, symbol) => {
 
 
 // Privavy Funciton 
->>>>>>> 8471efdad8180f8a1756e5931cf5f4df253304a5
 exports.Format_Username_Settings = (sender, setting) => { 
     if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1]
     if (setting === 'hidden') return 'Anonymous'
@@ -202,57 +194,3 @@ exports.IsNot_Number = (value) => {
   }
 
 
-<<<<<<< HEAD
-// Img Function 
-const { unlink, rename} = require('fs')
-
-exports.deleteOld_Img = (path) => {
-    unlink(path, (err) => {
-        if (err) throw err;
-    });
-}
-
-exports.isolate_mimetype = (string, symbol) => {
-    const mimetype = string.split(symbol)
-    return `.${mimetype[mimetype.length - 1]}`
-}
-
-
-
-// Pagination
-exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuzzyProduct) => {
-    page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page)
-
-    const startIndex = (page - 1) * limit
-    const endIndex = page * limit
-    
-    const results = {}
-
-    // Count Document
-    let countedDocuments
-    if (fuzzyProduct) countedDocuments = fuzzyProduct.length 
-    else countedDocuments = await model.countDocuments(query).exec()
-
-    // NextPage Creation
-    results.nextPage = [page]
-    if (startIndex > 0) results.nextPage.unshift(page - 1)
-    if ((page - 2) * limit > 0) results.nextPage.unshift(page - 2)
-    if (endIndex < countedDocuments) results.nextPage.push(page + 1)
-    if ((page + 1) * limit < countedDocuments) results.nextPage.push(page + 2)
-    
-    if (fuzzyProduct) {
-      results.results = fuzzyProduct.splice(startIndex, endIndex)
-      return results
-    } else { 
-        try {
-          results.results = await model.find(query).limit(limit).skip(startIndex).exec()
-          return results
-        } catch (e) {
-          console.log(e)
-          return
-        }
-    }
-}
-=======
-
->>>>>>> 8471efdad8180f8a1756e5931cf5f4df253304a5
