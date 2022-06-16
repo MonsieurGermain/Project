@@ -1,5 +1,13 @@
 // Be aware of bootsrap css from html classes when changing
 @use "sass:map";
+// media-queries break points
+$min-width-bp: map.get($grid-breakpoints, "md");
+$max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
+$drop-down-height: 4rem;
+// $nav-bar-height-mobile $nav-bar-height-large from _user-variables.scss control height of top nav bar
+
+
+
 //
 // Navbar
 // --------------------------------------------------
@@ -71,21 +79,21 @@
 
 //// section handles popup for mobile menu and nav drop downs on combination with js for component
 [data-popup]:not(.popup-active) {
-    @media (min-width: map.get($grid-breakpoints, "md")) {
+    @media (min-width: $min-width-bp) {
         [data-trigger]:not(:hover) {
             [data-popup] {
                 display: none;
             }
         }
     }
-    @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+    @media (max-width: $max-width-bp) {
         &:not([data-popup="mobile-menu"]) {
             display: none !important;
         }
     }
 }
 [data-popup="mobile-menu"]:not(.popup-active) {
-    @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+    @media (max-width: $max-width-bp) {
         display: none !important;
     }
 }
@@ -103,7 +111,7 @@
     left: 0px;
     display: flex;
     height: $nav-bar-height-mobile;
-    @media (min-width: map.get($grid-breakpoints, "md")) {
+    @media (min-width: $min-width-bp) {
         height: $nav-bar-height-large;
     }
     width: 100%;
@@ -141,7 +149,7 @@
         display: flex;
         width: 100%;
         justify-content: flex-end;
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             display: none;
         }
         > div {
@@ -183,7 +191,6 @@
             width: 100%;
             li {
                 text-decoration: none;
-                height: 4rem;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -192,6 +199,7 @@
                     color: white;
                     margin-left: 50px;
                     height: 100%;
+                    min-height: $drop-down-height;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -208,7 +216,7 @@
                 }
             }
         }
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             position: absolute;
             box-shadow: -6px 10px 16px -17px #800080;
             width: 237px;
@@ -236,7 +244,7 @@
         width: 100%;
         position: fixed;
         top: $nav-bar-height-mobile;
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             top: $nav-bar-height-large;
         }
         left: 0px;
@@ -262,7 +270,7 @@
         > div {
             width: 100%;
             height: $nav-bar-height-mobile;
-            @media (min-width: map.get($grid-breakpoints, "md")) {
+            @media (min-width: $min-width-bp) {
                 height: $nav-bar-height-large;
                 width: 60%;
                 max-width: 600px;
@@ -311,17 +319,35 @@
         display: flex;
         width: 100%;
         position: fixed;
-        flex-direction: column-reverse;
-        top: 4rem;
+        flex-direction: column;
+        top: $nav-bar-height-mobile;
         bottom: 0;
         left: 0;
         right: 0;
-        justify-content: start;
         background-color: $body-bg;
+         // extra scroll space so the user can adjust last item to tapable height
+        .mobile-menu-scroll-space {
+            order: 3;
+            height: 70vh;
+            flex-shrink: 0;
+        }
         .nav-items {
             flex-direction: column;
             list-style-type: none;
             padding-left: 0;
+            order: 2;
+        }
+        @media (min-width: $min-width-bp) {
+            .mobile-menu-scroll-space {
+                display: none;
+            }
+            .nav-items {
+                order: 0;
+            }
+        }
+        @media (max-width: $max-width-bp) {
+            overscroll-behavior: none;
+            overflow-y: scroll;
         }
         .navbar-right-cluster {
             display: flex;
@@ -335,7 +361,7 @@
                     margin-left: 20px;
                 }
             }
-            @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+            @media (max-width: $max-width-bp) {
                 .search-button {
                     display: none;
                 }
@@ -347,7 +373,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            @media (min-width: map.get($grid-breakpoints, "md")) {
+            @media (min-width: $min-width-bp) {
                 .mobile-only {
                     display: none;
                 }
@@ -359,7 +385,7 @@
                     }
                 }
             }
-            @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+            @media (max-width: $max-width-bp) {
                 .not-mobile-only {
                     display: none;
                 }
@@ -390,10 +416,10 @@
             background-color: $secondary-bg;
         }
         .nav-item {
-            height: 4rem;
+            min-height: $drop-down-height;
             border-bottom: 1px solid $secondary-bg;
             > a {
-                height: 100%;
+                height: $drop-down-height;
                 padding-left: 2rem;
             }
         }
@@ -414,7 +440,7 @@
         }
 
         // Below are style modifiers for large screens.
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             background-color: $secondary-bg;
             position: static;
             justify-content: space-between;
