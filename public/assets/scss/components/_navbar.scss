@@ -6,8 +6,6 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
 $drop-down-height: 4rem;
 // $nav-bar-height-mobile $nav-bar-height-large from _user-variables.scss control height of top nav bar
 
-
-
 //
 // Navbar
 // --------------------------------------------------
@@ -325,7 +323,7 @@ $drop-down-height: 4rem;
         left: 0;
         right: 0;
         background-color: $body-bg;
-         // extra scroll space so the user can adjust last item to tapable height
+        // extra scroll space so the user can adjust last item to tapable height
         .mobile-menu-scroll-space {
             order: 3;
             height: 70vh;
@@ -447,6 +445,7 @@ $drop-down-height: 4rem;
             flex-direction: row;
             .nav-item {
                 .navbar-link:not(.user-profile-item):hover::after,
+                .navbar-link:not(.user-profile-item):focus::after,
                 &.popup-active .navbar-link::after {
                     content: "";
                     width: 100%;
