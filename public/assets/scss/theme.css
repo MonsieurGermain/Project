@@ -13796,6 +13796,7 @@ hr.dropdown-divider {
   top: 0px;
   left: 0px;
   display: flex;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2);
   height: 4rem;
   width: 100%;
   padding: 0 20px;
@@ -13907,7 +13908,7 @@ hr.dropdown-divider {
 @media (min-width: 768px) {
   .main-navbar .navbar-dropdown {
     position: absolute;
-    box-shadow: -6px 10px 16px -17px #800080;
+    box-shadow: 0px 8px 48px rgba(128, 0, 128, 0.25);
     width: 237px;
     top: 5rem;
     left: 0px;
@@ -13952,7 +13953,7 @@ hr.dropdown-divider {
   opacity: 1;
 }
 .main-navbar .search-box.search-box-active div {
-  box-shadow: 0 10px 16px -17px #800080;
+  box-shadow: 0px 8px 48px rgba(128, 0, 128, 0.25);
 }
 .main-navbar .search-box > div {
   width: 100%;
