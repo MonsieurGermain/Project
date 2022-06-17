@@ -95,14 +95,8 @@ conversationSchema.methods.Add_New_Message = function (Message, From_User, Messa
     return this
 }
 
-//Delete
-conversationSchema.methods.Delete_Message = function(id) {
-    this.messages = this.messages.filter(message => message.id !== id)
-}
-
-
 // Search
-conversationSchema.static('Find_If_Conversation_Exist', function (username_1, username_2, conversation_type) {
+conversationSchema.static('findIf_conversationExist', function (username_1, username_2, conversation_type) {
     let query
     if (conversation_type === 'default') query = { $or: [{sender_1 : username_1, sender_2 : username_2,}, {sender_1 : username_2, sender_2 : username_1},], 'settings.type' : conversation_type}
     else query = {sender_1 : username_1, sender_2: username_2, 'settings.type' : conversation_type}
@@ -110,7 +104,7 @@ conversationSchema.static('Find_If_Conversation_Exist', function (username_1, us
     return this.findOne(query)
 })
 
-conversationSchema.static('Find_All_Conversation_User', function (username) {
+conversationSchema.static('Find_allConversation_ofUser', function (username) {
     return this.find({$or: [{sender_1 : username}, {sender_2 : username}]})
 })
 

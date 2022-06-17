@@ -5,7 +5,7 @@ const User = require('../models/user')
 const { Is_Empty, IsNot_String, Is_Shorter, Is_Longuer, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteOld_Img} = require('./function')
 
 // Vars
-const Banned_Username = ['Admin', 'admin', 'System', 'system']
+const Banned_Username = ['admin', 'admins', 'system', 'systems']
 const Conversation_Type = ['default', 'semi-hidden', 'hidden']
 const Rating_Possible = ['1', '2', '3', '4', '5']
 const List_Country = ['United-State', 'Canada']
@@ -14,7 +14,6 @@ const List_Information_AutoDel = ['0', '1', '3', '7', '30', 'never']
 const category = []
 
 // Function
-
 function Check_If_Selected_ShippingOptions_Valid(selected_opt, available_opt) {
   let taken_opt 
   for(let i = 0; i < available_opt.length; i++) {
@@ -42,7 +41,6 @@ function Get_Selection(selected_select, available_select) {
   }
   return taken_select
 }
-
 function Make_Shipping_Option(descriptions, prices) {
   const shipping_option = []
   for(let i = 0; i < descriptions.length; i++) {
@@ -50,7 +48,6 @@ function Make_Shipping_Option(descriptions, prices) {
   }
   return shipping_option
 }
-
 function Make_Selection(options, prices) {
   const selection = []
   for(let i = 0; i < options.length; i++) {
@@ -58,11 +55,9 @@ function Make_Selection(options, prices) {
   }
   return selection
 }
-
 function Filter_Empty(value) {
   return value.filter((element) => element)
 }
-
 function Replace_Empty(value) {
   for(let i = 0; i < value.length; i++) {
     if (!value[i]) value[i] = '0'
@@ -71,7 +66,7 @@ function Replace_Empty(value) {
 }
 
 
-
+// Input Validation
 exports.Validate_Login = (req, res, next) => { 
   try {
     // Username
@@ -80,7 +75,7 @@ exports.Validate_Login = (req, res, next) => {
     req.body.username = req.body.username.trim()
     if (Is_Empty(req.body.username))                                               throw new Error(`The ${name} fields is Required`) 
     if (Is_Shorter(req.body.username, 3) || Is_Longuer(req.body.username, 50))    throw new Error(`The ${name} need to be within 3 to 50 characters longs`)
-    if (compareArray(Banned_Username, req.body.username))                 throw new Error(`You cannot use this ${name}`) 
+    if (compareArray(Banned_Username, req.body.username.toLowerCase()))                 throw new Error(`You cannot use this ${name}`) 
 
     // Password
     name = 'Password'
@@ -103,7 +98,7 @@ exports.Validate_Register = (req, res, next) => {
     req.body.username = req.body.username.trim()
     if (Is_Empty(req.body.username))                                               throw new Error(`The ${name} fields is Required`) 
     if (Is_Shorter(req.body.username, 3) || Is_Longuer(req.body.username, 50))    throw new Error(`The ${name} need to be within 3 to 50 characters longs`) 
-    if (compareArray(Banned_Username, req.body.username))                 throw new Error(`You cannot use this ${name}`) 
+    if (compareArray(Banned_Username, req.body.username.toLowerCase()))                 throw new Error(`You cannot use this ${name}`) 
 
     // Password
     name = 'Password'
@@ -431,77 +426,41 @@ exports.Validate_SearchInput = (req, res, next) => {
 
 
 
-  
+// Params Query Validation
 // Product
-exports.Validate_Query_Slug_Product_Required = async (req,res, next) => {
-  try { 
-      if (IsNot_String(req.query.slug)) throw new Error('Query Slug not String')
-      if (Is_Empty(req.query.slug)) throw new Error('Query Slug Empty')
-
-      req.product = await Product.findOne({slug: req.query.slug}).orFail(new Error('Invalid Query Slug'))
-  
-      next()
-  } catch(e) {
-    console.log(e)
-    res.redirect('/404')
-  }
-}
-exports.Validate_Query_Product_Slug = async (req,res, next) => {
-  try { 
-      if (!Is_Empty(req.query.slug)) {
-          if (IsNot_String(req.query.slug)) throw new Error('Query Slug not String')
-      }
-
-      if (req.query.slug) req.product = await Product.findOne({slug: req.query.slug, vendor: req.user.username}).orFail(req.product = new Product())
-      else req.product = new Product()
-  
-      next()
-  } catch(e) {
-    console.log(e)
-    res.redirect('/404')
-  }
-}
-exports.Validate_Params_Slug_Product_Vendor = async (req, res, next) => {
-  try { 
-      if (Is_Empty(req.params.slug)) throw new Error('Params Slug Empty')
-      if (IsNot_String(req.params.slug)) throw new Error('Params Slug not String')
-
-      req.product = await Product.findOne({slug: req.params.slug, vendor: req.user.username}).orFail(new Error('Params Slug Invalid'))
-
-      next()
-  } catch(e) {
-    console.log(e)
-    res.redirect('/404')
-  }
-}
-exports.Validate_Params_Slug_Product = async (req, res, next) => {
+exports.existProduct = async (req, res, next) => {
   try { 
       if (Is_Empty(req.params.slug)) throw new Error('Params Slug Empty')
       if (IsNot_String(req.params.slug)) throw new Error('Params Slug not String')
 
       req.product = await Product.findOne({slug: req.params.slug}).orFail(new Error('Params Slug Invalid'))
-
       next()
   } catch(e) {
     console.log(e)
     res.redirect('/404')
-  }
-}
-// Conversation
-exports.Validate_Params_Username_Conversation = async (req, res, next) => {
+}}
+exports.isProduct_Vendor = async (req, res, next) => {
   try { 
-      if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
-      if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
-
-      req.Found_Conversation = await Conversation.Find_If_Conversation_Exist(req.user.username, req.params.username, req.body.type)
-
+    if (req.user.username !== req.product.vendor) throw new Error('Cant Access')
+    next()
+  } catch(e) {
+    console.log(e)
+    res.redirect('/404')
+}}
+exports.Validate_Query_Product_Slug = async (req,res, next) => {
+  try { 
+      if (!Is_Empty(req.query.slug)) {
+          if (IsNot_String(req.query.slug)) throw new Error('Query Slug not String')
+      }
+      if (req.query.slug) req.product = await Product.findOne({slug: req.query.slug, vendor: req.user.username}).orFail(req.product = new Product())
+      else req.product = new Product()
       next()
   } catch(e) {
     console.log(e)
     res.redirect('/404')
-  }
-}
-exports.Validate_Params_Id_Conversation = async (req, res, next) => {
+}}
+// Conversation
+exports.existConversation = async (req, res, next) => {
   try { 
       if (Is_Empty(req.params.id)) throw new Error('Params Id Empty')
       if (IsNot_String(req.params.id)) throw new Error('Params Id not String')
@@ -513,29 +472,42 @@ exports.Validate_Params_Id_Conversation = async (req, res, next) => {
   } catch(e) {
     console.log(e)
     res.redirect('/404')
-  }
-}
-exports.Validate_Params_Username_Conversations = async (req, res, next) => {
+}}
+exports.ValidateDelete_MessageId = async (req, res, next) => {
   try { 
-      req.conversations = await Conversation.Find_All_Conversation_User(req.user.username)
+    // Validate 
+    if (IsNot_String(req.params.message_id)) throw new Error('Params Message Id not String')
+    if (Is_Empty(req.params.message_id)) throw new Error('Params Message Id Empty')
+
+    //Delete
+    req.conversation.messages = req.conversation.messages.filter(message => message.id !== req.params.message_ied)
+
+    next()
+  } catch(e) {
+    console.log(e)
+    res.redirect('/404')
+}}
+exports.Find_ifConversation_alreadyExist = async (req, res, next) => {
+  try { 
+      if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
+      if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
+
+      req.Found_Conversation = await Conversation.findIf_conversationExist(req.user.username, req.params.username, req.body.type)
 
       next()
   } catch(e) {
     console.log(e)
     res.redirect('/404')
-  }
-}
-exports.Validate_Params_Message_Id_Conversation = async (req, res, next) => {
+}}
+exports.Find_allConverastion_ofUser = async (req, res, next) => {
   try { 
-      if (Is_Empty(req.params.message_id)) throw new Error('Params Message Id Empty')
-      if (IsNot_String(req.params.message_id)) throw new Error('Params Message Id not String')
+      req.conversations = await Conversation.Find_allConversation_ofUser(req.user.username)
       next()
   } catch(e) {
     console.log(e)
     res.redirect('/404')
-  }
-}
-exports.Validate_Query_Id_Conversations = async (req, res, next) => {
+}}
+exports.Validate_SelectedConversation_Id = async (req, res, next) => {
   try { 
       if (!Is_Empty(req.query.id)) {
           if (IsNot_String(req.query.id)) throw new Error('Query Id not String')
@@ -548,13 +520,12 @@ exports.Validate_Query_Id_Conversations = async (req, res, next) => {
   }
 }
 // Orders
-exports.Validate_Params_Id_Order = async (req, res, next) => {
+exports.existOrder = async (req, res, next) => {
   try { 
       if (Is_Empty(req.params.id)) throw new Error('Params Id Empty')
       if (IsNot_String(req.params.id)) throw new Error('Params Id not String')
 
       req.order = await Order.findById(req.params.id).orFail('Invalid Params Id')
-      if (req.user.username !== req.order.buyer && req.user.username !== req.order.vendor) throw new Error('Cant Access')
 
       next()
   } catch(e) {
@@ -562,20 +533,22 @@ exports.Validate_Params_Id_Order = async (req, res, next) => {
       res.redirect('/404')
   }
 }
-exports.Validate_Params_Id_Order_Buyer = async (req, res, next) => {
-try { 
-    if (Is_Empty(req.params.id)) throw new Error('Params Id Empty')
-    if (IsNot_String(req.params.id)) throw new Error('Params Id not String')
-
-    req.order = await Order.findById(req.params.id).orFail('Invalid Params Id')
+exports.isOrder_Buyer = async (req, res, next) => {
+  try { 
     if (req.user.username !== req.order.buyer) throw new Error('Cant Access')
-
     next()
 } catch(e) {
     console.log(e)
     res.redirect('/404')
-}
-}
+}}
+exports.isOrder_Part = async (req, res, next) => {
+  try { 
+    if (req.user.username !== req.order.buyer && req.user.username !== req.order.vendor) throw new Error('Cant Access')
+    next()
+} catch(e) {
+    console.log(e)
+    res.redirect('/404')
+}}
 exports.Validate_Params_Username_Order = async (req, res, next) => {
   try { 
       if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
@@ -592,12 +565,12 @@ exports.Validate_Params_Username_Order = async (req, res, next) => {
   }
 }
 // User 
-exports.Validate_Params_Username_User = async (req, res, next) => {
+exports.existUser = async (req, res, next) => {
 try { 
     if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
     if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
 
-    req.vendor = await User.findOne({username: req.params.username}).orFail(new Error('Username Params Invalid'))
+    req.user = await User.findOne({username: req.params.username}).orFail(new Error('Username Params Invalid'))
 
     next()
 } catch(e) {
@@ -605,7 +578,7 @@ try {
     res.redirect('/404')
 }
 }
-exports.Validate_Params_Username_User_ReqUser = async (req, res, next) => {
+exports.paramsUsername_isReqUsername = async (req, res, next) => {
 try { 
     if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
     if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
@@ -622,7 +595,7 @@ try {
 
 
 
-
+// Custom Validation
 exports.Sending_toHimself = async (req, res, next) => {
   try { 
       if (req.user.username === req.params.username) throw new Error('You cant send a Message to Yourself')
@@ -633,7 +606,7 @@ exports.Sending_toHimself = async (req, res, next) => {
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
   }
 }
-exports.Validate_Order_Customization = async (req, res, next) => {
+exports.Validate_OrderCustomization = async (req, res, next) => {
   try { 
       if (req.user.username === req.product.vendor) throw new Error('You cant Buy Your Own Product')
       // Qty
@@ -672,7 +645,7 @@ try {
 } catch(e) {
   console.log(e)
   req.flash('error', e.message)
-  res.redirect(`/settings/${req.params.slug}`)
+  res.redirect(`/settings/${req.user.username}`)
 }
 } 
 exports.Validate_Query_Url = async (req, res, next) => {
@@ -694,3 +667,16 @@ try {
   res.redirect('/register')
 }
 }
+exports.Is_titleTaken = async (req, res, next) => {
+  try {
+    let maxcount 
+    if (req.product.title && req.product.title === req.body.title) maxcount = 1
+    else maxcount = 0
+
+    const countedProduct = await Product.countDocuments({title : req.body.title, vendor: req.user.username}).exec()
+    if (countedProduct > maxcount) throw new Error ('You cant have 2 product with the same titles')
+    next()
+  } catch(e) {
+    req.flash('error', e.message)
+    res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
+}}

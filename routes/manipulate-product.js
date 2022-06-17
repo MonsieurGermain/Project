@@ -1,11 +1,12 @@
 const express = require('express')
 const router = express.Router()
+const Product = require('../models/product')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Product, Validate_Params_Slug_Product_Vendor, Validate_Query_Product_Slug } = require('../middlewares/validation')
+const { Validate_Product, existProduct, isProduct_Vendor, Validate_Query_Product_Slug, Is_titleTaken } = require('../middlewares/validation')
 const { uploadProductImg, deleteOld_Img } = require('../middlewares/function')
 
 //POST
-router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Query_Product_Slug, Validate_Product,
+router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Product, Validate_Query_Product_Slug, Is_titleTaken,
 async (req, res) => { 
     try {
         const { product } = req
@@ -53,7 +54,7 @@ async (req, res) => {
 })
 
 //Delete
-router.delete('/delete-product/:slug', Need_Authentification, Validate_Params_Slug_Product_Vendor,
+router.delete('/delete-product/:slug', Need_Authentification, existProduct, isProduct_Vendor,
 async (req,res) => {
     try {
         const { product } = req

@@ -4,11 +4,11 @@ const { Need_Authentification } = require('../middlewares/authentication')
 const User = require('../models/user')
 const Product = require('../models/product')
 const bcrypt = require('bcrypt')
-const { Validate_Change_Password, Validate_AutoDel_Settings,  Validate_Params_Username_User_ReqUser, Validate_Params_Slug_Product,  Validate_SectionQuery, Validate_Query_Url} = require('../middlewares/validation')
+const { Validate_Change_Password, Validate_AutoDel_Settings,  paramsUsername_isReqUsername, existProduct,  Validate_SectionQuery, Validate_Query_Url} = require('../middlewares/validation')
 const { paginatedResults } = require('../middlewares/function')
 
 
-router.get('/settings/:username', Need_Authentification, Validate_SectionQuery,
+router.get('/settings/:username', Need_Authentification, paramsUsername_isReqUsername, Validate_SectionQuery,
 async (req,res) => { 
     try { 
         const { user } = req
@@ -22,7 +22,7 @@ async (req,res) => {
     }
 })
 
-router.put('/change-autodelete/:username', Need_Authentification, Validate_Params_Username_User_ReqUser, Validate_AutoDel_Settings, 
+router.put('/change-autodelete/:username', Need_Authentification, paramsUsername_isReqUsername, Validate_AutoDel_Settings, 
 async (req,res) => {
     try { 
         const { user } = req
@@ -41,7 +41,7 @@ async (req,res) => {
     }
 })
 
-router.put('/change-password/:username', Need_Authentification, Validate_Params_Username_User_ReqUser, Validate_Change_Password,
+router.put('/change-password/:username', Need_Authentification, paramsUsername_isReqUsername, Validate_Change_Password,
 async (req,res) => {
     try { 
         const { user } = req
@@ -65,7 +65,7 @@ async (req,res) => {
     }
 })
 
-router.delete('/delete-user/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
+router.delete('/delete-user/:username', Need_Authentification, paramsUsername_isReqUsername,
 async (req,res) => {
     try { 
         const { user } = req
@@ -80,7 +80,7 @@ async (req,res) => {
     }
 })
 
-router.post('/saved_product/:slug', Need_Authentification, Validate_Query_Url, Validate_Params_Slug_Product,
+router.post('/saved_product/:slug', Need_Authentification, Validate_Query_Url, existProduct,
 async (req,res) => {
     try { 
         console.log(req.query)

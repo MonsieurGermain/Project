@@ -3,7 +3,7 @@ const router = express.Router()
 const Conversation = require('../models/conversation')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Conversation, Validate_Message, Validate_Params_Username_Conversation, Validate_Params_Id_Conversation, Validate_Params_Username_Conversations, Validate_Query_Id_Conversations, Validate_Params_Message_Id_Conversation, Sending_toHimself } = require('../middlewares/validation')
+const { Validate_Conversation, Validate_Message, Find_ifConversation_alreadyExist, existConversation, Find_allConverastion_ofUser, Validate_SelectedConversation_Id, ValidateDelete_MessageId, Sending_toHimself } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 // Perfect that ?
@@ -75,7 +75,7 @@ async function Format_Conversation(conversations, username, id) {
 
 // CREATE MESSAGE
 router.post('/send-message/:username', 
-Need_Authentification, Sending_toHimself, Validate_Conversation, Validate_Params_Username_Conversation,
+Need_Authentification, Sending_toHimself, Validate_Conversation, Find_ifConversation_alreadyExist,
 async (req, res) => {
     try {       
         const { Found_Conversation } = req
@@ -94,7 +94,7 @@ async (req, res) => {
 
 
 router.post('/messages/:id',
-Need_Authentification, Validate_Params_Id_Conversation, Validate_Message,
+Need_Authentification, existConversation, Validate_Message,
 async (req, res) => {
     try {
         const { conversation } = req
@@ -115,7 +115,7 @@ async (req, res) => {
 
 // GET PAGE
 router.get('/messages',
-Need_Authentification, Validate_Params_Username_Conversations, Validate_Query_Id_Conversations,
+Need_Authentification, Find_allConverastion_ofUser, Validate_SelectedConversation_Id,
 async (req, res) => {
     try {
         let { conversations } = req
@@ -134,7 +134,7 @@ async (req, res) => {
 
 // DELETE
 router.delete('/delete-conversation/:id', 
-Need_Authentification, Validate_Params_Id_Conversation,
+Need_Authentification, existConversation,
 async (req, res) => {
     try {
         const {conversation} = req
@@ -150,19 +150,22 @@ async (req, res) => {
 
 
 router.delete('/delete-message/:id/:message_id', 
-Need_Authentification, Validate_Params_Id_Conversation, Validate_Params_Message_Id_Conversation,
+Need_Authentification, existConversation, ValidateDelete_MessageId,
 async (req, res) => {
     try {
         let { conversation } = req
 
-        await conversation.Delete_Message(req.params.message_id) 
-
-        let redirect_url = `/messages?id=${conversation.id}`
-        if (!conversation.messages.length) redirect_url = '/messages'
-
-        if (!conversation.messages.length) await conversation.delete()
-        else await conversation.save()
-
+        let redirect_url
+        switch(conversation.messages.length) {
+            case 0 :
+                redirect_url = '/messages'
+                await conversation.delete()
+            break
+            default :
+            redirect_url =  `/messages?id=${conversation.id}` 
+            await conversation.save()
+        }
+        
         res.redirect(redirect_url)
 
     } catch (e) {

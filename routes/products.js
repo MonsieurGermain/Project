@@ -3,7 +3,7 @@ const router = express.Router()
 const Product = require('../models/product')
 const Review = require('../models/review')
 const User = require('../models/user')
-const { Validate_Params_Slug_Product } = require('../middlewares/validation')
+const { existProduct } = require('../middlewares/validation')
 const { sanitizeHTML, paginatedResults } = require('../middlewares/function')
 
 const Fuse = require('fuse.js')
@@ -53,7 +53,7 @@ router.post('/products', async (req,res) => {
 })
 
 
-router.get('/product/:slug', Validate_Params_Slug_Product,
+router.get('/product/:slug', existProduct,
 async (req,res) => {
     try {
         const { product } = req

@@ -5,7 +5,7 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_ProvidedInfo, Validate_Update_Order, Validate_Params_Slug_Product, Validate_Params_Id_Order, Validate_Params_Id_Order_Buyer, Validate_Params_Username_Order,  Validate_Order_Customization  } = require('../middlewares/validation')
+const { Validate_ProvidedInfo, Validate_Update_Order, existProduct, existOrder, isOrder_Buyer, isOrder_Part, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
@@ -169,7 +169,7 @@ async function Format_Orders_Array(orders, buyer = false, order_link = true) {
 
 // Routes
 router.get('/order/:slug', 
-Need_Authentification, Validate_Params_Slug_Product,
+Need_Authentification, existProduct,
 async (req,res) => {
     try { 
         const { product } = req
@@ -187,7 +187,7 @@ async (req,res) => {
 
 
 router.post('/create-order/:slug',
-Need_Authentification, Validate_Params_Slug_Product, Validate_Order_Customization,
+Need_Authentification, existProduct, Validate_OrderCustomization,
 async (req,res) => {
     try {
         const { product } = req
@@ -235,8 +235,7 @@ async (req,res) => {
 })
 
 
-router.get('/submit-info/:id', Validate_Params_Id_Order_Buyer,
-Need_Authentification, 
+router.get('/submit-info/:id', Need_Authentification, existOrder, isOrder_Buyer, 
 async (req,res) => {
     try {
         const { order } = req
@@ -252,7 +251,7 @@ async (req,res) => {
 
 
 router.post('/submit-info/:id', 
-Need_Authentification, Validate_Params_Id_Order, Validate_ProvidedInfo,
+Need_Authentification, existOrder, isOrder_Part, Validate_ProvidedInfo,
 async (req,res) => {
     try {
         const { order } = req
@@ -283,7 +282,7 @@ async (req,res) => {
 
 
 router.get('/pay/:id', 
-Need_Authentification, Validate_Params_Id_Order_Buyer,
+Need_Authentification, existOrder, isOrder_Buyer,
 async (req,res) => {
     try {
         const { order } = req
@@ -298,7 +297,7 @@ async (req,res) => {
 
 
 router.get('/order-resume/:id',
-Need_Authentification, Validate_Params_Id_Order,
+Need_Authentification, existOrder, isOrder_Part,
 async (req, res) => {
     try {
         let { order } = req
@@ -316,7 +315,7 @@ async (req, res) => {
 
 
 
-router.put('/update-order/:id', Need_Authentification, Validate_Params_Id_Order, Validate_Update_Order,
+router.put('/update-order/:id', Need_Authentification, existOrder, isOrder_Part, Validate_Update_Order,
 async (req,res) => {
     let { order } = req
 
@@ -346,7 +345,7 @@ async (req,res) => {
 
 
 
-router.delete('/delete-order/:id', Need_Authentification, Validate_Params_Id_Order,
+router.delete('/delete-order/:id', Need_Authentification, existOrder, isOrder_Part,
 async (req,res) => {
     const { order } = req
 

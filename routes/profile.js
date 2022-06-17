@@ -3,21 +3,21 @@ const router = express.Router()
 const Product = require('../models/product')
 const Review = require('../models/review')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Profile, Validate_Params_Username_User, Validate_Params_Username_User_ReqUser } = require('../middlewares/validation')
+const { Validate_Profile, existUser, paramsUsername_isReqUsername } = require('../middlewares/validation')
 const { uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function')
 
 
 // Route
-router.get('/profile/:username', Validate_Params_Username_User,
+router.get('/profile/:username', existUser,
 async (req, res) => {
     try { 
-        const { vendor } = req 
-        vendor.description = sanitizeHTML(vendor.description)
+        const { user } = req 
+        user.description = sanitizeHTML(user.description)
 
-        const paginatedProducts = await paginatedResults(Product, {vendor: vendor.username}, {page: req.query.productPage})
-        const paginatedReviews = await paginatedResults(Review, {vendor : vendor.username}, {page: req.query.reviewPage})
+        const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage})
+        const paginatedReviews = await paginatedResults(Review, {vendor : user.username}, {page: req.query.reviewPage})
 
-        res.render('profile', { vendor , paginatedProducts, paginatedReviews})
+        res.render('profile', { vendor : user, paginatedProducts, paginatedReviews})
 
     } catch (err) {
         console.log(err.message)
@@ -27,7 +27,7 @@ async (req, res) => {
 })
 
 
-router.get('/edit-profile/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
+router.get('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername,
 async (req,res) => {
     const { user } = req 
     const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage})
@@ -35,7 +35,7 @@ async (req,res) => {
 })
 
 
-router.put('/edit-profile/:username', Need_Authentification, Validate_Params_Username_User_ReqUser,
+router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername,
 uploadUserImg.single('profileImg'),
 Validate_Profile,
 async (req,res) => { 
