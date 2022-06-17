@@ -142,14 +142,28 @@ $drop-down-height: 4rem;
     }
 }
 @media (min-width: $min-width-bp) {
-    .nav-item.dropdown:not(:hover) {
-        .docs-dropdown {
-            display: none;
+    .nav-item.dropdown {
+        &:not(:hover) {
+            .docs-dropdown {
+                display: none;
+            }
+        }
+        &:hover {
+            .dropdown-caret {
+                transform: rotate(-180deg);
+            }
         }
     }
-    .user-profile-container:not(:hover) {
-        .nav-user-dropdown {
-            display: none;
+    .user-profile-container {
+        &:hover {
+            .dropdown-caret {
+                transform: rotate(-180deg);
+            }
+        }
+        &:not(:hover) {
+            .nav-user-dropdown {
+                display: none;
+            }
         }
     }
 }

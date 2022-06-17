@@ -13809,7 +13809,13 @@ hr.dropdown-divider {
   .nav-item.dropdown:not(:hover) .docs-dropdown {
     display: none;
   }
+  .nav-item.dropdown:hover .dropdown-caret {
+    transform: rotate(-180deg);
+  }
 
+  .user-profile-container:hover .dropdown-caret {
+    transform: rotate(-180deg);
+  }
   .user-profile-container:not(:hover) .nav-user-dropdown {
     display: none;
   }
