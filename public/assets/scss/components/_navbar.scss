@@ -68,6 +68,7 @@ $drop-down-height: 4rem;
     margin-left: 2px;
     margin-bottom: 3px;
     margin-right: -3px;
+    display: inline-block;
     transition: 0.2s transform ease-in-out;
     svg {
         height: 1.4rem;
@@ -75,28 +76,71 @@ $drop-down-height: 4rem;
     }
 }
 
-//// section handles popup for mobile menu and nav drop downs on combination with js for component
-[data-popup]:not(.popup-active) {
-    @media (min-width: $min-width-bp) {
-        [data-trigger]:not(:hover) {
-            [data-popup] {
+//// section handles popup for mobile menu and nav drop downs and search
+///
+.hidden-checkbox {
+    height: 0px;
+    width: 0px;
+}
+
+@media (max-width: $max-width-bp) {
+    // mobile menu on click
+    #mobile-menu-button-checkbox {
+        &:checked ~ nav.main-navbar {
+            #open-mobile-menu {
+                display: none;
+            }
+        }
+        &:not(:checked) ~ nav.main-navbar {
+            #close-mobile-menu {
+                display: none;
+            }
+            .nav-content {
                 display: none;
             }
         }
     }
-    @media (max-width: $max-width-bp) {
-        &:not([data-popup="mobile-menu"]) {
-            display: none !important;
+
+    // Docs drop down on click
+    #mobile-menu-dropdown-checkbox-1 {
+        &:checked ~ nav.main-navbar {
+            label[for="mobile-menu-dropdown-checkbox-1"] {
+                .dropdown-caret {
+                    transform: rotate(-180deg);
+                }
+            }
+        }
+        &:not(:checked) ~ nav.main-navbar {
+            .docs-dropdown {
+                display: none;
+            }
+        }
+    }
+    // User profile drop down on click
+    #mobile-menu-dropdown-checkbox-2 {
+        &:checked ~ nav.main-navbar {
+            .dropdown-caret {
+                transform: rotate(-180deg);
+            }
+        }
+        &:not(:checked) ~ nav.main-navbar {
+            .nav-user-dropdown {
+                display: none;
+            }
         }
     }
 }
-[data-popup="mobile-menu"]:not(.popup-active) {
-    @media (max-width: $max-width-bp) {
-        display: none !important;
+@media (min-width: $min-width-bp) {
+    .nav-item.dropdown:not(:hover) {
+        .docs-dropdown {
+            display: none;
+        }
     }
-}
-.popup-active:not([data-popup="mobile-menu"]) .dropdown-caret {
-    transform: rotate(-180deg);
+    .user-profile-container:not(:hover) {
+        .nav-user-dropdown {
+            display: none;
+        }
+    }
 }
 
 ///////////////////////////////
@@ -110,11 +154,12 @@ $drop-down-height: 4rem;
     display: flex;
     box-shadow: 0 10px 20px 0 rgb(0 0 0 / 20%);
     height: $nav-bar-height-mobile;
-    @media (min-width: $min-width-bp) {
-        height: $nav-bar-height-large;
-    }
     width: 100%;
     padding: 0 20px;
+    @media (min-width: $min-width-bp) {
+        padding: 0 40px;
+        height: $nav-bar-height-large;
+    }
     .navbar-brand {
         margin-right: 40px;
         display: flex;
@@ -166,14 +211,11 @@ $drop-down-height: 4rem;
         }
         .search-button,
         .mobile-menu-button {
+            padding: 0;
             cursor: pointer;
-            &:not(.popup-active) .mobile-cross {
-                display: none;
-            }
-            &.popup-active {
-                .mobile-hamburger {
-                    display: none;
-                }
+            > label {
+                font-size: inherit;
+                padding: 0 10px;
             }
         }
     }
@@ -420,6 +462,19 @@ $drop-down-height: 4rem;
             > a {
                 height: $drop-down-height;
                 padding-left: 2rem;
+            }
+            label[for="mobile-menu-dropdown-checkbox-1"] {
+                font-size: inherit;
+                display: inline-block;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                cursor: pointer;
+                > div {
+                    display: flex;
+                }
             }
         }
 
