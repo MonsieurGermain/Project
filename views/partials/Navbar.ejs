@@ -215,16 +215,17 @@
                     <div class="search-box-search-icon">
                         <i class="bx bx-search-alt fs-xl mx-3"></i>
                     </div>
-                    <form>
+                    <form action="/products?productPage=1" method="POST">
                         <input
                             type="text"
                             class="nav-search-input"
                             id="nav-search-input"
                             placeholder="Search for a product"
+                            name="search"
                         />
                     </form>
 
-                    <label for="search-checkbox"close-cross" class="close-cross">
+                    <label for="search-checkbox" close-cross class="close-cross">
                         <%- include ("../../public/assets/img/icons/close-cross.svg") %>
                     </label>
                 </div>
