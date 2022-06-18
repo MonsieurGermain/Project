@@ -79,8 +79,7 @@ $drop-down-height: 4rem;
 //// section handles popup for mobile menu and nav drop downs and search
 ///
 .hidden-checkbox {
-    height: 0px;
-    width: 0px;
+    display: none;
 }
 
 //seachbox

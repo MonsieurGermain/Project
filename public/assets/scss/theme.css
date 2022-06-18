@@ -13770,8 +13770,7 @@ hr.dropdown-divider {
 }
 
 .hidden-checkbox {
-  height: 0px;
-  width: 0px;
+  display: none;
 }
 
 #search-checkbox:not(:checked) ~ nav.main-navbar #search-box {
