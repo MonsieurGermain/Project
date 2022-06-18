@@ -79,8 +79,7 @@ $drop-down-height: 4rem;
 //// section handles popup for mobile menu and nav drop downs and search
 ///
 .hidden-checkbox {
-    height: 0px;
-    width: 0px;
+    display: none;
 }
 
 //seachbox
@@ -290,7 +289,7 @@ $drop-down-height: 4rem;
         }
         @media (min-width: $min-width-bp) {
             position: absolute;
-            box-shadow: 0px 8px 48px rgb($primary, 25%);
+            box-shadow: 0px 8px 20px rgb($primary, 25%);
             width: 237px;
             top: $nav-bar-height-large;
             left: 0px;
@@ -334,7 +333,7 @@ $drop-down-height: 4rem;
             @media (min-width: $min-width-bp) {
                 top: $nav-bar-height-large;
             }
-            box-shadow: 0px 8px 48px rgb($primary, 25%);
+            box-shadow: 0px 8px 20px rgb($primary, 25%);
         }
         cursor: default;
         .search-box-clickout {
