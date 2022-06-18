@@ -1,25 +1,32 @@
 <header>
     <div class="container">
+        <input id="mobile-menu-button-checkbox" class="hidden-checkbox" type="checkbox" />
+        <input id="mobile-menu-dropdown-checkbox-1" class="hidden-checkbox" type="checkbox" />
+        <input id="mobile-menu-dropdown-checkbox-2" class="hidden-checkbox" type="checkbox" />
+        <input id="search-checkbox" class="hidden-checkbox" type="checkbox" />
         <nav class="main-navbar">
             <a href="/" class="navbar-brand text-light">
                 <img src="/assets/img/logo.svg" width="38" alt="Project" />
                 Project
             </a>
             <div class="mobile-menu-bar">
-                <div class="search-button">
+                <label for="search-checkbox" class="search-button">
                     <i class="bx bx-search-alt fs-lg"></i>
-                </div>
+                </label>
                 <div class="divider">
                     <span></span>
                 </div>
-                <div data-trigger="mobile-menu" id="mobile-menu-button" class="mobile-menu-button">
-                    <span class="mobile-hamburger"
-                        ><%- include ("../../public/assets/img/icons/hamburger-menu.svg") %></span
+                <div id="mobile-menu-button" class="mobile-menu-button">
+                    <label id="open-mobile-menu" for="mobile-menu-button-checkbox" class="mobile-hamburger"
+                        ><%- include ("../../public/assets/img/icons/hamburger-menu.svg") %></label
                     >
-                    <span class="mobile-cross"><%- include ("../../public/assets/img/icons/cross.svg") %></span>
+                    <label id="close-mobile-menu" for="mobile-menu-button-checkbox" class="mobile-cross"
+                        ><%- include ("../../public/assets/img/icons/cross.svg") %></label
+                    >
                 </div>
             </div>
-            <div class="nav-content" data-popup="mobile-menu">
+            <div class="nav-content">
+                <div class="mobile-menu-scroll-space"></div>
                 <ul class="nav-items">
                     <li class="nav-item">
                         <a href="/products?productPage=1" class="navbar-link">Products</a>
@@ -34,14 +41,16 @@
                         <a href="/messages" class="navbar-link">Messages</a>
                     </li>
                     <% } %>
-                    <li class="nav-item dropdown" data-trigger="docs">
-                        <a href="#" class="navbar-link dropdown-active" aria-expanded="false"
-                            >Docs
-                            <span class="dropdown-caret"
-                                ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
+                    <li class="nav-item dropdown">
+                        <a href="#" class="navbar-link dropdown-active" aria-expanded="false">
+                            <label for="mobile-menu-dropdown-checkbox-1"
+                                ><div>Docs
+                                    <span class="dropdown-caret"
+                                        ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
+                                    ></div></label
                             ></a
                         >
-                        <div data-popup="docs" class="navbar-dropdown docs-dropdown">
+                        <div class="navbar-dropdown docs-dropdown">
                             <ul>
                                 <li>
                                     <a href="/news"
@@ -75,12 +84,12 @@
                     </li>
                 </ul>
                 <div class="navbar-right-cluster">
-                    <div class="search-button me-4">
+                    <label for="search-checkbox" class="search-button me-5">
                         <i class="bx bx-search-alt fs-xl nav-link"></i>
-                    </div>
+                    </label>
 
                     <% if (authuser) { %>
-                    <div data-trigger="profile" class="user-profile-container">
+                    <div class="user-profile-container">
                         <a
                             href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1"
                             class="not-mobile-only user-profile-item navbar-link"
@@ -115,7 +124,7 @@
                                     alt="User img"
                                 />
                             </span>
-                            <div class="drop-down-user">
+                            <label for="mobile-menu-dropdown-checkbox-2" class="drop-down-user">
                                 <div class="ps-2">
                                     <div class="fs-xs lh-1 opacity-60">Hey,</div>
                                     <div class="fs-sm"><%=authuser.username%></div>
@@ -125,9 +134,9 @@
                                         ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
                                     >
                                 </div>
-                            </div>
+                            </label>
                         </div>
-                        <div data-popup="profile" class="navbar-dropdown nav-user-dropdown">
+                        <div class="navbar-dropdown nav-user-dropdown">
                             <ul>
                                 <li>
                                     <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1">
@@ -215,10 +224,11 @@
                         />
                     </form>
 
-                    <div id="close-cross" class="close-cross">
+                    <label for="search-checkbox"close-cross" class="close-cross">
                         <%- include ("../../public/assets/img/icons/close-cross.svg") %>
-                    </div>
+                    </label>
                 </div>
+                <label class="search-box-clickout" for="search-checkbox"></label>
             </div>
         </nav>
     </div>

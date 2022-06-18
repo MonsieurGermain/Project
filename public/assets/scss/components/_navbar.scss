@@ -1,5 +1,11 @@
 // Be aware of bootsrap css from html classes when changing
 @use "sass:map";
+// media-queries break points
+$min-width-bp: map.get($grid-breakpoints, "md");
+$max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
+$drop-down-height: 4rem;
+// $nav-bar-height-mobile $nav-bar-height-large from _user-variables.scss control height of top nav bar
+
 //
 // Navbar
 // --------------------------------------------------
@@ -61,7 +67,8 @@
     /// You may want to reuse the caret style or use common styles set somewhere to be reused
     margin-left: 2px;
     margin-bottom: 3px;
-    margin-right: -3px;
+    margin-right: -10px;
+    display: inline-block;
     transition: 0.2s transform ease-in-out;
     svg {
         height: 1.4rem;
@@ -69,28 +76,95 @@
     }
 }
 
-//// section handles popup for mobile menu and nav drop downs on combination with js for component
-[data-popup]:not(.popup-active) {
-    @media (min-width: map.get($grid-breakpoints, "md")) {
-        [data-trigger]:not(:hover) {
-            [data-popup] {
+//// section handles popup for mobile menu and nav drop downs and search
+///
+.hidden-checkbox {
+    display: none;
+}
+
+//seachbox
+#search-checkbox {
+    &:not(:checked) ~ nav.main-navbar {
+        #search-box {
+            background-color: rgba($body-bg, 0);
+            visibility: hidden;
+            opacity: 0;
+        }
+    }
+}
+
+@media (max-width: $max-width-bp) {
+    // mobile menu on click
+    #mobile-menu-button-checkbox {
+        &:checked ~ nav.main-navbar {
+            #open-mobile-menu {
+                display: none;
+            }
+        }
+        &:not(:checked) ~ nav.main-navbar {
+            #close-mobile-menu {
+                display: none;
+            }
+            .nav-content {
                 display: none;
             }
         }
     }
-    @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
-        &:not([data-popup="mobile-menu"]) {
-            display: none !important;
+
+    // Docs drop down on click
+    #mobile-menu-dropdown-checkbox-1 {
+        &:checked ~ nav.main-navbar {
+            label[for="mobile-menu-dropdown-checkbox-1"] {
+                .dropdown-caret {
+                    transform: rotate(-180deg);
+                }
+            }
+        }
+        &:not(:checked) ~ nav.main-navbar {
+            .docs-dropdown {
+                display: none;
+            }
+        }
+    }
+    // User profile drop down on click
+    #mobile-menu-dropdown-checkbox-2 {
+        &:checked ~ nav.main-navbar {
+            .dropdown-caret {
+                transform: rotate(-180deg);
+            }
+        }
+        &:not(:checked) ~ nav.main-navbar {
+            .nav-user-dropdown {
+                display: none;
+            }
         }
     }
 }
-[data-popup="mobile-menu"]:not(.popup-active) {
-    @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
-        display: none !important;
+@media (min-width: $min-width-bp) {
+    .nav-item.dropdown {
+        &:not(:hover) {
+            .docs-dropdown {
+                display: none;
+            }
+        }
+        &:hover {
+            .dropdown-caret {
+                transform: rotate(-180deg);
+            }
+        }
     }
-}
-.popup-active:not([data-popup="mobile-menu"]) .dropdown-caret {
-    transform: rotate(-180deg);
+    .user-profile-container {
+        &:hover {
+            .dropdown-caret {
+                transform: rotate(-180deg);
+            }
+        }
+        &:not(:hover) {
+            .nav-user-dropdown {
+                display: none;
+            }
+        }
+    }
 }
 
 ///////////////////////////////
@@ -102,12 +176,14 @@
     top: 0px;
     left: 0px;
     display: flex;
+    box-shadow: 0 10px 20px 0 rgb(0 0 0 / 20%);
     height: $nav-bar-height-mobile;
-    @media (min-width: map.get($grid-breakpoints, "md")) {
+    width: 100%;
+    padding: 0 20px;
+    @media (min-width: $min-width-bp) {
+        padding: 0 40px;
         height: $nav-bar-height-large;
     }
-    width: 100%;
-    padding: 0 40px;
     .navbar-brand {
         margin-right: 40px;
         display: flex;
@@ -141,8 +217,15 @@
         display: flex;
         width: 100%;
         justify-content: flex-end;
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             display: none;
+        }
+        .search-button {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 6px;
+            cursor: pointer;
         }
         > div {
             display: flex;
@@ -157,16 +240,12 @@
                 }
             }
         }
-        .search-button,
         .mobile-menu-button {
+            padding: 0;
             cursor: pointer;
-            &:not(.popup-active) .mobile-cross {
-                display: none;
-            }
-            &.popup-active {
-                .mobile-hamburger {
-                    display: none;
-                }
+            > label {
+                font-size: inherit;
+                padding: 0 10px;
             }
         }
     }
@@ -183,7 +262,6 @@
             width: 100%;
             li {
                 text-decoration: none;
-                height: 4rem;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -192,6 +270,7 @@
                     color: white;
                     margin-left: 50px;
                     height: 100%;
+                    min-height: $drop-down-height;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -208,9 +287,9 @@
                 }
             }
         }
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             position: absolute;
-            box-shadow: -6px 10px 16px -17px #800080;
+            box-shadow: 0px 8px 20px rgb($primary, 25%);
             width: 237px;
             top: $nav-bar-height-large;
             left: 0px;
@@ -235,34 +314,40 @@
     .search-box {
         width: 100%;
         position: fixed;
-        top: $nav-bar-height-mobile;
-        @media (min-width: map.get($grid-breakpoints, "md")) {
-            top: $nav-bar-height-large;
-        }
+        top: 0px;
         left: 0px;
         right: 0px;
         bottom: 0px;
-        background-color: rgba($body-bg, 0);
-        visibility: hidden;
-        opacity: 0;
         transition: visibility 0.2s linear, 0.2s opacity linear;
         -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
         -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
         -o-transition: visibility 0.2s linear, 0.2s opacity linear;
         z-index: 101;
-        &.search-box-active {
-            visibility: visible;
-            background-color: rgba($body-bg, 0.8);
-            opacity: 1;
-            div {
-                box-shadow: 0 10px 16px -17px $primary;
+
+        visibility: visible;
+        background-color: rgba($body-bg, 0.8);
+        opacity: 1;
+        > div {
+            position: relative;
+            top: $nav-bar-height-mobile;
+            @media (min-width: $min-width-bp) {
+                top: $nav-bar-height-large;
             }
+            box-shadow: 0px 8px 20px rgb($primary, 25%);
         }
         cursor: default;
+        .search-box-clickout {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
         > div {
             width: 100%;
             height: $nav-bar-height-mobile;
-            @media (min-width: map.get($grid-breakpoints, "md")) {
+            @media (min-width: $min-width-bp) {
                 height: $nav-bar-height-large;
                 width: 60%;
                 max-width: 600px;
@@ -296,7 +381,9 @@
             }
 
             .close-cross {
+                display: flex;
                 cursor: pointer;
+                width: 54px;
                 padding: 0 15px;
                 path {
                     fill: $primary;
@@ -311,17 +398,35 @@
         display: flex;
         width: 100%;
         position: fixed;
-        flex-direction: column-reverse;
-        top: 4rem;
+        flex-direction: column;
+        top: $nav-bar-height-mobile;
         bottom: 0;
         left: 0;
         right: 0;
-        justify-content: start;
         background-color: $body-bg;
+        // extra scroll space so the user can adjust last item to tapable height
+        .mobile-menu-scroll-space {
+            order: 3;
+            height: 70vh;
+            flex-shrink: 0;
+        }
         .nav-items {
             flex-direction: column;
             list-style-type: none;
             padding-left: 0;
+            order: 2;
+        }
+        @media (min-width: $min-width-bp) {
+            .mobile-menu-scroll-space {
+                display: none;
+            }
+            .nav-items {
+                order: 0;
+            }
+        }
+        @media (max-width: $max-width-bp) {
+            overscroll-behavior: none;
+            overflow-y: scroll;
         }
         .navbar-right-cluster {
             display: flex;
@@ -335,7 +440,7 @@
                     margin-left: 20px;
                 }
             }
-            @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+            @media (max-width: $max-width-bp) {
                 .search-button {
                     display: none;
                 }
@@ -347,7 +452,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            @media (min-width: map.get($grid-breakpoints, "md")) {
+            @media (min-width: $min-width-bp) {
                 .mobile-only {
                     display: none;
                 }
@@ -359,7 +464,7 @@
                     }
                 }
             }
-            @media (max-width: calc(map.get($grid-breakpoints, "md") - 1px)) {
+            @media (max-width: $max-width-bp) {
                 .not-mobile-only {
                     display: none;
                 }
@@ -390,11 +495,26 @@
             background-color: $secondary-bg;
         }
         .nav-item {
-            height: 4rem;
+            min-height: $drop-down-height;
             border-bottom: 1px solid $secondary-bg;
             > a {
-                height: 100%;
+                height: $drop-down-height;
                 padding-left: 2rem;
+            }
+            label[for="mobile-menu-dropdown-checkbox-1"] {
+                font-size: inherit;
+                display: inline-block;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                cursor: pointer;
+                > div {
+                    display: flex;
+                    position: relative;
+                    top: 1px;
+                }
             }
         }
 
@@ -414,13 +534,14 @@
         }
 
         // Below are style modifiers for large screens.
-        @media (min-width: map.get($grid-breakpoints, "md")) {
+        @media (min-width: $min-width-bp) {
             background-color: $secondary-bg;
             position: static;
             justify-content: space-between;
             flex-direction: row;
             .nav-item {
                 .navbar-link:not(.user-profile-item):hover::after,
+                .navbar-link:not(.user-profile-item):focus::after,
                 &.popup-active .navbar-link::after {
                     content: "";
                     width: 100%;
