@@ -60,7 +60,7 @@ const REVIEW = require('./routes/review')
 const SETTINGS = require('./routes/settings')
 const ADMIN = require('./routes/admin')
 const REPORT = require('./routes/report')
-
+const DISPUTE = require('./routes/dispute')
 
 app.use('/', HOME_ROUTER)
 app.use('/', LOGIN_ROUTER)
@@ -74,6 +74,7 @@ app.use('/', REVIEW)
 app.use('/', SETTINGS)
 app.use('/', ADMIN)
 app.use('/', REPORT)
+app.use('/', DISPUTE)
 
 
 // PRIORITY 
@@ -83,6 +84,8 @@ app.use('/', REPORT)
 // To do 
 // fix product array and product img sizing
 
+
+// review Expired timer update
 // Totally hidden Message
 // Encrypt Messages
 // Saw or not saw message

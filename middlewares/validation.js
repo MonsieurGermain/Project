@@ -541,10 +541,26 @@ exports.isOrder_Buyer = async (req, res, next) => {
     console.log(e)
     res.redirect('/404')
 }}
-exports.isOrder_Part = async (req, res, next) => {
+exports.isOrder_VendorOrBuyer = async (req, res, next) => {
   try { 
     if (req.user.username !== req.order.buyer && req.user.username !== req.order.vendor) throw new Error('Cant Access')
     next()
+} catch(e) {
+    console.log(e)
+    res.redirect('/404')
+}}
+exports.isOrder_Part = async (req, res, next) => {
+  try { 
+    if (req.user.username !== req.order.buyer && req.user.username !== req.order.vendor && req.user.username !== req.order.admin) throw new Error('Cant Access')
+    next()
+} catch(e) {
+    console.log(e)
+    res.redirect('/404')
+}}
+exports.isOrder_Admin = async (req, res, next) => {
+  try { 
+    if (req.user.username === req.order.admin) next()
+    else throw new Error('Cant Access')
 } catch(e) {
     console.log(e)
     res.redirect('/404')
@@ -679,4 +695,13 @@ exports.Is_titleTaken = async (req, res, next) => {
   } catch(e) {
     req.flash('error', e.message)
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
+}}
+exports.winnerQuery_ispartOrder = async (req, res, next) => {
+  try {
+    const winner = req.query.winner
+    if (winner !== req.order.buyer && winner !== req.order.vendor) throw new Error('cant access')
+    next()
+  } catch(e) {
+    console.log(e)
+    res.redirect('/error')    
 }}

@@ -1,11 +1,10 @@
 const express = require('express')
 const router = express.Router()
-
 const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_ProvidedInfo, Validate_Update_Order, existProduct, existOrder, isOrder_Buyer, isOrder_Part, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
+const { Validate_ProvidedInfo, Validate_Update_Order, existProduct, existOrder, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
@@ -83,10 +82,6 @@ async function HandleOrderRequest(request, order, user_settings) {
         break
         case 'not_recieved':
             order.Reset_Timer()
-        break
-        case 'dispute' :
-            order.status = 'dispute_progress'
-            order.timer = undefined
         break
     }
     return order
@@ -254,20 +249,20 @@ router.post('/submit-info/:id',
 Need_Authentification, existOrder, isOrder_Part, Validate_ProvidedInfo,
 async (req,res) => {
     try {
-        const { order } = req
-
-        order.messages.push({ 
-            sender : req.user.username === order.buyer ? Format_Username_Settings(req.user.username, order.privacy) : req.user.username,
-            content : req.body.content
-        })        
+        const { order } = req       
 
         let redirect_url = `/order-resume/${order.id}`
 
-        if (order.status === 'awaiting_info') {
+        if (order.status === 'awaiting_info' && req.user.username === order.buyer) {
             order.status = 'awaiting_payment'
             order.timer = Date.now() + (1000 * 60 * 60)
             redirect_url = `/pay/${order.id}`
         }
+
+        order.messages.push({ 
+            sender : req.user.username === order.buyer ? Format_Username_Settings(req.user.username, order.privacy) : req.user.username,
+            content : req.body.content
+        }) 
 
         await order.save()
 
@@ -297,7 +292,7 @@ async (req,res) => {
 
 
 router.get('/order-resume/:id',
-Need_Authentification, existOrder, isOrder_Part,
+Need_Authentification, existOrder, isOrder_VendorOrBuyer,
 async (req, res) => {
     try {
         let { order } = req
@@ -315,7 +310,7 @@ async (req, res) => {
 
 
 
-router.put('/update-order/:id', Need_Authentification, existOrder, isOrder_Part, Validate_Update_Order,
+router.put('/update-order/:id', Need_Authentification, existOrder, isOrder_VendorOrBuyer, Validate_Update_Order,
 async (req,res) => {
     let { order } = req
 
@@ -345,7 +340,7 @@ async (req,res) => {
 
 
 
-router.delete('/delete-order/:id', Need_Authentification, existOrder, isOrder_Part,
+router.delete('/delete-order/:id', Need_Authentification, existOrder, isOrder_VendorOrBuyer,
 async (req,res) => {
     const { order } = req
 
