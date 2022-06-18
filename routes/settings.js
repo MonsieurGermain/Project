@@ -83,7 +83,6 @@ async (req,res) => {
 router.post('/saved_product/:slug', Need_Authentification, Validate_Query_Url, existProduct,
 async (req,res) => {
     try { 
-        console.log(req.query)
         const user = await User.findOne({username: req.user.username})
         user.Add_Remove_Saved_Product(req.params.slug)
 
