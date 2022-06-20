@@ -1,12 +1,12 @@
           <% const settingsPage = authuser && url[0] === `/settings/${authuser.username}` ? true : false %>
           <!-- Courses grid -->
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-<%=sepc_col%> gx-3 gx-md-4 mt-n2 mt-sm-0">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-<%=sepc_col%> gx-3 gx-md-4 mt-n2 mt-sm-0">
   
             <!-- Products -->
 
             <% for(let i = 0; i < products.length; i++) { %>
             <div class="col pb-1 pb-lg-3 mb-4">
-              <article class="card card-hover h-100 border-0 shadow-sm">
+              <article class="card h-100 border-0">
                 <div class="position-relative">
                   <a href="/product/<%=products[i].slug%>?reviewPage=1" class="d-block position-absolute w-100 h-100 top-0 start-0"></a>
                   <!-- Badges -->
@@ -44,7 +44,7 @@
                   <img src="<%=products[i].img_path %>" class="card-img-top" style="max-height: 15rem; object-fit: cover;" alt="Image">
                 </div>
                 <div class="card-body pb-3">
-                  <h3 class="h5 mb-2">
+                  <h3 class=" product-title h5 mb-2">
                     <a href="/product/<%=products[i].slug%>?reviewPage=1">
                       <% if (products[i].title.length > 50) { %>
                         <%=products[i].title.slice(0, 50)%>...
@@ -53,19 +53,22 @@
                       <% } %>
                     </a>
                   </h3>
-                  <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=products[i].vendor%>?productPage=1&reviewPage=1"><%=products[i].vendor%></a></p>
+                  <p class="fs-sm mb-2 vendor">Vendor : <a href="/profile/<%=products[i].vendor%>?productPage=1&reviewPage=1"><%=products[i].vendor%></a></p>
                   <!-- Convert Currency  -->
                   <% if (products[i].onsales) { %>
                     <p class="text-muted mb-0"><span class="fs-lg fw-semibold text-danger me-2">$<%=products[i].price%></span><del>$<%=products[i].old_price%></del></p>
                   <% } %>
-                  <p class="fs-lg fw-semibold text-primary mb-0">$<%=products[i].price%></p>
+                  <p class="fs-lg fw-semibold mb-0">$<%=products[i].price%></p>
 
                 </div>
                 <div class="card-footer d-flex align-items-center fs-sm text-muted py-4">
-                  <div class="d-flex align-items-center me-4">
+                  <div class="d-flex align-items-center me-1">
                     <!-- Change Icon -->
                     <i class="bx bxs-plane-alt fs-xl me-1"></i>
-                    From : <%=products[i].ship_from%>
+                    <div>
+                      <span>From:&nbsp;</span>
+                      <span class="from-loction"><%=products[i].ship_from%></span>
+                    </div>
                   </div>
                   <div class="d-flex align-items-center ms-auto">
                     <%- include('./Rating', {rating: products[i].review.average_note}) %>

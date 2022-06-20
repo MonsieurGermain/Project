@@ -36,3 +36,57 @@
     min-height: 40rem;
     max-height: 40rem;
 }
+
+
+.products-section {
+    article.card div:first-child:hover + div .product-title a, 
+    article.card .product-title a:hover {
+      color: white !important;
+      text-decoration: underline !important;
+    } 
+    article.card .vendor a {
+      color: white !important;
+      &:hover {
+        color: $primary !important;
+      }
+    }
+    article.card .card-footer div:first-child {
+      min-width: 0px;
+      overflow: hidden;
+      .from-loction {
+        white-space: nowrap;
+      }
+    }
+    .product-search-input {
+        display: flex;
+        > input {
+            border-top-right-radius: 0px;
+            border-bottom-right-radius: 0px;
+        }
+        > div {
+            position: relative;
+            width: 55px;
+            display: flex;
+            background-color: $secondary-bg;
+            border: 1px solid $input-border-color;
+            border-left: none;
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+            cursor: pointer;
+            &:hover {
+                background-color: $primary;
+            }
+            button {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+                background-color: transparent;
+                color: transparent;
+                border: none;
+            }
+        }
+    }
+  }
+  

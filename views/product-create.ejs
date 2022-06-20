@@ -275,7 +275,7 @@
             <h3 class="h4 mt-5">Shipping Option</h3>
              <div class="row row-cols-sm-auto g-3 align-items-center mt-2">
                 <div class="col-20">
-                    <input name="describe_ship" class="form-control" id="inline-form-input" type="text" minlength="200" placeholder="Describe Shipping Option #1"
+                    <input name="describe_ship" class="form-control" id="inline-form-input" type="text" maxlength="200" placeholder="Describe Shipping Option #1"
                     <% if(product.shipping_option[0]) { %>
                     value="<%=product.shipping_option[0].option_description%>%>"
                 <% } %>>

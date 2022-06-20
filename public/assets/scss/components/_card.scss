@@ -45,40 +45,44 @@
 
 // Hover effect
 
-.card-hover:not(.bg-transparent) {
-  transition: $card-transition;
-  &:hover {
-    transform: translateY(-.25rem);
-    @include box-shadow($box-shadow-sm);
-  }
-  &.shadow-sm:hover {
-    @include box-shadow($box-shadow !important);
-  }
-  &.shadow:hover {
-    @include box-shadow($box-shadow-lg !important);
-  }
-  &.border-primary:hover {
-    @include box-shadow($box-shadow-primary !important);
-  }
-}
-.card-hover {
-  .card-img-overlay {
-    transition: opacity .3s ease-in-out;
-    opacity: 0;
-    z-index: 5;
-  }
-  .card-icon {
-    transition: color .3s ease-in-out;
-  }
-  &:hover {
-    .card-icon {
-      color: $primary !important;
-    }
-    .card-img-overlay {
-      opacity: 1;
-    }
-  }
-}
+// card hover taken out because hover indicates it actionable and you cant actually click on anywhere on the card - only the image and the title.
+
+// .card-hover:not(.bg-transparent) {
+//   transition: $card-transition;
+//   &:hover {
+//     transform: translateY(-.25rem);
+//     @include box-shadow($box-shadow-sm);
+//   }
+//   &.shadow-sm:hover {
+//     @include box-shadow($box-shadow !important);
+//   }
+//   &.shadow:hover {
+//     @include box-shadow($box-shadow-lg !important);
+//   }
+//   &.border-primary:hover {
+//     @include box-shadow($box-shadow-primary !important);
+//   }
+// }
+// .card-hover {
+//   .card-img-overlay {
+//     transition: opacity .3s ease-in-out;
+//     opacity: 0;
+//     z-index: 5;
+//   }
+//   .card-icon {
+//     transition: color .3s ease-in-out;
+//   }
+//   &:hover {
+//     .card-icon {
+//       color: $primary !important;
+//     }
+//     .card-img-overlay {
+//       opacity: 1;
+//     }
+//   }
+// }
+
+.card 
 
 .card-hover-primary {
   transition: $card-transition;
