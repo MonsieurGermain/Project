@@ -4,7 +4,7 @@
     <%- include('partials/Navbar') %>
     <!-- Page wrapper for sticky footer -->
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
-    <main class="page-wrapper">
+    <main class="page-wrapper profile-view">
 
         <section class="pt-2 pt-lg-3" >
         <div class="container">
@@ -169,7 +169,7 @@
 
           </aside>
 
-          <div class="col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
+          <div class="profile-products col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
             <a href="/create-product" class="btn btn-primary mb-3"><i class='bx bx-plus-circle fs-lg me-2'></i> Create Product</a>
             <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
             <% if (!paginatedProducts.results.length) { %>

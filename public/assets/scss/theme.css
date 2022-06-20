@@ -17049,4 +17049,8 @@ img-comparison-slider:focus {
   background-color: transparent;
   color: transparent;
   border: none;
+}
+
+.profile-view .profile-products {
+  width: 100%;
 }/*# sourceMappingURL=theme.css.map */
