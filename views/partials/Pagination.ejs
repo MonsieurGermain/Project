@@ -1,5 +1,5 @@
 <% let index %>
-<% const arrayQuery = url[1].split('&') %>
+<% const arrayQuery = url[1] ? url[1].split('&') : []%>
 
 <% for(let i = 0; i < arrayQuery.length; i++) { %>
   <% const brokeQuery = arrayQuery[i].split('=') %>

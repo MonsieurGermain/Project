@@ -27,6 +27,8 @@
 .your_order_container-finalized,
 .your_order_container-rejected,
 .your_order_container-expired,
+.your_order_container-dispute_progress,
+.your_order_container-disputed,
 .client_order_container-all,
 .client_order_container-awaiting_info,
 .client_order_container-awaiting_payment,
@@ -35,7 +37,9 @@
 .client_order_container-recieved,
 .client_order_container-finalized,
 .client_order_container-rejected,
-.client_order_container-expired{
+.client_order_container-expired,
+.client_order_container-dispute_progress,
+.client_order_container-disputed {
   display: none;
 }
 
@@ -50,6 +54,8 @@
 #your_order-finalized:checked ~ label[for='your_order-finalized'],
 #your_order-rejected:checked ~ label[for='your_order-rejected'],
 #your_order-expired:checked ~ label[for='your_order-expired'],
+#your_order-dispute_progress:checked ~ label[for='your_order-dispute_progress'],
+#your_order-disputed:checked ~ label[for='your_order-disputed'],
 #client_order-all:checked ~ label[for='client_order-all'],
 #client_order-awaiting_info:checked ~ label[for='client_order-awaiting_info'],
 #client_order-awaiting_payment:checked ~ label[for='client_order-awaiting_payment'],
@@ -58,7 +64,9 @@
 #client_order-recieved:checked ~ label[for='client_order-recieved'],
 #client_order-finalized:checked ~ label[for='client_order-finalized'],
 #client_order-rejected:checked ~ label[for='client_order-rejected'],
-#client_order-expired:checked ~ label[for='client_order-expired'] {
+#client_order-expired:checked ~ label[for='client_order-expired'],
+#client_order-dispute_progress:checked ~ label[for='client_order-dispute_progress'],
+#client_order-disputed:checked ~ label[for='client_order-disputed'] {
   border-bottom: 5px solid purple;
 }
 
@@ -71,6 +79,8 @@
 #your_order-finalized:checked ~ .your_order_container-finalized,
 #your_order-rejected:checked ~ .your_order_container-rejected,
 #your_order-expired:checked ~ .your_order_container-expired,
+#your_order-dispute_progress:checked ~ .your_order_container-dispute_progress,
+#your_order-disputed:checked ~ .your_order_container-disputed,
 #client_order-all:checked ~ .client_order_container-all,
 #client_order-awaiting_info:checked ~ .client_order_container-awaiting_info,
 #client_order-awaiting_payment:checked ~ .client_order_container-awaiting_payment,
@@ -79,7 +89,9 @@
 #client_order-recieved:checked ~ .client_order_container-recieved,
 #client_order-finalized:checked ~ .client_order_container-finalized,
 #client_order-rejected:checked ~ .client_order_container-rejected,
-#client_order-expired:checked ~ .client_order_container-expired {
+#client_order-expired:checked ~ .client_order_container-expired,
+#client_order-dispute_progress:checked ~ .client_order_container-dispute_progress,
+#client_order-disputed:checked ~ .client_order_container-disputed {
   display: contents;
 }
 
@@ -92,4 +104,28 @@
 #quantity-settings-checkbox:checked ~ .quantity-settings,
 #contact-checkbox:checked ~ .contact-div { 
     display: contents;
+}
+
+.dispute-settling-container { 
+  display: none;
+}
+
+#settling-disputes:checked ~ .dispute-settling-container {
+  display: contents;
+}
+
+
+.admin-disputes-container,
+.disputes-container {
+  display: none;
+}
+
+#admin-dipsutes-container-check:checked ~ .admin-disputes-container,
+#dipsutes-container-check:checked ~ .disputes-container {
+  display: contents;
+}
+ 
+#admin-dipsutes-container-check:checked ~ label[for='admin-dipsutes-container-check'],
+#dipsutes-container-check:checked ~ label[for='dipsutes-container-check'] {
+  border-bottom: 5px solid purple;
 }

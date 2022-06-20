@@ -2,7 +2,7 @@ const Product = require('../models/product')
 const Conversation = require('../models/conversation')
 const Order = require('../models/order')
 const User = require('../models/user')
-const { Is_Empty, IsNot_String, Is_Shorter, Is_Longuer, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteOld_Img} = require('./function')
+const { Is_Empty, IsNot_String, Is_Shorter, Is_Longuer, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteOld_Img, Format_Username_Settings} = require('./function')
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems']
@@ -183,12 +183,37 @@ exports.Validate_Reviews = (req, res, next) => {
 }
 exports.Validate_Update_Order = (req, res, next) => {
   try {
-    if (!compareArray(['shipped', 'recieved', 'finished', 'rejected', 'not_recieved', 'dispute'], req.body.status)) throw new Error('Update Value Invalid')
-
-    next()
+    const username = req.user.username
+    switch(req.body.status) {
+      case 'shipped':
+        if (username === req.order.vendor) next()
+        else throw new Error ('No access')
+      break
+      case 'recieved':
+        if (username === req.order.buyer) next()
+        else throw new Error ('No access')
+      break
+      case 'finished':
+        if (username === req.order.buyer) next()
+        else throw new Error ('No access')
+      break
+      case 'rejected':
+        if (username === req.order.vendor) next()
+        else throw new Error ('No access')
+      break
+      case 'not_recieved':
+        if (username === req.order.buyer) next()
+        else throw new Error ('No access')
+      break
+      case 'dispute':
+        if (username === req.order.buyer || username === req.order.vendor) next()
+        else throw new Error ('No access')
+      break
+      default: 
+      throw new Error ('Update Value Invalid')
+    }
   } catch (e) {
-    req.flash('error', e.message)
-    res.redirect(`/order-resume/${req.params.id}`)
+    res.redirect('/error')
   }
 }
 exports.Validate_Profile = (req, res, next) => {
@@ -423,6 +448,15 @@ exports.Validate_SearchInput = (req, res, next) => {
     res.redirect(`/products?productPage=1`)
   }
 }
+exports.Validate_disputeWinner = async (req, res, next) => {
+  try {
+    if (req.body.winner === req.order.vendor) req.winner = req.order.vendor 
+    else req.winner = req.order.buyer
+    next()
+  } catch(e) {
+    console.log(e)
+    res.redirect('/error')    
+}}
 
 
 
@@ -578,9 +612,24 @@ exports.Validate_Params_Username_Order = async (req, res, next) => {
   } catch(e) {
       console.log(e)
       res.redirect('/404')
-  }
-}
-// User 
+}}
+exports.get_adminDispute = async (req, res, next) => {
+  try { 
+    req.adminDisputes = await Order.find({status : 'dispute_progress', admin : req.user.username})
+    next()
+  } catch(e) {
+      console.log(e)
+      res.redirect('/error')
+}}
+exports.getDispute_inProgress = async (req, res, next) => {
+  try { 
+    req.disputes = await Order.find({status : 'dispute_progress', admin: undefined})
+    next()
+  } catch(e) {
+    console.log(e)
+    res.redirect('/404')
+}}
+// USERS
 exports.existUser = async (req, res, next) => {
 try { 
     if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
@@ -605,9 +654,7 @@ try {
 } catch(e) {
     console.log(e)
     res.redirect('/404')
-}
-}
-
+}}
 
 
 
@@ -695,13 +742,4 @@ exports.Is_titleTaken = async (req, res, next) => {
   } catch(e) {
     req.flash('error', e.message)
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
-}}
-exports.winnerQuery_ispartOrder = async (req, res, next) => {
-  try {
-    const winner = req.query.winner
-    if (winner !== req.order.buyer && winner !== req.order.vendor) throw new Error('cant access')
-    next()
-  } catch(e) {
-    console.log(e)
-    res.redirect('/error')    
 }}

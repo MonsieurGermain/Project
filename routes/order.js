@@ -30,6 +30,8 @@ function sortOrder_PerStatus(orders) {
         finalized : [],
         rejected : [],
         expired : [],
+        dispute_progress : [],
+        disputed : [],
     }
 
     for(let i = 0; i < orders.length; i++) {
@@ -57,6 +59,12 @@ function sortOrder_PerStatus(orders) {
             break
             case 'expired' :
                 sorted_order.expired.push(orders[i])
+            break
+            case 'dispute_progress' :
+                sorted_order.dispute_progress.push(orders[i])
+            break
+            case 'disputed' :
+                sorted_order.disputed.push(orders[i])
             break
         }
     }
@@ -127,20 +135,25 @@ function Create_Order_Link(status, id, buyer) {
     return `/order-resume/${id}`
 }
 
-function Include_Delete_Link(status, buyer){
-    switch(status) {
+function Include_Delete_Link(order, buyer){
+    switch(order.status) {
         case 'rejected' :
             return true
         case 'finalized' :
             return true
         case 'expired' :
             return true
-    }
-
-    // Allow Winner of dispute to delete
-
-    if (buyer && status === 'awaiting_info') {
-        return true
+        case 'awaiting_info':
+            if (buyer) return true
+        break
+        case 'disputed' : 
+            if (order.dispute_winner !== order.vendor) {
+                if (buyer) return true
+            }
+            else if (!order.timer) return true
+        break
+        default :
+        return
     }
     return
 }
@@ -149,7 +162,7 @@ async function Format_Order(order, buyer, order_link) {
 
     order.Formated_Timers = Format_Timer(order.timer)
     order.buyer = Format_Username_Settings(order.buyer, order.privacy)
-    order.deletelink = Include_Delete_Link(order.status, buyer)
+    order.deletelink = Include_Delete_Link(order, buyer)
 
     if (order_link) order.link = Create_Order_Link(order.status, order.id, buyer)
     
@@ -292,7 +305,7 @@ async (req,res) => {
 
 
 router.get('/order-resume/:id',
-Need_Authentification, existOrder, isOrder_VendorOrBuyer,
+Need_Authentification, existOrder, isOrder_Part,
 async (req, res) => {
     try {
         let { order } = req
@@ -312,13 +325,18 @@ async (req, res) => {
 
 router.put('/update-order/:id', Need_Authentification, existOrder, isOrder_VendorOrBuyer, Validate_Update_Order,
 async (req,res) => {
-    let { order } = req
+    try {
+        let { order } = req
 
-    order = await HandleOrderRequest(req.body.status, order, req.user.settings)
-
-    await order.save()
-
-    res.redirect(`/order-resume/${req.params.id}`)
+        order = await HandleOrderRequest(req.body.status, order, req.user.settings)
+    
+        await order.save()
+    
+        res.redirect(`/order-resume/${req.params.id}`)
+    } catch (e) {
+        console.log(e)
+        res.redirect('/error')
+    }
 })
 
 
@@ -326,27 +344,38 @@ async (req,res) => {
 router.get('/orders/:username',
 Need_Authentification, Validate_Params_Username_Order,
 async (req,res) => {
+    try {
+        let { your_order, clients_order } = req
 
-    let { your_order, clients_order } = req
-
-    your_order = await Format_Orders_Array(your_order, true)
-    clients_order = await Format_Orders_Array(clients_order)
+        your_order = await Format_Orders_Array(your_order, true)
+        clients_order = await Format_Orders_Array(clients_order)
+        
+        your_order = sortOrder_PerStatus(your_order)
+        clients_order = sortOrder_PerStatus(clients_order)
     
-    your_order = sortOrder_PerStatus(your_order)
-    clients_order = sortOrder_PerStatus(clients_order)
-
-    res.render('your-order', {your_order, clients_order} )
+        res.render('your-order', {your_order, clients_order} )
+    } catch (e) {
+        console.log(e)
+        res.redirect('/error')
+    }
 })
 
 
 
 router.delete('/delete-order/:id', Need_Authentification, existOrder, isOrder_VendorOrBuyer,
 async (req,res) => {
-    const { order } = req
+    try {
+        const { order } = req
 
-    order.delete()
+        if (!Include_Delete_Link(order, req.user.username === order.buyer ? true : false)) throw new Error('You cant delete that') // Check if as Auth to delete
 
-    res.redirect(`/orders/${req.user.username}`)
+        order.delete()
+    
+        res.redirect(`/orders/${req.user.username}`)
+    } catch (e) {
+        console.log(e)
+        res.redirect('/error')
+    }
 })
 
 module.exports = router

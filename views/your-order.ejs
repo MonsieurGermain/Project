@@ -16,7 +16,7 @@
         <nav class="py-4 mb-3" aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
-              <a href="landing-online-courses.html"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+              <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
           </li>
             <li class="breadcrumb-item active" aria-current="page">Your Order(s)</li>
           </ol>
@@ -63,6 +63,12 @@
       <input name='radio-hack-order' type="radio" id="your_order-expired" class="form-check-input">
       <label for="your_order-expired" class="form-check-label">Expired</label>
 
+      <input name='radio-hack-order' type="radio" id="your_order-dispute_progress" class="form-check-input">
+      <label for="your_order-dispute_progress" class="form-check-label">Dispute in Progress</label>
+  
+      <input name='radio-hack-order' type="radio" id="your_order-disputed" class="form-check-input">
+      <label for="your_order-disputed" class="form-check-label">Disputed</label>
+
       <hr class="my-4">
       
       <div class="your_order_container-all"><%- include('partials/Orders-list', {orders : your_order.all}) %></div>
@@ -74,7 +80,8 @@
       <div class="your_order_container-finalized"><%- include('partials/Orders-list', {orders : your_order.finalized}) %></div>
       <div class="your_order_container-rejected"><%- include('partials/Orders-list', {orders : your_order.rejected}) %></div>
       <div class="your_order_container-expired"><%- include('partials/Orders-list', {orders : your_order.expired}) %></div>
-     
+      <div class="your_order_container-dispute_progress"><%- include('partials/Orders-list', {orders : your_order.dispute_progress}) %></div>
+      <div class="your_order_container-disputed"><%- include('partials/Orders-list', {orders : your_order.disputed}) %></div>
     </div>
   
   
@@ -107,6 +114,12 @@
       <input name='radio-hack-client-order' type="radio" id="client_order-expired" class="form-check-input">
       <label for="client_order-expired" class="form-check-label">Expired</label>
 
+      <input name='radio-hack-client-order' type="radio" id="client_order-dispute_progress" class="form-check-input">
+      <label for="client_order-dispute_progress" class="form-check-label">Dispute in Progress</label>
+  
+      <input name='radio-hack-client-order' type="radio" id="client_order-disputed" class="form-check-input">
+      <label for="client_order-disputed" class="form-check-label">Disputed</label>
+
       <hr class="my-4">
       
       <div class="client_order_container-all"><%- include('partials/Orders-list', {orders : clients_order.all}) %></div>
@@ -118,6 +131,9 @@
       <div class="client_order_container-finalized"><%- include('partials/Orders-list', {orders : clients_order.finalized}) %></div>
       <div class="client_order_container-rejected"><%- include('partials/Orders-list', {orders : clients_order.rejected}) %></div>
       <div class="client_order_container-expired"><%- include('partials/Orders-list', {orders : clients_order.expired}) %></div>
+      <div class="client_order_container-dispute_progress"><%- include('partials/Orders-list', {orders : clients_order.dispute_progress}) %></div>
+      <div class="client_order_container-disputed"><%- include('partials/Orders-list', {orders : clients_order.disputed}) %></div>
+
      </div>
     </div>
 

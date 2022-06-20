@@ -1,0 +1,168 @@
+<%- include('partials/Head') %>
+<body>
+    <%- include('partials/Navbar') %>
+
+<div class="container-product my-5">
+<main class="page-wrapper">
+<section class="container">
+
+  <% if (error.length) { %>
+    <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+    <%- include('partials/Flash-message', {message: error}) %>
+  </div>   
+  <% } %>
+  <% if (success.length) { %>
+    <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+    <%- include('partials/Flash-message', {message: success, success: true}) %>
+  </div>   
+  <% } %>
+
+    <!-- Page title + Filters -->
+      <h1 class="me-3">Disputes</h1>
+
+      <input type="radio" id="admin-dipsutes-container-check" name="disputes-containers" class="d-none" checked>
+      <label for="admin-dipsutes-container-check" class="form-check-label me-5">Your Disputes</label>
+
+      <input type="radio" id="dipsutes-container-check" name="disputes-containers" class="d-none">
+      <label for="dipsutes-container-check" class="form-check-label">Disputes</label>
+
+      <div class="admin-disputes-container">
+        <% if (!adminDisputes.length) { %>
+          <h4 class="my-3">You dont have any disputes...</h3>
+          <h5 class="my-3">Go take some !</h5>
+        <% } else { %>
+          <% for(let i = 0; i < adminDisputes.length; i++) { %>
+            <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
+              <div class="row g-0">
+                <div class="col-sm-8">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <p class="mb-1 me-5">Order id: <a href="/order-resume/<%=adminDisputes[i].id%>"><%=adminDisputes[i].id%></a></p>
+                      <p class="mb-1">Status: <span>    <span class="ms-2 badge bg-danger">Dispute in Progress</span></span></p>
+                    </div>
+                    <h3 class="h4">
+                      <a href="/order-resume/<%=adminDisputes[i].id%>"><%=adminDisputes[i].product_title%></a>
+                    </h3>
+      
+                    <span>
+                      <p class="mb-0">Total Price:</p>
+                      <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                          <%= adminDisputes[i].total_price %> $
+                      </p>
+                  </span>
+      
+                   <hr class="my-4">
+      
+                    <div class="d-flex align-items-center">
+                      <span>
+                      <p class="mb-0">Vendor:</p>
+                      <a href="/profile/<%=adminDisputes[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                        <%= adminDisputes[i].vendor%>
+                      </a>
+                  </span>
+                  <span class="ms-5">
+                      <p class="mb-0">Buyer:</p>
+                      <a class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                        <%= adminDisputes[i].buyer%>
+                      </a>
+                  </span>
+    
+                      <span class="ms-5">
+                        <p class="mb-0">Admin:</p>
+                        <p class="mb-0"><b><%=adminDisputes[i].admin%></b> (You)</p>
+                    </span>
+      
+                    <span class="ms-auto">
+                        <a href="/order-resume/<%=adminDisputes[i].id%>" class="btn btn-primary">See Disputes >></a>
+                  </span>
+      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          <% } %>
+        <% } %>
+      </div>
+
+        <div class="disputes-container">
+          <% if (!disputes.length) { %>
+            <h4 class="my-3">No dispute Needing resolving !</h3>
+            <h5 class="my-3">Keep it up !</h5>
+          <% } else { %>
+            <% for(let i = 0; i < disputes.length; i++) { %>
+              <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
+                <div class="row g-0">
+                  <div class="col-sm-8">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-3">
+                        <p class="mb-1 me-5">Order id: <a href="/order-resume/<%=disputes[i].id%>"><%=disputes[i].id%></a></p>
+                        <p class="mb-1">Status: <span>    <span class="ms-2 badge bg-danger">Dispute in Progress</span></span></p>
+                      </div>
+                      <h3 class="h4">
+                        <a href="/order-resume/<%=disputes[i].id%>"><%=disputes[i].product_title%></a>
+                      </h3>
+        
+                      <span>
+                        <p class="mb-0">Total Price:</p>
+                        <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                            <%= disputes[i].total_price %> $
+                        </p>
+                    </span>
+        
+                     <hr class="my-4">
+        
+                      <div class="d-flex align-items-center">
+                        <span>
+                        <p class="mb-0">Vendor:</p>
+                        <a href="/profile/<%=disputes[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                          <%= disputes[i].vendor%>
+                        </a>
+                    </span>
+                    <span class="ms-5">
+                        <p class="mb-0">Buyer:</p>
+                        <a class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                          <%= disputes[i].buyer%>
+                        </a>
+                    </span>
+      
+                      <% if (disputes[i].admin) { %>
+                        <span class="ms-5">
+                          <p class="mb-0">Admin:</p>
+                          <p class="mb-0"><%=disputes[i].admin%></p>
+                      </span>
+                      <% } else { %> 
+                        <span class="ms-5">
+                          <p class="mb-0">Admin:</p>
+                          <p class="mb-0">Awaiting Admin...</p>
+                      </span>
+                      <% } %>
+        
+                      <span class="ms-auto">
+                        <form action="/admin-take-dispute/<%=disputes[i].id%>" method="POST">
+                          <button type="submit" class="btn btn-primary">Take Disputes >></button>
+                        </form>
+                    </span>
+        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            <% } %>
+          <% } %>
+        </div>
+
+
+
+
+
+
+
+</section>
+</main>
+</div>
+
+<%- include('partials/Footer') %>
+</body>
+</html>

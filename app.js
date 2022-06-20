@@ -76,6 +76,8 @@ app.use('/', ADMIN)
 app.use('/', REPORT)
 app.use('/', DISPUTE)
 
+// fix Order resume chat
+// Update Admin functionnality
 
 // PRIORITY 
 // XMR ESCROW

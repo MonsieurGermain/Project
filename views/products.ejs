@@ -40,8 +40,12 @@
         </div>
       </form>
     </div>
-      
-<%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3 }) %>
+      <% if (paginatedProducts.results.length) { %>
+        <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3 }) %>
+      <% } else { %>
+        <h3 class="me-3">No Products found...</h3>
+      <% } %>
+
 
           <!-- Sign up CTA -->
           <div class="card rounded-3 my-2 my-md-4 my-lg-5 py-5 px-3 px-md-0">

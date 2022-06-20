@@ -100,6 +100,12 @@ const orderSchema = new mongoose.Schema ({
         type : String,
         required : true
     },
+    admin : { 
+        type : String,
+    },
+    dispute_winner : { 
+        type : String,
+    }
 })
 
 orderSchema.methods.Reset_Timer = function() {
@@ -164,8 +170,7 @@ orderSchema.methods.Expired_Timer = async function() {
             this.timer = undefined
         break
         case 'disputed' :
-            this.timer = 172800000
-            this.admin = undefined
+            this.timer = undefined
         break
     }
 }

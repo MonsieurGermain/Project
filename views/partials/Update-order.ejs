@@ -5,6 +5,13 @@
 <% if (order.timer) { %>
     <p>Time Left: <b><%=order.Formated_Timers%></b></p>
 <% } %>
+<%  if (order.status === 'dispute_progress') { %>
+    <% if (!order.admin) { %>
+        <p><b>Waiting for an Admin</b></p>
+    <% } else { %>
+        <p>Admin: <b><%=order.admin%></b></p>
+    <% } %>
+<% } %>
 
 <hr class="my-2">
 
@@ -54,7 +61,7 @@
         </form>
         <% } %>
 
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/create-dispute/<%=order.id%>" method="POST">
             <button class="btn btn-danger mt-3" type="submit" name="status" value="dispute">Disupte this Order</button>
         </form>
     <%}%>
@@ -62,7 +69,7 @@
         <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
             <button class="btn btn-success mt-3" type="submit" name="status" value="finished">Everything is good, finalize this order</button>
         </form>
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/create-dispute/<%=order.id%>" method="POST">
             <button class="btn btn-danger mt-3" type="submit" name="status" value="dispute">Disupte this Order</button>
         </form>
     <%}%>
@@ -76,9 +83,38 @@
     <p class="mt-2 mb-0">This Order is Finalized</p>
 <%}%>
 
+
 <%if (order.status === 'dispute_progress') {%>
-    <p class="mt-4">This Order is currently Disputed</p>
-    <p class="mt-4"><b>Defend your case in the order chat</b></p>
+    <% if (authuser.username === order.admin) { %>
+        <p class="mt-4">Decide who is right or wrong here</p>
+        <p class="mt-2"><b>Chat with the vendor and username using the Order chat</b></p>
+
+        <span>
+
+        <input type="checkbox" name="settling-dispute" id="settling-disputes" class="form-check-input me-1">
+        <label for="settling-disputes" class="form-check-label">I have made my decision</label>
+
+        <div class="dispute-settling-container">
+            <div class="my-3">
+
+            <form action="/settle-dispute/<%=order.id%>" method="POST">
+                <div>
+                <input type="radio" id="buyer-radio" name="winner" value="<%=order.buyer%>" class="form-check-input me-1" required>
+                <label class="form-check-label" for="buyer-radio">Buyer Win (<%=order.buyer%>)</label>
+            </div>
+            <div>
+                <input type="radio" id="vendor-radio" name="winner" value="<%=order.vendor%>" class="form-check-input me-1" required>
+                <label class="form-check-label" for="vendor-radio">Vendor Win (<%=order.vendor%>)</label>
+            </div>
+                <button class="btn btn-primary mt-3" type="submit" name="status" value="dispute">Settle Dispute</button>
+            </form>
+        </div>
+        </div>
+    </span>
+    <% } else { %> 
+        <p class="mt-4">This Order is currently Disputed</p>
+        <p class="mt-2"><b>Defend your case in the order chat</b></p>
+    <% } %>
 <%}%>
 
 

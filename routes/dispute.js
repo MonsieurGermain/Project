@@ -4,7 +4,7 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_ProvidedInfo, Validate_Update_Order, existProduct, existOrder, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Admin, winnerQuery_ispartOrder, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
+const { getDispute_inProgress, existOrder,  isOrder_VendorOrBuyer, isOrder_Admin, Validate_disputeWinner, get_adminDispute } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 // Make dipsute admin take page
@@ -26,7 +26,23 @@ async (req,res) => {
     }
 })
 
-router.post('/admin-take-dispute/:id', Need_Authentification, existOrder,
+
+router.get('/admin-disputes-list', Need_Authentification, //is_Admin,
+get_adminDispute, getDispute_inProgress,
+async (req,res) => {
+    try {
+        const { adminDisputes, disputes } = req
+
+        res.render('admin-dispute-list', { adminDisputes, disputes })
+    } catch(e) {
+        console.log(e)
+        res.redirect('/error')
+    }
+})
+
+
+router.post('/admin-take-dispute/:id', Need_Authentification, //is_Admin,
+existOrder,
 async (req,res) => {
     try {
         const { order } = req
@@ -35,25 +51,29 @@ async (req,res) => {
     
         await order.save()
 
-        res.redirect(`/dispute-taken/${req.user.username}`)
+        res.redirect('/admin-disputes-list')
     } catch(e) {
         console.log(e)
         res.redirect('/error')
     }
 })
 
-router.post('/settle-dispute/:id', Need_Authentification, existOrder, isOrder_Admin, winnerQuery_ispartOrder,
+
+
+router.post('/settle-dispute/:id', Need_Authentification, // is_Admin,
+existOrder, isOrder_Admin, Validate_disputeWinner,
 async (req,res) => {
     try {
-        const { order } = req
+        const { order, winner } = req
 
         order.status = 'disputed'
-        order.timer = 172800000
-        order.dispute_winner = req.query.winner
+        order.timer = Date.now() + 172800000
+        order.dispute_winner = winner
     
         await order.save()
 
-        res.redirect(`/admin-panel`)
+        req.flash('success', 'Dispute Settle')
+        res.redirect(`/admin-disputes-list`)
     } catch(e) {
         console.log(e)
         res.redirect('/error')

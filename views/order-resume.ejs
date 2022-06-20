@@ -19,11 +19,6 @@
                 </ol>
               </nav>
 
-              <% if (error.length) { %>
-                <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-                <%- include('partials/Flash-message', {message: error}) %>
-              </div>   
-              <% } %>
 
               <h1>Order Resume</h1>
 
@@ -157,22 +152,47 @@
           <div class="swiper-slide h-auto">
 
             <% for(let i = 0; i < order.messages.length ; i++) {%>
-
-            <% if (authuser.username !== order.vendor && order.vendor !== order.messages[i].buyer) { %>
-            <!-- Own message -->
-            <div class="d-flex align-items-start justify-content-end mb-3">
-                <div class="pe-2 me-1" style="max-width: 348px;">
-                    <div class="bg-primary text-light p-3 mb-1" style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
-                    </div>
-            </div>
-            <% } else { %>
-            <!-- User message -->
-            <div class="d-flex align-items-start mb-3">
-                <img src="<%=order.img_path%>" class="rounded-circle" width="40" alt="<%=order.sender_2%>">
+            
+            <% if (order.messages[i].sender === order.admin) { %>
+              <div class="d-flex align-items-center justify-content-center mb-3"> <!--Put message in middle-->
                 <div class="ps-2 ms-1" style="max-width: 348px;">
-                  <div class="card p-3 mb-1" style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                  <div class="bg-warning card p-3 mb-1" style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
                 </div>
               </div>
+            <% } else if (order.messages[i].sender === order.vendor) { %>
+              <% if (authuser.username === order.vendor) { %>
+                <div class="d-flex align-items-end justify-content-end mb-3">
+                  <div class="pe-2 me-1" style="max-width: 348px;">
+                    <div class="bg-primary text-light p-3 mb-1" style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                  </div>
+            </div>
+              <% } else { %>
+                <div class="d-flex align-items-start mb-3">
+                  <div class="ps-2 ms-1" style="max-width: 348px;">
+                    <div class="card p-3 mb-1" style="border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                  </div>
+                </div>
+              <% } %>
+            <% } else { %>
+              <% if (authuser.username === order.admin) { %>
+                <div class="d-flex align-items-end justify-content-end mb-3">
+                  <div class="pe-2 me-1" style="max-width: 348px;">
+                    <div class="bg-primary text-light p-3 mb-1" style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                  </div>
+            </div>
+              <% } else if (authuser.username === order.vendor) { %>
+                <div class="d-flex align-items-start mb-3">
+                  <div class="ps-2 ms-1" style="max-width: 348px;">
+                    <div class="card p-3 mb-1" style="border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                  </div>
+                </div>
+              <% } else { %>
+                <div class="d-flex align-items-end justify-content-end mb-3">
+                  <div class="pe-2 me-1" style="max-width: 348px;">
+                    <div class="bg-primary text-light p-3 mb-1" style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;"><%= order.messages[i].content %></div>
+                  </div>
+            </div>
+            <% } %>
             <% } %>
             <% } %>
 
