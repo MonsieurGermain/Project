@@ -53,7 +53,7 @@
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 255, 255, 255;
-  --bs-body-bg-rgb: 25, 25, 25;
+  --bs-body-bg-rgb: 24, 24, 24;
   --bs-font-sans-serif: "Manrope", sans-serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
@@ -62,7 +62,7 @@
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.6;
   --bs-body-color: #fff;
-  --bs-body-bg: #191919;
+  --bs-body-bg: #181818;
 }
 
 *,
@@ -609,7 +609,7 @@ progress {
 
 .img-thumbnail {
   padding: 0.5rem;
-  background-color: #191919;
+  background-color: #181818;
   border: 0 solid #e2e5f1;
   border-radius: 0.5rem;
   box-shadow: 0 0.275rem 0.75rem -0.0625rem rgba(180, 183, 201, 0.06), 0 0.125rem 0.4rem -0.0625rem rgba(180, 183, 201, 0.03);
@@ -2509,10 +2509,10 @@ textarea.form-control-lg {
   outline: 0;
 }
 .form-range:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 1px #191919, 0 0.5rem 1.125rem -0.5rem rgba(128, 0, 128, 0.2);
+  box-shadow: 0 0 0 1px #181818, 0 0.5rem 1.125rem -0.5rem rgba(128, 0, 128, 0.2);
 }
 .form-range:focus::-moz-range-thumb {
-  box-shadow: 0 0 0 1px #191919, 0 0.5rem 1.125rem -0.5rem rgba(128, 0, 128, 0.2);
+  box-shadow: 0 0 0 1px #181818, 0 0.5rem 1.125rem -0.5rem rgba(128, 0, 128, 0.2);
 }
 .form-range::-moz-focus-outer {
   border: 0;
@@ -4643,7 +4643,7 @@ textarea.form-control-lg {
   font-size: 1rem;
   color: #131022;
   text-align: left;
-  background-color: #191919;
+  background-color: #181818;
   border: 0;
   border-radius: 0;
   overflow-anchor: none;
@@ -4694,7 +4694,7 @@ textarea.form-control-lg {
 }
 
 .accordion-item {
-  background-color: #191919;
+  background-color: #181818;
   border: 1px solid #131022;
 }
 .accordion-item:first-of-type {
@@ -13774,7 +13774,13 @@ hr.dropdown-divider {
 }
 
 #search-checkbox:not(:checked) ~ nav.main-navbar #search-box {
-  background-color: rgba(25, 25, 25, 0);
+  background-color: rgba(24, 24, 24, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
+#search-checkbox:not(:checked) ~ nav.main-navbar #search-box {
+  background-color: rgba(24, 24, 24, 0);
   visibility: hidden;
   opacity: 0;
 }
@@ -13862,7 +13868,7 @@ hr.dropdown-divider {
 .main-navbar .divider > span {
   height: 70%;
   width: 2px;
-  background-color: #191919;
+  background-color: #181818;
   margin: 0px 8px;
 }
 .main-navbar .mobile-menu-bar {
@@ -13936,7 +13942,7 @@ hr.dropdown-divider {
 .main-navbar .navbar-dropdown > ul li.dropdown-divider {
   width: 90%;
   margin: 0 auto;
-  background-color: #191919;
+  background-color: #181818;
   height: 1px;
 }
 @media (min-width: 768px) {
@@ -13972,14 +13978,14 @@ hr.dropdown-divider {
   -o-transition: visibility 0.2s linear, 0.2s opacity linear;
   z-index: 101;
   visibility: visible;
-  background-color: rgba(25, 25, 25, 0.8);
+  background-color: rgba(24, 24, 24, 0.8);
   opacity: 1;
   cursor: default;
 }
 .main-navbar .search-box > div {
   position: relative;
   top: 4rem;
-  box-shadow: 0px 8px 20px rgba(128, 0, 128, 0.25);
+  box-shadow: 0px 8px 48px rgba(128, 0, 128, 0.25);
 }
 @media (min-width: 768px) {
   .main-navbar .search-box > div {
@@ -13998,7 +14004,7 @@ hr.dropdown-divider {
   width: 100%;
   height: 4rem;
   background-color: #212121;
-  border-top: 1px solid #191919;
+  border-top: 1px solid #181818;
   display: flex;
 }
 @media (min-width: 768px) {
@@ -14058,7 +14064,7 @@ hr.dropdown-divider {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #191919;
+  background-color: #181818;
 }
 .main-navbar > .nav-content .mobile-menu-scroll-space {
   order: 3;

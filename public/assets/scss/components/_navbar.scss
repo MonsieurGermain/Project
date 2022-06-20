@@ -93,6 +93,17 @@ $drop-down-height: 4rem;
     }
 }
 
+//seachbox
+#search-checkbox {
+    &:not(:checked) ~ nav.main-navbar {
+        #search-box {
+            background-color: rgba($body-bg, 0);
+            visibility: hidden;
+            opacity: 0;
+        }
+    }
+}
+
 @media (max-width: $max-width-bp) {
     // mobile menu on click
     #mobile-menu-button-checkbox {
@@ -333,7 +344,7 @@ $drop-down-height: 4rem;
             @media (min-width: $min-width-bp) {
                 top: $nav-bar-height-large;
             }
-            box-shadow: 0px 8px 20px rgb($primary, 25%);
+            box-shadow: 0px 8px 48px rgb($primary, 25%);
         }
         cursor: default;
         .search-box-clickout {
