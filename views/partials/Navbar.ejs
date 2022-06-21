@@ -44,10 +44,12 @@
                     <li class="nav-item dropdown">
                         <a href="#" class="navbar-link dropdown-active" aria-expanded="false">
                             <label for="mobile-menu-dropdown-checkbox-1"
-                                ><div>Docs
+                                ><div>
+                                    Docs
                                     <span class="dropdown-caret"
                                         ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
-                                    ></div></label
+                                    >
+                                </div></label
                             ></a
                         >
                         <div class="navbar-dropdown docs-dropdown">
@@ -84,9 +86,24 @@
                     </li>
                 </ul>
                 <div class="navbar-right-cluster">
-                    <label for="search-checkbox" class="search-button me-5">
+                    <div class="top-search-input">
+                        <div>
+                            <input
+                                type="text"
+                                name="search"
+                                class="form-control"
+                                placeholder="Search for a product"
+                                maxlength="500"
+                            />
+                            <div>
+                                <button type="submit"><i class="bx bx-search-alt fs-xl"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <label for="search-checkbox" class="search-button me-5">
                         <i class="bx bx-search-alt fs-xl nav-link"></i>
-                    </label>
+                    </label> -->
 
                     <% if (authuser) { %>
                     <div class="user-profile-container">

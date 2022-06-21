@@ -312,6 +312,9 @@ $drop-down-height: 4rem;
 
     // Section for popup search box styling ///////////////////
     .search-box {
+        @media (min-width: $min-width-bp) {
+            display: none; // turned off for desktop
+        }
         width: 100%;
         position: fixed;
         top: 0px;
@@ -431,13 +434,21 @@ $drop-down-height: 4rem;
         .navbar-right-cluster {
             display: flex;
             border-bottom: 7px solid $secondary-bg;
+            @media (min-width: $min-width-bp) {
+                flex-grow: 1;
+            }
             .login-signup {
-                width: 100%;
                 display: flex;
-                justify-content: space-between;
+                @media (max-width: $max-width-bp) {
+                    width: 100%;
+                    justify-content: space-between;
+                }
                 > a {
                     margin-right: 20px;
                     margin-left: 20px;
+                }
+                > a:first-child {
+                    white-space: nowrap; //"Log In" no wrap
                 }
             }
             @media (max-width: $max-width-bp) {
@@ -448,7 +459,6 @@ $drop-down-height: 4rem;
         }
 
         .user-profile-container {
-            width: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -465,6 +475,7 @@ $drop-down-height: 4rem;
                 }
             }
             @media (max-width: $max-width-bp) {
+                width: 100%;
                 .not-mobile-only {
                     display: none;
                 }
@@ -604,4 +615,61 @@ $drop-down-height: 4rem;
         }
     }
     //////////////////////////////////
+
+    // nav search bar
+   
+    .top-search-input {
+        @media (max-width: $max-width-bp) {
+            display: none;
+        }
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 650px;
+        margin-left: auto;
+        margin-right: 2rem;
+        > div {
+            display: flex;
+            padding-left: 2rem;
+            width: calc(100% - 2rem);
+            > input {
+                background-color: $white;
+                border-top-left-radius: 50rem;
+                border-bottom-left-radius: 50rem;
+                border-top-right-radius: 0px;
+                border-bottom-right-radius: 0px;
+                color: $body-bg;
+                padding: 0.625rem 1rem;
+            }
+            > div {
+                position: relative;
+                width: 55px;
+                display: flex;
+                border: 1px solid $input-border-color;
+                border-left: none;
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+                border-top-right-radius: 50rem;
+                border-bottom-right-radius: 50rem;
+                overflow: hidden;
+                button {
+                    cursor: pointer;
+                    height: 100%;
+                    width: 100%;
+                    color: $white;
+                    border: none;
+                    background-color: $primary;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    &:hover,
+                    &:focus {
+                        background-color: darken($primary, 7.5%);
+                    }
+                }
+            }
+        }
+    }
 }
