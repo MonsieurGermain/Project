@@ -24,7 +24,7 @@ $gray-800:                    #3e4265 !default;
 $gray-900:                    #131022 !default;
 $black:                       #000 !default;
 $body-bg:                     #191919 !default; 
-$secondary-bg:                #212121 !default; 
+$secondary-bg:                #242424 !default; 
 $input-border-color:          #4d4d4d !default;
 
 // Brand colors
@@ -117,6 +117,7 @@ $container-max-widths: (
 $body-color:                                $white !default;
 $body-bg:                                   $body-bg !default;
 $text-muted:                                $gray-200 !default;
+$text-muted-inverse:                        $gray-500 !default;
 
 $body-dark-mode-color:                      rgba($white, .7) !default;
 $body-dark-mode-bg:                         $gray-900 !default;

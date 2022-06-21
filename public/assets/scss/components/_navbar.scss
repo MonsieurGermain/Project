@@ -628,7 +628,6 @@ $drop-down-height: 4rem;
         justify-content: center;
         max-width: 650px;
         margin-left: auto;
-        margin-right: 2rem;
         > div {
             display: flex;
             padding-left: 2rem;
@@ -641,6 +640,9 @@ $drop-down-height: 4rem;
                 border-bottom-right-radius: 0px;
                 color: $body-bg;
                 padding: 0.625rem 1rem;
+                &::placeholder {
+                    color: $text-muted-inverse;
+                }
             }
             > div {
                 position: relative;
