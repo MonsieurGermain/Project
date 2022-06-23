@@ -17031,4 +17031,259 @@ img-comparison-slider:focus {
 .min-heigth-45 {
   min-height: 40rem;
   max-height: 40rem;
+}
+
+.messages-view {
+  overflow: hidden;
+  height: calc(100% - 4rem);
+}
+@media (min-width: 768px) {
+  .messages-view {
+    height: calc(100% - 5rem);
+  }
+}
+.messages-view section {
+  height: 100%;
+}
+.messages-view section > div {
+  height: 100%;
+}
+.messages-view section > div > div {
+  height: 100%;
+}
+@media (max-width: 767px) {
+  .messages-view .container {
+    padding: 0px;
+  }
+  .messages-view #change-messages:checked ~ .messages-container .chat {
+    display: none;
+  }
+  .messages-view #change-messages:not(:checked) ~ .messages-container .contacts {
+    display: none;
+  }
+}
+.messages-view .messages-container {
+  box-shadow: 0px 8px 20px rgba(128, 0, 128, 0.25);
+  display: flex;
+  min-height: 0px;
+  height: 100%;
+}
+.messages-view .messages-container .contacts {
+  display: flex;
+  min-height: 0px;
+  flex-direction: column;
+  width: 100%;
+  background-color: #212121;
+}
+@media (min-width: 768px) {
+  .messages-view .messages-container .contacts {
+    border-right: 1px solid #800080;
+    width: 50%;
+    max-width: 400px;
+  }
+}
+.messages-view .messages-container .contacts > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-image: linear-gradient(#191919, #212121);
+}
+.messages-view .messages-container .contacts > div:first-child label {
+  width: 1.6rem;
+  margin-right: 1.5rem;
+}
+@media (min-width: 768px) {
+  .messages-view .messages-container .contacts > div:first-child label {
+    display: none;
+  }
+}
+.messages-view .messages-container .contacts > div:first-child label path {
+  fill: #fff;
+}
+.messages-view .messages-container .contacts .search-messages {
+  display: flex;
+  min-height: 0px;
+  height: 3.75rem;
+  min-height: 3.75rem;
+  border-top: 1px solid #800080;
+  border-bottom: 1px solid #191919;
+}
+@media (max-width: 767px) {
+  .messages-view .messages-container .contacts .search-messages {
+    display: none;
+  }
+}
+.messages-view .messages-container .contacts .search-messages > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.messages-view .messages-container .contacts .search-messages > div i {
+  margin-right: 1rem;
+}
+.messages-view .messages-container .contacts .search-messages input {
+  caret-color: #fff;
+  border: none;
+  background-color: transparent;
+  outline: none;
+  color: #fff;
+}
+.messages-view .messages-container .contacts .contact-list {
+  min-height: 0px;
+  flex-grow: 1;
+  flex-shrink: 1;
+  overflow-y: auto;
+}
+.messages-view .messages-container .contacts .contact-list .selected-convo {
+  background-color: #191919;
+}
+.messages-view .messages-container .contacts .contact-list .contact-divider {
+  width: 90%;
+  margin: 0 0 0 auto;
+  height: 1px;
+  background-color: #191919;
+}
+.messages-view .messages-container .contacts .contact-list > a,
+.messages-view .messages-container .contacts .contact-list > label {
+  width: 100%;
+}
+.messages-view .messages-container .contacts .contact-list > a > div, .messages-view .messages-container .contacts .contact-list > a > a > div,
+.messages-view .messages-container .contacts .contact-list > label > div,
+.messages-view .messages-container .contacts .contact-list > label > a > div {
+  min-width: 0px;
+}
+.messages-view .messages-container .contacts .contact-list > a .convo-snippet,
+.messages-view .messages-container .contacts .contact-list > label .convo-snippet {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.messages-view .messages-container .contacts .contact-list > a > img,
+.messages-view .messages-container .contacts .contact-list > a a > img,
+.messages-view .messages-container .contacts .contact-list > label > img,
+.messages-view .messages-container .contacts .contact-list > label a > img {
+  min-width: 45px;
+}
+.messages-view .messages-container .chat {
+  flex-grow: 1;
+}
+.messages-view .messages-container .chat .chat-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.messages-view .messages-container .chat .chat-body .messages-header {
+  background-color: #212121;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .messages-view .messages-container .chat .chat-body .messages-header {
+    min-height: 6rem;
+  }
+}
+@media (max-width: 767px) {
+  .messages-view .messages-container .chat .chat-body .messages-header {
+    padding: 10px 0px;
+  }
+}
+.messages-view .messages-container .chat .chat-body .messages-header a {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+@media (min-width: 768px) {
+  .messages-view .messages-container .chat .chat-body .messages-header .change-convo {
+    display: none;
+  }
+}
+.messages-view .messages-container .chat .chat-body .messages-header .change-convo label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  bottom: 10px;
+  right: 2px;
+  margin-right: -21px;
+}
+.messages-view .messages-container .chat .chat-body .messages-header .change-convo svg:first-child {
+  transform: scale(1.8) rotate(90deg);
+}
+.messages-view .messages-container .chat .chat-body .messages-header .change-convo svg:last-child {
+  transform: scale(0.6);
+  position: relative;
+  bottom: 4px;
+  right: 11px;
+}
+.messages-view .messages-container .chat .chat-body .messages-header .change-convo path {
+  fill: #fff;
+}
+@media (max-width: 767px) {
+  .messages-view .messages-container .chat .chat-body .messages-header .delete-button-container button {
+    padding: 7px;
+    border-radius: 50rem;
+    position: relative;
+    top: -10px;
+    left: 2px;
+  }
+}
+.messages-view .messages-container .chat .chat-body .messages-main {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry:first-child {
+  margin-top: 0.5rem;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry > div {
+  position: relative;
+  display: inline-block;
+  background-color: #212121;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  max-width: 600px;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry:not(.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own) {
+  margin-right: 1.5rem;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry:not(.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own) > div {
+  margin-right: auto;
+  border-bottom-left-radius: 1px;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry:not(.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own) > div > div {
+  display: flex;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry:not(.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own) > div > div > img {
+  min-width: 46px;
+  margin-right: 0.75rem;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own {
+  margin-left: 1.5rem;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own > div {
+  background-color: #800080;
+  margin-left: auto;
+  border-bottom-right-radius: 1px;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-entry--own > div .message-text span {
+  margin-right: 46px;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-text span {
+  display: inline-block;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-text form button {
+  position: absolute;
+  top: 6px;
+  right: 9px;
+  border-radius: 50rem;
+  padding: 5px;
+}
+.messages-view .messages-container .chat .card-footer {
+  align-items: center;
 }/*# sourceMappingURL=theme.css.map */

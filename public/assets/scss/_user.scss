@@ -1,3 +1,7 @@
+@use "sass:map";
+// media-queries break points
+$min-width-bp: map.get($grid-breakpoints, "md");
+$max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
 //
 // user.scss
 // Use this to write your custom SCSS
@@ -35,4 +39,256 @@
 .min-heigth-45 {
     min-height: 40rem;
     max-height: 40rem;
+}
+
+.messages-view {
+    overflow:hidden;
+    height: calc(100% - $nav-bar-height-mobile);
+    @media (min-width: $min-width-bp) {
+        height: calc(100% - $nav-bar-height-large);
+    }
+    section {
+        height: 100%;
+        > div {
+            height: 100%;
+            > div {
+                height: 100%;
+            }
+        }
+    }
+
+    @media (max-width: $max-width-bp) {
+        .container {
+            padding: 0px;
+        }
+        #change-messages:checked ~ .messages-container .chat {
+            display: none;
+        }
+        #change-messages:not(:checked) ~ .messages-container .contacts {
+            display: none;
+        }
+    }
+
+    .messages-container {
+        box-shadow: 0px 8px 20px rgb(128 0 128 / 25%);
+        display: flex;
+        min-height: 0px;
+        height: 100%;
+        .contacts {
+            display: flex;
+            min-height: 0px;
+            flex-direction: column;
+            width: 100%;
+            @media (min-width: $min-width-bp) {
+                border-right: 1px solid #800080;
+                width: 50%;
+                max-width: 400px;
+            }
+            background-color: $secondary-bg;
+            > div:first-child {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                background-image: linear-gradient($body-bg, $secondary-bg);
+                label {
+                    @media (min-width: $min-width-bp) {
+                        display: none;
+                    }
+                    width: 1.6rem;
+                    margin-right: 1.5rem;
+                    path {
+                        fill: $white;
+                    }
+                }
+            }
+
+            .search-messages {
+                display: flex;
+                @media (max-width: $max-width-bp) {
+                    display: none;
+                }    
+                min-height: 0px;
+                height: 3.75rem;
+                min-height: 3.75rem;
+                border-top: 1px solid $primary;
+                border-bottom: 1px solid $body-bg;
+                > div {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    i {
+                        margin-right: 1rem;
+                    }
+                }
+                input {
+                    caret-color: $white;
+                    border: none;
+                    background-color: transparent;
+                    outline: none;
+                    color: $white;
+                }
+            }
+            .contact-list {
+                min-height: 0px;
+                flex-grow: 1;
+                flex-shrink: 1;
+                overflow-y: auto;
+                .selected-convo {
+                    background-color: $body-bg;
+                }
+                .contact-divider {
+                    width: calc(90%);
+                    margin: 0 0 0 auto;
+                    height: 1px;
+                    background-color: $body-bg;
+                }
+                > a,
+                > label {
+                    width: 100%;
+                    > div, > a > div {
+                        min-width: 0px;
+                    }
+                    .convo-snippet {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                    }
+                    > img,
+                    a > img {
+                        min-width: 45px;
+                    }
+                }
+            }
+        }
+        .chat {
+            flex-grow: 1;
+            .chat-body {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                .messages-header {
+                    @media (min-width: $min-width-bp) {
+                        min-height: 6rem;
+                    }
+                    @media (max-width: $max-width-bp) {
+                        padding: 10px 0px;
+                    }
+                    
+                    background-color: $secondary-bg;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    a {
+                        font-size: $font-size-xl;
+                        font-weight: bold;
+                    }
+                    .change-convo {
+                        @media (min-width: $min-width-bp) {
+                            display: none;
+                        }
+                        
+                        label {
+                            display: flex;
+                            align-items: center;
+                            cursor: pointer;
+                            position:relative;
+                            bottom: 10px;
+                            right: 2px;
+                            margin-right: -21px;
+                        }
+                        svg:first-child {
+                            transform: scale(1.8) rotate(90deg);
+                        }
+                        svg:last-child {
+                            transform: scale(0.6);
+                            position: relative;
+                            bottom: 4px;
+                            right: 11px;
+                        }
+                        path {
+                            fill: $white;
+                        }
+                    }
+                   
+                    .delete-button-container {
+                        button {
+                            @media (max-width: $max-width-bp) {
+                                padding: 7px;
+                                border-radius: 50rem;
+                                position: relative;
+                                top: -10px;
+                                left: 2px;
+                            }
+                          
+                        }
+                    }
+
+                }
+                .messages-main {
+                    flex-grow: 1;
+                    overflow-y: auto;
+                    .message-entry {
+                        display: flex;
+                        &:first-child {
+                            margin-top: 0.5rem;
+                        }
+                        margin-bottom: 0.5rem;
+                        > div {
+                            position: relative;
+                            display: inline-block;
+                            background-color: $secondary-bg;
+                            padding: 0.8rem 1rem;
+                            border-radius: 0.5rem;
+                            max-width: 600px;
+                        }
+                        &:not(&--own) {
+                            margin-right: 1.5rem;
+                            > div {
+                                margin-right: auto;
+                                border-bottom-left-radius: 1px;
+                                > div {
+                                    display: flex;
+                                    > img {
+                                        min-width: 46px;
+                                        margin-right: 0.75rem;
+                                    }
+                                }
+                            }
+                        }
+                        &--own {
+                            margin-left: 1.5rem;
+                            > div {
+                                background-color: $primary;
+                                margin-left: auto;
+                                border-bottom-right-radius: 1px;
+                                .message-text span {
+                                    margin-right: 46px;
+                                }
+                            }
+                        }
+                    }
+                    .message-text {
+                        span {
+                            display: inline-block;
+                            white-space: pre-wrap;
+                            overflow-wrap: break-word;
+                            overflow-wrap: anywhere;
+                        }
+                        form {
+                            button {
+                                position: absolute;
+                                top: 6px;
+                                right: 9px;
+                                border-radius: 50rem;
+                                padding: 5px;
+                            }
+                        }
+                    }
+                }
+            }
+            .card-footer {
+                align-items: center;
+            }
+        }
+    }
 }
