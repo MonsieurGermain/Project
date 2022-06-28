@@ -1,10 +1,19 @@
 <div class="chat-body">
+    <input id="delete-convo-input" type="checkbox" hidden></input>
+    <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>
+    <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
+        <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
+            <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+            <%- include('Popup-dialog', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this message?", confirm_text: "Yes", cancel_text: "No"}) %>
+        <%}%>
+    <% } %>
     <% if (selected_conversation) { %>
     <!-- Header -->
     <div class="messages-header px-4">
         <div class="change-convo">
             <label for="change-messages"
-                ><%- include ("../../public/assets/img/icons/caret-down.svg") %><%- include ("../../public/assets/img/icons/change-person.svg") %></label
+                ><%- include ("../../public/assets/img/icons/caret-down.svg") %><%- include
+                ("../../public/assets/img/icons/change-person.svg") %></label
             >
         </div>
         <div class="chat-user">
@@ -14,23 +23,35 @@
                 width="40"
                 alt="<%=selected_conversation.sender_2%>"
             />
-            <a href="<%=selected_conversation.link%>" class="mb-0 px-1 mx-2"><%=selected_conversation.sender_2%></a>
+            <div class="name-and-type">
+                <div><%=selected_conversation.settings.type%></div>
+                <a href="<%=selected_conversation.link%>" class="mb-0 px-1 mx-2"><%=selected_conversation.sender_2 %></a>
+            </div>
+           
             <!-- <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div> -->
         </div>
         <div class="delete-button-container">
-            <form action="/delete-conversation/<%=selected_conversation.id%>?_method=DELETE" method="POST">
-                <button type="submit" class="btn btn-outline-danger">
-                    <i class="bx bx-trash-alt fs-xl me-xl-2"></i>
-                    <span class="d-none d-xl-inline">Delete Conversation</span>
-                </button>
-            </form>
+    
+                <label for="delete-convo-input" class="btn btn-outline-danger">
+                
+                        <i class="bx bx-trash-alt fs-xl me-xl-2"></i>
+                        <span class="d-none d-xl-inline">Delete Conversation</span>
+                </label>
+ 
         </div>
     </div>
 
     <!-- Messages -->
-    <div class="messages-main px-4">
+    <div class="messages-main px-3">
         <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
-
+            <% if (selected_conversation.settings.timestamps && (i === 0 || (selected_conversation.messages[i].timestamps.getTime() - selected_conversation.messages[i-1].timestamps.getTime()) > 600000)) { %>
+                <div class="timestamp">
+                    <div class="timestamp-left"></div>
+                    <div class="timestamp-time"><%=selected_conversation.messages[i].timestamps.getDate() + "/" + (selected_conversation.messages[i].timestamps.getMonth()+1) + "/" + selected_conversation.messages[i].timestamps.getFullYear() + ", " + ("00"+(selected_conversation.messages[i].timestamps.getHours() + 1)).slice(-2) + ":" + ("00"+(selected_conversation.messages[i].timestamps.getMinutes()+1)).slice(-2) %></div>
+                    <div class="timestamp-right"></div>
+                </div>
+            <% } %>
+       
         <div>
             <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
             <!-- Own message -->
@@ -45,14 +66,13 @@
                         "
                     >
                         <span><%= selected_conversation.messages[i].message %></span>
-                        <form
-                            action="/delete-message/<%= selected_conversation.id %>/<%= selected_conversation.messages[i].id %>?_method=DELETE"
-                            method="POST"
-                        >
-                            <button type="submit" class="btn btn-outline-danger">
+                        <label for="delete-message-input-<%=i%>" class="delete-message-button btn btn-outline-danger">
+                         
                                 <i class="bx bx-trash-alt"></i>
-                            </button>
-                        </form>
+                            
+                        </label>
+                         
+
                     </div>
                     <% if (selected_conversation.settings.timestamps === true) { %>
                     <div><%= selected_conversation.messages[i].timestamps %></div>
@@ -120,7 +140,7 @@
                 ></textarea>
             </div>
             <input type="submit" hidden />
-            <button type="submit" class="btn btn-primary btn-icon btn-lg d-none d-sm-inline-flex ms-1">
+            <button type="submit" class="desktop btn btn-primary btn-icon d-none d-sm-block">
                 <i class="bx bx-send"></i>
             </button>
             <button type="submit" class="btn btn-primary btn-lg w-100 d-sm-none">
