@@ -47,7 +47,7 @@
             <% if (selected_conversation.settings.timestamps && (i === 0 || (selected_conversation.messages[i].timestamps.getTime() - selected_conversation.messages[i-1].timestamps.getTime()) > 600000)) { %>
                 <div class="timestamp">
                     <div class="timestamp-left"></div>
-                    <div class="timestamp-time"><%=selected_conversation.messages[i].timestamps.getDate() + "/" + (selected_conversation.messages[i].timestamps.getMonth()+1) + "/" + selected_conversation.messages[i].timestamps.getFullYear() + ", " + ("00"+(selected_conversation.messages[i].timestamps.getHours() + 1)).slice(-2) + ":" + ("00"+(selected_conversation.messages[i].timestamps.getMinutes()+1)).slice(-2) %></div>
+                    <div class="timestamp-time"><%=selected_conversation.messages[i].timestamps.getDate() + "/" + (selected_conversation.messages[i].timestamps.getMonth()+1) + "/" + selected_conversation.messages[i].timestamps.getFullYear() + ", " + selected_conversation.messages[i].timestamps.toLocaleTimeString([],{ hour12: false, hour:'2-digit', minute: "2-digit" }) %></div>
                     <div class="timestamp-right"></div>
                 </div>
             <% } %>
@@ -74,9 +74,7 @@
                          
 
                     </div>
-                    <% if (selected_conversation.settings.timestamps === true) { %>
-                    <div><%= selected_conversation.messages[i].timestamps %></div>
-                    <% } %>
+    
                 </div>
             </div>
 
@@ -102,9 +100,7 @@
                             >
                                 <span><%= selected_conversation.messages[i].message %></span>
                             </div>
-                            <% if (selected_conversation.settings.timestamps === true) { %>
-                            <div class="text-muted"><%= selected_conversation.messages[i].timestamps %></div>
-                            <%}%>
+                    
                         </div>
                     </div>
                 </div>

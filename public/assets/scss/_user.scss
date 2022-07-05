@@ -302,7 +302,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
                                 margin-left: auto;
                                 border-bottom-right-radius: 1px;
                                 .message-text span {
-                                    margin-right: 46px;
+                                    margin-right: 10px;
                                 }
                             }
                         }

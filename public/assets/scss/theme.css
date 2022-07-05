@@ -17316,7 +17316,7 @@ img-comparison-slider:focus {
   border-bottom-right-radius: 1px;
 }
 .messages-view .messages-container .chat .chat-body .messages-main .message-entry--own > div .message-text span {
-  margin-right: 46px;
+  margin-right: 10px;
 }
 .messages-view .messages-container .chat .chat-body .messages-main .message-text span {
   display: inline-block;
