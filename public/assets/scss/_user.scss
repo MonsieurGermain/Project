@@ -91,6 +91,12 @@
             overflow-y: auto;
         }
     }
+    @media (min-width: $min-width-bp) {
+        footer {
+            width: calc(100% - 21rem);
+            margin-left: auto;
+        }
+    }
     @media (max-width: $max-width-bp) {
         #mobile-menu-toggle:not(:checked) {
             + .docs-aside-open-close {
@@ -107,4 +113,5 @@
             }
         }
     }
+    
 }

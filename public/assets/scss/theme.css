@@ -17094,6 +17094,12 @@ img-comparison-slider:focus {
 .documentation-view .aside-scroller:hover {
   overflow-y: auto;
 }
+@media (min-width: 768px) {
+  .documentation-view footer {
+    width: calc(100% - 21rem);
+    margin-left: auto;
+  }
+}
 @media (max-width: 767px) {
   .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
     right: auto;
