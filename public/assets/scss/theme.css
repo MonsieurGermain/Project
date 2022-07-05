@@ -13822,7 +13822,7 @@ hr.dropdown-divider {
 .main-navbar {
   background-color: #212121;
   position: fixed;
-  z-index: 200;
+  z-index: 3000;
   top: 0px;
   left: 0px;
   display: flex;
@@ -13970,7 +13970,7 @@ hr.dropdown-divider {
   -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
   -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
   -o-transition: visibility 0.2s linear, 0.2s opacity linear;
-  z-index: 2002;
+  z-index: 200;
   visibility: visible;
   background-color: rgba(25, 25, 25, 0.8);
   opacity: 1;

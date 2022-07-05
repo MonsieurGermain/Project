@@ -172,7 +172,7 @@ $drop-down-height: 4rem;
 .main-navbar {
     background-color: $secondary-bg;
     position: fixed;
-    z-index: 200;
+    z-index: 3000;
     top: 0px;
     left: 0px;
     display: flex;
@@ -322,7 +322,7 @@ $drop-down-height: 4rem;
         -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
         -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
         -o-transition: visibility 0.2s linear, 0.2s opacity linear;
-        z-index: 2002;
+        z-index: 200;
 
         visibility: visible;
         background-color: rgba($body-bg, 0.8);
