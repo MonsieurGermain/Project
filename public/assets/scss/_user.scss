@@ -2,6 +2,7 @@
 // user.scss
 // Use this to write your custom SCSS
 //
+
 .small-rc {
     width: 2.5rem;
     height: 2.5rem;
@@ -35,4 +36,75 @@
 .min-heigth-45 {
     min-height: 40rem;
     max-height: 40rem;
+}
+
+.documentation-view {
+    #componentsNav {
+        position: relative;
+        width: 100%;
+        @media (min-width: $min-width-bp) {
+            width: 21rem;
+        }
+        background-color: $secondary-bg;
+        margin-top: $nav-bar-height-mobile;
+        height: calc(100% - $nav-bar-height-mobile);
+        border-top: 2px solid $body-bg;
+        z-index: 1045;
+        box-shadow: 0 0.275rem 1.25rem rgb(180 183 201 / 5%), 0 0.25rem 0.5625rem rgb(180 183 201 / 3%);
+        transition: transform 0.3s ease-in-out;
+        @media (min-width: $min-width-bp) {
+            margin-top: $nav-bar-height-large;
+            height: calc(100% - $nav-bar-height-large);
+        }
+    }
+    .docs-aside-open-close {
+        @media (min-width: $min-width-bp) {
+            display: none;
+        }
+        position: fixed;
+        width: 40px;
+        top: 0;
+        z-index: 2000;
+        top: calc($nav-bar-height-mobile + 1rem);
+        right: 0;
+        background-color: $primary;
+        padding: 1px;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        transition: tansform 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+        @media (min-width: $min-width-bp) {
+            margin-top: calc($nav-bar-height-large + 1rem);
+        }
+        svg {
+            height: 35px;
+            width: 35px;
+        }
+    }
+
+    .aside-scroller {
+        height: 100%;
+        overflow: hidden;
+        @media (max-width: $max-width-bp) {
+            overflow-y: auto;
+        }
+        &:hover {
+            overflow-y: auto;
+        }
+    }
+    @media (max-width: $max-width-bp) {
+        #mobile-menu-toggle:not(:checked) {
+            + .docs-aside-open-close {
+                right: auto;
+                border-radius: 0 4px 4px 0;
+                svg {
+                    transform: scaleX(-1);
+                    position: relative;
+                    left: 3px;
+                }
+            }
+            ~ main #componentsNav {
+                transform: translateX(-100%);
+            }
+        }
+    }
 }

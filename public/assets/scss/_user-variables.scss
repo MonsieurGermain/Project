@@ -1,3 +1,4 @@
+@use "sass:map";
 // 
 // user-variables.scss
 // Use this to override Bootstrap and Finder variables
@@ -8,3 +9,7 @@
 
 $nav-bar-height-mobile: 4rem;
 $nav-bar-height-large: 5rem;
+
+// media-queries break points
+$min-width-bp: map.get($grid-breakpoints, "md");
+$max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);

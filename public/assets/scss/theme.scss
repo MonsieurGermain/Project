@@ -4,12 +4,14 @@
  * Theme styles
 */
 
-// User variables
-@import 'user-variables';
 
 // Configuration & utilities
 @import 'variables';
 @import 'utilities';
+
+// User variables
+@import 'user-variables';
+
 
 // Bootstrap
 @import '../vendor/bootstrap/scss/functions';
