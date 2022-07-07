@@ -17085,6 +17085,8 @@ img-comparison-slider:focus {
 .documentation-view .aside-scroller {
   height: 100%;
   overflow: hidden;
+  -ms-scroll-chaining: none;
+      overscroll-behavior: none;
 }
 @media (max-width: 767px) {
   .documentation-view .aside-scroller {

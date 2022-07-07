@@ -84,6 +84,7 @@
     .aside-scroller {
         height: 100%;
         overflow: hidden;
+        overscroll-behavior: none;
         @media (max-width: $max-width-bp) {
             overflow-y: auto;
         }
