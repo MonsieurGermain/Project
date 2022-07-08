@@ -17035,7 +17035,7 @@ img-comparison-slider:focus {
 
 .documentation-view #componentsNav {
   position: relative;
-  width: 100%;
+  width: 69%;
   background-color: #212121;
   margin-top: 4rem;
   height: calc(100% - 4rem);
@@ -17061,7 +17061,7 @@ img-comparison-slider:focus {
   top: 0;
   z-index: 2000;
   top: 5rem;
-  right: 0;
+  left: calc(69% - 40px);
   background-color: #800080;
   padding: 1px;
   border-top-left-radius: 4px;
@@ -17096,6 +17096,9 @@ img-comparison-slider:focus {
 .documentation-view .aside-scroller:hover {
   overflow-y: auto;
 }
+.documentation-view .clickout-mobile-menu {
+  display: none;
+}
 @media (min-width: 768px) {
   .documentation-view footer {
     width: calc(100% - 21rem);
@@ -17103,8 +17106,17 @@ img-comparison-slider:focus {
   }
 }
 @media (max-width: 767px) {
+  .documentation-view #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
+    background-color: rgba(0, 0, 0, 0.25);
+    display: initial;
+    width: 100%;
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    height: 100%;
+  }
   .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
-    right: auto;
+    left: auto;
     border-radius: 0 4px 4px 0;
   }
   .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close svg {
@@ -17115,4 +17127,18 @@ img-comparison-slider:focus {
   .documentation-view #mobile-menu-toggle:not(:checked) ~ main #componentsNav {
     transform: translateX(-100%);
   }
+}
+.documentation-view .docs-section {
+  padding-top: 7rem;
+}
+.documentation-view .docs-section:last-child {
+  padding-bottom: 7rem;
+}
+.documentation-view .docs-link-item {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
+.documentation-view .docs-link-item:hover {
+  background-color: #800080;
 }/*# sourceMappingURL=theme.css.map */
