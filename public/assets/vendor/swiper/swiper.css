@@ -119,10 +119,8 @@
 /* CSS Mode */
 .swiper-css-mode > .swiper-wrapper {
   overflow: auto;
-  scrollbar-width: none;
-  /* For Firefox */
-  -ms-overflow-style: none;
-  /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
 }
 .swiper-css-mode > .swiper-wrapper::-webkit-scrollbar {
   display: none;

@@ -514,7 +514,7 @@ exports.ValidateDelete_MessageId = async (req, res, next) => {
     if (Is_Empty(req.params.message_id)) throw new Error('Params Message Id Empty')
 
     //Delete
-    req.conversation.messages = req.conversation.messages.filter(message => message.id !== req.params.message_ied)
+    req.conversation.messages = req.conversation.messages.filter(message => message.id !== req.params.message_id)
 
     next()
   } catch(e) {

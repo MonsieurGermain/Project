@@ -204,15 +204,15 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
                         display: flex;
                         align-items: center;
                         .name-and-type {
-                            margin-left: 0.5rem;
+                            margin-left: 1.25rem;
                             display: flex;
-                            align-items: center;
+                            align-items: start;
                             flex-direction: column;
                         }
                     }
                     a {
                         font-size: $font-size-xl;
-                        font-weight: bold;
+                        text-decoration: none;
                     }
                     .change-convo {
                         @media (min-width: $min-width-bp) {
@@ -246,8 +246,6 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
                         label {
                             @media (max-width: $max-width-bp) {
                                 position: relative;
-                                top: -10px;
-                                left: 2px;
                                 padding: 7px;
                                 border-radius: 50rem;
                             }
