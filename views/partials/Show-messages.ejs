@@ -1,11 +1,13 @@
 <div class="chat-body">
     <input id="delete-convo-input" type="checkbox" hidden></input>
+    <% if  (selected_conversation) { %>
     <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>
     <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
         <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
             <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
             <%- include('Popup-dialog', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this message?", confirm_text: "Yes", cancel_text: "No"}) %>
         <%}%>
+    <% } %>
     <% } %>
     <% if (selected_conversation) { %>
     <!-- Header -->
@@ -114,15 +116,15 @@
     </div>
     <% } else { %>
     <!-- MAke that Pretty -->
-    <div class="d-flex align-items-center justify-content-between mb-1">
-        <h6 class="mb-0 me-2">No Converastion Yet</h6>
+    <div class="no-convo-yet">
+        <h6>No Converastion Yet</h6>
     </div>
     <% } %>
 
     <!-- Footer (Send message form) -->
     <% if (selected_conversation) { %>
     <form method="POST" action="/messages/<%=selected_conversation.id%>#bottom">
-        <% } %>
+   
         <div class="card-footer d-sm-flex w-100 border-0 pt-3 pb-3 px-4">
             <div class="position-relative w-100 me-2 mb-3 mb-sm-0">
                 <textarea
@@ -145,4 +147,5 @@
             </button>
         </div>
     </form>
+    <% } %>
 </div>
