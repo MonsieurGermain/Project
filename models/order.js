@@ -117,18 +117,16 @@ orderSchema.methods.Reset_Timer = function() {
     return this
 }
 
-orderSchema.methods.Finalize_Order = async function(settings) {
-    this.status = 'finalized'
-
-    if (settings === false) {
-        const user = User.findOne({username: this.buyer})
+orderSchema.methods.Apply_buyerDeleteInfo = async function(settings) {
+    if (!settings) {
+        const user = await User.findOne({username: this.buyer})
         settings = user.settings.info_expiring
     }
 
     // Delete Provided Info
     if (settings.info_expiring === 0) { this.timer = undefined;  this.submited_info = []; } // Instantly Del
-    if (settings.info_expiring && settings.info_expiring !== 0) this.timer = Date.now() + settings.info_expiring * 86400000  //Set timer until Auto Del
-    if (!settings.info_expiring) this.timer = undefined  //Never Delete Auto Del
+    else if (settings.info_expiring && settings.info_expiring !== 0) this.timer = Date.now() + settings.info_expiring * 86400000  //Set timer until Auto Del
+    else if (!settings.info_expiring) this.timer = undefined  //Never Delete Auto Del
 
     return this
 }
@@ -163,14 +161,16 @@ orderSchema.methods.Expired_Timer = async function() {
             order.timer =  Date.now() + 2 * 24 * 60 * 60 * 1000
         break
         case 'recieved' :
-            await this.Finalize_Order(false)
+            this.status = 'finalized'
+            await this.Apply_buyerDeleteInfo(false)
         break
         case 'finalized' :
             this.submited_info = [] // ??
             this.timer = undefined
         break
         case 'disputed' :
-            this.timer = undefined
+            this.status = 'disputed'
+            await this.Apply_buyerDeleteInfo(false)
         break
     }
 }

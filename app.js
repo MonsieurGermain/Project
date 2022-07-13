@@ -7,11 +7,11 @@ const flash = require('express-flash')
 const methodOverride = require('method-override')
 require('dotenv').config()
 
-const app = express() 
+const app = express()
 require('./middlewares/passport')(passport);
 
 mongoose.connect('mongodb://localhost:27017/project', {
-    useNewUrlParser: true, useUnifiedTopology: true
+  useNewUrlParser: true, useUnifiedTopology: true
 });
 
 app.set("view engine", "ejs");
@@ -20,12 +20,12 @@ app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
 app.use(express.static(__dirname + '/public'));
 app.use(session({
-      secret: process.env.SESSION_SECRET,
-      resave: true,
-      saveUninitialized: true,
-      cookie : {maxAge : 5400000} // 1.5 hours
-    })
-  );
+  secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 5400000 } // 1.5 hours
+})
+);
 // FLASH MIDDLEWARE
 app.use(flash());
 app.use(passport.initialize())
@@ -41,26 +41,31 @@ app.use((req, res, next) => {
   next()
 })
 
+global.siteSettings = {
+  autoPromote: true
+}
 
 
-const { Auto_Delete_Expired_Message, Auto_Check_Recieved_Payment, Update_Order_ExpiredTimer } = require('./middlewares/constant-function')
+const { Auto_Delete_Expired_Message, Auto_Check_Recieved_Payment, Update_Order_ExpiredTimer, autoDelete_InactiveUser } = require('./middlewares/constant-function')
 Auto_Delete_Expired_Message
 Auto_Check_Recieved_Payment
 Update_Order_ExpiredTimer
+autoDelete_InactiveUser
 
 const HOME_ROUTER = require('./routes/home')
 const LOGIN_ROUTER = require('./routes/login')
 const DEL_PUT_CREATE_PRODUCT_ROUTER = require('./routes/manipulate-product')
 const PROFILE = require('./routes/profile')
 const PRODUCTS = require('./routes/products')
-const ERROR = require('./routes/404') 
+const ERROR = require('./routes/404')
 const MESSAGE = require('./routes/message')
 const ORDER = require('./routes/order')
 const REVIEW = require('./routes/review')
 const SETTINGS = require('./routes/settings')
-const ADMIN = require('./routes/admin')
+const ADMINFUNCTION = require('./routes/admin')
 const REPORT = require('./routes/report')
 const DISPUTE = require('./routes/dispute')
+const PROMOTE = require('./routes/promotion')
 
 app.use('/', HOME_ROUTER)
 app.use('/', LOGIN_ROUTER)
@@ -72,16 +77,20 @@ app.use('/', MESSAGE)
 app.use('/', ORDER)
 app.use('/', REVIEW)
 app.use('/', SETTINGS)
-app.use('/', ADMIN)
+app.use('/', ADMINFUNCTION)
 app.use('/', REPORT)
 app.use('/', DISPUTE)
+app.use('/', PROMOTE)
 
-// fix Order resume chat
-// Update Admin functionnality
+// Upgrade Promotion Routes
+// Make change on front-end to make it responsive with Authorization
 
-// PRIORITY 
+// Better Error Handling When Uploading Img
+
+
+// PRIORITY
 // XMR ESCROW
-// ADMIN PAGE AND SYSTEM
+// ADMIN PAGE AND SYSTEM Report, Feedback/Message, Ban User
 
 // To do 
 // fix product array and product img sizing
@@ -97,6 +106,6 @@ app.use('/', DISPUTE)
 // Offline local 
 
 
-app.listen('3000', (req,res) => {
-    console.log('Server running on port 3000')
+app.listen('3000', (req, res) => {
+  console.log('Server running on port 3000')
 })

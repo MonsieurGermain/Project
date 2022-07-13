@@ -57,6 +57,17 @@
               <% } %>
             <% } %>
 
+            <% if (orders[i].status === 'disputed') { %>
+              <span class="ms-5">
+                <p class="mb-0">Winner:</p>
+                <% if (orders[i].dispute_winner === orders[i].vendor) { %>
+                  <p class="mb-0"><b><%=orders[i].vendor%></b></p>
+                <% } else { %>
+                  <p class="mb-0"><b><%=orders[i].buyer%></b></p>
+                <% } %>
+            </span>
+            <% } %>
+
             <span class="ms-5">
                 <p class="mb-0">Time Left:</p>
                 <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">

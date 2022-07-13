@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const Product = require('../models/product')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Product, existProduct, isProduct_Vendor, Validate_Query_Product_Slug, Is_titleTaken } = require('../middlewares/validation')
+const { Validate_Product, FetchData, isProduct_Vendor, Validate_Query_Product_Slug, Is_titleTaken } = require('../middlewares/validation')
 const { uploadProductImg, deleteOld_Img } = require('../middlewares/function')
 
 //POST
@@ -54,12 +54,12 @@ async (req, res) => {
 })
 
 //Delete
-router.delete('/delete-product/:slug', Need_Authentification, existProduct, isProduct_Vendor,
+router.delete('/delete-product/:slug', Need_Authentification, 
+FetchData(['params', 'slug'], Product, 'slug', 'product'), 
+isProduct_Vendor,
 async (req,res) => {
     try {
         const { product } = req
-
-        deleteOld_Img(`./public/${product.img_path}`) //Del Product Pic
 
         await product.Delete_Orders_And_Reviews() //Del Orders & Reviews on this Product
         await product.delete() // Del the Product itself
@@ -77,7 +77,7 @@ async (req,res) => {
 // GET
 router.get('/create-product', 
 Need_Authentification, Validate_Query_Product_Slug,
-//Is_Vendor,
+//isVendor,
 async (req,res) => {
     const { product } = req
     res.render('product-create', { product })

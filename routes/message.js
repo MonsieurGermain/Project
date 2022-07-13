@@ -3,7 +3,7 @@ const router = express.Router()
 const Conversation = require('../models/conversation')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Conversation, Validate_Message, Find_ifConversation_alreadyExist, existConversation, Find_allConverastion_ofUser, Validate_SelectedConversation_Id, ValidateDelete_MessageId, Sending_toHimself } = require('../middlewares/validation')
+const { Validate_Conversation, Validate_Message, Find_ifConversation_alreadyExist, FetchData, isPartofConversation, Find_allConverastion_ofUser, Validate_SelectedConversation_Id, ValidateDelete_MessageId, Sending_toHimself } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 // Perfect that ?
@@ -55,22 +55,33 @@ function Get_IndexOf(conversations, id) {
     return // If no Id and No Conversation return Nothing
 }
 
+async function Delete_onSeeing_Message(conversation, username) {
+    const isSender_2 = conversation.sender_2 === username ? true : false 
+    for(let i = 0; i < conversation.messages.length; i++) {
+        if (isSender_2) {
+            if (conversation.messages[i].expire_at === 'seeing' && conversation.messages[i].sender !== conversation.messages[i].sender_2) conversation.messages[i].expire_at = 1
+        } else { 
+            if (conversation.messages[i].expire_at === 'seeing' && conversation.messages[i].sender === conversation.messages[i].sender_2) conversation.messages[i].expire_at = 1
+        }
+    }
+    await conversation.save()
+}
+
 async function Format_Conversation(conversations, username, id) {
     
-    const indexOf_SelectedConversation = Get_IndexOf(conversations, id) // Get Index of The Selected Conversation
-    if (indexOf_SelectedConversation || indexOf_SelectedConversation === 0) conversations[indexOf_SelectedConversation] = Create_Link(conversations[indexOf_SelectedConversation], username) // If Index Format Selected Conversation
+    const index_selectedConversation = Get_IndexOf(conversations, id) // Get Index of The Selected Conversation
+
+    // Manipulate Selected Conversation
+    if (index_selectedConversation || index_selectedConversation === 0) conversations[index_selectedConversation] = Create_Link(conversations[index_selectedConversation], username) // If Index Format Selected Conversation
+    if (conversations[index_selectedConversation]) await Delete_onSeeing_Message(conversations[index_selectedConversation], username)
 
     for(let i = 0; i < conversations.length; i++) {
-
     conversations[i].img_path = await Get_User_Img_Path(conversations[i], username) // Get Img Path Of the Conversation Partner
-
     conversations[i] = Format_Username(conversations[i], username) // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
     }
 
-    return {formated_conversations: conversations, index_selectedConversation: indexOf_SelectedConversation}
+    return [conversations, index_selectedConversation]
 }
-
-
 
 
 // CREATE MESSAGE
@@ -83,7 +94,9 @@ async (req, res) => {
         const New_Or_Updated_Conversation = Create_Or_Update_Conversation(Found_Conversation, req.body, req.user.username, req.params.username, req.user.settings.message_expiring)
         await New_Or_Updated_Conversation.save()
 
-        res.redirect('/messages')
+        let redirect_url = '/messages'
+        if (Found_Conversation) redirect_url = `/messages?id=${Found_Conversation.id}` 
+        res.redirect(redirect_url)
 
     } catch (e) {
         console.log(e)
@@ -94,7 +107,7 @@ async (req, res) => {
 
 
 router.post('/messages/:id',
-Need_Authentification, existConversation, Validate_Message,
+Need_Authentification, FetchData(['params', 'id'], Conversation, undefined, 'conversation'), isPartofConversation, Validate_Message,
 async (req, res) => {
     try {
         const { conversation } = req
@@ -119,7 +132,7 @@ Need_Authentification, Find_allConverastion_ofUser, Validate_SelectedConversatio
 async (req, res) => {
     try {
         let { conversations } = req
-        const {formated_conversations, index_selectedConversation} = await Format_Conversation(conversations, req.user.username, req.query.id) // Function Format All Conversation and Return IndexOf Selected Conversaiotn
+        const [formated_conversations, index_selectedConversation] = await Format_Conversation(conversations, req.user.username, req.query.id) // Function Format All Conversation and Return IndexOf Selected Conversaiotn
 
         res.render('messages', {conversations: formated_conversations,  selected_conversation: formated_conversations[index_selectedConversation]})
 
@@ -134,7 +147,7 @@ async (req, res) => {
 
 // DELETE
 router.delete('/delete-conversation/:id', 
-Need_Authentification, existConversation,
+Need_Authentification, FetchData(['params', 'id'], Conversation, undefined, 'conversation'), isPartofConversation,
 async (req, res) => {
     try {
         const {conversation} = req
@@ -150,7 +163,7 @@ async (req, res) => {
 
 
 router.delete('/delete-message/:id/:message_id', 
-Need_Authentification, existConversation, ValidateDelete_MessageId,
+Need_Authentification, FetchData(['params', 'id'], Conversation, undefined, 'conversation'), isPartofConversation, ValidateDelete_MessageId,
 async (req, res) => {
     try {
         let { conversation } = req

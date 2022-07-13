@@ -1,5 +1,6 @@
 const Conversation = require('../models/conversation')
 const Order = require('../models/order')
+const User = require('../models/user')
 
 async function Delete_Expired_Message() {
     const date = Date.now()
@@ -16,7 +17,7 @@ async function Delete_Expired_Message() {
       await Delete_Old_Message[i].save()
     }
 } 
-exports.Auto_Delete_Expired_Message = setInterval(async function(){ await Delete_Expired_Message()}, 21600000)
+exports.Auto_Delete_Expired_Message = setInterval(async function(){ await Delete_Expired_Message()}, 300000) // 5 min 
 
 
 
@@ -41,6 +42,15 @@ async function Update_Order() {
     orders[i].save()
   }
 }
-exports.Update_Order_ExpiredTimer = setInterval(async function(){ await Update_Order()}, 5000
-//600000
-) //10 min
+exports.Update_Order_ExpiredTimer = setInterval(async function(){ await Update_Order()}, 450000) //7.5 min
+
+
+
+async function Delete_InactiveUser() {
+  const users = await User.find({expire_at : { $lt : Date.now()}})
+  for(let i = 0; i < users.length; i++) {
+    await users[i].Delete_User_Conversation_Etc()
+    await users[i].delete() 
+  }
+}
+exports.autoDelete_InactiveUser = setInterval(async function(){ await Delete_InactiveUser()}, 86400000) // 1day 

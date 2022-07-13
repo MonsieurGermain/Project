@@ -221,6 +221,7 @@ async function Delete_Reviews(slug) {
 }
 
 productSchema.methods.Delete_Orders_And_Reviews = async function() {
+    deleteOld_Img(`./public/${this.img_path}`)
     await Delete_Orders(this.slug)
     await Delete_Reviews(this.slug)
 }

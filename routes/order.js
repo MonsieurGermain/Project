@@ -4,7 +4,7 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_ProvidedInfo, Validate_Update_Order, existProduct, existOrder, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
+const { Validate_ProvidedInfo, Validate_Update_Order, FetchData, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
@@ -82,8 +82,9 @@ async function HandleOrderRequest(request, order, user_settings) {
             order.status = request
             order.timer =  Date.now() + 172800000 // 2days
         break
-        case 'finished' : 
-            await order.Finalize_Order(user_settings)
+        case 'finished' :
+            order.status = 'finalized' 
+            await order.Apply_buyerDeleteInfo(user_settings)
         break
         case 'rejected':
             order.Reject_Order(user_settings)
@@ -177,7 +178,7 @@ async function Format_Orders_Array(orders, buyer = false, order_link = true) {
 
 // Routes
 router.get('/order/:slug', 
-Need_Authentification, existProduct,
+Need_Authentification, FetchData(['params', 'slug'], Product, 'slug', 'product'),
 async (req,res) => {
     try { 
         const { product } = req
@@ -195,7 +196,7 @@ async (req,res) => {
 
 
 router.post('/create-order/:slug',
-Need_Authentification, existProduct, Validate_OrderCustomization,
+Need_Authentification, FetchData(['params', 'slug'], Product, 'slug', 'product'), Validate_OrderCustomization,
 async (req,res) => {
     try {
         const { product } = req
@@ -243,7 +244,7 @@ async (req,res) => {
 })
 
 
-router.get('/submit-info/:id', Need_Authentification, existOrder, isOrder_Buyer, 
+router.get('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, 
 async (req,res) => {
     try {
         const { order } = req
@@ -258,8 +259,8 @@ async (req,res) => {
 })
 
 
-router.post('/submit-info/:id', 
-Need_Authentification, existOrder, isOrder_Part, Validate_ProvidedInfo,
+router.post('/submit-info/:id',
+Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Part, Validate_ProvidedInfo,
 async (req,res) => {
     try {
         const { order } = req       
@@ -290,7 +291,7 @@ async (req,res) => {
 
 
 router.get('/pay/:id', 
-Need_Authentification, existOrder, isOrder_Buyer,
+Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer,
 async (req,res) => {
     try {
         const { order } = req
@@ -305,7 +306,7 @@ async (req,res) => {
 
 
 router.get('/order-resume/:id',
-Need_Authentification, existOrder, isOrder_Part,
+Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Part,
 async (req, res) => {
     try {
         let { order } = req
@@ -323,7 +324,7 @@ async (req, res) => {
 
 
 
-router.put('/update-order/:id', Need_Authentification, existOrder, isOrder_VendorOrBuyer, Validate_Update_Order,
+router.put('/update-order/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer, Validate_Update_Order,
 async (req,res) => {
     try {
         let { order } = req
@@ -362,7 +363,7 @@ async (req,res) => {
 
 
 
-router.delete('/delete-order/:id', Need_Authentification, existOrder, isOrder_VendorOrBuyer,
+router.delete('/delete-order/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer,
 async (req,res) => {
     try {
         const { order } = req
