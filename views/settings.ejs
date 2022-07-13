@@ -59,7 +59,6 @@
               <!-- Account security -->
               <div class="col-md-8 offset-lg-1 pb-5 mb-lg-2 mb-lg-4 pt-md-5 mt-n3 mt-md-0">
                 <div class="ps-md-3 ps-lg-0 mt-md-2 pt-md-4 pb-md-2">
-
                   <% if (error.length) { %>
                     <div class="mb-3">
                     <%- include('partials/Flash-message', {message: error}) %>
@@ -74,6 +73,75 @@
                   <% if (!query.section || query.section === 'security') { %>
                     <div>
                     <h1 class="h2 pt-xl-1 pb-3">Security</h1>
+
+                    <% if (authuser.email) { %>
+                      <h2 class="h5 mb-3">Change Email Address</h2>
+                    <% } else { %> 
+                      <h2 class="h5 mb-3">Add Email Address</h2>
+                    <% } %>
+                    <form action="/add-email" method="POST">
+                      <input type="text" name="email" placeholder="Email Address" class="form-control form-control-lg mb-2" value="<%=authuser.email%>">
+                      <div class="d-flex align-items-center mt-3 mb-5">
+                        <% if (authuser.email) { %>
+                          <span class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirm-email" required>
+                            <label class="form-check-label" for="confirm-email">I Understand that it might cause some problems</label>
+                          </span>
+                          <button type="submit" class="btn btn-primary ms-4">Change Email Address</button>
+                        <% } else { %>
+                          <button type="submit" class="btn btn-primary">Add Email Address</button>
+                        <% } %>
+                      </div> 
+                    </form>
+
+                    <% if (authuser.email_verification_code) { %>
+                      <h2 class="h5 mb-3">Confirmation Code</h2>
+ 
+                      <form action="/resend-email-verification" method="POST">
+                        <p>Havent Recieve any Confirmation Code ? Dont Forget to check in your spam. <button 
+                        style="
+                          color: #800080;
+                          text-decoration: underline;
+                          background: none;
+                          border: none;" type="submit">Resend</button></p>
+                      </form>
+
+                        <form action="/confirm-email" method="POST">
+                          <input type="text" name="confirmation_code" placeholder="Enter Your Verification Code Here" class="form-control form-control-lg mb-2" maxlength="6" minlength="6">
+                          <button type="submit" class="btn btn-primary mb-5">Submit Code</button>
+                        </form>
+                    <% } %>
+
+
+                    <% if (authuser.pgp_keys) { %>
+                      <h2 class="h5 mb-3">Change Pgp Keys</h2>
+                    <% } else { %> 
+                      <h2 class="h5 mb-3">Add Pgp Keys</h2>
+                    <% } %>
+                    <form action="/add-pgp" method="POST">
+                      <input type="text" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-2" value="<%=authuser.pgp_keys%>">
+                      <div class="d-flex align-items-center mt-3 mb-5">
+                        <% if (authuser.pgp_keys) { %>
+                          <span class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirm-pgp" required>
+                            <label class="form-check-label" for="confirm-pgp">I Understand that it might cause some problems</label>
+                          </span>
+                          <button type="submit" class="btn btn-primary ms-4">Change Pgp Keys</button>
+                        <% } else { %>
+                          <button type="submit" class="btn btn-primary">Add Pgp Keys</button>
+                        <% } %>
+                      </div>  
+                    </form>
+
+                    <% if (authuser.pgp_keys_verification_words_encrypted) { %>
+                      <h2 class="h5 mb-3">Decrypt this Code with your own pgp and enter the result to verify your pgp keys</h2> 
+                      <p><%=authuser.pgp_keys_verification_words_encrypted%></p>
+                      <h2 class="h5 mb-3">Verify Pgp Keys</h2>
+                      <form action="/verify-pgp" method="POST">
+                        <input type="text" name="pgp_verification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
+                        <button type="submit" class="btn btn-primary mb-5">Verify Pgp</button>
+                      </form>
+                    <% } %>
                   
                     <!-- Password -->
                     <h2 class="h5 text-primary mb-4">Password</h2>
@@ -104,11 +172,53 @@
                         <button type="submit" class="btn btn-primary">Change Password</button>
                       </div>
                     </form>
+
+
+                    <h2 class="h5 text-primary my-4">Enable 2 Step Verification</h2>
+                    <% if ((authuser.email && !authuser.email_verification_code) || (authuser.pgp_keys && !authuser.pgp_keys_verification_words)) { %>
+                      <form action="/enable-2fa" method="POST">
+
+                        <% if (authuser.email && !authuser.email_verification_code) { %>
+                          <input class='form-check-input' type="radio" name="step_verification" id="email-2fa" value="email" required
+                          <% if (authuser.settings.step_verification === 'email') { %>
+                            checked
+                          <% } %>>
+                          <label class='form-check-label ms-2' for="email-2fa">Email</label><br>
+                        <% } else { %>
+                          <label class='form-check-label opacity-60' for="2">Email (Add a Verified an Email to Unable this Option)</label><br>
+                        <% } %>
+
+                        <% if (authuser.pgp_keys && !authuser.pgp_keys_verification_words) { %>
+                          <div class="mt-2">
+                          <input class='form-check-input' type="radio" name="step_verification" id="pgp-2fa" value="pgp" required
+                          <% if (authuser.settings.step_verification === 'pgp') { %>
+                            checked
+                          <% } %>>
+                          <label class='form-check-label ms-2' for="pgp-2fa">Pgp Keys</label><br>
+                        </div>
+                        <% } else { %>
+                          <label class='form-check-label opacity-60' for="2">Pgp (Add a Verified a Pgp Keys to Unable this Option)</label><br>
+                        <% } %>
+
+                        <span class="d-flex align-items-center">
+                        <% if (authuser.settings.step_verification) { %>
+                          <button class="btn btn-primary mt-4" type="submit">Change 2 step Verification</button>
+                        <% } else { %> 
+                          <button class="btn btn-primary mt-4" type="submit">Add 2 step Verification</button>
+                        <% } %>
+                      </form>
+                      <% if (authuser.settings.step_verification) { %>
+                        <form action="/remove-2fa" method="POST">
+                        <button class="btn btn-danger mt-4 ms-2" type="submit">Remove 2 Step Verification</button>
+                      </form>
+                      <% } %>
+                    </span>
+                    <% } %>
   
   
                 <!-- Delete account -->
                 <h2 class="h5 text-primary pt-1 pt-lg-3 mt-4">Delete account</h2>
-                <p>This action is irreversible and will result in the lost of all data of your profile expect the reviews that you have posted</p>
+                <p>This action is irreversible and will result in the lost of all data of your profile except the reviews that you have posted</p>
                 <form action="/delete-user/<%=authuser.username%>?_method=DELETE" method="POST">
                 <div class="form-check mb-4">
                   <input type="checkbox" id="delete-account" class="form-check-input" required>
@@ -126,67 +236,102 @@
 
                             <label for="select-input" class="form-label">Automaticly Delete Message after :</label>
                             <select name="messages" class="form-select mb-4" id="select-input">
-                                <option value="never"
+                              <option value="never"
                                 <% if (!authuser.settings.message_expiring) { %>
-                                    selected
+                                   selected
                                 <% } %>
                                 >Never</option> 
                                 <option value="1"
-                                <% if (authuser.settings.message_expiring === 1) { %>
+                                <% if (authuser.settings.message_expiring === '1') { %>
                                     selected
                                 <% } %>
                                 >1 days</option> 
                                 <option value="3"
-                                <% if (authuser.settings.message_expiring === 3) { %>
+                                <% if (authuser.settings.message_expiring === '3') { %>
                                     selected
                                 <% } %>
                                 >3 days</option> 
                                 <option value="7"
-                                <% if (authuser.settings.message_expiring === 7) { %>
+                                <% if (authuser.settings.message_expiring === '7') { %>
                                     selected
                                 <% } %>
                                 >1 weeks</option> 
                                 <option value="30"
-                                <% if (authuser.settings.message_expiring === 30) { %>
+                                <% if (authuser.settings.message_expiring === '30') { %>
                                     selected
                                 <% } %>
                                 >≈ 1 months (30days)</option> 
+                                <option value="seeing"
+                                <% if (authuser.settings.message_expiring === 'seeing') { %>
+                                    selected
+                                <% } %>
+                                >≈ 3 Minutes After Seeing</option> 
                             </select>
-                    
+                  
                             <label for="select-input" class="form-label">Automaticly Delete the info you provide when completing an order after : </label>
                             <select name="informations" class="form-select mb-4" id="select-input">
-                                <option value="never"
+                              <option value="never"
                                 <% if (!authuser.settings.info_expiring) { %>
-                                    selected
+                                   selected
                                 <% } %>
                                 >Never</option> 
                                 <option value="0"
-                                <% if (authuser.settings.info_expiring === 0) { %>
+                                <% if (authuser.settings.info_expiring === '0') { %>
                                     selected
                                 <% } %>
                                 >Instantly</option> 
                                 <option value="1"
-                                <% if (authuser.settings.info_expiring === 1) { %>
+                                <% if (authuser.settings.info_expiring === '1') { %>
                                     selected
                                 <% } %>
                                 >1 days</option> 
                                 <option value="3"
-                                <% if (authuser.settings.info_expiring === 3) { %>
+                                <% if (authuser.settings.info_expiring === '3') { %>
                                     selected
                                 <% } %>
                                 >3 days</option> 
                                 <option value="7"
-                                <% if (authuser.settings.info_expiring === 7) { %>
+                                <% if (authuser.settings.info_expiring === '7') { %>
                                     selected
                                 <% } %>
                                 >1 weeks</option> 
                                 <option value="30"
-                                <% if (authuser.settings.info_expiring === 30) { %>
+                                <% if (authuser.settings.info_expiring === '30') { %>
                                     selected
                                 <% } %>
                                 >≈ 1 months (30days)</option> 
                             </select>
                     
+                            <p class="mb-1">What should we do when you become inactive ?</p>
+                            <label for="select-input" class="form-label mt-0">Delete my Account after :</label>
+                            <select name="userDel" class="form-select mb-4" id="select-input">
+                              <option value="never"
+                                <% if (!authuser.settings.user_expiring) { %>
+                                   selected
+                                <% } %>
+                                >Never</option> 
+                                <option value="7"
+                                <% if (authuser.settings.user_expiring === 7) { %>
+                                    selected
+                                <% } %>
+                                >1 week</option> 
+                                <option value="14"
+                                <% if (authuser.settings.user_expiring === 14) { %>
+                                    selected
+                                <% } %>
+                                >2 weeks</option> 
+                                <option value="30"
+                                <% if (authuser.settings.user_expiring === 30) { %>
+                                    selected
+                                <% } %>
+                                >≈ 1 months (30days)</option> 
+                                <option value="365"
+                                <% if (authuser.settings.user_expiring === 365) { %>
+                                    selected
+                                <% } %>
+                                >1 years</option> 
+                            </select>
+
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </form>
                     </div>

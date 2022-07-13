@@ -53,7 +53,7 @@ exports.sanitizeHTML = (object) => {
 
 
 // Pagination
-exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuzzyProduct) => {
+exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, paginateArray) => {
   page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page)
 
   const startIndex = (page - 1) * limit
@@ -63,7 +63,7 @@ exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuz
 
   // Count Document
   let countedDocuments
-  if (fuzzyProduct) countedDocuments = fuzzyProduct.length 
+  if (paginateArray) countedDocuments = paginateArray.length 
   else countedDocuments = await model.countDocuments(query).exec()
 
   // NextPage Creation
@@ -73,8 +73,8 @@ exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, fuz
   if (endIndex < countedDocuments) results.nextPage.push(page + 1)
   if ((page + 1) * limit < countedDocuments) results.nextPage.push(page + 2)
   
-  if (fuzzyProduct) {
-    results.results = fuzzyProduct.splice(startIndex, endIndex)
+  if (paginateArray) {
+    results.results = paginateArray.splice(startIndex, endIndex)
     return results
   } else { 
       try {
@@ -95,12 +95,14 @@ const storageProduct = multer.diskStorage({
     cb(null, generateRandomString(25) + path.extname(file.originalname));
   }
 });
+
 const storageUser = multer.diskStorage({
   destination: './public/uploads/user-img',
   filename: function(req, file, cb){
     cb(null, generateRandomString(25) + path.extname(file.originalname));
   }
 });
+
 // Check File Type
 function checkFileType(file, cb){
   // Allowed ext
@@ -116,6 +118,7 @@ function checkFileType(file, cb){
     cb('Error: Images Only!');
   }
 }
+
 exports.uploadProductImg = multer({
   storage: storageProduct,
   limits:{fileSize: 5000000},
@@ -130,6 +133,19 @@ exports.uploadUserImg = multer({
     checkFileType(file, cb);
 }
 })
+
+
+exports.RandomNumber = function(length) {
+  var result           = '';
+  var characters       = '0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * 
+charactersLength));
+ }
+ return result;
+}
+
 
 exports.deleteOld_Img = (path) => {
     unlink(path, (err) => {
@@ -192,5 +208,20 @@ exports.IsNot_Number = (value) => {
     return 
   }
 
+exports.isEmail = (email) => {
+    return email.match(
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  };
 
 
+var randomWords = require('random-words');
+
+exports.RandomList_ofWords = function(number) {
+  let randomSentence = randomWords(number)
+  let merged_word = randomSentence[0]
+    for(let i = 1; i < randomSentence.length; i++) {
+      merged_word += ' ' + randomSentence[i]
+    }
+  return merged_word
+}

@@ -1,0 +1,80 @@
+<%- include('partials/Head') %>
+
+  <!-- Body -->
+<body>
+
+    <!-- Page wrapper for sticky footer -->
+    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+    <main class="page-wrapper">
+
+
+      <%- include('partials/Navbar') %>
+
+      <section class="container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
+
+        <!-- BreadCrumb -->
+        <nav class="py-4 mb-3" aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+              <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Admin Panel</a>
+          </li>
+            <li class="breadcrumb-item active" aria-current="page">Promote User</li>
+          </ol>
+        </nav>
+
+<!-- 
+      <div class="p-sm-3 label-input">
+
+
+     </div> -->
+     <% if (users.results.length) { %>
+      <% const usersResult = users.results %> 
+      <% for(let i = usersResult.length - 1; i > -1; i--) { %>
+        <div class="card card-body d-flex flex-row align-items-center card-hover mt-2">
+          <img src="<%=usersResult[i].img_path%>" class="d-block big-rc rounded-circle" width="150" alt="<%=usersResult[i].username%>">
+          <div class="col-md-7" style="width: 75%;">
+            <div class="py-5 mx-auto" style="max-width: 530px;">
+              <div class=" opacity-50 mb-2">User :</div>
+              <h2 class="mb-4">
+                <a href="/profile/<%=usersResult[i].username%>?productPage=1&reviewPage=1">
+                  <%=usersResult[i].username%>
+                </a></h2>
+
+              <div class="d-flex flex-column flex-sm-row">
+                <a href="/profile/<%=usersResult[i].username%>?productPage=1&reviewPage=1" class="btn btn-primary me-sm-4 mb-3 mb-sm-0">
+                  See Profile
+                </a>
+                <form action="/promote-user/<%=usersResult[i].username%>" method="POST">
+                <button type="submit" class="btn btn-success me-sm-4 mb-3 mb-sm-0">
+                  Promote
+                </button>
+              </form>
+              <form action="/promote-user/<%=usersResult[i].username%>?decline=true" method="POST">
+                <button type="submit" class="btn btn-danger me-sm-4 mb-3 mb-sm-0">
+                  Refuse
+                </button>
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+     <% } %>
+     <div class="mt-4">
+     <%- include('partials/Pagination', {nextPage: users.nextPage, currentPage: parseInt(query.usersPage), queryName: 'usersPage'}) %>
+    </div>
+
+     <% } else { %>
+      <p>No user to Promote...</p>
+     <% } %>
+     
+  </section>
+
+    <!-- Footer -->
+    <%- include('partials/Footer') %>
+    </main>
+
+
+  </body>
+</html>
+

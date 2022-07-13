@@ -3,12 +3,13 @@ const router = express.Router()
 const { Need_Authentification } = require('../middlewares/authentication')
 const Review = require('../models/review')
 const User = require('../models/user')
+const Order = require('../models/order')
 const Product = require('../models/product')
-const { Validate_Reviews, existOrder, isOrder_Buyer } = require('../middlewares/validation')
+const { Validate_Reviews, FetchData, isOrder_Buyer } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 
-router.post('/create-review/:id', Need_Authentification, existOrder, isOrder_Buyer, Validate_Reviews,
+router.post('/create-review/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, Validate_Reviews,
 async (req,res) => { 
     const { order } = req
 

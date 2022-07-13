@@ -1,14 +1,15 @@
 const express = require('express')
 const router = express.Router()
+const User = require('../models/user')
 const Product = require('../models/product')
 const Review = require('../models/review')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Profile, existUser, paramsUsername_isReqUsername } = require('../middlewares/validation')
+const { Validate_Profile, FetchData, paramsUsername_isReqUsername } = require('../middlewares/validation')
 const { uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function')
 
 
 // Route
-router.get('/profile/:username', existUser,
+router.get('/profile/:username', FetchData(['params', 'username'], User, 'username', 'user'),
 async (req, res) => {
     try { 
         const { user } = req 

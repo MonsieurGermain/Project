@@ -22,15 +22,21 @@ const reviewSchema = new mongoose.Schema({
 
 const settingsSchema = new mongoose.Schema({
     message_expiring : {
-        type : Number ,
+        type: String
     },
     info_expiring : {
-        type : Number ,
+        type : String
+    },
+    user_expiring : {
+        type : Number
     },
     currency : { 
         type : String,
         required : true,
         default : 'USD'
+    },
+    step_verification : {
+        type : String, 
     }
 })
 
@@ -49,9 +55,32 @@ const userSchema = new mongoose.Schema({
         type : String,
         required: true
     },
+    authorization : {
+        type : String,
+        required: true,
+        default : 'buyer'
+    },
+    awaiting_promotion : { 
+        type: Boolean
+    },
+    email : { 
+        type : String,
+    },
+    email_verification_code : { 
+        type: String,
+    },
+    pgp_keys : { 
+        type : String,
+    },
+    pgp_keys_verification_words : { 
+        type : String,
+    },
+    pgp_keys_verification_words_encrypted : { 
+        type : String,
+    },
     settings : { 
         type : settingsSchema,
-        default : { message_expiring : 7, info_expiring : 7 },
+        default : { message_expiring : '7', info_expiring : '7'},
         required : true
     },
     job : {
@@ -76,8 +105,12 @@ const userSchema = new mongoose.Schema({
         type : reviewSchema,
         required: true, 
         default : { number_review : 0, total_note : 0, average_note: 0}
+    },
+    expire_at : { 
+        type: Number
     }
 })
+
 
 function rename_newImg(old_filename, new_name) {
     fs.rename(`./public/uploads/user-img/${old_filename}`, `./public/${new_name}`, (err) => {
@@ -94,6 +127,10 @@ userSchema.methods.UploadImg = function(file) {
     this.img_path = newImg_path
 }
 
+
+userSchema.methods.Update_IncativeDate = function() {
+    if (this.settings.user_expiring) this.expire_at = Date.now() + this.settings.user_expiring * 86400000
+}
 
 userSchema.methods.Add_Remove_Saved_Product = function(id) {
     if (this.saved_product.includes(id)) this.saved_product = this.saved_product.filter(element => element !== id) // Remove
@@ -121,6 +158,8 @@ userSchema.methods.Delete_User_Conversation_Etc = async function() {
         await products[i].delete_Orders_Reviews()
         products[i].delete()
     }
+
+    deleteOld_Img(`./public/${this.img_path}`)   
 }
 
 module.exports = mongoose.model('User', userSchema)

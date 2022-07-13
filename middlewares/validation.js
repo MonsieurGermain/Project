@@ -2,15 +2,16 @@ const Product = require('../models/product')
 const Conversation = require('../models/conversation')
 const Order = require('../models/order')
 const User = require('../models/user')
-const { Is_Empty, IsNot_String, Is_Shorter, Is_Longuer, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteOld_Img, Format_Username_Settings} = require('./function')
+const { Is_Empty, IsNot_String, Is_Shorter, Is_Longuer, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteOld_Img, Format_Username_Settings, isEmail, isolate_mimetype} = require('./function')
 
 // Vars
-const Banned_Username = ['admin', 'admins', 'system', 'systems']
+const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous']
 const Conversation_Type = ['default', 'semi-hidden', 'hidden']
 const Rating_Possible = ['1', '2', '3', '4', '5']
 const List_Country = ['United-State', 'Canada']
-const List_Message_AutoDel = ['1', '3', '7', '30', 'never']
+const List_Message_AutoDel = ['1', '3', '7', '30', 'never', 'seeing']
 const List_Information_AutoDel = ['0', '1', '3', '7', '30', 'never']
+const List_UserDel = ['7', '14', '30', '365', 'never']
 const category = []
 
 // Function
@@ -64,25 +65,80 @@ function Replace_Empty(value) {
   }
   return value
 }
+function ValidateText(value, name, {minlength = 3, maxlength = 50, isRequired = true} = {}) {
+  if (!isRequired && !value) return ''
+
+  if (typeof(value) !== 'string') throw new Error(`Invalid ${name} Data Type`) 
+  value = value.trim()
+
+  if (isRequired && !value) throw new Error(`The ${name} fields is Required`)
+  if (value.length > maxlength || value.length < minlength) throw new Error(`The ${name} need to be within ${minlength} to ${maxlength} characters longs`)
+  return value
+}
+
+
+exports.ValidateValueByChoice = (path, allowed_value) => { 
+  return (req, res, next) => {
+    try { 
+      const value = req[path[0]][path[1]]
+      
+      if (!compareArray(allowed_value, value)) throw new Error(`Invalid ${path[0]} ${path[1]} Value`)
+      next()
+    } catch(e) {
+      console.log(e)
+      res.redirect('/error')
+    }
+}}
+
+
+async function Fetch_inDatabase(model, query, value) {
+  if (query) return await model.findOne({[query] : value})
+  else return await model.findById(value)
+}
+
+exports.FetchData = (path, model, query, varName) => { 
+  return async (req, res, next) => { 
+    try { 
+      const value = req[path[0]][path[1]]
+
+      if (!value) throw new Error(`${path[0]} ${path[1]} Empty`)
+      if (typeof(value) !== 'string') throw new Error(`${path[0]} ${path[1]} isnt a String`)
+
+      req[varName] = await Fetch_inDatabase(model, query, value)
+      if (!req[varName]) throw new Error(`${path[0]} ${path[1]} Invalid`)
+
+      next()
+    } catch(e) {
+      console.log(e)
+      res.redirect('/404')
+    }
+}}
+
+
+exports.ValidateNumber = (path, {min=1, max=99999} = {}) => { 
+  let value = req[path[0]][path[1]]
+  value = parseInt(value)
+
+  if (typeof(value) !== 'number') value = 1
+  if (value > max) value = max
+  if (value < min) value = min
+
+  req[path[0]][path[1]] = value 
+
+  next()
+}
+
+
 
 
 // Input Validation
 exports.Validate_Login = (req, res, next) => { 
   try {
     // Username
-    let name = 'Username'
-    if (IsNot_String(req.body.username))                           throw new Error(`Invalid ${name} Data Type`) 
-    req.body.username = req.body.username.trim()
-    if (Is_Empty(req.body.username))                                               throw new Error(`The ${name} fields is Required`) 
-    if (Is_Shorter(req.body.username, 3) || Is_Longuer(req.body.username, 50))    throw new Error(`The ${name} need to be within 3 to 50 characters longs`)
-    if (compareArray(Banned_Username, req.body.username.toLowerCase()))                 throw new Error(`You cannot use this ${name}`) 
+    req.body.username = ValidateText(req.body.username, 'Username')
 
     // Password
-    name = 'Password'
-    if (IsNot_String(req.body.password))                           throw new Error(`Invalid ${name} Data Type`) 
-    req.body.password = req.body.password.trim()
-    if (Is_Empty(req.body.password))                                               throw new Error(`The ${name} fields is Required`) 
-    if (Is_Shorter(req.body.password, 8) || Is_Longuer(req.body.password, 200))   throw new Error(`The ${name} need to be within 8 to 200 characters longs`)
+    req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 })
  
     next()
   } catch(e) {
@@ -93,23 +149,16 @@ exports.Validate_Login = (req, res, next) => {
 exports.Validate_Register = (req, res, next) => { 
   try {
     // Username
-    let name = 'Username'
-    if (IsNot_String(req.body.username))                                  throw new Error(`Invalid ${name} Data Type`) 
-    req.body.username = req.body.username.trim()
-    if (Is_Empty(req.body.username))                                               throw new Error(`The ${name} fields is Required`) 
-    if (Is_Shorter(req.body.username, 3) || Is_Longuer(req.body.username, 50))    throw new Error(`The ${name} need to be within 3 to 50 characters longs`) 
-    if (compareArray(Banned_Username, req.body.username.toLowerCase()))                 throw new Error(`You cannot use this ${name}`) 
+    req.body.username = ValidateText(req.body.username, 'Username')
+    if (compareArray(Banned_Username, req.body.username.toLowerCase())) throw new Error(`You cannot use this ${name}`) 
 
     // Password
-    name = 'Password'
-    if (IsNot_String(req.body.password))                                  throw new Error(`Invalid ${name} Data Type`) 
-    req.body.password = req.body.password.trim()
-    if (Is_Empty(req.body.password))                                               throw new Error(`The ${name} fields is Required`) 
-    if (Is_Shorter(req.body.password, 8) || Is_Longuer(req.body.password, 200))   throw new Error(`The ${name} need to be within 8 to 200 characters longs`) 
+    req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 })
  
     // Confirm Password
+    if (typeof(req.body.confirmPassword) !== 'string') throw new Error(`Invalid Confirm Password Data Type`) 
     req.body.confirmPassword = req.body.confirmPassword.trim()
-    if (req.body.confirmPassword !== req.body.password)                   throw new Error(`The ${name}s doesnt Match`) 
+    if (req.body.confirmPassword !== req.body.password) throw new Error(`The Passwords doesnt Match`) 
 
     next()
   } catch(e) {
@@ -120,15 +169,12 @@ exports.Validate_Register = (req, res, next) => {
 exports.Validate_Conversation = (req, res, next) => {
   try {
     // Message
-    if (IsNot_String(req.body.message))                                   throw new Error() 
-    req.body.message = req.body.message.trim()
-    if (Is_Empty(req.body.message))                                                throw new Error() 
-    if (Is_Shorter(req.body.message, 2) || Is_Longuer(req.body.message, 1000))    throw new Error() 
+    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 2, maxlength: 1000 })
 
     // Conversation Type
-    if (!compareArray(Conversation_Type, req.body.type)) throw new Error() 
+    if (!compareArray(Conversation_Type, req.body.type)) throw new Error()
 
-    if (!Is_Empty(req.body.timestamps)) req.body.timestamps = true
+    if (req.body.timestamps) req.body.timestamps = true
 
     next()
   } catch (e) {
@@ -138,11 +184,7 @@ exports.Validate_Conversation = (req, res, next) => {
 exports.Validate_Message = (req, res, next) => {
   try {
     // Message
-    if (IsNot_String(req.body.message))                                   throw new Error() 
-    req.body.message = req.body.message.trim()
-    if (Is_Empty(req.body.message))                                                throw new Error() 
-    if (Is_Shorter(req.body.message, 2) || Is_Longuer(req.body.message, 1000))    throw new Error() 
-
+    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 2, maxlength: 1000 })
     next()
   } catch (e) {
     res.redirect(`/error`)
@@ -151,23 +193,17 @@ exports.Validate_Message = (req, res, next) => {
 exports.Validate_ProvidedInfo = (req, res, next) => {
   try {
     // Info
-    if (IsNot_String(req.body.content))                                   throw new Error('Invalid Information Data Type')
-    req.body.info = req.body.content.trim()
-    if (Is_Empty(req.body.content))                                                throw new Error('The Information fields is Required') 
-    if (Is_Shorter(req.body.content, 2) || Is_Longuer(req.body.info, 3000))    throw new Error('Your Information need to be within 2 to 3000 characters longs')
-
+    req.body.content = ValidateText(req.body.content, 'Content', { minlength: 2, maxlength: 3000 })
     next()
   } catch (e) {
+    req.flash('error', e.message)
     res.redirect(`/error`)
   }
 }
 exports.Validate_Reviews = (req, res, next) => {
   try {
     // Review
-    if (IsNot_String(req.body.review))                                   throw new Error()
-    req.body.review = req.body.review.trim()
-    if (Is_Empty(req.body.review))                                                throw new Error() 
-    if (Is_Shorter(req.body.review, 5) || Is_Longuer(req.body.review, 500))    throw new Error()
+    req.body.review = ValidateText(req.body.review, 'Review', { minlength: 5, maxlength: 5000 })
 
     //Note
     if (!compareArray(Rating_Possible, req.body.note)) throw new Error()
@@ -219,26 +255,20 @@ exports.Validate_Update_Order = (req, res, next) => {
 exports.Validate_Profile = (req, res, next) => {
   try {
     // Job
-    if (IsNot_String(req.body.job))                                   throw new Error('Invalid Job Data Type')
-    req.body.job = req.body.job.trim()
-    if (Is_Longuer(req.body.job, 100))    throw new Error('Your Job cannot be longuer than 100 characters longs')
+    req.body.job = ValidateText(req.body.job, 'Job', { minlength: 0, maxlength: 100, isRequired: false})
 
     //Description
-    if (IsNot_String(req.body.description))                                   throw new Error('Invalid Description Data Type')
-    req.body.description = req.body.description.trim()
-    if (Is_Longuer(req.body.description, 3000))    throw new Error('Your Description cannot be longuer than 3000 characters longs')
+    req.body.description = ValidateText(req.body.description, 'Description', { minlength: 0, maxlength: 3000, isRequired: false})
 
 
     req.body.achievement = Filter_Empty(req.body.achievement)
     for(let i = 0; i < req.body.achievement.length; i++) {
-      if (IsNot_String(req.body.achievement[i])) throw new Error('Invalid Achievement Data Type')
-      if (Is_Longuer(req.body.achievement[i], 50)) throw new Error('Your Achievement cannot be longuer than 50 characters longs')
+      req.body.achievement[i] = ValidateText(req.body.achievement[i], 'Achievement #' + i, { minlength: 0, maxlength: 50, isRequired: false})
     }
 
     req.body.languages = Filter_Empty(req.body.languages)
     for(let i = 0; i < req.body.languages.length; i++) {
-      if (IsNot_String(req.body.languages[i])) throw new Error('Invalid Languages Data Type')
-      if (Is_Longuer(req.body.languages[i], 50)) throw new Error('Your Languages cannot be longuer than 50 characters longs')
+      req.body.languages[i] = ValidateText(req.body.languages[i], 'Languages #' + i, { minlength: 0, maxlength: 50, isRequired: false})
     }
 
     next()
@@ -256,16 +286,10 @@ exports.Validate_Profile = (req, res, next) => {
 exports.Validate_Product = (req, res, next) => {
   try {
     // Title
-    if (IsNot_String(req.body.title))                           throw new Error(`Invalid Title Data Type`) 
-    req.body.title = req.body.title.trim()
-    if (Is_Empty(req.body.title))                                               throw new Error(`The Title fields is Required`) 
-    if (Is_Shorter(req.body.title, 5) || Is_Longuer(req.body.title, 150))    throw new Error('The Title need to be within 5 to 150 characters longs')
+    req.body.title = ValidateText(req.body.title, 'Title', { minlength: 5, maxlength: 150})
 
     // Description
-    if (IsNot_String(req.body.description))                           throw new Error(`Invalid Description Data Type`) 
-    req.body.description = req.body.description.trim()
-    if (Is_Empty(req.body.description))                                               throw new Error(`The Description fields is Required`) 
-    if (Is_Shorter(req.body.description, 10) || Is_Longuer(req.body.description, 20000))    throw new Error('The Description need to be within 10 to 20000 characters longs')
+    req.body.description = ValidateText(req.body.description, 'Description', { minlength: 10, maxlength: 20000})
 
     // Price
     if (Is_Empty(req.body.price)) throw new Error(`The Price fields is Required`)
@@ -274,9 +298,7 @@ exports.Validate_Product = (req, res, next) => {
     if (Is_Smaller(req.body.price, 1) || Is_Bigger(req.body.price, 1000000)) throw new Error(`The Price cannot be less than 1 and more than 1000000`)
 
     // Message
-    if (IsNot_String(req.body.message))                                   throw new Error('Invalid Message Data Type')
-    req.body.message = req.body.message.trim()
-    if (Is_Longuer(req.body.message, 500))    throw new Error('Your Message cannot be longuer than 100 characters longs')
+    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 0, maxlength: 500, isRequired: false})
 
     //Allow Hidden
     if (req.body.allow_hidden) req.body.allow_hidden = true 
@@ -287,8 +309,7 @@ exports.Validate_Product = (req, res, next) => {
     // Details
     req.body.details = Filter_Empty(req.body.details)
     for(let i = 0; i < req.body.details.length; i++) {
-      if (IsNot_String(req.body.details[i])) throw new Error('Invalid Details Data Type')
-      if (Is_Longuer(req.body.details[i], 100)) throw new Error('Your Details cannot be longuer than 100 characters longs')
+      req.body.details[i] = ValidateText(req.body.details[i], 'Details #' + i, { minlength: 0, maxlength: 100, isRequired: false})
     }
 
     // Availble Quantity
@@ -313,8 +334,7 @@ exports.Validate_Product = (req, res, next) => {
 
     // Shipping Option
     for(let i = 0; i < req.body.describe_ship.length; i++) {
-      if (IsNot_String(req.body.describe_ship[i])) throw new Error('Invalid Shipping Option Description Data Type')
-      if (Is_Longuer(req.body.describe_ship[i], 200)) throw new Error('Your Shipping Option Description cannot be longuer than 200 characters longs')
+      req.body.describe_ship[i] = ValidateText(req.body.describe_ship[i], 'Shipping Option Description #' + i, { minlength: 0, maxlength: 200, isRequired: false})
     }
 
     req.body.price_ship = Replace_Empty(req.body.price_ship)
@@ -328,18 +348,13 @@ exports.Validate_Product = (req, res, next) => {
 
 
     // Selection #1
-    if (IsNot_String(req.body.selection_1_name))                                   throw new Error('Invalid Selection #1 Name Data Type')
-    req.body.selection_1_name = req.body.selection_1_name.trim()
-    if (Is_Longuer(req.body.selection_1_name, 100))    throw new Error('Your Selection #1 Name cannot be longuer than 100 characters longs')
+    req.body.selection_1_name = ValidateText(req.body.selection_1_name, 'Selection Name #1', { minlength: 0, maxlength: 100, isRequired: false})
 
-
-    if (!Is_Empty(req.body.selection_1_name)) {
+    if (req.body.selection_1_name) {
       for(let i = 0; i < req.body.se_1_des.length; i++) {
-        if (IsNot_String(req.body.se_1_des[i])) throw new Error('Invalid Selection #1 Descriptions Description Data Type')
-        if (Is_Longuer(req.body.se_1_des[i], 200)) throw new Error('Your Selection #1 Descriptions cannot be longuer than 200 characters longs')
+        req.body.se_1_des[i] = ValidateText(req.body.se_1_des[i], 'Selection #1 Descriptions #' + i, { minlength: 0, maxlength: 200, isRequired: false})
       }
     }
-
 
     if (!Is_Empty(req.body.selection_1_name)) {
     req.body.se_1_price = Replace_Empty(req.body.se_1_price)
@@ -351,19 +366,15 @@ exports.Validate_Product = (req, res, next) => {
    }
 
    if (!Is_Empty(req.body.selection_1_name) && req.body.se_1_des.filter((element) => element).length >= 1) {
-      req.body.selection_1 = {selection_name: req.body.selection_1_name, 
-      selection_choices: Make_Selection(req.body.se_1_des, req.body.se_1_price)} 
+      req.body.selection_1 = {selection_name: req.body.selection_1_name, selection_choices: Make_Selection(req.body.se_1_des, req.body.se_1_price)} 
    }
 
   // Selection #2
-  if (IsNot_String(req.body.selection_2_name))                                   throw new Error('Invalid Selection #1 Name Data Type')
-   req.body.selection_2_name = req.body.selection_2_name.trim()
-  if (Is_Longuer(req.body.selection_2_name, 100))    throw new Error('Your Selection #1 Name cannot be longuer than 100 characters longs')
+  req.body.selection_2_name = ValidateText(req.body.selection_2_name, 'Selection Name #2', { minlength: 0, maxlength: 100, isRequired: false})
 
-  if (!Is_Empty(req.body.selection_2_name)) {
+  if (req.body.selection_2_name) {
     for(let i = 0; i < req.body.se_2_des.length; i++) {
-      if (IsNot_String(req.body.se_2_des[i])) throw new Error('Invalid Selection #1 Descriptions Description Data Type')
-      if (Is_Longuer(req.body.se_2_des[i], 200)) throw new Error('Your Selection #1 Descriptions cannot be longuer than 200 characters longs')
+      req.body.se_2_des[i] = ValidateText(req.body.se_2_des[i], 'Selection #2 Descriptions #' + i, { minlength: 0, maxlength: 200, isRequired: false})
     }
   }
 
@@ -394,20 +405,15 @@ exports.Validate_Product = (req, res, next) => {
 exports.Validate_Change_Password = (req, res, next) => {
   try {
     // Old Password
-    if (IsNot_String(req.body.password))                                  throw new Error(`Invalid Password Data Type`) 
-    req.body.password = req.body.password.trim()
-    if (Is_Empty(req.body.password))                                               throw new Error(`The Password fields is Required`) 
-    if (Is_Shorter(req.body.password, 8) || Is_Longuer(req.body.password, 200))   throw new Error(`The Password need to be within 8 to 200 characters longs`) 
+    req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 })
 
     // New Password
-    if (IsNot_String(req.body.newPassword))                                  throw new Error(`Invalid New Password Data Type`) 
-    req.body.newPassword = req.body.newPassword.trim()
-    if (Is_Empty(req.body.newPassword))                                               throw new Error(`The New Password fields is Required`) 
-    if (Is_Shorter(req.body.newPassword, 8) || Is_Longuer(req.body.newPassword, 200))   throw new Error(`The New Password need to be within 8 to 200 characters longs`) 
+    req.body.newPassword = ValidateText(req.body.newPassword, 'New Password', { minlength: 8, maxlength: 200 }) 
 
     // Confirm Password
+    if (typeof(req.body.confirmPassword) !== 'string') throw new Error(`Invalid Confirm Password Data Type`) 
     req.body.confirmPassword = req.body.confirmPassword.trim()
-    if (req.body.confirmPassword !== req.body.newPassword)                   throw new Error(`The Password doesnt match`) 
+    if (req.body.confirmPassword !== req.body.newPassword) throw new Error(`The new Password doesnt Match`) 
     
     next()
   } catch (e) {
@@ -418,34 +424,19 @@ exports.Validate_Change_Password = (req, res, next) => {
 }
 exports.Validate_AutoDel_Settings = (req, res, next) => {
   try {
-
     if (!compareArray(List_Message_AutoDel, req.body.messages)) throw new Error('The Selected Auto Delete Message Settings is Invalid')
     if (!compareArray(List_Information_AutoDel, req.body.informations)) throw new Error('The Selected Auto Delete Information Settings is Invalid')
+    if (!compareArray(List_UserDel, req.body.userDel)) throw new Error('The User Auto Delete Settings is Invalid')
 
     if (req.body.messages === 'never') req.body.messages = undefined
     if (req.body.informations === 'never') req.body.informations = undefined
+    if (req.body.userDel === 'never') req.body.userDel = undefined
 
     next()
   } catch (e) {
     let url = `/settings/${req.user.username}?section=privacy`
     req.flash('error', e.message)
     res.redirect(url)
-  }
-}
-exports.Validate_SearchInput = (req, res, next) => {
-  try {
-    // Search
-    if (IsNot_String(req.body.search))                                   throw new Error('Invalid Search Data Type')
-    req.body.search = req.body.info.trim()
-    if (Is_Longuer(req.body.search, 500))    throw new Error('Your cannot search with more than 500 charachters')
-
-    //Category
-    if (compareArray(category, req.body.category)) throw new Error('Selected Category Invalid')
-
-    next()
-  } catch (e) {
-    req.flash('error', e.message)
-    res.redirect(`/products?productPage=1`)
   }
 }
 exports.Validate_disputeWinner = async (req, res, next) => {
@@ -457,22 +448,97 @@ exports.Validate_disputeWinner = async (req, res, next) => {
     console.log(e)
     res.redirect('/error')    
 }}
+exports.Validate_Email = (req, res, next) => {
+  try {
+    if (!req.body.email) {
+      req.body.email = undefined
+      next()
+    }
+    else if (isEmail(req.body.email)) next()
+    else throw new Error ('Invalid Email Address')
+  } catch (e) {
+    req.flash('error', e.message)
+    res.redirect(`/settings/${req.user.username}?sec=security`)
+  }
+}
+exports.Validate_SearchInput = (req, res, next) => {
+  try {
+    // Search
+    req.body.search = ValidateText(req.body.search, 'Search', { minlength: 0, maxlength: 500, isRequired: false })
+    //Category
+    if (compareArray(category, req.body.category)) throw new Error('Selected Category Invalid')
+
+    next()
+  } catch (e) {
+    req.flash('error', e.message)
+    res.redirect(`/products?productPage=1`)
+  }
+}
+exports.Validate_Code = (req, res, next) => { 
+  try {
+    const lengths = req.query.type === 'email' ? [9, 9] : [9, 300]
+    req.body.code = ValidateText(req.body.code, 'Code', { minlength: lengths[0], maxlength: lengths[1] })
+    next()
+  } catch (e) {
+    req.flash('error', e.message)
+    res.redirect(`/2fa?type=${req.query.type}`)
+  }
+}
+exports.Validate_Pgp_Verification = (req,res, next) => { 
+  try {
+    req.body.pgp_verification = ValidateText(req.body.pgp_verification, 'Pgp Verification Code', { maxlength: 250 })
+
+    if (req.body.pgp_verification !== req.user.pgp_keys_verification_words) throw new Error('Invalid Code... try Again')
+
+    next()
+  } catch (e) {
+    req.flash('error', e.message)
+    res.redirect(`/settings/${req.user.username}?sec=security`)
+  }
+}
+function is_pgpKeys(pgpKeys) {
+  if (pgpKeys) return true
+  return false
+}
+exports.Validate_Pgp = (req,res, next) => { 
+  try {
+    // Validate User Pgp Keys
+    if (!is_pgpKeys(req.body.pgp)) throw new Error('You pgp Key is Invalid')
+    next()
+  } catch (e) {
+    req.flash('error', e.message)
+    res.redirect(`/settings/${req.user.username}?sec=security`)
+  }
+}
+
+exports.Validate_EncryptedCodeQuery = (req, res, next) => { 
+  try {
+    req.query.encrypted = ValidateText(req.query.encrypted, 'Encrypted Code', { minlength: 0, maxlength: 3000, isRequired: false })
+    next()
+  } catch (e) {
+    req.flash('error', e.message)
+    res.redirect(`/login`)
+  }
+}
+
+
+
 
 
 
 // Params Query Validation
 // Product
-exports.existProduct = async (req, res, next) => {
-  try { 
-      if (Is_Empty(req.params.slug)) throw new Error('Params Slug Empty')
-      if (IsNot_String(req.params.slug)) throw new Error('Params Slug not String')
 
-      req.product = await Product.findOne({slug: req.params.slug}).orFail(new Error('Params Slug Invalid'))
-      next()
-  } catch(e) {
+
+exports.isPartofConversation = async (req, res, next) => {
+  try { 
+    if (req.user.username !== req.conversation.sender_1 && req.user.username !== req.conversation.sender_2) throw new Error('Params Id Invalid')
+    next()
+} catch(e) {
     console.log(e)
-    res.redirect('/404')
+    res.redirect('/error')
 }}
+
 exports.isProduct_Vendor = async (req, res, next) => {
   try { 
     if (req.user.username !== req.product.vendor) throw new Error('Cant Access')
@@ -494,19 +560,7 @@ exports.Validate_Query_Product_Slug = async (req,res, next) => {
     res.redirect('/404')
 }}
 // Conversation
-exports.existConversation = async (req, res, next) => {
-  try { 
-      if (Is_Empty(req.params.id)) throw new Error('Params Id Empty')
-      if (IsNot_String(req.params.id)) throw new Error('Params Id not String')
 
-      req.conversation = await Conversation.findById(req.params.id).orFail(new Error('Params Id Invalid'))
-      if (req.user.username !== req.conversation.sender_1 && req.user.username !== req.conversation.sender_2) throw new Error('Params Id Invalid')
-
-      next()
-  } catch(e) {
-    console.log(e)
-    res.redirect('/404')
-}}
 exports.ValidateDelete_MessageId = async (req, res, next) => {
   try { 
     // Validate 
@@ -554,19 +608,6 @@ exports.Validate_SelectedConversation_Id = async (req, res, next) => {
   }
 }
 // Orders
-exports.existOrder = async (req, res, next) => {
-  try { 
-      if (Is_Empty(req.params.id)) throw new Error('Params Id Empty')
-      if (IsNot_String(req.params.id)) throw new Error('Params Id not String')
-
-      req.order = await Order.findById(req.params.id).orFail('Invalid Params Id')
-
-      next()
-  } catch(e) {
-      console.log(e)
-      res.redirect('/404')
-  }
-}
 exports.isOrder_Buyer = async (req, res, next) => {
   try { 
     if (req.user.username !== req.order.buyer) throw new Error('Cant Access')
@@ -630,19 +671,7 @@ exports.getDispute_inProgress = async (req, res, next) => {
     res.redirect('/404')
 }}
 // USERS
-exports.existUser = async (req, res, next) => {
-try { 
-    if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
-    if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
 
-    req.user = await User.findOne({username: req.params.username}).orFail(new Error('Username Params Invalid'))
-
-    next()
-} catch(e) {
-    console.log(e)
-    res.redirect('/404')
-}
-}
 exports.paramsUsername_isReqUsername = async (req, res, next) => {
 try { 
     if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
@@ -657,7 +686,6 @@ try {
 }}
 
 
-
 // Custom Validation
 exports.Sending_toHimself = async (req, res, next) => {
   try { 
@@ -669,6 +697,7 @@ exports.Sending_toHimself = async (req, res, next) => {
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
   }
 }
+
 exports.Validate_OrderCustomization = async (req, res, next) => {
   try { 
       if (req.user.username === req.product.vendor) throw new Error('You cant Buy Your Own Product')
@@ -699,18 +728,7 @@ exports.Validate_OrderCustomization = async (req, res, next) => {
     res.redirect(`/order/${req.params.slug}`)
   }
 }
-exports.Validate_SectionQuery = async (req, res, next) => {
-try { 
-  if (req.query.section) {
-    if (!compareArray(['security', 'privacy', 'saved'], req.query.section)) throw new Error('Invalid Settings Section')
-  }
-  next()
-} catch(e) {
-  console.log(e)
-  req.flash('error', e.message)
-  res.redirect(`/settings/${req.user.username}`)
-}
-} 
+
 exports.Validate_Query_Url = async (req, res, next) => {
 try { 
   if (!req.query.url) req.query.url = '/'
@@ -718,8 +736,8 @@ try {
   next()
 } catch(e) {
   res.redirect('/error')
-}
-}
+}}
+
 exports.Is_UsernameTaken = async (req, res, next) => {
 try { 
   const Is_Taken = await User.findOne({username : req.body.username})
@@ -728,8 +746,8 @@ try {
 } catch(e) {
   req.flash('error', e.message)
   res.redirect('/register')
-}
-}
+}}
+
 exports.Is_titleTaken = async (req, res, next) => {
   try {
     let maxcount 

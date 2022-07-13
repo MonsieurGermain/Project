@@ -7,15 +7,22 @@ const { Need_Authentification } = require('../middlewares/authentication')
 
 router.post('/report/:id', Need_Authentification,
 async (req,res) => {
-    const report = new Report({
-        reference_id : req.params.id,
-        reason : req.body.reason !== 'other' ? req.body.reason : req.body.other,
-        type : req.query.type,
-        explaination : req.body.explaination 
-    })
+    try {
+        const report = new Report({
+            reference_id : req.params.id,
+            reason : req.body.reason !== 'other' ? req.body.reason : req.body.other,
+            type : req.query.type,
+            explaination : req.body.explaination 
+        })
+    
+        report.save()
+        
+        res.redirect(req.query.url)
+    } catch(e) {
+        console.log(e)
+        res.redirect('/error')
+    }
 
-    report.save()
-    res.redirect(req.query.url)
 })
 
 

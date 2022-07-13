@@ -1,23 +1,23 @@
 const LocalStrategy = require('passport-local').Strategy;
-const bcrypt = require('bcrypt');
-
-// Load User model
 const User = require('../models/user');
+
 
 module.exports = function(passport) {
   passport.use(
-    new LocalStrategy((username, password, done) => {
-      // Match user
-      User.findOne({ username: username }).then( user => {
-        if (!user) return done(null, false, { message: 'Username or Password Invalid' });
+    new LocalStrategy({passReqToCallback: true}, async (req, username, password, done) => {
+      if (!req.user_toAuth) return done(null, false, { message: 'No User to Authenticate' }); 
 
-        // Match password
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-          if (err) throw err;
-          if (isMatch) return done(null, user);
-          else return done(null, false, { message: 'Username or Password Invalid' });
-        });
-      });
+      if (typeof(req.user_toAuth) === 'string') {
+      
+        const user = await User.findOne({username: req.user_toAuth})
+      
+        if (!user) return done(null, false, { message: 'Invalid Username' });
+      
+        return done(null, user);
+      
+      } else {  
+        return done(null, req.user_toAuth);
+      }
     })
   );
 
