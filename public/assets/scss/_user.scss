@@ -6,6 +6,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
 // user.scss
 // Use this to write your custom SCSS
 //
+
 .small-rc {
     width: 2.5rem;
     height: 2.5rem;
@@ -389,6 +390,118 @@ input#delete-convo-input:not(:checked) + *:not(.no-convo-yet) {
                     width: 100%;
                 }
             }
+        }
+    }
+}
+
+
+$width-docs-side-nav: 69%;
+.documentation-view {
+    .docs-con {
+        @media (min-width: $min-width-bp) {
+            padding-left: 21rem;
+        }
+    }
+    #componentsNav {
+        position: relative;
+        width: $width-docs-side-nav;
+        @media (min-width: $min-width-bp) {
+            width: 21rem;
+        }
+        background-color: $secondary-bg;
+        margin-top: $nav-bar-height-mobile;
+        height: calc(100% - $nav-bar-height-mobile);
+        border-top: 2px solid $body-bg;
+        z-index: 1045;
+        box-shadow: 0 0.275rem 1.25rem rgb(180 183 201 / 5%), 0 0.25rem 0.5625rem rgb(180 183 201 / 3%);
+        transition: transform 0.3s ease-in-out;
+        @media (min-width: $min-width-bp) {
+            margin-top: $nav-bar-height-large;
+            height: calc(100% - $nav-bar-height-large);
+        }
+    }
+    .docs-aside-open-close {
+        @media (min-width: $min-width-bp) {
+            display: none;
+        }
+        position: fixed;
+        width: 40px;
+        z-index: 2000;
+        top: calc($nav-bar-height-mobile + 1rem);
+        left: calc($width-docs-side-nav - 40px);
+        background-color: $primary;
+        padding: 1px;
+        border-top-left-radius: 4px;
+        border-bottom-left-radius: 4px;
+        transition: transform 0.3s ease-in-out, border-radius 0.3s ease-in-out, left 0.3s ease-in-out;
+        @media (min-width: $min-width-bp) {
+            margin-top: calc($nav-bar-height-large + 1rem);
+        }
+        svg {
+            height: 35px;
+            width: 35px;
+        }
+    }
+
+    .aside-scroller {
+        height: 100%;
+        overflow: hidden;
+        overscroll-behavior: none;
+        @media (max-width: $max-width-bp) {
+            overflow-y: auto;
+        }
+        &:hover {
+            overflow-y: auto;
+        }
+    }
+    .clickout-mobile-menu {
+        display: none;
+    }
+    @media (min-width: $min-width-bp) {
+        footer {
+            width: calc(100% - 21rem);
+            margin-left: auto;
+        }
+    }
+    @media (max-width: $max-width-bp) {
+        #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
+            background-color: rgba(0,0,0,0.25);
+            display: initial;
+            width: 100%;
+            position: fixed;
+            top: $nav-bar-height-mobile;
+            left: 0;
+            height: 100%;
+        }
+        #mobile-menu-toggle:not(:checked) {
+            + .docs-aside-open-close {
+                left: 0px;
+                border-radius: 0 4px 4px 0;
+                svg {
+                    transform: scaleX(-1);
+                    position: relative;
+                    left: 3px;
+                }
+            }
+            ~ main #componentsNav {
+                transform: translateX(-100%);
+            }
+        }
+    }
+
+    .docs-section {
+        padding-top: 7rem;
+        &:last-child {
+            padding-bottom: 7rem;
+        }
+    }
+
+    .docs-link-item {
+        text-decoration: none;
+        color: $white;
+        font-weight: bold;
+        &:hover {
+            background-color: $primary;
         }
     }
 }

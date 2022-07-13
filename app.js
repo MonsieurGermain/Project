@@ -61,6 +61,8 @@ const SETTINGS = require('./routes/settings')
 const ADMIN = require('./routes/admin')
 const REPORT = require('./routes/report')
 const DISPUTE = require('./routes/dispute')
+const NEWS = require('./routes/news')
+const DOCUMENTATION = require('./routes/documentation')
 
 app.use('/', HOME_ROUTER)
 app.use('/', LOGIN_ROUTER)
@@ -75,6 +77,8 @@ app.use('/', SETTINGS)
 app.use('/', ADMIN)
 app.use('/', REPORT)
 app.use('/', DISPUTE)
+app.use('/', NEWS)
+app.use('/', DOCUMENTATION)
 
 // fix Order resume chat
 // Update Admin functionnality

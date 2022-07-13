@@ -12493,7 +12493,7 @@ hr.dropdown-divider {
 .main-navbar {
   background-color: #212121;
   position: fixed;
-  z-index: 200;
+  z-index: 3000;
   top: 0px;
   left: 0px;
   display: flex;
@@ -12641,7 +12641,7 @@ hr.dropdown-divider {
   -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
   -moz-transition: visibility 0.2s linear, 0.2s opacity linear;
   -o-transition: visibility 0.2s linear, 0.2s opacity linear;
-  z-index: 101;
+  z-index: 200;
   visibility: visible;
   background-color: rgba(25, 25, 25, 0.8);
   opacity: 1;
@@ -16062,4 +16062,118 @@ input#delete-convo-input:not(:checked) + *:not(.no-convo-yet) {
 .popup-dialog > div .buttons > * label,
 .popup-dialog > div .buttons > * button {
   width: 100%;
+}
+
+@media (min-width: 768px) {
+  .documentation-view .docs-con {
+    padding-left: 21rem;
+  }
+}
+.documentation-view #componentsNav {
+  position: relative;
+  width: 69%;
+  background-color: #212121;
+  margin-top: 4rem;
+  height: calc(100% - 4rem);
+  border-top: 2px solid #191919;
+  z-index: 1045;
+  box-shadow: 0 0.275rem 1.25rem rgba(180, 183, 201, 0.05), 0 0.25rem 0.5625rem rgba(180, 183, 201, 0.03);
+  transition: transform 0.3s ease-in-out;
+}
+@media (min-width: 768px) {
+  .documentation-view #componentsNav {
+    width: 21rem;
+  }
+}
+@media (min-width: 768px) {
+  .documentation-view #componentsNav {
+    margin-top: 5rem;
+    height: calc(100% - 5rem);
+  }
+}
+.documentation-view .docs-aside-open-close {
+  position: fixed;
+  width: 40px;
+  z-index: 2000;
+  top: 5rem;
+  left: calc(69% - 40px);
+  background-color: #800080;
+  padding: 1px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  transition: transform 0.3s ease-in-out, border-radius 0.3s ease-in-out, left 0.3s ease-in-out;
+}
+@media (min-width: 768px) {
+  .documentation-view .docs-aside-open-close {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  .documentation-view .docs-aside-open-close {
+    margin-top: 6rem;
+  }
+}
+.documentation-view .docs-aside-open-close svg {
+  height: 35px;
+  width: 35px;
+}
+.documentation-view .aside-scroller {
+  height: 100%;
+  overflow: hidden;
+  -ms-scroll-chaining: none;
+      overscroll-behavior: none;
+}
+@media (max-width: 767px) {
+  .documentation-view .aside-scroller {
+    overflow-y: auto;
+  }
+}
+.documentation-view .aside-scroller:hover {
+  overflow-y: auto;
+}
+.documentation-view .clickout-mobile-menu {
+  display: none;
+}
+@media (min-width: 768px) {
+  .documentation-view footer {
+    width: calc(100% - 21rem);
+    margin-left: auto;
+  }
+}
+@media (max-width: 767px) {
+  .documentation-view #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
+    background-color: rgba(0, 0, 0, 0.25);
+    display: initial;
+    width: 100%;
+    position: fixed;
+    top: 4rem;
+    left: 0;
+    height: 100%;
+  }
+  .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
+    left: 0px;
+    border-radius: 0 4px 4px 0;
+  }
+  .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close svg {
+    transform: scaleX(-1);
+    position: relative;
+    left: 3px;
+  }
+  .documentation-view #mobile-menu-toggle:not(:checked) ~ main #componentsNav {
+    transform: translateX(-100%);
+  }
+}
+.documentation-view .docs-section {
+  padding-top: 7rem;
+}
+.documentation-view .docs-section:last-child {
+  padding-bottom: 7rem;
+}
+.documentation-view .docs-link-item {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+}
+.documentation-view .docs-link-item:hover {
+  background-color: #800080;
 }/*# sourceMappingURL=theme.css.map */
