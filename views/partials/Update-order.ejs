@@ -3,17 +3,17 @@
 
 
 <% if (order.timer) { %>
-    <p>Time Left: <b><%=order.Formated_Timers%></b></p>
+    <p class="mb-0">Time Left: <b><%=order.Formated_Timers%></b></p>
 <% } %>
 <%  if (order.status === 'dispute_progress') { %>
     <% if (!order.admin) { %>
-        <p><b>Waiting for an Admin</b></p>
+        <p class="mb-0"><b>Waiting for an Admin</b></p>
     <% } else { %>
-        <p>Admin: <b><%=order.admin%></b></p>
+        <p class="mb-0">Admin: <b><%=order.admin%></b></p>
     <% } %>
 <% } %>
 
-<hr class="my-2">
+<hr class="my-4">
 
 <%if (authuser.username === order.vendor) {%>
     <%if (order.status === 'awaiting_info') {%>
@@ -24,10 +24,10 @@
     <%}%>
     <%if (order.status === 'awaiting_shipment') {%>
         <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
-            <button class="btn btn-warning mt-3" type="submit" name="status" value="shipped">I have shipped the Product</button>
+            <button class="btn btn-warning" type="submit" name="status" value="shipped" style="width: 80%;">I have shipped the Product</button>
         </form>
         <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
-            <button class="btn btn-danger mt-3" type="submit" name="status" value="rejected">I want to Cancel this Order</button>
+            <button class="btn btn-danger mt-3" type="submit" name="status" value="rejected" style="width: 80%;">I want to Cancel this Order</button>
         </form>
     <%}%>
     <%if (order.status === 'shipped') {%>
@@ -42,52 +42,52 @@
 <%}%>
 
 
-<%if (authuser.username !== order.vendor) {%>
+<%if (authuser.username !== order.vendor && authuser.username !== order.admin) {%>
     <%if (order.status === 'awaiting_payment') {%>
-        <p class="mt-4">Waiting for your Payment</p>
+        <p class="mt-4 mb-0">Waiting for your Payment...</p>
+        <p class="mb-3 mt-2">Send <span class="text-primary"><%=order.total_price%>XMR</span> To this address <span class="text-primary"><%=order.address%>XMR.</span></p>
     <%}%>
     <%if (order.status === 'awaiting_shipment') {%>
         <p class="mt-4">Waiting for the Vendor to ship the Product</p>
     <%}%>
     <%if (order.status === 'shipped') {%>
         <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
-            <button class="btn btn-success mt-3" type="submit" name="status" value="recieved">I have recieved the Product</button>
+            <button class="btn btn-success" type="submit" name="status" value="recieved" style="width: 80%;">I have recieved the Product</button>
         </form>
 
         <% if (order.reset_left) { %>
-        <p class="text-muted mb-2 mt-2">Reset Left (<%=order.reset_left%>)</p>
         <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
-            <button class="btn btn-primary" type="submit" name="status" value="not_recieved">I didnt recieve the product yet</button>
+            <button class="btn btn-primary mt-3" type="submit" name="status" value="not_recieved" style="width: 80%;">I didnt recieve the product yet (<%=order.reset_left%>)</button>
         </form>
         <% } %>
 
         <form action="/create-dispute/<%=order.id%>" method="POST">
-            <button class="btn btn-danger mt-3" type="submit" name="status" value="dispute">Disupte this Order</button>
+            <button class="btn btn-danger mt-3" type="submit" name="status" value="dispute" style="width: 80%;">Disupte this Order</button>
         </form>
     <%}%>
     <%if (order.status === 'recieved') {%>
         <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
-            <button class="btn btn-success mt-3" type="submit" name="status" value="finished">Everything is good, finalize this order</button>
+            <button class="btn btn-success" type="submit" name="status" value="finished" style="width: 80%;">Everything is good, finalize this order</button>
         </form>
         <form action="/create-dispute/<%=order.id%>" method="POST">
-            <button class="btn btn-danger mt-3" type="submit" name="status" value="dispute">Disupte this Order</button>
+            <button class="btn btn-danger mt-3" type="submit" name="status" value="dispute" style="width: 80%;">Disupte this Order</button>
         </form>
     <%}%>
     <%if (order.status === 'rejected') {%>
-        <p class="mt-4">This Order as been Cancelled bt the Vendor</p>
+        <p class="mb-0">This Order as been Cancelled bt the Vendor</p>
     <%}%>
 <%}%>
 
 
 <%if (order.status === 'finalized') {%>
-    <p class="mt-2 mb-0">This Order is Finalized</p>
+    <p class="mb-0">This Order is Finalized</p>
 <%}%>
 
 
 <%if (order.status === 'dispute_progress') {%>
     <% if (authuser.username === order.admin) { %>
-        <p class="mt-4">Decide who is right or wrong here</p>
-        <p class="mt-2"><b>Chat with the vendor and username using the Order chat</b></p>
+        <p>Decide who is right or wrong here</p>
+        <p><b>Chat with the vendor and username using the Order chat</b></p>
 
         <span>
 
@@ -106,22 +106,22 @@
                 <input type="radio" id="vendor-radio" name="winner" value="<%=order.vendor%>" class="form-check-input me-1" required>
                 <label class="form-check-label" for="vendor-radio">Vendor Win (<%=order.vendor%>)</label>
             </div>
-                <button class="btn btn-primary mt-3" type="submit" name="status" value="dispute">Settle Dispute</button>
+                <button class="btn btn-primary mt-3" type="submit" name="status" value="dispute" style="width: 80%;">Settle Dispute</button>
             </form>
         </div>
         </div>
     </span>
     <% } else { %> 
-        <p class="mt-4">This Order is currently Disputed</p>
-        <p class="mt-2"><b>Defend your case in the order chat</b></p>
+        <p class="mb-0">This Order is currently Disputed</p>
+        <p class="mt-2 mb-0"><b>Defend your case in the order chat</b></p>
     <% } %>
 <%}%>
 
 
 <%if (order.status === 'disputed') {%>
-    <p class="mt-4">This Dipsute have been settle</p>
+    <p class="mb-2">This Dipsute have been settle</p>
 
-    <p class="mt-4">The Winner of this Dispute is : 
+    <p class="mb-0">The Winner of this Dispute is : 
         <b>
             <% if (order.dispute_winner === order.vendor) { %>
                 <%=order.vendor%> 
@@ -148,9 +148,9 @@
 
 <% if (order.deletelink) { %>
        <p class="mt-2 mb-2">I want to delete this Order</p>
-        <form class="mb-3" action="/delete-order/<%=order.id%>?_method=DELETE" method="POST">
-            <button class="btn btn-primary" type="submit">Delete Order</button>
+        <form class="mb-1" action="/delete-order/<%=order.id%>?_method=DELETE" method="POST">
+            <button class="btn btn-primary"style="width: 80%;" type="submit">Delete Order</button>
         </form>
 <% } %>
 
-<hr class="my-2">
+<hr class="my-4">

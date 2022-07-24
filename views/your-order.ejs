@@ -22,120 +22,240 @@
           </ol>
         </nav>
 
+        <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
+          <h1 class="me-3"></h1>
+          <form action="/filter-orders" method="POST">
+          <div class="d-md-flex mb-3">
+              <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
+                <% if (!query.status) { %>
+                  <option value="all" selected>All status</option>
+                <% } else { %>
+                  <option value="all">All status</option>
+                <% } %>
+                  
+                  <% if (query.status === 'awaiting_info') { %>
+                    <option value="awaiting_info" selected>Awaiting Information</option>
+                  <% } else { %>
+                    <option value="awaiting_info">Awaiting Information</option>
+                  <% } %>
 
-      <div class="shadow-sm p-sm-3 label-input">
+                  <% if (query.status === 'awaiting_payment') { %>
+                    <option value="awaiting_payment" selected>Awaiting Payment</option>
+                  <% } else { %>
+                    <option value="awaiting_payment">Awaiting Payment</option>
+                  <% } %>
 
-      <input name='radio-hack' type="radio" id="your_order"  class="form-check-input" checked>
-      <label for="your_order" class="form-check-label">Your Orders</label>
-      
-      <input name='radio-hack' type="radio" id="client_order" class="form-check-input" checked>
-      <label for="client_order" class="form-check-label">Your Clients Orders</label>
-  
-      <div></div>
-  
-      <!--Your Order-->
-      <div class="your_order_container">
-          
-      <input name='radio-hack-order' type="radio" id="your_order-all" class="form-check-input" checked>
-      <label for="your_order-all" class="form-check-label">All</label>
-          
-      <input name='radio-hack-order' type="radio" id="your_order-awaiting_info" class="form-check-input">
-      <label for="your_order-awaiting_info" class="form-check-label">Awaiting Info</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-awaiting_payment" class="form-check-input">
-      <label for="your_order-awaiting_payment" class="form-check-label">Awaiting Payment</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-awaiting_shipment" class="form-check-input">
-      <label for="your_order-awaiting_shipment" class="form-check-label">Awaiting Shipment</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-shipped" class="form-check-input">
-      <label for="your_order-shipped" class="form-check-label">Shipped</label>
-          
-      <input name='radio-hack-order' type="radio" id="your_order-recieved" class="form-check-input">
-      <label for="your_order-recieved" class="form-check-label">Recieved</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-finalized" class="form-check-input">
-      <label for="your_order-finalized" class="form-check-label">Finalized</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-rejected" class="form-check-input">
-      <label for="your_order-rejected" class="form-check-label">Rejected</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-expired" class="form-check-input">
-      <label for="your_order-expired" class="form-check-label">Expired</label>
+                  <% if (query.status === 'awaiting_shipment') { %>
+                    <option value="awaiting_shipment" selected>Awaiting Shipment</option>
+                  <% } else { %>
+                    <option value="awaiting_shipment">Awaiting Shipment</option>
+                  <% } %>
 
-      <input name='radio-hack-order' type="radio" id="your_order-dispute_progress" class="form-check-input">
-      <label for="your_order-dispute_progress" class="form-check-label">Dispute in Progress</label>
-  
-      <input name='radio-hack-order' type="radio" id="your_order-disputed" class="form-check-input">
-      <label for="your_order-disputed" class="form-check-label">Disputed</label>
+                  <% if (query.status === 'shipped') { %>
+                    <option value="shipped" selected>Shipped</option>
+                  <% } else { %>
+                    <option value="shipped">Shipped</option>
+                  <% } %>
 
-      <hr class="my-4">
-      
-      <div class="your_order_container-all"><%- include('partials/Orders-list', {orders : your_order.all}) %></div>
-      <div class="your_order_container-awaiting_info"><%- include('partials/Orders-list', {orders : your_order.awaiting_info}) %></div>
-      <div class="your_order_container-awaiting_payment"><%- include('partials/Orders-list', {orders : your_order.awaiting_payment}) %></div>
-      <div class="your_order_container-awaiting_shipment"><%- include('partials/Orders-list', {orders : your_order.awaiting_shipment}) %></div>
-      <div class="your_order_container-shipped"><%- include('partials/Orders-list', {orders : your_order.shipped}) %></div>
-      <div class="your_order_container-recieved"><%- include('partials/Orders-list', {orders : your_order.recieved}) %></div>
-      <div class="your_order_container-finalized"><%- include('partials/Orders-list', {orders : your_order.finalized}) %></div>
-      <div class="your_order_container-rejected"><%- include('partials/Orders-list', {orders : your_order.rejected}) %></div>
-      <div class="your_order_container-expired"><%- include('partials/Orders-list', {orders : your_order.expired}) %></div>
-      <div class="your_order_container-dispute_progress"><%- include('partials/Orders-list', {orders : your_order.dispute_progress}) %></div>
-      <div class="your_order_container-disputed"><%- include('partials/Orders-list', {orders : your_order.disputed}) %></div>
-    </div>
-  
-  
-     <div class="client_order_container">
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-all" class="form-check-input" checked>
-      <label for="client_order-all" class="form-check-label">All</label>
-          
-      <input name='radio-hack-client-order' type="radio" id="client_order-awaiting_info" class="form-check-input">
-      <label for="client_order-awaiting_info" class="form-check-label">Awaiting Info</label>
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-awaiting_payment" class="form-check-input">
-      <label for="client_order-awaiting_payment" class="form-check-label">Awaiting Payment</label>
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-awaiting_shipment" class="form-check-input">
-      <label for="client_order-awaiting_shipment" class="form-check-label">Awaiting Shipment</label>
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-shipped" class="form-check-input">
-      <label for="client_order-shipped" class="form-check-label">Shipped</label>
-          
-      <input name='radio-hack-client-order' type="radio" id="client_order-recieved" class="form-check-input">
-      <label for="client_order-recieved" class="form-check-label">Recieved</label>
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-finalized" class="form-check-input">
-      <label for="client_order-finalized" class="form-check-label">Finalized</label>
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-rejected" class="form-check-input">
-      <label for="client_order-rejected" class="form-check-label">Rejected</label>
-  
-      <input name='radio-hack-client-order' type="radio" id="client_order-expired" class="form-check-input">
-      <label for="client_order-expired" class="form-check-label">Expired</label>
+                  <% if (query.status === 'recieved') { %>
+                    <option value="recieved" selected>Recieved</option>
+                  <% } else { %>
+                    <option value="recieved">Recieved</option>
+                  <% } %>
 
-      <input name='radio-hack-client-order' type="radio" id="client_order-dispute_progress" class="form-check-input">
-      <label for="client_order-dispute_progress" class="form-check-label">Dispute in Progress</label>
+                  <% if (query.status === 'finalized') { %>
+                    <option value="finalized" selected>Finalized</option>
+                  <% } else { %>
+                    <option value="finalized">Finalized</option>
+                  <% } %>
+
+                  <% if (query.status === 'rejected') { %>
+                    <option value="rejected" selected>Rejected</option>
+                  <% } else { %>
+                    <option value="rejected">Rejected</option>
+                  <% } %>
+
+                  <% if (query.status === 'expired') { %>
+                    <option value="expired" selected>Expired</option>
+                  <% } else { %>
+                    <option value="expired">Expired</option>
+                  <% } %>
+
+                  <% if (query.status === 'dispute_progress') { %>
+                    <option value="dispute_progress" selected>Dispute in Progress</option>
+                  <% } else { %>
+                    <option value="dispute_progress">Dispute in Progress</option>
+                  <% } %>
+                  
+                  <% if (query.status === 'disputed') { %>
+                    <option value="disputed" selected>Disputed</option>
+                  <% } else { %>
+                    <option value="disputed">Disputed</option>
+                  <% } %>
+
+          </select>
+          <% if (authuser.authorization === 'vendor') { %>
+            <select class="form-select me-4 mb-2 mb-md-0" name="clientsOrders" style="min-width: 240px;" required>
+              <option value="true" 
+              <% if (query.clientsOrders) { %>
+                selected
+              <% } %> 
+              >Clients Orders</option>
+              <option value="false"
+              <% if (query.clientsOrders === 'false') { %>
+                selected
+              <% } %>
+              >Your Orders</option>
+            </select>
+          <% } %>
+
+            <button type="submit" class="btn btn-primary">Filter</button>
+          </div>
+        </form>
+      </div>
+
+<% if (!orders.results.length) { %>
+  <div class="">
+    <p>No Orders of this type</p>
+  </div>
+<% } else { %>
+  <% for(let i = orders.results.length - 1; i > -1; i--) { %>
+    <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
+        <div class="row g-0">
+          <% if(query.clientsOrders === 'false' || !query.clientsOrders && authuser.authorization !== 'vendor') { %>
+            <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover">
+              <a href="<%=orders.results[i].link%>" class="position-absolute top-0 start-0 w-100 h-100" aria-label="Read more">
   
-      <input name='radio-hack-client-order' type="radio" id="client_order-disputed" class="form-check-input">
-      <label for="client_order-disputed" class="form-check-label">Disputed</label>
+              <img src="<%=orders.results[i].product_img%>" style="min-height: 18rem;" alt="Product Img">
+            </a>
+          </div>
+          <div class="col-sm-8">
+          <% } else { %> 
+            <div>
+          <% } %>
+  
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <p class="mb-1">Status: <span><%- include('partials/Status-order', {status : orders.results[i].status}) %></span></p>
+              </div>
+              <h3 class="h4">
+                <a href="<%=orders.results[i].link%>"><%=orders.results[i].product_title%></a>
+              </h3>
+  
+              <span>
+                <p class="mb-0">Total Price:</p>
+                <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                    <%= orders.results[i].total_price %> $
+                </p>
+            </span>
+  
+             <hr class="my-4">
+  
+              <div class="d-flex align-items-center">
+                <span class="me-5">
+                  <p class="mb-0">Vendor:</p>
+                  <a href="/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                    <%= orders.results[i].vendor%>
+                  </a>
+                </span>
+  
+            <span>
+                <p class="mb-0">Buyer:</p>
+                <a 
+                <% if (orders.results[i].privacy === 'default') { %>
+                    href="/profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1" 
+                <% } %>
+                class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                  <%= orders.results[i].buyer%>
+                </a>
+            </span>
+  
+            <% if (orders.results[i].status === 'dispute_progress') { %>
+              <% if (orders.results[i].admin) { %>
+                <span class="ms-5">
+                  <p class="mb-0">Admin:</p>
+                  <p class="mb-0"><%=orders.result[i].admin%></p>
+              </span>
+              <% } else { %> 
+                <span class="ms-5">
+                  <p class="mb-0">Admin:</p>
+                  <p class="mb-0">Awaiting Admin...</p>
+              </span>
+              <% } %>
+            <% } %>
+  
+            <% if (orders.results[i].status === 'disputed') { %>
+              <span class="ms-5">
+                <p class="mb-0">Winner:</p>
+                <% if (orders.results[i].dispute_winner === orders.results[i].vendor) { %>
+                  <p class="mb-0"><b><%=orders.results[i].vendor%></b></p>
+                <% } else { %>
+                  <p class="mb-0"><b><%=orders.results[i].buyer%></b></p>
+                <% } %>
+            </span>
+            <% } %>
+  
+            <span class="ms-5">
+                <p class="mb-0">Time Left:</p>
+                <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
+                <% if (!orders.results[i].timer) { %>
+                    Infinite
+                <% } else { %> 
+                    <%= orders.results[i].Formated_Timers%>
+                <% } %>
+                </p>
+            </span>
+  
+            <% if (orders.results[i].deletelink) { %>
+              <span class="position-absolute top-0 end-0 zindex-2 me-3 mt-3">
+                <form action="/delete-order/<%=orders.results[i].id%>?_method=DELETE" method="POST">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bx bx-trash"></i>
+                </button>
+              </form>
+                </span> 
+            <% } %>
+  
+  
+              </div>
+  
+              <% if(query.clientsOrders === 'true' || !query.clientsOrders && authuser.authorization === 'vendor') { %>
+                <div class="d-flex align-items-center mt-3">
+                  <span class="me-5">
+                    <p class="mb-0">Buyer Info:</p>
+                    <p class="mb-0" style="max-width: 80%;"><%=orders.results[i].messages[0].content%></p>
+                  </span>
+  
+                  <% if (orders.results[i].status === 'awaiting_shipment') { %>
+  
+                    <div class="d-flex ms-auto">
+                      <span class="">
+                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&_method=PUT" method="POST">
+                          <button class="btn btn-warning me-4" type="submit" name="status" value="shipped">I have shipped the Product</button>
+                      </form>
+                      </span>
+    
+                      <span class="">
+                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&_method=PUT" method="POST">
+                          <button class="btn btn-danger" type="submit" name="status" value="rejected">I want to Cancel this Order</button>
+                      </form>
+                      </span>
+                    </div>
+                  <% } %>
+  
+              </div>
+              <% } %>
+  
+            </div>
+          </div>
+        </div>
+      </article>
+  <% } %>
+  <div class="mt-5">
+    <%- include('partials/Pagination', {nextPage: orders.nextPage, currentPage: parseInt(query.ordersPage), queryName: 'ordersPage'}) %>
+  </div>
 
-      <hr class="my-4">
-      
-      <div class="client_order_container-all"><%- include('partials/Orders-list', {orders : clients_order.all}) %></div>
-      <div class="client_order_container-awaiting_info"><%- include('partials/Orders-list', {orders : clients_order.awaiting_info}) %></div>
-      <div class="client_order_container-awaiting_payment"><%- include('partials/Orders-list', {orders : clients_order.awaiting_payment}) %></div>
-      <div class="client_order_container-awaiting_shipment"><%- include('partials/Orders-list', {orders : clients_order.awaiting_shipment}) %></div>
-      <div class="client_order_container-shipped"><%- include('partials/Orders-list', {orders : clients_order.shipped}) %></div>
-      <div class="client_order_container-recieved"><%- include('partials/Orders-list', {orders : clients_order.recieved}) %></div>
-      <div class="client_order_container-finalized"><%- include('partials/Orders-list', {orders : clients_order.finalized}) %></div>
-      <div class="client_order_container-rejected"><%- include('partials/Orders-list', {orders : clients_order.rejected}) %></div>
-      <div class="client_order_container-expired"><%- include('partials/Orders-list', {orders : clients_order.expired}) %></div>
-      <div class="client_order_container-dispute_progress"><%- include('partials/Orders-list', {orders : clients_order.dispute_progress}) %></div>
-      <div class="client_order_container-disputed"><%- include('partials/Orders-list', {orders : clients_order.disputed}) %></div>
-
-     </div>
-    </div>
+<% } %>
 
   </section>
 

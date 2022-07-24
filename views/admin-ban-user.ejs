@@ -23,11 +23,6 @@
                   <%- include('partials/Flash-message', {message: success, success: true}) %>
                 </div>   
                 <% } %>
-                <% if (error.length) { %>
-                  <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
-                    <%- include('partials/Flash-message', {message: error}) %>
-                  </div>   
-                <% } %>
 
 
                   <div>
@@ -36,7 +31,7 @@
 
                    <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
                     <h1 class="me-3"></h1>
-                    <form action="/report-filter" method="POST">
+                    <form action="/ban-user-filter" method="POST">
                     <div class="d-md-flex mb-3">
                         <select class="form-select me-4 mb-2 mb-md-0" name="reason" style="min-width: 240px;" required>
                           <option value="all">All</option>
@@ -56,15 +51,10 @@
                 </div>
 
                 <% if (!reports.results.length) { %>
-                  <h4 class="my-3">No Report !!</h3>
-                  <h4 class="my-3">Yall are so good !!</h3>
+                  <h4 class="my-3">No Ban Request !!</h3>
                  <% } %>
 
                 <% for(let i = 0; i < reports.results.length; i++) { %>
-
-                  <input id="report-resolve-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-                  <%- include('partials/Popop-admin-report', {checkboxInputId: "report-resolve-" + i, action : "/resolve-report/" + reports.results[i].id, method: "POST", report: reports.results[i]}) %>
-
 
                   <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
                     <div class="row g-0">
@@ -94,6 +84,14 @@
                               <%= reports.results[i].reference_id %>
                           </a>
                       </span>
+
+
+                      <span>
+                        <p class="mb-0 mt-3">Banning Reason :</p>
+                        <p class="d-flex align-items-center text-decoration-none me-3">
+                            <%= reports.results[i].ban_explanation %>
+                        </p>
+                    </span>
             
                          <hr class="mt-2 mb-4">
             
@@ -134,24 +132,20 @@
 
 
                               <div class="ms-auto d-flex flex-column flex-sm-row">
-                                <form action="/archive-report/<%=reports.results[i].id%>" method="POST">
-                                    <% if (!reports.results[i].archived) { %> 
-                                      <button type="submit" class="btn btn-success">Archive Reports</button>
-                                    <% } else { %> 
-                                      <button type="submit" class="btn btn-primary">Unarchive Reports</button>
-                                    <% } %>
-                                </form>
 
-                                <form action="/dismiss-report/<%=reports.results[i].id%>" method="POST">
-                                  <button type="submit" class="btn btn-primary ms-3">
-                                    Dismiss Report
+                                <form action="/dismiss-ban-request/<%=reports.results[i].id%>" method="POST">
+                                  <button type="submit" class="btn btn-success ms-3">
+                                    Dismiss Banning Request
                                   </button>
                                 </form>
 
-
-                                <label for="report-resolve-<%=i%>" class="btn btn-danger ms-3">
-                                  Take Action
-                                </label>
+                                <form action="/ban-user/<%=reports.results[i].id%>" method="POST">
+                                    <input class="form-check-input" type="checkbox" id="confirm-<%=i%>" required>
+                                    <label class="form-check-label" for="confirm-<%=i%>">I confirm that all the Information here are correct</label>
+                                    <button type="submit" class="btn btn-danger ms-3">
+                                      Ban User Immediatly
+                                    </button>
+                                </form>
                                 
 
 

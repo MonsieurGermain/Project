@@ -71,10 +71,13 @@ router.post('/login', Should_Not_Be_Authenticated , Validate_Login, async (req, 
         res.redirect('/login')
     }
 }, passport.authenticate('local', {
-    successRedirect: '/',
     failureRedirect: `/login`,
     failureFlash: true
-}))
+}), 
+(req, res) => { 
+    if (req.user.authorization === 'admin') res.redirect('/disputes')
+    else res.redirect('/')
+})
 
 
 router.get('/2fa', Should_Not_Be_Authenticated,
@@ -110,10 +113,13 @@ Validate_EncryptedCodeQuery, Validate_Code, async (req, res, next) => {
         res.redirect(`/2fa?${query}`)
     }
 }, passport.authenticate('local', {
-    successRedirect: '/',
     failureRedirect: `/login`,
     failureFlash: true
-}))
+}), 
+(req, res) => { 
+    if (req.user.authorization === 'admin') res.redirect('/disputes')
+    else res.redirect('/')
+})
 
 
 router.get('/register', Should_Not_Be_Authenticated , (req,res) => {

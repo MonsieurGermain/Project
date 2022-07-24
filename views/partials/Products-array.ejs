@@ -5,6 +5,9 @@
             <!-- Products -->
 
             <% for(let i = 0; i < products.length; i++) { %>
+              <input id="report-product-<%=products[i].slug%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+              <%- include('./Popup-report', { checkboxInputId: "report-product-" + products[i].slug,  method: "POST", action: '/report/' + products[i].slug + '?type=product', type: "product"}) %>
+        
             <div class="col pb-1 pb-lg-3 mb-4">
               <article class="card card-hover h-100 border-0 shadow-sm">
                 <div class="position-relative">
@@ -25,6 +28,9 @@
                       <i class="bx bx-edit"></i>
                     </a>
                   <% } else if (authuser) { %>
+                    <label for="report-product-<%=products[i].slug%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-5 mt-3">      
+                      <i class="bx bx-flag"></i>
+                   </label>
                     <% if (settingsPage) { %>
                       <form action="/saved_product/<%=products[i].slug%>?productPage=<%=query.productPage%>" method="POST">
                     <% } else { %> 

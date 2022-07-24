@@ -1,34 +1,28 @@
 
       <!-- Not Respnsive -->
-      <section class="py-lg-4 py-xl-5 mt-3 mb-5">
-        <h2 class="h3 mb-4">Reviews</h2>
-        <% if (!reviews.length) { %>
-          <h2 class="h5 mb-4">No review yet...</h2>
-        <% } %>
-
+      <section class="card card-body mt-3 pb-0" style="border: none;">
+        <div class="px-5 pt-4">
         <% for(let i = reviews.length - 1; i >= 0; i--) { %>
-            <div class="py-4">
-                <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
-                  <div class="d-flex align-items-center me-3">
+            <div class="pb-3 pt-5">
 
-                    <div class="d-sm-flex align-items-center">
-                        <div class="pe-sm-3 me-sm-5">
-                            <h6 class="fw-semibold mb-0"><%=reviews[i].sender%></h6>
+                    <div class="d-flex align-items-center">
+                        <div class="mb-2">
+                            <h6 class="fw-semibold text-primary mb-0"><%=reviews[i].sender%></h6>
                         </div>
-                        <div class="ps-3 pe-sm-3 me-sm-5">
+                        <div class="ms-auto me-5">
                             <%- include('./Rating', {rating: reviews[i].note}) %>
                         </div>
                     </div>
                       
-                  </div>
-                </div>
-                <p class="mb-0"><%=reviews[i].content%></p>
+                <p class="my-0"><%=reviews[i].content%></p>
               </div>
-              <hr class="my-2">
+              <hr class="">
         <% } %>
 
+        <div class="mt-5">
 
+        </div>
         <%- include('./Pagination', {nextPage, currentPage: parseInt(query.reviewPage), queryName: 'reviewPage'}) %>
         
-
+      </div>
         </section>

@@ -7,7 +7,7 @@
           <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1">
             <%=vendor.username%>
           </a></h2>
-        <p class=" opacity-70 pb-4"><%=vendor.description%>
+        <p class=" opacity-70 pb-4" style="max-height: 10rem; overflow: hidden;"><%=vendor.description%>
           <% if (!vendor.description) { %>
             This Vendor doesnt have a description...
         <% } %>

@@ -55,6 +55,7 @@ exports.sanitizeHTML = (object) => {
 // Pagination
 exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, paginateArray) => {
   page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page)
+  if (page > 5000) page = 5000
 
   const startIndex = (page - 1) * limit
   const endIndex = page * limit
@@ -82,7 +83,7 @@ exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, pag
         return results
       } catch (e) {
         console.log(e)
-        return
+        throw new Error(e.message)
       }
   }
 }
@@ -149,7 +150,7 @@ charactersLength));
 
 exports.deleteOld_Img = (path) => {
     unlink(path, (err) => {
-        if (err) throw err;
+        if (err) console.log('Img needing deletion doesnt exist');
     });
 }
 exports.isolate_mimetype = (string, symbol) => {

@@ -81,7 +81,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
     }
 
     .messages-container {
-        box-shadow: 0px 8px 20px rgb($primary, 0.25);
+        box-shadow: 0px 3px 5px rgb($primary, 0.25);
         display: flex;
         min-height: 0px;
         height: 100%;
@@ -358,6 +358,15 @@ $max-width-bp: calc(map.get($grid-breakpoints, "md") - 1px);
 
 input[id^="delete-message-input-"]:not(:checked) + *,
 input#delete-convo-input:not(:checked) + *:not(.no-convo-yet) {
+    display: none;
+}
+input[id^="report-vendor-"]:not(:checked) + * {
+    display: none;
+}
+input[id^="report-product-"]:not(:checked) + * {
+    display: none;
+}
+input[id^="report-resolve-"]:not(:checked) + * {
     display: none;
 }
 

@@ -8,6 +8,11 @@
     
     <div class="container position-relative zindex-2 py-lg-4">
 
+      <% if (success.length) { %>
+        <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+        <%- include('partials/Flash-message', {message: success, success: true}) %>
+      </div>   
+      <% } %>
       <!-- <% if (authuser) { %>
         <form action="/promote-user/<%=authuser.username%>" method="post">
           <button type="submit">Promote User</button>

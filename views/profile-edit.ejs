@@ -6,39 +6,36 @@
     <!-- Page wrapper for sticky footer -->
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
-        <section class="pt-2 pt-lg-3" >
-        <div class="container">
-        <!-- Breadcrumb -->
-          <nav class="py-4" aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item">
-                <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
-              </li>
-              <li class="breadcrumb-item">
-                <a>Profile</a>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page"><%=vendor.username%></li>
-            </ol>
-          </nav>
-          
-          <% if (query.errmsg) { %>
-            <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-              <%- include('partials/Flash-message', {error_message: query.errmsg}) %>
-            </div>
-          <% } %>
 
+      <section class="container pt-5" style="max-width: 1520px;">
 
-          <div class="d-flex pt-3 pb-2 py-sm-4 pt-lg-4">
-            <h2><%=vendor.username%> Profile Page</h2>
-          </div>
+                <!-- Breadcrumb -->
+                <nav class="pb-4 pt-2" aria-label="breadcrumb">
+                  <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item">
+                      <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                      <a>Profile</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page"><%=vendor.username%></li>
+                  </ol>
+                </nav>
+                
+                <% if (query.errmsg) { %>
+                  <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
+                    <%- include('partials/Flash-message', {error_message: query.errmsg}) %>
+                  </div>
+                <% } %>
+      
+      
+                <div class="d-flex pt-3 mb-4 py-sm-4 pt-lg-4">
+                  <h2><%=vendor.username%> Profile Page</h2>
+                </div>
 
-        </div>
-        </section>
-
-
-      <section class="container">
+        
         <div class="row">
-          <aside class="col-lg-4 order-md-1 mb-5">
+          <aside class="col-lg-4 col-md-4 pb-5 mt-n5">
 
             <form action="/edit-profile/<%=vendor.username%>?_method=PUT" enctype="multipart/form-data" method="POST">
 
@@ -58,14 +55,9 @@
                   Contact me
                 </label>
 
-                <span class="position-absolute top-0 start-0 zindex-2 ms-3 mt-3">
-                <a href="#" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle" data-bs-toggle="tooltip" data-bs-placement="left" title="Report Vendor">
-                    <i class="bx bx-flag"></i>
-                  </a>
-                </span> 
-                <a href="#" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-4 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Vendor Pgp Key">
-                  <i class="bx bx-key"></i>
-                  </a> 
+                <label for="report-vendor-<%=vendor.username%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-4 mt-3">      
+                  <i class="bx bx-flag"></i>
+               </label>
               </div>
 
               <div class="card card-body shadow-sm border-0 mt-4">
@@ -99,9 +91,9 @@
             <div class="mt-2">
               <hr class="my-2">
               <h5 class="fw-medium fs-lg mb-1">Pgp Key</h5>
-              <p class="fs-sm"><%=vendor.pgp%></p>
+              <p class="fs-sm"><%=vendor.pgp_keys%></p>
               
-              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="">Go Here</a></p>
+              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="/settings/<%=authuser.username%>">Go Here</a></p>
           </div>
 
           <!-- Spoken Language -->
@@ -129,7 +121,7 @@
 
           </aside>
 
-          <div class="col-xl-7 col-lg-8 col-md-7 order-md-2 mb-5">
+          <div class="col-md-7 pb-5 mb-lg-2 mb-lg-4 mt-n5">
             <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
 
             <% if (!paginatedProducts.results.length) { %>
@@ -139,9 +131,8 @@
             <% } %>
             <hr class="my-2">
       <!-- Review Section -->
-      <section class="container py-lg-4 py-xl-5 mt-3 mb-5">
-        <h2 class="h1 mb-4">Reviews</h2>
-
+      <section class="container mb-5">
+        <h2 class="h3 mt-5 mb-4">Reviews :</h2>
         <!-- Single Review -->
             <div class="py-4">
                 <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
@@ -172,6 +163,7 @@
 
 
             <!-- Single Review -->
+            
             <div class="py-4">
                 <div class="d-flex align-items-center justify-content-between pb-2 mb-1">
                   <div class="d-flex align-items-center me-3">

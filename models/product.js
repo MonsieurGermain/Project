@@ -99,9 +99,11 @@ const productSchema = new mongoose.Schema ({
         required : true,
         default : 'USD'
     },
-    // accepted_crypto : { 
-    //     type : accepted_cryptoSchema
-    // },
+    status : { 
+        type : String,
+        required : true,
+        default : 'online'
+    },
     ship_from : {
         type : String,
         required: true

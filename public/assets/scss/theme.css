@@ -15741,7 +15741,7 @@ img-comparison-slider:focus {
   }
 }
 .messages-view .messages-container {
-  box-shadow: 0px 8px 20px rgba(128, 0, 128, 0.25);
+  box-shadow: 0px 3px 5px rgba(128, 0, 128, 0.25);
   display: flex;
   min-height: 0px;
   height: 100%;
@@ -16030,6 +16030,18 @@ img-comparison-slider:focus {
 
 input[id^=delete-message-input-]:not(:checked) + *,
 input#delete-convo-input:not(:checked) + *:not(.no-convo-yet) {
+  display: none;
+}
+
+input[id^=report-vendor-]:not(:checked) + * {
+  display: none;
+}
+
+input[id^=report-product-]:not(:checked) + * {
+  display: none;
+}
+
+input[id^=report-resolve-]:not(:checked) + * {
   display: none;
 }
 

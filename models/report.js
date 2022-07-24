@@ -4,26 +4,31 @@ const User = require('../models/user')
 
 
 const reportSchema = new mongoose.Schema({ 
-    reference_id : { 
+    reference_id  : { 
         type : String,
-        required : true
-    },
-    reason : { 
-        type : String,
-        required : true
-    },
+    }, 
     type : {
+        type : String
+    } ,
+    username : { 
         type : String,
-        required : true
+    }, 
+    message : {
+        type : String,
+        required : true, 
+    }, 
+    reason : {
+        type : String,
+        required : true, 
+    }, 
+    ban_requested : {
+        type : Boolean
     },
-    explaination : { 
+    ban_explanation : {
         type : String,
-        required : true
     },
     archived : { 
-        type : Boolean,
-        default : false,
-        required : true
+        type : Boolean
     }
 })
 

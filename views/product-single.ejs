@@ -27,8 +27,9 @@
             </ol>
           </nav>
 
+          <div class="card px-5 pt-2 pb-4 border-0">
           <!-- Badges -->
-          <div class="d-flex pt-3 pb-4 py-sm-4 pt-lg-4">
+          <div class="d-flex pb-4 py-sm-4 pt-lg-4">
             <span class="badge bg-success fs-sm me-2">Best Seller</span>
             <a href="#" class="badge bg-white text-dark fs-sm text-decoration-none">Web Development</a>
           </div>
@@ -70,6 +71,7 @@
             </div>
           </div>
         </div>
+        </div>
       </section>
 
       <!-- Sidebar (Course summary) -->
@@ -77,10 +79,10 @@
       <section class="container">
         <div class="row">
 
-          <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-5">
+          <aside class="col-lg-5 col-md-5 order-md-2 mb-5">
             <div style="margin-top: -96px;"></div>
             <div class="position-sticky top-0 pt-5">
-              <div class="pt-5 mt-md-3">
+              <div class="pt-5">
                 <div class="card shadow-sm p-sm-3">
                   <div class="card-body">
                     <% if (product.details.length) { %>
@@ -103,16 +105,17 @@
                     <!-- Make Button Take whole wicth of sidebar and be thicker -->
                   </div>
                   <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary">Buy This Product</a>
-                </div>
               </div>
+            </div>
             </div>
           </aside>
 
-          <!-- Content -->
+          <!-- Content --> 
           <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
             <img src="<%=product.img_path%>" class="card-img-top" style="height: 30rem; object-fit:cover;" alt="Product Image">
 
-            <h2 class="h1 mb-4 mt-4">Product description</h2>
+            <div class="card px-5 py-4 border-0 my-4">
+            <h2 class="h1 mb-4 mt-2">Product description</h2>
             <p class="pb-1 mb-1"><%-product.description%></p>
 
             <!-- Make Text Smaller , Change Color-->
@@ -175,12 +178,14 @@
                 </div>
               </div>
             <% } %>
-
+          </div>
 
 
             <%- include('partials/Vendor-card', {vendor : vendor}) %>
 
+            <hr class="my-2 mt-5">
       <!-- Review Section -->
+      <h2 class="h3 mb-4 mt-4">Reviews :</h2>
       <%- include('partials/Reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage}) %>
 
           </div>

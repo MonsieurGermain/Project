@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const User = require('./user')
+const User = require('../models/user')
 
 const shipping_optionSchema = new mongoose.Schema({
     option_name : {
@@ -117,11 +117,15 @@ orderSchema.methods.Reset_Timer = function() {
     return this
 }
 
+async function returnUser_infoSettings(username) {
+    const user = await User.findOne({username: username})
+    return user.settings.info_expiring
+}
+
 orderSchema.methods.Apply_buyerDeleteInfo = async function(settings) {
-    if (!settings) {
-        const user = await User.findOne({username: this.buyer})
-        settings = user.settings.info_expiring
-    }
+    // if (!settings) {
+    //     await returnUser_infoSettings(this.buyer)
+    // }
 
     // Delete Provided Info
     if (settings.info_expiring === 0) { this.timer = undefined;  this.submited_info = []; } // Instantly Del

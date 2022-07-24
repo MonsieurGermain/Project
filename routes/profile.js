@@ -3,7 +3,7 @@ const router = express.Router()
 const User = require('../models/user')
 const Product = require('../models/product')
 const Review = require('../models/review')
-const { Need_Authentification } = require('../middlewares/authentication')
+const { Need_Authentification, isBuyer } = require('../middlewares/authentication')
 const { Validate_Profile, FetchData, paramsUsername_isReqUsername } = require('../middlewares/validation')
 const { uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function')
 
@@ -58,6 +58,25 @@ async (req,res) => {
     } catch (e) {
         console.log(e)
         res.redirect(`/error`)
+    }
+})
+
+
+
+// Where to put that
+router.post('/awaiting-promotion', Need_Authentification, isBuyer,
+async (req,res) => {
+    try {
+        const { user } = req
+
+        user.awaiting_promotion = true
+
+        await user.save()
+
+        req.flash('success', 'You submission to become a Vendor as been send')
+        res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`)
+    } catch(e) {
+        res.redirect('/error')
     }
 })
 

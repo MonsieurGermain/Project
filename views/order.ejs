@@ -25,7 +25,9 @@
               <li class="breadcrumb-item">
                 <a href="">Order</a>
               </li>
-              <li class="breadcrumb-item active" aria-current="page"><%=product.title%></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                <a href="/product/<%=product.slug%>" class="text-primary">      <%=product.title%></a>
+             </li>
             </ol>
           </nav>
 
@@ -41,7 +43,7 @@
 
         <!-- Page title + Layout switcher -->
         <div class="d-flex align-items-center justify-content-between mb-4 pb-1 pb-md-3">
-          <h1 class="mb-0">Customize Your Order</h1>
+          <h2 class="mb-0">Customize Your Order</h2>
         </div>
 
 
@@ -49,12 +51,12 @@
         <div class="row">
           <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
 
-            <!-- Item -->
-            <article class="card border-0 bg-transparent me-xl-3 mb-4">
+
+            <article class="card border-0 ps-2 pe-5 py-2">
               <div class="row g-0">
                 <div class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3">
                   <a href="/product/<%=product.slug%>?reviewPage=1" class="position-absolute top-0 start-0 w-100 h-100">
-                    <img src="<%=product.img_path%>" style="min-height: 15rem;" alt="Product Img">
+                    <img src="<%=product.img_path%>" style="object-fit: 15rem;" alt="Product Img">
                   </a>
                 </div>
                 <div class="col-sm-7">
@@ -80,23 +82,24 @@
               </div>
             </article>
 
-            <div class="pb-2 pb-lg-3"></div>
+            <hr class="my-4">
+
 
             <% if (product.shipping_option.length) { %>
-                <h3 class="mb-4">Select your Shipping Option</h3>
-                <div class="mb-4">
+              <div class="card px-5 py-4 my-3 border-0">
+                <h3 class="h5 mb-2">Shipping Option</h3>
                     <select name='shipping_option' class="form-select" id="select-input">
                     <% for(let i = 0; i < product.shipping_option.length; i++) { %>
                       <option value="<%=product.shipping_option[i].option_description%>"><%=product.shipping_option[i].option_description%> - <%=product.shipping_option[i].option_price%>$</option>
                       <% } %>
                     </select>
-                  </div>
+              </div>
               <% } %>
 
 
               <% if (product.selection_1) { %>
-                <h3 class="mb-4">Select your <%=product.selection_1.selection_name%></h3>
-                <div class="mb-4">
+                <div class="card px-5 py-4 my-3 border-0">
+                <h3 class="h5 mb-2">Select the <%=product.selection_1.selection_name%></h3>
                     <select name='selection_1' class="form-select" id="select-input">
                     <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
                       <option value="<%=product.selection_1.selection_choices[i].choice_name%>"><%=product.selection_1.selection_choices[i].choice_name%> - <%=product.selection_1.selection_choices[i].choice_price%>$</option>
@@ -107,8 +110,8 @@
 
 
               <% if (product.selection_2) { %>
-                <h3 class="mb-4">Select your <%=product.selection_2.selection_name%></h3>
-                <div class="mb-4">
+                <div class="card px-5 py-4 my-3 border-0">
+                <h3 class="h5 mb-2">Select the <%=product.selection_2.selection_name%></h3>
                     <select name='selection_2' class="form-select" id="select-input">
                     <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
                       <option value="<%=product.selection_2.selection_choices[i].choice_name%>"><%=product.selection_2.selection_choices[i].choice_name%> - <%=product.selection_2.selection_choices[i].choice_price%>$</option>
@@ -123,9 +126,9 @@
           <aside class="col-lg-4 col-md-5 order-md-2 mb-5 position-sticky">
 
                 <div class="position-sticky top-0">
-                      <div class="card shadow-sm p-sm-3">
+                      <div class="card shadow-sm p-sm-3 border-0">
                         <div class="card-body">
-                            <p>Privacy Settings</p>
+                            <p class="mb-2">Privacy Settings</p>
                             <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
                             <label class='form-check-label mb-2' for="default">Default <span class="opacity-70">(Not Recommended)</span></label><br>
                 

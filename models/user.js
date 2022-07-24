@@ -106,6 +106,10 @@ const userSchema = new mongoose.Schema({
         required: true, 
         default : { number_review : 0, total_note : 0, average_note: 0}
     },
+    warning : { 
+        type: Number,
+        default: 0
+    },
     expire_at : { 
         type: Number
     }
@@ -146,16 +150,10 @@ userSchema.methods.Delete_User_Conversation_Etc = async function() {
         conversations[i].delete()
     }
 
-    // Del Orders
-    const orders = await Order.find({$or : [ {buyer : this.username}, {vendor : this.username}]})
-    for(let i = 0; i < orders.length; i++) {
-        orders[i].delete()
-    }
-
     // Del Products
     const products = await Product.find({vendor: this.username})
     for(let i = 0; i < products.length; i++) {
-        await products[i].delete_Orders_Reviews()
+        await products[i].Delete_Orders_And_Reviews()
         products[i].delete()
     }
 

@@ -4,8 +4,8 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_ProvidedInfo, Validate_Update_Order, FetchData, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, Validate_Params_Username_Order,  Validate_OrderCustomization  } = require('../middlewares/validation')
-const { Format_Username_Settings } = require('../middlewares/function')
+const { ValidateValueByChoice, Validate_ProvidedInfo, Validate_Update_Order, FetchData, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, paramsUsername_isReqUsername, Validate_OrderCustomization  } = require('../middlewares/validation')
+const { Format_Username_Settings, paginatedResults} = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
     let price = base_price + selection_1_price + selection_2_price // Base Price OF Each
@@ -16,59 +16,6 @@ function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, se
     price = price.slice(0, price.indexOf('.') + 3)
   
     return parseFloat(price) 
-}
-
-
-function sortOrder_PerStatus(orders) {
-    const sorted_order = {
-        all : orders, 
-        awaiting_info : [],
-        awaiting_payment : [],
-        awaiting_shipment : [],
-        shipped : [],
-        recieved : [],
-        finalized : [],
-        rejected : [],
-        expired : [],
-        dispute_progress : [],
-        disputed : [],
-    }
-
-    for(let i = 0; i < orders.length; i++) {
-        switch(orders[i].status) {
-            case 'awaiting_info' :
-                sorted_order.awaiting_info.push(orders[i])
-            break
-            case 'awaiting_payment':
-                sorted_order.awaiting_payment.push(orders[i])
-            break
-            case 'awaiting_shipment' :
-                sorted_order.awaiting_shipment.push(orders[i])
-            break
-            case 'shipped' :
-                sorted_order.shipped.push(orders[i])
-            break
-            case 'recieved' :
-                sorted_order.recieved.push(orders[i])
-            break
-            case 'finalized' :
-                sorted_order.finalized.push(orders[i])
-            break
-            case 'rejected' :
-                sorted_order.rejected.push(orders[i])
-            break
-            case 'expired' :
-                sorted_order.expired.push(orders[i])
-            break
-            case 'dispute_progress' :
-                sorted_order.dispute_progress.push(orders[i])
-            break
-            case 'disputed' :
-                sorted_order.disputed.push(orders[i])
-            break
-        }
-    }
-    return sorted_order
 }
 
 async function HandleOrderRequest(request, order, user_settings) {
@@ -124,8 +71,8 @@ async function Get_Product_Img(slug) {
     return product.img_path
 }
 
-function Create_Order_Link(status, id, buyer) {
-    if (buyer) {
+function Create_Order_Link(status, id, isBuyer) {
+    if (isBuyer) {
         switch(status) {
             case 'awaiting_info' :
             return `/submit-info/${id}`
@@ -136,20 +83,22 @@ function Create_Order_Link(status, id, buyer) {
     return `/order-resume/${id}`
 }
 
-function Include_Delete_Link(order, buyer){
+function Include_Delete_Link(order, isBuyer){
     switch(order.status) {
         case 'rejected' :
-            return true
+            if (isBuyer) return true
+            else return
         case 'finalized' :
             return true
         case 'expired' :
             return true
         case 'awaiting_info':
-            if (buyer) return true
+            if (isBuyer) return true
+            else return
         break
         case 'disputed' : 
             if (order.dispute_winner !== order.vendor) {
-                if (buyer) return true
+                if (isBuyer) return true
             }
             else if (!order.timer) return true
         break
@@ -158,20 +107,18 @@ function Include_Delete_Link(order, buyer){
     }
     return
 }
-async function Format_Order(order, buyer, order_link) {
-    order.product_img = await Get_Product_Img(order.product_slug)
-
-    order.Formated_Timers = Format_Timer(order.timer)
+async function Format_Order(order, isBuyer) {
     order.buyer = Format_Username_Settings(order.buyer, order.privacy)
-    order.deletelink = Include_Delete_Link(order, buyer)
-
-    if (order_link) order.link = Create_Order_Link(order.status, order.id, buyer)
+    order.Formated_Timers = Format_Timer(order.timer)
+    order.link = Create_Order_Link(order.status, order.id, isBuyer)
+    order.deletelink = Include_Delete_Link(order, isBuyer)
+    order.product_img = await Get_Product_Img(order.product_slug)
     
     return order
 }
-async function Format_Orders_Array(orders, buyer = false, order_link = true) {
+async function Format_Orders_Array(orders, isBuyer) {
     for(let i = 0; i < orders.length; i++) {
-        orders[i] = await Format_Order(orders[i], buyer, order_link)
+        orders[i] = await Format_Order(orders[i], isBuyer)
     }
     return orders
 }
@@ -229,7 +176,8 @@ async (req,res) => {
             order.qty, 
             order.shipping_option ? order.shipping_option.option_price : 0, 
             order.selection_1 ? order.selection_1.selected_choice.choice_price : 0, 
-            order.selection_2 ? order.selection_2.selected_choice.choice_price : 0)
+            order.selection_2 ? order.selection_2.selected_choice.choice_price : 0
+        )
 
         await product.save()
         await order.save()
@@ -250,7 +198,7 @@ async (req,res) => {
         const { order } = req
         const product = await Product.findOne({slug : order.product_slug})
         const user = await User.findOne({username: order.vendor})
-        res.render('submit-info', { order, product_message : product.message, pgp : user.pgp})
+        res.render('submit-info', { order, product, vendor: user})
     } catch(e) {
         console.log(e)
         res.redirect('/error')
@@ -329,11 +277,17 @@ async (req,res) => {
     try {
         let { order } = req
 
-        order = await HandleOrderRequest(req.body.status, order, req.user.settings)
+        console.log(req.query)
+
+        order = await HandleOrderRequest(req.body.status, order, req.user.settings, req.query.fromOrders)
     
         await order.save()
     
-        res.redirect(`/order-resume/${req.params.id}`)
+        let redirect_url
+        if (req.query.fromOrders) redirect_url = `/orders/${req.user.username}?ordersPage=1&clientsOrders=true&status=awaiting_shipment` 
+        else redirect_url = `/order-resume/${req.params.id}` 
+
+        res.redirect(redirect_url)
     } catch (e) {
         console.log(e)
         res.redirect('/error')
@@ -341,26 +295,55 @@ async (req,res) => {
 })
 
 
+function constructOrdersQuery(query, user) {
+    const mongooseQuery = {}
+
+    if (query.status) mongooseQuery.status = query.status
+    
+    if (query.clientsOrders === 'true') mongooseQuery.vendor = user.username
+    else if (query.clientsOrders === 'false') mongooseQuery.buyer = user.username
+    else if (!query.clientsOrders && user.authorization === 'vendor') mongooseQuery.vendor = user.username
+    else mongooseQuery.buyer = user.username
+
+    return mongooseQuery
+}
 
 router.get('/orders/:username',
-Need_Authentification, Validate_Params_Username_Order,
+Need_Authentification, paramsUsername_isReqUsername,
+ValidateValueByChoice(['body', 'status'], [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed']), 
+ValidateValueByChoice(['body', 'clientsOrders'], [undefined, 'true']),
 async (req,res) => {
     try {
-        let { your_order, clients_order } = req
+        const query = constructOrdersQuery(req.query, req.user)
 
-        your_order = await Format_Orders_Array(your_order, true)
-        clients_order = await Format_Orders_Array(clients_order)
-        
-        your_order = sortOrder_PerStatus(your_order)
-        clients_order = sortOrder_PerStatus(clients_order)
-    
-        res.render('your-order', {your_order, clients_order} )
+        let orders = await paginatedResults(Order, query, {page: req.query.ordersPage, limit: 24})
+        orders.results = await Format_Orders_Array(orders.results, query.vendor ? false : true)
+
+        res.render('your-order', { orders })
     } catch (e) {
         console.log(e)
         res.redirect('/error')
     }
 })
 
+router.post('/filter-orders', Need_Authentification, // isAdmin,
+ValidateValueByChoice(['body', 'status'], ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed']), 
+ValidateValueByChoice(['body', 'clientsOrders'], [undefined, 'true', 'false']),
+async (req,res) => {
+    try {
+        const { status, clientsOrders } = req.body
+
+        let query = '?ordersPage=1'
+        
+        if (status !== 'all') query += `&status=${status}`
+        if (clientsOrders) query += `&clientsOrders=${clientsOrders}`
+
+        res.redirect(`/orders/${req.user.username}${query}`)
+    } catch(e) {
+        console.log(e)
+        res.redirect('/error')
+    }
+})
 
 
 router.delete('/delete-order/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer,
@@ -372,8 +355,26 @@ async (req,res) => {
 
         order.delete()
     
-        res.redirect(`/orders/${req.user.username}`)
+        res.redirect(`/orders/${req.user.username}?ordersPage=1`)
     } catch (e) {
+        console.log(e)
+        res.redirect('/error')
+    }
+})
+
+
+router.post('/create-dispute/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer,
+async (req,res) => {
+    try {
+        const { order } = req
+
+        order.status = 'dispute_progress'
+        order.timer = undefined
+    
+        await order.save()
+
+        res.redirect(`/order-resume/${order.id}`)
+    } catch(e) {
         console.log(e)
         res.redirect('/error')
     }

@@ -83,14 +83,14 @@
             <% } else { %>
             <!-- User message -->
             <div class="message-entry">
-                <div>
+                <img
+                src="<%=selected_conversation.img_path%>"
+                class="smedium-rc rounded-circle"
+                width="40"
+                alt="<%=selected_conversation.sender_2%>"
+            />
+                <div class="ms-2">
                     <div>
-                        <img
-                            src="<%=selected_conversation.img_path%>"
-                            class="smedium-rc rounded-circle"
-                            width="40"
-                            alt="<%=selected_conversation.sender_2%>"
-                        />
                         <div>
                             <div
                                 class="message-text"

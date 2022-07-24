@@ -65,8 +65,10 @@ function Replace_Empty(value) {
   }
   return value
 }
+
+
 function ValidateText(value, name, {minlength = 3, maxlength = 50, isRequired = true} = {}) {
-  if (!isRequired && !value) return ''
+  if (!isRequired && !value) return undefined
 
   if (typeof(value) !== 'string') throw new Error(`Invalid ${name} Data Type`) 
   value = value.trim()
@@ -103,6 +105,7 @@ exports.FetchData = (path, model, query, varName) => {
 
       if (!value) throw new Error(`${path[0]} ${path[1]} Empty`)
       if (typeof(value) !== 'string') throw new Error(`${path[0]} ${path[1]} isnt a String`)
+      if (value.length > 200) throw new Error(`${path[0]} ${path[1]} is too long`)
 
       req[varName] = await Fetch_inDatabase(model, query, value)
       if (!req[varName]) throw new Error(`${path[0]} ${path[1]} Invalid`)
@@ -255,11 +258,12 @@ exports.Validate_Update_Order = (req, res, next) => {
 exports.Validate_Profile = (req, res, next) => {
   try {
     // Job
-    req.body.job = ValidateText(req.body.job, 'Job', { minlength: 0, maxlength: 100, isRequired: false})
+    if(req.body.job) req.body.job = ValidateText(req.body.job, 'Job', { minlength: 0, maxlength: 100, isRequired: false})
+    else req.body.job = undefined
 
     //Description
-    req.body.description = ValidateText(req.body.description, 'Description', { minlength: 0, maxlength: 3000, isRequired: false})
-
+    if(req.body.description) req.body.description = ValidateText(req.body.description, 'Description', { minlength: 0, maxlength: 3000, isRequired: false})
+    else req.body.description = undefined 
 
     req.body.achievement = Filter_Empty(req.body.achievement)
     for(let i = 0; i < req.body.achievement.length; i++) {
@@ -521,15 +525,88 @@ exports.Validate_EncryptedCodeQuery = (req, res, next) => {
   }
 }
 
+exports.validateContactUs = (req, res, next) => {
+  try { 
+    if (!req.body.username) req.body.username = undefined
+
+    if (!compareArray(['feedback', 'bug', 'help', 'other'], req.body.reason)) throw new Error('Invalid Reason')
+    
+    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 10, maxlength: 3000 })
+
+    if (req.body.email) {
+      if (!isEmail(req.body.email)) throw new Error('The Email field must be a valid Email')
+    } else req.body.email = undefined
+   
+    next()
+  } catch(e) {
+    req.flash('error', e.message)
+    res.redirect('/contactus')
+  }
+}
+
+exports.validateResolveReport = (req,res, next) => { 
+  try { 
+    req.body.message = ValidateText(req.body.message, 'Message to the vendor', { minlength: 10, maxlength: 3000 })
+
+    if (!req.body.ban) {
+      req.body.ban = undefined
+      req.body.banReason = undefined
+    } else {
+      req.body.ban = true
+      req.body.banReason = ValidateText(req.body.banReason, 'Reason of Banning', { minlength: 10, maxlength: 3000 })
+    } 
+    
+    next()
+  } catch(e) {
+    console.log(e)
+    req.flash('error', e.message)
+    res.redirect('/reports')
+  }
+}
+
+exports.validateReports = (req, res, next) => {
+  try {
+    if (req.body.username) req.body.username = req.user.username  
+    else req.body.username = undefined
+
+    if (!compareArray(['scam', 'blackmail', 'information', 'other'], req.body.reason)) throw new Error('Invalid Reason')
+    
+    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 10, maxlength: 3000 })
+
+    req.params.id = ValidateText(req.params.id, 'Id', { minlength: 3, maxlength: 200})
+   
+    next()
+  } catch(e) {
+    console.log(e)
+    res.redirect('/error')
+  }
+}
 
 
+function joinArray(array, req) {
+  let joinedString = ''
+  for(let i = 0; i < array.length; i++) {
+    console.log(array[i])
+    if (typeof(array[i]) !== 'string') joinedString += `${req[array[i][0]][array[i][1]]}`
+    else joinedString += array[i]
+  }
+  return joinedString
+}
 
-
+exports.isHimself = ({url = '/error', flashMessage_Type = 'error', message = ''} = {}, username) => {
+  return (req, res, next) => {
+    try { 
+      if (req.user.username === req[username[0]][username[1]]) throw new Error()
+      next()
+    } catch (e) {
+      if (message) req.flash(flashMessage_Type, message)
+      res.redirect(joinArray(url, req))
+    }
+  }
+}
 
 // Params Query Validation
 // Product
-
-
 exports.isPartofConversation = async (req, res, next) => {
   try { 
     if (req.user.username !== req.conversation.sender_1 && req.user.username !== req.conversation.sender_2) throw new Error('Params Id Invalid')
@@ -640,38 +717,8 @@ exports.isOrder_Admin = async (req, res, next) => {
     console.log(e)
     res.redirect('/404')
 }}
-exports.Validate_Params_Username_Order = async (req, res, next) => {
-  try { 
-      if (Is_Empty(req.params.username)) throw new Error('Params Username Empty')
-      if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
-      if (req.params.username !== req.user.username) throw new Error()
 
-      req.your_order = await Order.find({buyer : req.params.username})
-      req.clients_order = await Order.find({vendor : req.params.username})
-
-      next()
-  } catch(e) {
-      console.log(e)
-      res.redirect('/404')
-}}
-exports.get_adminDispute = async (req, res, next) => {
-  try { 
-    req.adminDisputes = await Order.find({status : 'dispute_progress', admin : req.user.username})
-    next()
-  } catch(e) {
-      console.log(e)
-      res.redirect('/error')
-}}
-exports.getDispute_inProgress = async (req, res, next) => {
-  try { 
-    req.disputes = await Order.find({status : 'dispute_progress', admin: undefined})
-    next()
-  } catch(e) {
-    console.log(e)
-    res.redirect('/404')
-}}
 // USERS
-
 exports.paramsUsername_isReqUsername = async (req, res, next) => {
 try { 
     if (IsNot_String(req.params.username)) throw new Error('Params Username not String')
@@ -687,20 +734,12 @@ try {
 
 
 // Custom Validation
-exports.Sending_toHimself = async (req, res, next) => {
-  try { 
-      if (req.user.username === req.params.username) throw new Error('You cant send a Message to Yourself')
-      next()
-  } catch(e) {
-    console.log(e)
-    req.flash('error', e.message)
-    res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
-  }
-}
 
 exports.Validate_OrderCustomization = async (req, res, next) => {
   try { 
       if (req.user.username === req.product.vendor) throw new Error('You cant Buy Your Own Product')
+
+      if (req.product.available_qty == 0) throw new Error('This Product is Sold Out')
       // Qty
       if (req.body.qty) {
           req.body.qty = isNaN(parseFloat(req.body.qty)) || req.body.qty === 0 ? req.body.qty = 1 : req.body.qty = parseFloat(req.body.qty) 

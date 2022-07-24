@@ -54,7 +54,6 @@ autoDelete_InactiveUser
 
 const HOME_ROUTER = require('./routes/home')
 const LOGIN_ROUTER = require('./routes/login')
-const DEL_PUT_CREATE_PRODUCT_ROUTER = require('./routes/manipulate-product')
 const PROFILE = require('./routes/profile')
 const PRODUCTS = require('./routes/products')
 const ERROR = require('./routes/404')
@@ -62,16 +61,13 @@ const MESSAGE = require('./routes/message')
 const ORDER = require('./routes/order')
 const REVIEW = require('./routes/review')
 const SETTINGS = require('./routes/settings')
-const ADMINFUNCTION = require('./routes/admin')
-const REPORT = require('./routes/report')
-const DISPUTE = require('./routes/dispute')
-const NEWS = require('./routes/news')
+const ADMIN = require('./routes/admin')
 const DOCUMENTATION = require('./routes/documentation')
-const PROMOTE = require('./routes/promotion')
+
+
 
 app.use('/', HOME_ROUTER)
 app.use('/', LOGIN_ROUTER)
-app.use('/', DEL_PUT_CREATE_PRODUCT_ROUTER)
 app.use('/', PROFILE)
 app.use('/', PRODUCTS)
 app.use('/', ERROR)
@@ -79,27 +75,22 @@ app.use('/', MESSAGE)
 app.use('/', ORDER)
 app.use('/', REVIEW)
 app.use('/', SETTINGS)
-app.use('/', ADMINFUNCTION)
-app.use('/', REPORT)
-app.use('/', DISPUTE)
-app.use('/', NEWS)
+app.use('/', ADMIN)
 app.use('/', DOCUMENTATION)
-app.use('/', PROMOTE)
 
-// Upgrade Promotion Routes
-// Make change on front-end to make it responsive with Authorization
-
-// Better Error Handling When Uploading Img
+app.all('*', (req, res) => {
+  res.render('404page')
+})
 
 
 // PRIORITY
 // XMR ESCROW
-// ADMIN PAGE AND SYSTEM Report, Feedback/Message, Ban User
+// Finalize 2fa
 
 // To do 
 // fix product array and product img sizing
 
-
+// Check if Reported Object Exist
 // review Expired timer update
 // Totally hidden Message
 // Encrypt Messages

@@ -3,7 +3,7 @@ const router = express.Router()
 const Conversation = require('../models/conversation')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Conversation, Validate_Message, Find_ifConversation_alreadyExist, FetchData, isPartofConversation, Find_allConverastion_ofUser, Validate_SelectedConversation_Id, ValidateDelete_MessageId, Sending_toHimself } = require('../middlewares/validation')
+const { Validate_Conversation, Validate_Message, Find_ifConversation_alreadyExist, FetchData, isPartofConversation, Find_allConverastion_ofUser, Validate_SelectedConversation_Id, ValidateDelete_MessageId, isHimself } = require('../middlewares/validation')
 const { Format_Username_Settings } = require('../middlewares/function')
 
 // Perfect that ?
@@ -86,7 +86,7 @@ async function Format_Conversation(conversations, username, id) {
 
 // CREATE MESSAGE
 router.post('/send-message/:username', 
-Need_Authentification, Sending_toHimself, Validate_Conversation, Find_ifConversation_alreadyExist,
+Need_Authentification, isHimself({url: ['/profile/', ['user', 'username'], '?productPage=1&reviewPage=1'], message: 'You cant send a Message to Yourself'}, ['params', 'username']), Validate_Conversation, Find_ifConversation_alreadyExist,
 async (req, res) => {
     try {       
         const { Found_Conversation } = req
