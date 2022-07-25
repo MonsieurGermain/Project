@@ -27,30 +27,73 @@
             </ol>
           </nav>
 
-          <div class="card px-5 pt-2 pb-4 border-0">
+
           <!-- Badges -->
-          <div class="d-flex pb-4 py-sm-4 pt-lg-4">
+          <div class="d-flex py-sm-2 pt-lg-4">
             <span class="badge bg-success fs-sm me-2">Best Seller</span>
             <a href="#" class="badge bg-white text-dark fs-sm text-decoration-none">Web Development</a>
           </div>
 
-          <!-- Title -->
-          <h1><%=product.title%></h1>
+        </div>
+      </section>
 
-          <!-- Stats -->
-          <div class="d-sm-flex ">
-            <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">  
-              <div class="text-nowrap me-1">
-                <%- include('partials/Rating', {rating: product.review.average_note}) %>
+      <!-- Sidebar (Course summary) -->
+      <!-- MAke it look better when no Details -->
+      <section class="container">
+        <div class="row">
+
+          <aside class="col-lg-5 col-md-5 order-md-2 mb-5">
+            <div style="margin-top: -96px;"></div>
+            <div class="position-sticky top-0 pt-5">
+              <div class="pt-5">
+                <div class="card shadow-sm p-sm-3 border-0">
+                  <div class="card-body">
+                  <!-- Title -->
+                  <h1 class="h3"><%=product.title%></h1>
+
+                  <!-- Stats -->
+                  <div class="d-sm-flex ">
+                    <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">  
+                      <div class="text-nowrap me-1">
+                        <%- include('partials/Rating', {rating: product.review.average_note}) %>
+                      </div>
+                    <span class="opacity-70">
+                      <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
+                    </span>
+                    </div>
+                  </div>
+                    <% if (product.details.length) { %>
+                    <h4 class="mb-4">About this Product:</h4>
+                    <ul class="list-unstyled pb-3">
+                      <!-- Allow User to Choose SVG -->
+                      <% for(let i = 0; i < product.details.length; i++) { %>
+                        <li class="d-flex align-items-center mb-2">
+                          <i class="bx bx-check-circle text-primary fs-xl me-2"></i>
+                          <b class="me-2"><%=product.details[i]%></b>
+                        </li>
+                      <% } %>
+                    </ul>
+                    <% } %>
+                    <div class="h2 d-flex align-items-center mb-0">
+                      <p class="h4 mb-0 mt-2">Price: <%=product.price%>$</p>
+                      <!-- IF SALE ON -->
+                      <!-- <del class="text-muted fs-xl fw-normal ms-2">49.99</del> -->
+                    </div>
+                  </div>
+                  <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary mt-0">Buy This Product</a>
               </div>
-            <span class="opacity-70">
-              <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
-            </span>
             </div>
-          </div>
+            </div>
+          </aside>
+
+          <!-- Content --> 
+          <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
+            <img src="<%=product.img_path%>" class="card-img-top" style="height: 30rem; object-fit:cover;" alt="Product Image">
 
           <!-- Author -->
-          <div class="d-sm-flex align-items-center  pt-lg-4">
+          <div class="card py-3 px-5 mt-3 border-0">
+          <div class="d-sm-flex align-items-center">
+            
             <a href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1">
               <img src="<%=vendor.img_path%>" class="medium-rc rounded-circle" width="60" alt="<%=vendor.username%>">
             </a>
@@ -69,50 +112,8 @@
                 </span>
               </div>
             </div>
+            </div>
           </div>
-        </div>
-        </div>
-      </section>
-
-      <!-- Sidebar (Course summary) -->
-      <!-- MAke it look better when no Details -->
-      <section class="container">
-        <div class="row">
-
-          <aside class="col-lg-5 col-md-5 order-md-2 mb-5">
-            <div style="margin-top: -96px;"></div>
-            <div class="position-sticky top-0 pt-5">
-              <div class="pt-5">
-                <div class="card shadow-sm p-sm-3">
-                  <div class="card-body">
-                    <% if (product.details.length) { %>
-                      <h4 class="mb-4">About this Product:</h4>
-                    <% } %>
-                    <ul class="list-unstyled pb-3">
-                      <!-- Allow User to Choose SVG -->
-                      <% for(let i = 0; i < product.details.length; i++) { %>
-                        <li class="d-flex align-items-center mb-2">
-                          <i class="bx bx-check-circle text-primary fs-xl me-2"></i>
-                          <b class="me-2"><%=product.details[i]%></b>
-                        </li>
-                      <% } %>
-                    </ul>
-                    <div class="h2 d-flex align-items-center mb-2">
-                      <p class="h4">Price: <%=product.price%>$</p>
-                      <!-- IF SALE ON -->
-                      <!-- <del class="text-muted fs-xl fw-normal ms-2">49.99</del> -->
-                    </div>
-                    <!-- Make Button Take whole wicth of sidebar and be thicker -->
-                  </div>
-                  <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary">Buy This Product</a>
-              </div>
-            </div>
-            </div>
-          </aside>
-
-          <!-- Content --> 
-          <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
-            <img src="<%=product.img_path%>" class="card-img-top" style="height: 30rem; object-fit:cover;" alt="Product Image">
 
             <div class="card px-5 py-4 border-0 my-4">
             <h2 class="h1 mb-4 mt-2">Product description</h2>
