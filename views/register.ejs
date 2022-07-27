@@ -10,7 +10,7 @@
          <div class="container d-flex flex-wrap justify-content-center justify-content-xl-start align-content-center h-100 pt-5">
            <div class="w-100 align-self-end pt-1 pt-md-4 pb-4" style="max-width: 526px;">
             <% if (error.length) { %>
-              <%- include('partials/Flash-message', {message: error}) %> 
+              <%- include('partials/Flash-message', {message: error, type: 'error'}) %> 
             <% } %>
              <h1 class="text-center text-xl-start">Create Account</h1>
              <p class="text-center text-xl-start pb-3 mb-3">Already have an account? <a href="/login">Sign in here.</a></p>

@@ -13,13 +13,13 @@
                 <div class="position-relative">
                   <a href="/product/<%=products[i].slug%>?reviewPage=1" class="d-block position-absolute w-100 h-100 top-0 start-0"></a>
                   <!-- Badges -->
-                  <% if (products[i].qty_settings && !products[i].qty_settings.available_qty) { %>
+                  <% if (products[i].status === 'offline') { %>
+                    <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Offline</span>
+                  <% } else if (products[i].qty_settings && !products[i].qty_settings.available_qty) { %>
                     <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sold Out!</span>
-                  <% } %>
-                  <% if (products[i].onsales) { %>
-                    <span class="badge bg-primary  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sale!</span>
-                  <% } %>
-                  <% if (products[i].popular) { %>
+                  <% } else if (products[i].default_price) { %>
+                    <span class="badge bg-primary  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sales!</span>
+                  <% } else if (products[i].popular) { %>
                     <span class="badge bg-success position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Popular</span>
                   <% } %>
 

@@ -37,6 +37,7 @@ app.use((req, res, next) => {
   const splitedUrl = req.url.split('?')
   res.locals.url = splitedUrl
   res.locals.success = req.flash('success');
+  res.locals.warning = req.flash('warning');
   res.locals.error = req.flash('error');
   next()
 })
@@ -90,16 +91,16 @@ app.all('*', (req, res) => {
 // To do 
 // fix product array and product img sizing
 
-// Check if Reported Object Exist
 // review Expired timer update
 // Totally hidden Message
 // Encrypt Messages
-// Saw or not saw message
 // Delete message after seing
 // Format Currency of Product
-// Discount Product
-// Offline local 
 
+// Saw or not saw message
+
+// Offline local 
+// Add settings
 
 app.listen('3000', (req, res) => {
   console.log('Server running on port 3000')

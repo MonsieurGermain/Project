@@ -28,7 +28,7 @@
 
           <% if (error.length) { %>
             <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
-            <%- include('partials/Flash-message', {message: error}) %>
+            <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
           </div>   
           <% } %>
 
@@ -162,7 +162,14 @@
                     </ul>
                     <div class="h2 d-flex align-items-center mb-4">
                         <!-- Price -->
-                            <input class="form-control" type="number" id="number-input" name="price" placeholder="Price of Product" value="<%=product.price%>"  max="1000000" min="1" required> 
+                            <input class="form-control" type="number" id="number-input" name="price" placeholder="Price of Product" max="1000000" min="1" required
+                            <% if (product.default_price) { %>
+                              value="<%=product.default_price%>"
+                              style="pointer-events:none; opacity: 50%;"
+                            <% } else { %> 
+                              value="<%=product.price%>"
+                            <% } %>
+                            > 
                             <label for="number-input" class="form-label ms-4">$</label>
                           
                     </div>
@@ -349,17 +356,17 @@
                                 </div>
 </div>
 
-
 <!-- Quantity Settings -->
 <div>
 <h3 class="h4 mt-5">Quantity Settings</h3>
 <div>
+
     
     <input class="form-check-input" type="checkbox" id="quantity-settings-checkbox"
     <% if (product.qty_settings) { %>
       checked
     <% } %> >
-    <label class="form-check-label" for="quantity-settings-checkbox">I have a limited stocks</label>
+    <label class="form-check-label ms-2" for="quantity-settings-checkbox">I have a limited stocks</label>
 
     <div class="quantity-settings">
                 <div class="mb-4">
@@ -380,21 +387,75 @@
 </div>
 </div>
 
-
-<!-- Privacy Settings -->
 <div>
-    <h3 class="h4 mt-5 mb-2">Privacy Settings</h3>
-    <div>
-        <div>
-            <input name="allow_hidden" class="form-check-input" type="checkbox" id="privacy-hidden" 
-            <% if (product.allow_hidden) { %>
-              checked
-            <% } %>>
-            <label class="form-check-label" for="privacy-hidden">Allow Buyer to totally hide their Username from me</label>
-        </div>
-    </div>
-    </div>
+  <h3 class="h4 mt-5">Product Settings</h3>
+  <div>
+  
+      
+      <input class="form-check-input" type="checkbox" id="settings-checkbox">
+      <label class="form-check-label ms-2" for="settings-checkbox">Change Settings</label>
+  
+      <div class="settings-container">
 
+        <% if (product.title) { %>
+          <div class="mb-4">
+            <p class="h5 mb-2 mt-4">Start a Sales !</p>
+
+            <p class="mb-2 mt-2">Sales Price</p>
+            <input type="number" class="form-control" placeholder="Price on sales of the product" name="sales_price" 
+            <% if (product.default_price) { %>
+              value="<%=product.price%>"
+              style="pointer-events:none; opacity: 50%;"
+            <% } else { %>
+              max="<%=product.price - 1%>"
+            <% } %>
+            >
+
+            <p class="mb-2 mt-2">Time of the sales</p>
+            <input type="number" class="form-control" placeholder="How much days will your Sales Last ?" max="30" name="sales_time" 
+            <% if (product.sales_time) { %>
+            value="<%=product.sales_time%>"
+            style="pointer-events:none; opacity: 50%;"
+            <% } %> 
+            >
+
+            <% if (product.default_price) { %>
+              <div class="mt-4">
+              <label type="submit" for="stop_sales" class="form-check-label text-danger me-2">I want to stop this Sales</label>
+              <input class="form-check-input" name="stop_sales" type="checkbox" id="stop_sales">
+            </div>
+            <% } %>
+
+          </div>
+        <% } %>
+
+        <div class="mb-4"> 
+          <p class="h5 mb-2 mt-4">Status of your Product</p>
+          <select class="form-select me-4 mb-2 mb-md-0" id="status" name="status" style="min-width: 240px;" required>
+            <option value="online"
+            <% if (product.status === 'online') { %>
+              selected
+            <% } %>
+            >Online</option>
+            <option value="offline"
+            <% if (product.status === 'offline') { %>
+              selected
+            <% } %> 
+            >Offline</option>
+          </select>
+        </div>
+
+                    <div>
+                      <p class="h5 mb-2 mt-4">Privacy Settings</p>
+                      <label class="form-check-label me-2" for="privacy-hidden">Allow Buyer to totally hide their Username from me</label>
+                      <input name="allow_hidden" class="form-check-input" type="checkbox" id="privacy-hidden" 
+                      <% if (product.allow_hidden) { %>
+                        checked
+                      <% } %>>
+                  </div>
+      </div>
+  </div>
+  </div>
 
     <button type="submit" class="btn btn-primary mb-4 mt-4">
         <% if (product.title) { %>

@@ -120,6 +120,15 @@ const productSchema = new mongoose.Schema ({
     details : {
         type : Array
     },
+    default_price : { // Put Sales Related data in a new Schema salesSchema
+        type: Number
+    },
+    sales_time : { 
+        type: Number
+    },
+    sales_end : { 
+        type: Number
+    },
     shipping_option : 
         [shipping_option],
 
@@ -157,8 +166,6 @@ productSchema.methods.UploadImg = function(filename, Old_Image) {
 
     this.img_path = newImg_path
 }
-
-
 
 // Change Slug
 async function Change_Order_With_Old_Slug(old_slug, new_slug) {
@@ -226,6 +233,15 @@ productSchema.methods.Delete_Orders_And_Reviews = async function() {
     deleteOld_Img(`./public/${this.img_path}`)
     await Delete_Orders(this.slug)
     await Delete_Reviews(this.slug)
+}
+
+
+productSchema.methods.endSales = function() {
+    this.price = this.default_price
+
+    this.default_price = undefined
+    this.sales_time = undefined
+    this.sales_end = undefined
 }
 
 module.exports = mongoose.model('Product', productSchema)

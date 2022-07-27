@@ -25,10 +25,27 @@ function constructQuery(query) {
 }
 
 // User Post Report // Where Should I put that ?
+async function check_ifReported_objectExist(req, res, next) {
+    try { 
+        switch(req.query.type) {
+            case 'vendor':
+                await User.findOne({username: req.params.id}).orFail(new Error(''))
+            break
+            case 'product':
+                await Product.findOne({slug: req.params.id}).orFail(new Error(''))
+            break 
+        }
+        next()
+    } catch (e) {
+        console.log('Invalid Reported Items')
+        res.redirect('/error')
+    }
+}
 router.post('/report/:id', Need_Authentification,
 validateReports,
 isHimself({url: ['/profile/', ['user', 'username'], '?productPage=1&reviewPage=1'], message: 'Why do you want to report Yourself ?'}, ['params', 'id']),
 ValidateValueByChoice(['query', 'type'], ['vendor', 'product']), 
+check_ifReported_objectExist,
 async (req,res) => {
     try {
         const { type } = req.query
@@ -53,6 +70,7 @@ async (req,res) => {
     }
 
 })
+
 
 // Admin Report
 router.get('/reports', Need_Authentification, // isAdmin,
@@ -175,6 +193,8 @@ async (req,res) => {
         res.redirect('/error')
     }
 })
+
+
 // Ban User
 router.get('/ban-user', Need_Authentification, // isAdmin,
 ValidateValueByChoice(['query', 'reason'], [undefined, 'scam', 'blackmail', 'information', 'other']), 

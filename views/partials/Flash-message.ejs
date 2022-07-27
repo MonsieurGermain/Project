@@ -1,7 +1,9 @@
-<% if (success === true) { %>
+<% if (type === 'success') { %>
     <div class="alert alert-success text-center mb-1" role="alert">
-<% } else { %>
+<% } else if (type === 'error') { %>
     <div class="alert alert-danger text-center mb-1" role="alert">
+<% } else { %>
+    <div class="alert alert-warning text-center mb-1" role="alert">
 <% } %>
     <%= message %>
 </div>

@@ -14,7 +14,7 @@ async (req,res) => {
         const { user } = req
         
         let paginatedProducts
-        if (req.query.section === 'saved') paginatedProducts = await paginatedResults(Product, {slug: { $in: user.saved_product }}, {page: req.query.productPage, limit: 24})
+        if (req.query.section === 'saved') paginatedProducts = await paginatedResults(Product, {slug: { $in: user.saved_product }, status: 'online'}, {page: req.query.productPage, limit: 24})
         res.render('settings', {user, paginatedProducts})
     } catch(e) {
         console.log(e)

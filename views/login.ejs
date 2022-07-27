@@ -18,10 +18,10 @@
               <%- include('partials/Flash-message', {message: messages.error}) %>
             <% } %>
             <% if (error.length) { %>
-              <%- include('partials/Flash-message', {message: error}) %>
+              <%- include('partials/Flash-message', {message: error, type : 'error'}) %>
             <% } %>
             <% if (success.length) { %>
-              <%- include('partials/Flash-message', {message: success, success: true}) %>
+              <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
             <% } %>
             <h1 class="text-center text-xl-start">Welcome Back</h1>
             <p class="text-center text-xl-start pb-3 mb-3">Don’t have an account yet? <a href="/register">Register here.</a></p>

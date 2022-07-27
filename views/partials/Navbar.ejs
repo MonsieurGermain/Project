@@ -143,10 +143,18 @@
                                         <span><i class="bx bx-user fs-base opacity-60 me-2"></i> Profile</span>
                                     </a>
                                 </li>
+                                <% if (authuser.authorization === 'vendor') { %>
+                                <li class="dropdown-divider"></li>
+                                <li>
+                                    <a href="/orders/<%=authuser.username%>?clientsOrders=true&ordersPage=1">
+                                        <span><i class="bx bx-shopping-bag fs-base opacity-60 me-2"></i>Your Clients Order</span>
+                                    </a>
+                                </li>
+                                <% } %>
                                 <li class="dropdown-divider"></li>
                                 <li>
                                     <a href="/orders/<%=authuser.username%>?ordersPage=1">
-                                        <span><i class="bx bx-shopping-bag fs-base opacity-60 me-2"></i> Orders</span>
+                                        <span><i class="bx bx-shopping-bag fs-base opacity-60 me-2"></i>Your Orders</span>
                                     </a>
                                 </li>
                                 <li class="dropdown-divider"></li>

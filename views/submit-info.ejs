@@ -27,7 +27,7 @@
 
           <% if (error.length) { %>
             <div class="d-flex align-items-center justify-content-between mb-4 pb-1 pb-md-3">
-            <%- include('partials/Flash-message', {message: error}) %>
+            <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
           </div>   
           <% } %>
         

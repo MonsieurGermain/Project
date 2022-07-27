@@ -299,6 +299,7 @@ exports.Validate_Product = (req, res, next) => {
     if (Is_Empty(req.body.price)) throw new Error(`The Price fields is Required`)
     if (IsNot_Number(req.body.price))  throw new Error(`The Price fields need to be a number`)
     req.body.price = parseFloat(req.body.price)
+    if (req.product.default_price && req.product.default_price !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale')
     if (Is_Smaller(req.body.price, 1) || Is_Bigger(req.body.price, 1000000)) throw new Error(`The Price cannot be less than 1 and more than 1000000`)
 
     // Message
@@ -394,6 +395,27 @@ exports.Validate_Product = (req, res, next) => {
   if (!Is_Empty(req.body.selection_2_name) && req.body.se_1_des.filter((element) => element).length >= 1) {
   req.body.selection_2 = {selection_name: req.body.selection_2_name, selection_choices: Make_Selection(req.body.se_2_des, req.body.se_2_price)} 
   }
+
+
+  req.body.sales_price = parseFloat(req.body.sales_price)
+  if (req.product.default_price && req.product.price !== req.body.sales_price) throw new Error('You cannot make a Sales when you are already in Sales')
+  if (!isNaN(req.body.sales_price)) {
+    if (Is_Smaller(req.body.sales_price, 0) || Is_Bigger(req.body.sales_price, req.body.price - 1)) throw new Error(`The Sales Price Need to be at least 1 less than your Price`)
+  }
+
+  req.body.sales_time = parseFloat(req.body.sales_time)
+  if (req.product.default_price && req.product.sales_time !== req.body.sales_time) throw new Error('You cannot change the duration of the Sales while it is already started')
+  if (!isNaN(req.body.sales_time)) {
+    if (Is_Smaller(req.body.sales_time, 0) || Is_Bigger(req.body.price, 30)) throw new Error(`Your Sales Cannot last more than 30 days`)
+  }
+  if (!req.body.sales_time && req.body.sales_price) req.body.sales_time = 7
+
+  if (req.product.default_price) {
+    if (req.body.stop_sales) req.body.stop_sales = true
+    else req.body.stop_sales = undefined
+  }
+
+  if (!compareArray(['online', 'offline'], req.body.status)) throw new Error(`Invalid Status Value`)
 
   next()
   } catch (e) {
@@ -624,6 +646,20 @@ exports.isProduct_Vendor = async (req, res, next) => {
     console.log(e)
     res.redirect('/404')
 }}
+
+exports.validateSlugParams = async (req, res, next) => { 
+  try {
+    if (!req.params.slug) throw new Error(`The Slug Params Empty`)
+    if (typeof(req.params.slug) !== 'string') throw new Error(`The Slug Params isnt a String`)
+    if (req.params.slug.length > 200) throw new Error(`The Slug Params is too long`)
+
+    next()
+  } catch (e) {
+    console.log(e)
+    res.redirect('/404')
+  }
+}
+
 exports.Validate_Query_Product_Slug = async (req,res, next) => {
   try { 
       if (!Is_Empty(req.query.slug)) {

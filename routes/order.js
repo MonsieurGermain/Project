@@ -4,7 +4,7 @@ const Product = require('../models/product')
 const Order = require('../models/order')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { ValidateValueByChoice, Validate_ProvidedInfo, Validate_Update_Order, FetchData, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, paramsUsername_isReqUsername, Validate_OrderCustomization  } = require('../middlewares/validation')
+const { validateSlugParams, ValidateValueByChoice, Validate_ProvidedInfo, Validate_Update_Order, FetchData, isOrder_Buyer, isOrder_VendorOrBuyer, isOrder_Part, paramsUsername_isReqUsername, Validate_OrderCustomization  } = require('../middlewares/validation')
 const { Format_Username_Settings, paginatedResults} = require('../middlewares/function')
 
 function Calculate_Price(base_price , qty, ship_opt_price, selection_1_price, selection_2_price) {
@@ -125,10 +125,11 @@ async function Format_Orders_Array(orders, isBuyer) {
 
 // Routes
 router.get('/order/:slug', 
-Need_Authentification, FetchData(['params', 'slug'], Product, 'slug', 'product'),
+Need_Authentification, validateSlugParams,
 async (req,res) => {
     try { 
-        const { product } = req
+        const product = await Product.findOne({slug: req.params.slug})
+        if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline')
         // const product = await Product.findOne({slug : req.params.slug}).orFail(new Error('Invalid Slug'))
         const vendor = await User.findOne({username : product.vendor})
 
@@ -136,17 +137,17 @@ async (req,res) => {
 
     } catch (e) {
         console.log(e)
-        res.redirect('/error')
+        res.redirect('/404')
         return
     }
 })
 
 
 router.post('/create-order/:slug',
-Need_Authentification, FetchData(['params', 'slug'], Product, 'slug', 'product'), Validate_OrderCustomization,
+Need_Authentification, validateSlugParams,
 async (req,res) => {
     try {
-        const { product } = req
+        const product = await Product.findOne({slug: req.params.slug, status: 'online'}).orFail('Invalid Slug')
         let {qty, shipping_option, selection_1, selection_2, type} = req.body
 
         qty = qty > 1 ? qty : 1
@@ -302,7 +303,6 @@ function constructOrdersQuery(query, user) {
     
     if (query.clientsOrders === 'true') mongooseQuery.vendor = user.username
     else if (query.clientsOrders === 'false') mongooseQuery.buyer = user.username
-    else if (!query.clientsOrders && user.authorization === 'vendor') mongooseQuery.vendor = user.username
     else mongooseQuery.buyer = user.username
 
     return mongooseQuery
@@ -336,7 +336,7 @@ async (req,res) => {
         let query = '?ordersPage=1'
         
         if (status !== 'all') query += `&status=${status}`
-        if (clientsOrders) query += `&clientsOrders=${clientsOrders}`
+        if (clientsOrders === 'true') query += `&clientsOrders=true`
 
         res.redirect(`/orders/${req.user.username}${query}`)
     } catch(e) {

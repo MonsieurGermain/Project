@@ -4,21 +4,22 @@ const User = require('../models/user')
 const Product = require('../models/product')
 const Review = require('../models/review')
 const { Need_Authentification, isBuyer } = require('../middlewares/authentication')
-const { Validate_Profile, FetchData, paramsUsername_isReqUsername } = require('../middlewares/validation')
+const { Validate_Profile, FetchData, paramsUsername_isReqUsername, validateSlugParams} = require('../middlewares/validation')
 const { uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function')
 
 
 // Route
-router.get('/profile/:username', FetchData(['params', 'username'], User, 'username', 'user'),
+router.get('/profile/:username', FetchData(['params', 'username'], User, 'username', 'vendor'),
 async (req, res) => {
     try { 
-        const { user } = req 
-        user.description = sanitizeHTML(user.description)
+        const { vendor } = req 
+        vendor.description = sanitizeHTML(vendor.description)
 
-        const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage})
-        const paginatedReviews = await paginatedResults(Review, {vendor : user.username}, {page: req.query.reviewPage})
+        const productQuery = req.user && req.params.username === req.user.username ? {vendor: vendor.username} : {vendor: vendor.username, status: 'online'} 
+        const paginatedProducts = await paginatedResults(Product, productQuery, {page: req.query.productPage})
+        const paginatedReviews = await paginatedResults(Review, {vendor : vendor.username}, {page: req.query.reviewPage})
 
-        res.render('profile', { vendor : user, paginatedProducts, paginatedReviews})
+        res.render('profile', { vendor, paginatedProducts, paginatedReviews})
 
     } catch (err) {
         console.log(err.message)
@@ -31,7 +32,7 @@ async (req, res) => {
 router.get('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername,
 async (req,res) => {
     const { user } = req 
-    const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage})
+    const paginatedProducts = await paginatedResults(Product, {vendor: user.username, status: 'online'}, {page: req.query.productPage})
     res.render('profile-edit', { vendor: user , paginatedProducts})
 })
 

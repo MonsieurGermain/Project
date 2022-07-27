@@ -4,24 +4,24 @@ const Product = require('../models/product')
 const Review = require('../models/review')
 const User = require('../models/user')
 const { Need_Authentification } = require('../middlewares/authentication')
-const { Validate_Product, FetchData, isProduct_Vendor, Validate_Query_Product_Slug, Is_titleTaken } = require('../middlewares/validation')
+const { Validate_Product, FetchData, isProduct_Vendor, Validate_Query_Product_Slug, Is_titleTaken, validateSlugParams} = require('../middlewares/validation')
 const { uploadProductImg, deleteOld_Img, sanitizeHTML, paginatedResults } = require('../middlewares/function')
 
 const Fuse = require('fuse.js')
 // Create Fuzzy Product Collecion
-var fusedProduct 
-Product.find({}).then(products => { 
+var fusedProduct = 
+Product.find({status: 'online'}).then(products => { 
     const options = {
-        threshold: 0.3,
+        threshold: 0.4,
         keys: ['title', 'vendor']
     }    
     fusedProduct = new Fuse(products, options);
 })
 // Update Fuzzy Product Collecion
 setInterval(() => {
-    Product.find({}).then(products => { 
+    Product.find({status: 'online'}).then(products => { 
         const options = {
-            threshold: 0.5,
+            threshold: 0.4,
             keys: ['title', 'vendor']
         }    
         fusedProduct = new Fuse(products, options);
@@ -29,7 +29,7 @@ setInterval(() => {
 }, 300000); // 5min 300000
 
 
-
+// Dont Get Local Product
 router.get('/products', async (req,res) => {
     try {
         let paginatedProducts
@@ -38,7 +38,7 @@ router.get('/products', async (req,res) => {
             const productFused = fusedProduct.search(req.query.search);
             productsFuzzy = productFused.map(({ item }) => item);
         }
-        paginatedProducts = await paginatedResults(Product, {}, {page: req.query.productPage, limit: 24}, productsFuzzy)
+        paginatedProducts = await paginatedResults(Product, {status: 'online'}, {page: req.query.productPage, limit: 24}, productsFuzzy)
 
         res.render('products', { paginatedProducts })  
 
@@ -55,9 +55,11 @@ router.post('/products', async (req,res) => {
 
 
 router.get('/product/:slug', FetchData(['params', 'slug'], Product, 'slug', 'product'),
+validateSlugParams,
 async (req,res) => {
     try {
-        const { product } = req
+        const product = await Product.findOne({slug: req.params.slug})
+        if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline')
         const vendor = await User.findOne({username : product.vendor})
         const paginatedReviews = await paginatedResults(Review, {product_slug : product.slug}, {page: req.query.reviewPage}) 
 
@@ -67,7 +69,7 @@ async (req,res) => {
 
     } catch (err) {
         console.log(err)
-        res.redirect('/error')
+        res.redirect('/404')
         return
     }
 })
@@ -84,11 +86,14 @@ async (req,res) => {
 })
 
 //POST
-router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Product, Validate_Query_Product_Slug, Is_titleTaken,
+router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), 
+Validate_Query_Product_Slug, 
+Validate_Product, 
+Is_titleTaken,
 async (req, res) => { 
     try {
         const { product } = req
-        const { title, description, message, price, ship_from, allow_hidden, qty_settings, shipping_option, selection_1, selection_2, details} = req.body
+        const { title, description, message, price, ship_from, allow_hidden, qty_settings, shipping_option, selection_1, selection_2, details, sales_price, sales_time, stop_sales, status} = req.body
 
         let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created'
 
@@ -103,11 +108,30 @@ async (req, res) => {
         else if (product.img_path && req.file) await product.UploadImg(req.file.filename, true) // If Edit Product and Send New Img, Del Old One & Upload Img
 
 
+        // price
+        if (product.title && sales_price && !product.default_price) {
+            product.default_price = product.price
+            product.price = sales_price
+            product.sales_time = sales_time
+            product.sales_end = Date.now() + (86400000 * sales_time)      
+        } 
+        else if (product.title && product.price !== price && product.default_price) {
+            product.price = price
+            product.default_price = undefined
+            product.sales_end = undefined
+
+            req.flash('warning', 'Since you have change the Price of your Offer, The sales as been ended')
+        }
+        else product.price = price
+        
+        console.log(req.body)
+        if (stop_sales) product.endSales() // End Sales
+        console.log(product)
+
         product.title = title 
         product.vendor = req.user.username
         product.description = description
         product.message = message
-        product.price = price
         product.ship_from = ship_from
         product.allow_hidden = allow_hidden
         product.selection_1 = selection_1
@@ -115,6 +139,7 @@ async (req, res) => {
         product.details = details
         product.shipping_option = shipping_option
         product.qty_settings = qty_settings
+        product.status = status
 
         await product.save()
 

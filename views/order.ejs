@@ -34,7 +34,7 @@
 
           <% if (error.length) { %>
             <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-            <%- include('partials/Flash-message', {message: error}) %>
+            <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
           </div>   
           <% } %>
 

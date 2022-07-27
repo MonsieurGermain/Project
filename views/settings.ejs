@@ -58,9 +58,15 @@
                         <i class="bx bx-bookmark fs-xl opacity-60 me-2"></i>
                         Saved Items
                       </a>
+                      <% if (authuser.authorization === 'vendor') { %>
+                        <a href="/orders/<%=authuser.username%>?clientsOrders=true&ordersPage=1" class="list-group-item d-flex align-items-center border-0">
+                          <i class="bx bx-shopping-bag fs-xl opacity-60 me-2"></i>
+                          Your Clients Order
+                        </a>
+                      <% } %>
                       <a href="/orders/<%=authuser.username%>?ordersPage=1" class="list-group-item d-flex align-items-center border-0">
                         <i class="bx bx-shopping-bag fs-xl opacity-60 me-2"></i>
-                        Orders
+                        Your Orders
                       </a>
                       <a href="/logout" class="list-group-item d-flex align-items-center">
                         <i class="bx bx-log-out fs-xl opacity-60 me-2"></i>
@@ -83,12 +89,12 @@
                 <div class="mt-md-2 pb-md-2">
                   <% if (error.length) { %>
                     <div class="mb-3">
-                    <%- include('partials/Flash-message', {message: error}) %>
+                    <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
                   </div>   
                   <% } %>
                   <% if (success.length) { %>
                     <div class="mb-3">
-                    <%- include('partials/Flash-message', {message: success, success: true}) %>
+                    <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
                   </div>   
                   <% } %>
 

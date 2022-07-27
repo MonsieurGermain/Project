@@ -156,15 +156,13 @@
             <div class="card px-4 py-4">
                 <p class="h5">Order Information</p>
 
-                <div class="d-sm-flex align-items-center ">
-                      <p>Price: <b><%=order.base_price%></b></p>  
-                      <p class="ms-auto">Quantity Taken: <b><%= order.qty%></b></p>  
-                  </div>
-        
+                <p>Price: <b><%=order.base_price%></b></p>  
+
+                <p>Quantity Taken: <b><%= order.qty%></b></p>  
+
                 <% if (order.shipping_option) { %>
                 <p>Shipping Option: <b><%= order.shipping_option.option_name%> - <%= order.shipping_option.option_price %>$</b></p> 
                 <%}%>
-
         
                 <% if (order.selection_1) { %>
                 <p><%= order.selection_1.selection_name %>: <b><%= order.selection_1.selected_choice.choice_name%> - <%= order.selection_1.selected_choice.choice_price%>$</b></p>
