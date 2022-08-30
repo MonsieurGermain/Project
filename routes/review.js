@@ -1,46 +1,48 @@
-const express = require('express')
-const router = express.Router()
-const { Need_Authentification } = require('../middlewares/authentication')
-const Review = require('../models/review')
-const User = require('../models/user')
-const Order = require('../models/order')
-const Product = require('../models/product')
-const { Validate_Reviews, FetchData, isOrder_Buyer } = require('../middlewares/validation')
-const { Format_Username_Settings } = require('../middlewares/function')
+const express = require('express');
+const router = express.Router();
+const {Need_Authentification} = require('../middlewares/authentication');
+const Review = require('../models/review');
+const User = require('../models/user');
+const Order = require('../models/order');
+const Product = require('../models/product');
+const {Validate_Reviews, FetchData, isOrder_Buyer} = require('../middlewares/validation');
+const {Format_Username_Settings} = require('../middlewares/function');
 
+function updateRating(review, note) {
+   review.number_review += 1;
+   review.total_note += note;
+   review.average_note = review.total_note / review.number_review;
+   return review;
+}
 
-router.post('/create-review/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, Validate_Reviews,
-async (req,res) => { 
-    const { order } = req
+router.post('/create-review/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, Validate_Reviews, async (req, res) => {
+   const {order} = req;
+   const {username} = req.user;
+   const {note, type} = req;
 
-    const review = new Review({
-        product_slug : order.product_slug,
-        vendor : order.vendor,
-        sender : Format_Username_Settings(req.user.username, req.body.type),
-        content : req.body.review,
-        note : req.body.note,
-        type : req.body.type
-    })
+   const review = new Review({
+      product_slug: order.product_slug,
+      vendor: order.vendor,
+      sender: Format_Username_Settings(username, type),
+      content: req.body.review,
+      note,
+      type,
+   });
 
-    order.let_review = true
+   order.let_review = true;
 
-    let product = await Product.findOne({slug : order.product_slug})
-    product.review.number_review += 1
-    product.review.total_note += req.body.note
-    product.review.average_note = product.review.total_note / product.review.number_review 
+   let product = await Product.findOne({slug: order.product_slug});
+   product.review = updateRating(product.review, note);
 
+   let user = await User.findOne({username: order.vendor});
+   user.review = updateRating(user.review, note);
 
-    let user = await User.findOne({username : order.vendor})
-    user.review.number_review += 1
-    user.review.total_note += req.body.note
-    user.review.average_note = user.review.total_note / user.review.number_review 
+   user.save();
+   product.save();
+   review.save();
+   await order.save();
 
-    await user.save()
-    await product.save()
-    await review.save()
-    await order.save()
+   res.redirect(`/order-resume/${req.params.id}`);
+});
 
-    res.redirect(`/order-resume/${req.params.id}`)
-})
-
-module.exports = router
+module.exports = router;

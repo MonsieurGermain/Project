@@ -14,11 +14,11 @@
                   <a href="/product/<%=products[i].slug%>?reviewPage=1" class="d-block position-absolute w-100 h-100 top-0 start-0"></a>
                   <!-- Badges -->
                   <% if (products[i].status === 'offline') { %>
-                    <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Offline</span>
+                    <span class="badge bg-primary position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Offline</span>
                   <% } else if (products[i].qty_settings && !products[i].qty_settings.available_qty) { %>
                     <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sold Out!</span>
                   <% } else if (products[i].default_price) { %>
-                    <span class="badge bg-primary  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sales!</span>
+                    <span class="badge bg-success  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sales!</span>
                   <% } else if (products[i].popular) { %>
                     <span class="badge bg-success position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Popular</span>
                   <% } %>
@@ -64,7 +64,13 @@
                   <% if (products[i].onsales) { %>
                     <p class="text-muted mb-0"><span class="fs-lg fw-semibold text-danger me-2">$<%=products[i].price%></span><del>$<%=products[i].old_price%></del></p>
                   <% } %>
-                  <p class="fs-lg fw-semibold text-primary mb-0">$<%=products[i].price%></p>
+                  <div class="d-flex">
+                    <p class="fs-lg fw-semibold text-primary mb-0">$<%=products[i].price%></p>
+                    <% if (products[i].default_price) { %>
+                      <del class="fs-md fw-semibold text-primary mb-0 text-muted opacity-70 ms-2"><%=products[i].default_price%>$</del>
+                    <% }%>
+                  </div>
+
 
                 </div>
                 <div class="card-footer d-flex align-items-center fs-sm text-muted py-4">

@@ -14,13 +14,13 @@
               <div class="messages-heading"> <h1 class="h3 mb-0 px-4 py-3">Messages </h1>
                 <label for="change-messages"><%- include ("../public/assets/img/icons/close-cross.svg") %></label>
               </div>
-               <form class="search-messages px-4">
-                <div>
-                  <i class="bx bx-search-alt fs-xl"></i>
+               <form class="search-messages px-4" action="/search-messages" method="POST">
+                <div>       
+                    <i class="bx bx-search-alt fs-xl text-light"></i> 
                 </div>
              
-                <input type="search" placeholder="Search">
-                <input type="submit" hidden />
+                <input type="search" name="search" maxlength="100" placeholder="Search" required>
+                <input type="submit" hidden/>
               </form>
               <div class="contact-list">
                 <% for(let i = conversations.length - 1; i >= 0; i--) { %>
@@ -33,7 +33,11 @@
                           <div class="mb-1">
                             <h6 class="mb-0 me-2"><%= conversations[i].sender_2 %></h6>
                           </div>
-                          <p class="convo-snippet fs-sm text-body mb-0"><%= conversations[i].messages[conversations[i].messages.length - 1].message %></p>
+                          <% if (conversations[i].messages.length) { %>
+                            <p class="convo-snippet fs-sm text-body mb-0"><%= conversations[i].messages[conversations[i].messages.length - 1].message %></p>
+                          <% } else { %>
+                            <p class="convo-snippet fs-sm text-body opacity-70 mb-0">No Messages</p>
+                          <% } %>
                         </div>
                       </a>
                     </label>
@@ -41,11 +45,23 @@
                   <% } else { %>
                     <a href="/messages?id=<%= conversations[i].id %>#bottom" class="d-flex align-items-start text-decoration-none bg-faded-primary-hover py-3 px-4">
                       <img src="<%= conversations[i].img_path%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
+                     
                       <div class="ps-2 ms-1">
                         <div class="mb-1">
                           <h6 class="mb-0 me-2"><%= conversations[i].sender_2 %></h6>
                         </div>
-                        <p class="convo-snippet fs-sm text-body mb-0"><%= conversations[i].messages[conversations[i].messages.length - 1].message %></p>
+                        <% if (conversations[i].messages.length) { %>
+                          <p class="convo-snippet fs-sm text-body mb-0">
+                          <% if (conversations[i].settings.type === 'default' && conversations[i].messages[conversations[i].messages.length - 1].sender !== authuser.username && conversations[i].messages[conversations[i].messages.length - 1].messageView === false) { %>
+                            <b><%= conversations[i].messages[conversations[i].messages.length - 1].message %></b>
+                          <% } else { %>
+                            <%= conversations[i].messages[conversations[i].messages.length - 1].message %>
+                          <% } %>
+                        </p>
+
+                        <% } else { %>
+                          <p class="convo-snippet fs-sm text-body opacity-70 mb-0">No Messages</p>
+                        <% } %>
                       </div>
                     </a>
                   <% } %>

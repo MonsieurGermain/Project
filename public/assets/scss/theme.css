@@ -15949,7 +15949,8 @@ img-comparison-slider:focus {
   margin: 0 1rem;
   font-size: 0.75rem;
 }
-.messages-view .messages-container .chat .chat-body .messages-main .timestamp .timestamp-left, .messages-view .messages-container .chat .chat-body .messages-main .timestamp .timestamp-right {
+.messages-view .messages-container .chat .chat-body .messages-main .timestamp .timestamp-left,
+.messages-view .messages-container .chat .chat-body .messages-main .timestamp .timestamp-right {
   flex-grow: 1;
   height: 1px;
   background-color: #800080;
@@ -16029,7 +16030,9 @@ img-comparison-slider:focus {
 }
 
 input[id^=delete-message-input-]:not(:checked) + *,
-input#delete-convo-input:not(:checked) + *:not(.no-convo-yet) {
+input#delete-convo-input:not(:checked) + *:not(.no-convo-yet),
+input[id^=edit-message-input-]:not(:checked) + *,
+input#edit-message-input:not(:checked) + *:not(.no-convo-yet) {
   display: none;
 }
 
@@ -16062,7 +16065,7 @@ input[id^=report-resolve-]:not(:checked) + * {
   margin: 0 1.5rem;
   max-width: 370px;
   background-color: #212121;
-  box-shadow: 0 0px 20px 0 rgba(76, 130, 247, 0.25);
+  box-shadow: 0 0px 27px 0 rgba(128, 0, 128, 0.15);
 }
 .popup-dialog > div .buttons {
   display: flex;

@@ -13,7 +13,7 @@
           <section class="container pt-5" style="max-width: 1520px;">
 
 
-            <nav class="pt-4 pb-5" aria-label="breadcrumb">
+            <nav class="pt-2 pb-5" aria-label="breadcrumb">
               <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item">
                   <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
@@ -34,7 +34,7 @@
                     </div>
                     <h2 class="h5 mb-1"><%=authuser.username%></h2>
                     <p class="fs-sm mb-2"><%=authuser.job%></p>
-                    <a href='/edit-profile/<%=authuser.username%>?productPage=1' class="mb-3">Edit Profile</a>
+                    <a href='/edit-profile/<%=authuser.username%>?productPage=1&reviewPage=1' class="mb-3">Edit Profile</a>
                     <hr class="my-2">
                     <div id="account-menu" class="list-group-flush d-md-block mt-3">
                         <a href="/settings/<%=authuser.username%>?section=security" class="list-group-item  d-flex align-items-center border-0
@@ -50,6 +50,13 @@
                         <% } %>">
                         <i class="bx bx-mask fs-xl opacity-60 me-2"></i>
                         Privacy Settings
+                      </a>
+                      <a href="/settings/<%=authuser.username%>?section=payment" class="list-group-item  d-flex align-items-center border-0
+                        <% if(query.section === 'payment') { %>
+                            active
+                        <% } %>">
+                        <i class='bx bxs-credit-card fs-xl opacity-60 me-2'></i>
+                        Payment Settings
                       </a>
                       <a href="/settings/<%=authuser.username%>?section=saved&productPage=1" class="list-group-item d-flex align-items-center border-0
                         <% if(query.section === 'saved') { %>
@@ -79,17 +86,21 @@
               </aside>
   
 
-              <div class="
+              
               <% if (query.section === 'saved') { %>
-                col-md-7 pb-5 mb-lg-2 mb-lg-4
+                <div class="col-md-7 pb-5 mb-lg-2 mb-lg-4">
               <% } else { %>
-                col-md-8 pb-5 mb-lg-2 mb-lg-4
+                <div class="col-md-8 pb-5 mb-lg-2 mb-lg-4">           
               <% } %>
-              ">
                 <div class="mt-md-2 pb-md-2">
                   <% if (error.length) { %>
                     <div class="mb-3">
                     <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
+                  </div>   
+                  <% } %>
+                  <% if (warning.length) { %>
+                    <div class="mb-3">
+                    <%- include('partials/Flash-message', {message: warning, type : 'warning'}) %>
                   </div>   
                   <% } %>
                   <% if (success.length) { %>
@@ -99,10 +110,9 @@
                   <% } %>
 
                   <% if (!query.section || query.section === 'security') { %>
-                    <div>
                     <h1 class="h2 pt-xl-1">Security</h1>
 
-
+                  
                     <div class="card px-5 pt-5 mt-4">
                       <% if (authuser.email) { %>
                         <h2 class="h5 mb-3">Change Email Address</h2>
@@ -117,23 +127,28 @@
                             <input class="form-check-input" type="checkbox" id="confirm-email" required>
                             <label class="form-check-label" for="confirm-email">I Understand that it might cause some problems</label>
                           </span>
-                          <button type="submit" class="btn btn-primary ms-4">Change Email Address</button>
+                          <button type="submit" class="btn btn-primary ms-auto">Change Email Address</button>
                         <% } else { %>
                           <button type="submit" class="btn btn-primary">Add Email Address</button>
                         <% } %>
-                      </div> 
-                    </form>
-
+                      </form>
+                        <% if (authuser.email) { %> 
+                          <form action="/delete-email" method="POST">
+                            <button type="submit" class="btn btn-danger ms-3">Delete Email Address</button>
+                          </form>
+                        <% } %>
+                    </div>
                     <% if (authuser.email_verification_code) { %>
+                      <hr class="mb-5">
                       <h2 class="h5 mb-3">Confirmation Code</h2>
  
                       <form action="/resend-email-verification" method="POST">
-                        <p>Havent Recieve any Confirmation Code ? Dont Forget to check in your spam. <button 
-                        style="
-                          color: #800080;
-                          text-decoration: underline;
-                          background: none;
-                          border: none;" type="submit">Resend</button></p>
+                        <p class="mb-2 fs-sm">Havent Recieve any Confirmation Code ? <button 
+                          style="
+                            color: #800080;
+                            text-decoration: underline;
+                            background: none;
+                            border: none;" type="submit">Resend</button> <span class="ms-1">Dont Forget to check in your spam !</span></p>
                       </form>
 
                         <form action="/confirm-email" method="POST">
@@ -141,50 +156,63 @@
                           <button type="submit" class="btn btn-primary mb-5">Submit Code</button>
                         </form>
                     <% } %>
-                  </div>
+                    </div> 
 
-                  <div class="card px-5 pt-5 mt-5">
+
+
+
+
+                  <div class="card px-5 pt-5 mt-4">
                     <% if (authuser.pgp_keys) { %>
                       <h2 class="h5 mb-3">Change Pgp Keys</h2>
                     <% } else { %> 
                       <h2 class="h5 mb-3">Add Pgp Keys</h2>
                     <% } %>
                     <form action="/add-pgp" method="POST">
-                      <input type="text" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-2" value="<%=authuser.pgp_keys%>">
+                      <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" style="min-height:none;" required><%=authuser.pgp_keys%></textarea>
                       <div class="d-flex align-items-center mt-3 mb-5">
                         <% if (authuser.pgp_keys) { %>
                           <span class="form-check">
                             <input class="form-check-input" type="checkbox" id="confirm-pgp" required>
                             <label class="form-check-label" for="confirm-pgp">I Understand that it might cause some problems</label>
                           </span>
-                          <button type="submit" class="btn btn-primary ms-4">Change Pgp Keys</button>
+                          <button type="submit" class="btn btn-primary ms-auto">Change Pgp Keys</button>
                         <% } else { %>
                           <button type="submit" class="btn btn-primary">Add Pgp Keys</button>
                         <% } %>
-                      </div>  
-                    </form>
-
-                    <% if (authuser.pgp_keys_verification_words_encrypted) { %>
-                      <h2 class="h5 mb-3">Decrypt this Code with your own pgp and enter the result to verify your pgp keys</h2> 
-                      <p><%=authuser.pgp_keys_verification_words_encrypted%></p>
-                      <h2 class="h5 mb-3">Verify Pgp Keys</h2>
-                      <form action="/verify-pgp" method="POST">
-                        <input type="text" name="pgp_verification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
-                        <button type="submit" class="btn btn-primary mb-5">Verify Pgp</button>
                       </form>
-                    <% } %>
-                  </div>
+                        <% if (authuser.pgp_keys) { %> 
+                          <form action="/delete-pgp" method="POST">
+                            <button type="submit" class="btn btn-danger ms-3">Delete Pgp Keys</button>
+                          </form>
+                        <% } %>
+                      </div>  
+
+                      <% if (authuser.pgp_keys_verification_words_encrypted) { %>
+                        <hr class="mb-5">
+                        <h2 class="h5 mb-3">Decrypt this Code with your own pgp and enter the result to verify your pgp keys</h2> 
+                        <p><%=authuser.pgp_keys_verification_words_encrypted%></p>
+                        <h2 class="h5 mb-3">Verify Pgp Keys</h2>
+                        <form action="/verify-pgp" method="POST">
+                          <input type="text" name="pgp_verification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
+                          <button type="submit" class="btn btn-primary mb-5">Verify Pgp</button>
+                        </form>
+                      <% } %>
+                    </div>
 
 
 
-                  <div class="card px-5 pt-5 mt-5">
+
+
+
+                  <div class="card px-5 pt-5 mt-4">
                     <h2 class="h5 mb-4">Password</h2>
                     <form class="needs-validation border-bottom pb-3 pb-lg-4" action="/change-password/<%=authuser.username%>?_method=PUT" method="POST">
                       <div class="row">
                         <div class="col-sm-6 mb-4">
                           <label for="cp" class="form-label fs-base">Current password</label>
                           <div class="password-toggle">
-                            <input type="password" id="cp" name="password" class="form-control form-control-lg" minlength="8" maxlength="200" required>
+                            <input type="password" id="cp" name="password" class="form-control form-control-lg" minlength="8" maxlength="200" placeholder="Current Password" required>
                           </div>
                         </div>
                       </div>
@@ -192,13 +220,13 @@
                         <div class="col-sm-6 mb-4">
                           <label for="np" class="form-label fs-base">New password</label>
                           <div class="password-toggle">
-                            <input type="password" id="np" name="newPassword" class="form-control form-control-lg" minlength="8" maxlength="200" required>
+                            <input type="password" id="np" name="newPassword" class="form-control form-control-lg" minlength="8" maxlength="200" placeholder="Enter your new Password" required>
                           </div>
                         </div>
                         <div class="col-sm-6 mb-4">
                           <label for="cnp" class="form-label fs-base">Confirm new password</label>
                           <div class="password-toggle">
-                            <input type="password" id="cnp" name="confirmPassword" class="form-control form-control-lg" minlength="8" maxlength="200" required>
+                            <input type="password" id="cnp" name="confirmPassword" class="form-control form-control-lg" minlength="8" maxlength="200" placeholder="Repeat New Password" required>
                           </div>
                         </div>
                       </div>
@@ -207,8 +235,9 @@
                       </div>
                     </form>
                   </div>
-                    <!-- Password -->
-                    <div class="card px-5 pt-5 pb-4 mt-5">
+
+
+                    <div class="card px-5 pt-5 pb-4 mt-4">
                     <h2 class="h5">Enable 2 Step Verification</h2>
                       <form action="/enable-2fa" method="POST">
                         <% if (authuser.email && !authuser.email_verification_code) { %>
@@ -218,7 +247,7 @@
                           <% } %>>
                           <label class='form-check-label ms-2' for="email-2fa">Email</label><br>
                         <% } else { %>
-                          <label class='form-check-label opacity-60' for="2">Email (Add a Verified an Email to Unable this Option)</label><br>
+                          <label class='form-check-label opacity-60' for="2">Email (Add and Verify an Email to Unable this Option)</label><br>
                         <% } %>
 
                         <% if (authuser.pgp_keys && !authuser.pgp_keys_verification_words) { %>
@@ -230,7 +259,7 @@
                           <label class='form-check-label ms-2' for="pgp-2fa">Pgp Keys</label><br>
                         </div>
                         <% } else { %>
-                          <label class='form-check-label opacity-60' for="2">Pgp (Add a Verified a Pgp Keys to Unable this Option)</label><br>
+                          <label class='form-check-label opacity-60' for="2">Pgp (Add and Verify a Pgp Keys to Unable this Option)</label><br>
                         <% } %>
 
                         <span class="d-flex align-items-center">
@@ -256,11 +285,11 @@
   
                   
                 <!-- Delete account -->
-                <div class="card px-5 pt-5 pb-4 mt-5">
+                <div class="card border-danger p-5 mt-4">
                 <h2 class="h5">Delete account</h2>
-                <p>This action is irreversible and will result in the lost of all data of your profile except the reviews that you have posted</p>
+                <p>This action is irreversible and will result in the lost of <b>ALL</b> data of your profile except the reviews that you have posted</p>
                 <form action="/delete-user/<%=authuser.username%>?_method=DELETE" method="POST">
-                <div class="form-check d-flex align-items-center">
+                <div class="form-check d-flex align-items-center mt-3">
                   <input type="checkbox" id="delete-account" class="form-check-input mb-1" required>
                   <label for="delete-account" class="form-check-label fs-base ms-2">Yes, I want to delete my account</label>
                   <button type="submit" class="btn btn-danger ms-auto">Delete Account</button>
@@ -271,121 +300,233 @@
 
                   <% } else if (query.section === 'privacy') { %>
                     <div>
-                      <h1 class="h2 pt-xl- pb-3">Privacy</h1>
-                      <div class="card px-5 py-4 mt-4">
-                        <form action="/change-autodelete/<%=authuser.username%>?_method=PUT" method="POST">
+                      <h1 class="h2 pt-xl-1">Privacy</h1>
 
-                          <div class="mt-3">
-                            <label for="select-input" class="form-label">Automaticly Delete Message after :</label>
-                            <select name="messages" class="form-select mb-5" id="select-input">
-                              <option value="never"
-                                <% if (!authuser.settings.message_expiring) { %>
-                                   selected
-                                <% } %>
-                                >Never</option> 
-                                <option value="1"
-                                <% if (authuser.settings.message_expiring === '1') { %>
-                                    selected
-                                <% } %>
-                                >1 days</option> 
-                                <option value="3"
-                                <% if (authuser.settings.message_expiring === '3') { %>
-                                    selected
-                                <% } %>
-                                >3 days</option> 
-                                <option value="7"
-                                <% if (authuser.settings.message_expiring === '7') { %>
-                                    selected
-                                <% } %>
-                                >1 weeks</option> 
-                                <option value="30"
-                                <% if (authuser.settings.message_expiring === '30') { %>
-                                    selected
-                                <% } %>
-                                >≈ 1 months (30days)</option> 
-                                <option value="seeing"
-                                <% if (authuser.settings.message_expiring === 'seeing') { %>
-                                    selected
-                                <% } %>
-                                >≈ 3 Minutes After Seeing</option> 
-                            </select>
-                          </div>
-                  
-                            <label for="select-input" class="form-label">Automaticly Delete the info you provide when completing an order after : </label>
-                            <select name="informations" class="form-select mb-5" id="select-input">
-                              <option value="never"
-                                <% if (!authuser.settings.info_expiring) { %>
-                                   selected
-                                <% } %>
-                                >Never</option> 
-                                <option value="0"
-                                <% if (authuser.settings.info_expiring === '0') { %>
-                                    selected
-                                <% } %>
-                                >Instantly</option> 
-                                <option value="1"
-                                <% if (authuser.settings.info_expiring === '1') { %>
-                                    selected
-                                <% } %>
-                                >1 days</option> 
-                                <option value="3"
-                                <% if (authuser.settings.info_expiring === '3') { %>
-                                    selected
-                                <% } %>
-                                >3 days</option> 
-                                <option value="7"
-                                <% if (authuser.settings.info_expiring === '7') { %>
-                                    selected
-                                <% } %>
-                                >1 weeks</option> 
-                                <option value="30"
-                                <% if (authuser.settings.info_expiring === '30') { %>
-                                    selected
-                                <% } %>
-                                >≈ 1 months (30days)</option> 
-                            </select>
-                    
-                            <p class="mb-1">What should we do when you become inactive ?</p>
-                            <label for="select-input" class="form-label mt-0">Delete my Account after :</label>
-                            <select name="userDel" class="form-select mb-4" id="select-input">
-                              <option value="never"
-                                <% if (!authuser.settings.user_expiring) { %>
-                                   selected
-                                <% } %>
-                                >Never</option> 
-                                <option value="7"
-                                <% if (authuser.settings.user_expiring === 7) { %>
-                                    selected
-                                <% } %>
-                                >1 week</option> 
-                                <option value="14"
-                                <% if (authuser.settings.user_expiring === 14) { %>
-                                    selected
-                                <% } %>
-                                >2 weeks</option> 
-                                <option value="30"
-                                <% if (authuser.settings.user_expiring === 30) { %>
-                                    selected
-                                <% } %>
-                                >≈ 1 months (30days)</option> 
-                                <option value="365"
-                                <% if (authuser.settings.user_expiring === 365) { %>
-                                    selected
-                                <% } %>
-                                >1 years</option> 
-                            </select>
+                      <div class="card pt-5 px-5 pb-4 mt-4">
+                        <h2 class="h5 mb-2">Conversation</h2>
+                        <p class="fs-sm opacity-70">Here you can decide how you want us to handle your conversations</p>
+                        <form action="/conversation-settings" method="POST">
+                        <label for="select-input" class="form-label">Delete my Message after :</label>
+                          <select name="autoDeleteConversation" class="form-select" id="select-input">
+                            <option value="never"
+                            <% if (!authuser.settings.message_expiring) { %>
+                               selected
+                            <% } %>
+                            >Never</option> 
+                            <option value="1"
+                            <% if (authuser.settings.message_expiring === '1') { %>
+                                selected
+                            <% } %>
+                            >1 days</option> 
+                            <option value="3"
+                            <% if (authuser.settings.message_expiring === '3') { %>
+                                selected
+                            <% } %>
+                            >3 days</option> 
+                            <option value="7"
+                            <% if (authuser.settings.message_expiring === '7') { %>
+                                selected
+                            <% } %>
+                            >1 weeks</option> 
+                            <option value="30"
+                            <% if (authuser.settings.message_expiring === '30') { %>
+                                selected
+                            <% } %>
+                            >≈ 1 months (30days)</option> 
+                          </select>
 
-                            <button type="submit" class="btn btn-primary mb-2">Save Changes</button>
-                        </form>
+                        <div class="mt-3">
+                        <label for="select-input-delete-empty" class="form-label">Delete my Conversation when all messages have been deleted:</label>
+                        <select name="deleteEmptyConversation" class="form-select" id="select-input-delete-empty">
+                          <option value="true"
+                          <% if (authuser.settings.deleteEmptyConversation) { %>
+                             selected
+                          <% } %>
+                          > <p>Yes<span class="fs-sm opacity-70"> (Recommended for Privacy)</span></p></option> 
+                          <option value="false"
+                          <% if (!authuser.settings.deleteEmptyConversation) { %>
+                              selected
+                          <% } %>
+                          >No<span class="fs-sm opacity-70"> (More Convenient)</span></p></option> 
+                        </select>
+                      </div>
+
+
+                      <div class="mt-3">
+                        <label for="select-input-saw-message" class="form-label">Do you want us to record if you saw a message or not:</label>
+                        <select name="recordSeeingMessage" class="form-select" id="select-input-saw-message">
+                          <option value="true"
+                          <% if (authuser.settings.recordSeeingMessage) { %>
+                             selected
+                          <% } %>
+                          > <p>Yes<span class="fs-sm opacity-70"> (More Convenient)</span></p></option> 
+                          <option value="false"
+                          <% if (!authuser.settings.recordSeeingMessage) { %>
+                              selected
+                          <% } %>
+                          >No<span class="fs-sm opacity-70"> (Recommended for Privacy)</span></p></option> 
+                        </select>
+                      </div>
+
+                      <div class="d-flex mt-4 mb-2">
+                      <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+                      </form>
+
+                      <form action="/reset-privacy?type=conversation" method="POST">
+                        <button type="submit" class="btn ms-3" style="background: rgba(255, 145, 0, 0.767);">Reset to Default</button>
+                      </form>
                     </div>
+                      </div>
+
+
+                      <div class="card pt-5 px-5 pb-4 mt-4">
+                        <h2 class="h5 mb-2">Order</h2>
+                        <p class="fs-sm opacity-70">Here you can decide how you want us to handle your Provided Information upon the completion of an order</p>
+                       
+                        <form action="/order-settings" method="POST">
+                          <label for="select-input" class="form-label">Delete my Provided Information after : </label>
+                          <select name="autoDeleteProvidedInfo" class="form-select mb-4" id="select-input">
+                            <option value="never"
+                              <% if (!authuser.settings.info_expiring) { %>
+                                 selected
+                              <% } %>
+                              >Never</option> 
+                              <option value="0"
+                              <% if (authuser.settings.info_expiring === '0') { %>
+                                  selected
+                              <% } %>
+                              >Instantly</option> 
+                              <option value="1"
+                              <% if (authuser.settings.info_expiring === '1') { %>
+                                  selected
+                              <% } %>
+                              >1 days</option> 
+                              <option value="3"
+                              <% if (authuser.settings.info_expiring === '3') { %>
+                                  selected
+                              <% } %>
+                              >3 days</option> 
+                              <option value="7"
+                              <% if (authuser.settings.info_expiring === '7') { %>
+                                  selected
+                              <% } %>
+                              >1 weeks</option> 
+                              <option value="30"
+                              <% if (authuser.settings.info_expiring === '30') { %>
+                                  selected
+                              <% } %>
+                              >≈ 1 months (30days)</option> 
+                          </select>
+
+                      <div class="d-flex mb-2">
+                      <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+                      </form>
+
+                      <form action="/reset-privacy?type=order" method="POST">
+                        <button type="submit" class="btn ms-3" style="background: rgba(255, 145, 0, 0.767);">Reset to Default</button>
+                      </form>
+                    </div>
+                    </div>
+
+
+                    <div class="card pt-5 px-5 pb-4 mt-4">
+                      <h2 class="h5 mb-2">User</h2>
+                      <p class="fs-sm opacity-70">Here you can decide how you want us to handle your Account, once you have become inactive</p>
+                      
+                      <form action="/account-settings" method="POST">
+                        <label for="select-input" class="form-label mt-0">Delete my Account after:</label>
+                        <select name="autoDeleteAccount" class="form-select mb-4" id="select-input">
+                          <option value="never"
+                            <% if (!authuser.settings.user_expiring) { %>
+                               selected
+                            <% } %>
+                            >Never</option> 
+                            <option value="7"
+                            <% if (authuser.settings.user_expiring === 7) { %>
+                                selected
+                            <% } %>
+                            >1 week</option> 
+                            <option value="14"
+                            <% if (authuser.settings.user_expiring === 14) { %>
+                                selected
+                            <% } %>
+                            >2 weeks</option> 
+                            <option value="30"
+                            <% if (authuser.settings.user_expiring === 30) { %>
+                                selected
+                            <% } %>
+                            >≈ 1 months (30days)</option> 
+                            <option value="365"
+                            <% if (authuser.settings.user_expiring === 365) { %>
+                                selected
+                            <% } %>
+                            >1 years</option> 
+                        </select>
+                    <div class="d-flex mb-2">
+                    <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+                    </form>
+
+                    <form action="/reset-privacy?type=account" method="POST">
+                      <button type="submit" class="btn ms-3" style="background: rgba(255, 145, 0, 0.767);">Reset to Default</button>
+                    </form>
+                  </div>
                   </div>
 
+                  <% } else if (query.section === 'payment') { %>
+                    <h1 class="h2 pt-xl-1">Payment</h1>
+                    <% if (authuser.authorization === 'vendor') { %>
+                      <div class="card px-5 pt-5 mt-4">
+                      <h2 class="h5 mb-2">Account Monero Address</h2>
+                      <form action="/add-xmr-address" method="POST">
+                        <p class="fs-sm opacity-70 mb-1">After a <b>successfull</b> transaction, our system will send you your money to this address</p>
+                        <p class="fs-sm opacity-70 mb-1">You are obligated to have a Monero Address on your account if you want to start selling product</p>
+                        <input type="text" name="xmr_address" placeholder="Monero Address" class="form-control form-control-lg mb-2" value="<%=authuser.xmr_address%>" required>
+                        <div class="d-flex align-items-center mt-3 mb-5">
+                          <span class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirm-xmr_address" required>
+                            <label class="form-check-label" for="confirm-xmr_address">I have double check my address</label>
+                          </span>
+                          <% if (authuser.xmr_address) { %>
+                            <button type="submit" class="btn btn-primary ms-auto">Change</button>
+                          </form>
+                          <form action="/delete-address?addressType=personal" method="POST">
+                            <button type="submit" class="btn btn-danger ms-2">Delete</button>
+                          </form>
+                          <% } else { %>
+                            <button type="submit" class="btn btn-primary ms-auto">Add</button>
+                          </form>
+                          <% } %>
+                        </div> 
+                      </div>
+                    <% } %>
 
+                    <div class="card px-5 pt-5 mt-4">
+                      <h2 class="h5 mb-2">Refund Monero Address</h2>
+                      <form action="/add-xmr-refund-address" method="POST">
+                        <p class="fs-sm opacity-70 mb-1">After an <b>failed</b> transaction, our system will send your refund to this address</p>
+                        <p class="fs-sm opacity-70 mb-1">If you dont have ane refund address, our system will send your refund back to the address where it came from</p>
+                        <input type="text" name="xmrRefundAddress" placeholder="Refund Monero Address" class="form-control form-control-lg mb-2" value="<%=authuser.xmrRefundAddress%>" required>
+                        <div class="d-flex align-items-center mt-3 mb-5">
+                          <span class="form-check">
+                            <input class="form-check-input" type="checkbox" id="confirm-xmrRefundAddress" required>
+                            <label class="form-check-label" for="confirm-xmrRefundAddress">I have double check my address</label>
+                          </span>
+                          <% if (authuser.xmrRefundAddress) { %>
+                            <button type="submit" class="btn btn-primary ms-auto">Change</button>
+                          </form>
+                          <form action="/delete-address?addressType=refund" method="POST">
+                            <button type="submit" class="btn btn-danger ms-2">Delete</button>
+                          </form>
+                          <% } else { %>
+                            <button type="submit" class="btn btn-primary ms-auto">Add</button>
+                          </form>
+                          <% } %>
+                        </div> 
                   <% } else { %>
                     <div>
                       <h1 class="h2 pt-xl-1 pb-3">Saved Products</h1>
                       <% if (!paginatedProducts.results.length) { %>
-                        <h1 class="h4 pt-xl-1 pb-3">You dont have any Saved Products</h1>
+                        <h6>You dont have any Saved Products</h6>
                       <% } else { %>
                         <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
                       <% } %>
@@ -393,6 +534,7 @@
                     </div>
                   <% } %>
 
+                </div>
                 </div>
               </div>
             </div>

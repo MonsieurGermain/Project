@@ -1,13 +1,12 @@
 <!--designed to work with css input popup technique - no js -->
 <div class="popup-dialog">
-    <div class="rounded py-4 px-5">
-        <div class="text pb-4"><%=text%></div>
-        <div class="buttons">
-            <label for="<%=checkboxInputId%>" class="btn btn-danger cancel-button"><%=cancel_text%></label>
-
-            <form action="<%=action%>" method="<%=method%>">
+   <div class="rounded py-4 px-5">
+      <div class="text pb-4"><%=text%></div>
+      <div class="buttons">
+         <form action="<%=action%>" method="<%=method%>">
             <button type="submit" class="confirm-button btn btn-primary"><%=confirm_text%></button>
-            </form>
-        </div>
-    </div>
+         </form>
+         <label for="<%=checkboxInputId%>" class="btn btn-danger cancel-button"><%=cancel_text%></label>
+      </div>
+   </div>
 </div>

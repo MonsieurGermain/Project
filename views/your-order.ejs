@@ -206,17 +206,15 @@
             </span>
             <% } %>
   
+            <% if (orders.results[i].timer) { %>
             <span class="ms-5">
                 <p class="mb-0">Time Left:</p>
                 <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
-                <% if (!orders.results[i].timer) { %>
-                    Infinite
-                <% } else { %> 
-                    <%= orders.results[i].Formated_Timers%>
-                <% } %>
+                  <%= orders.results[i].Formated_Timers%>
                 </p>
             </span>
-  
+            <% } %>
+            
             <% if (orders.results[i].deletelink) { %>
               <span class="position-absolute top-0 end-0 zindex-2 me-3 mt-3">
                 <form action="/delete-order/<%=orders.results[i].id%>?_method=DELETE" method="POST">
@@ -265,7 +263,6 @@
   <div class="mt-5">
     <%- include('partials/Pagination', {nextPage: orders.nextPage, currentPage: parseInt(query.ordersPage), queryName: 'ordersPage'}) %>
   </div>
-
 <% } %>
 
   </section>

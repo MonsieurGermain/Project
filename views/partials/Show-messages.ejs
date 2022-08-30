@@ -1,12 +1,18 @@
 <div class="chat-body">
     <input id="delete-convo-input" type="checkbox" hidden></input>
     <% if  (selected_conversation) { %>
-    <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>
-    <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
+   <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>  
+   <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
+
         <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
             <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
             <%- include('Popup-dialog', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this message?", confirm_text: "Yes", cancel_text: "No"}) %>
+            
+            <input id="edit-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+            <%- include('Popup-edit', {checkboxInputId:"edit-message-input-"+ i, action : "/edit-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id, currentMessage: selected_conversation.messages[i].message}) %>
+
         <%}%>
+
     <% } %>
     <% } %>
     <% if (selected_conversation) { %>
@@ -68,56 +74,90 @@
                         "
                     >
                         <span><%= selected_conversation.messages[i].message %></span>
-                        <label for="delete-message-input-<%=i%>" class="delete-message-button btn btn-outline-danger">
+                            <label for="delete-message-input-<%=i%>" class="delete-message-button btn btn-outline-danger">
                          
                                 <i class="bx bx-trash-alt"></i>
                             
-                        </label>
-                         
-
-                    </div>
-    
+                            </label>
+                            <label for="edit-message-input-<%=i%>" class="delete-message-button btn me-4" style="background: rgb(204, 204, 204); outline: rgb(204, 204, 204);">
+                             
+                                <i class='bx bxs-edit' style="color: black;"></i>
+                                
+                            </label>
+                        </div>
                 </div>
             </div>
+            <% if (i + 1 === selected_conversation.messages.length && selected_conversation.messages[i].messageView){ %>
+                <!-- Read Template, you cant put the code at differrent place if it is easier -->
+                <div class="d-flex"> 
+                    <p class="fs-sm text-primary ms-auto">
+                        <%- include ("../../public/assets/img/icons/check-double.svg") %>
+                        Read
+                    </p>
+                </div>
+            <% } %>
+    
 
             <% } else { %>
             <!-- User message -->
             <div class="message-entry">
-                <img
-                src="<%=selected_conversation.img_path%>"
-                class="smedium-rc rounded-circle"
-                width="40"
-                alt="<%=selected_conversation.sender_2%>"
-            />
+            <% if (i === 0 || i > 0 && selected_conversation.messages[i - 1].sender !== selected_conversation.messages[i].sender) { %>
+                    <img
+                    src="<%=selected_conversation.img_path%>"
+                    class="smedium-rc rounded-circle"
+                    width="40"
+                    alt="<%=selected_conversation.sender_2%>"
+                />
                 <div class="ms-2">
+            <% } else { %> 
+                <div style="margin-left: 3.5rem;">
+            <% } %>
+                <div>
                     <div>
-                        <div>
-                            <div
-                                class="message-text"
-                                style="
-                                    border-top-right-radius: 0.5rem;
-                                    border-bottom-right-radius: 0.5rem;
-                                    border-bottom-left-radius: 0.5rem;
-                                "
-                            >
-                                <span><%= selected_conversation.messages[i].message %></span>
-                            </div>
-                    
+                        <div
+                            class="message-text"
+                            style="
+                                border-top-right-radius: 0.5rem;
+                                border-bottom-right-radius: 0.5rem;
+                                border-bottom-left-radius: 0.5rem;
+                            "
+                        >
+                            <span><%= selected_conversation.messages[i].message %></span>
                         </div>
                     </div>
                 </div>
             </div>
+            </div>
+
+            <% if (i + 1 === selected_conversation.messages.length && selected_conversation.messages[i].messageView){ %>
+                <!-- Read Template -->
+                <!--you cant put the code at differrent place if it is easier-->
+                <div class="ms-5"> 
+                    <p class="fs-sm text-primary ms-1">
+                        <%- include ("../../public/assets/img/icons/check-double.svg") %>
+                        Read
+                    </p>
+                </div>
+            <% } %>
 
             <% } %>
         </div>
-        <% } %>
+        <% } %> <!-- For loop End -->
+
+   
 
         <div id="bottom" class="swiper-scrollbar end-0"></div>
     </div>
     <% } else { %>
     <!-- MAke that Pretty -->
     <div class="no-convo-yet">
-        <h6>No Converastion Yet</h6>
+      <h6>
+        <% if (query.searchQuery) { %>
+            No Converastion found
+        <% } else { %> 
+            No Converastion Yet
+        <% } %>
+     </h6>
     </div>
     <% } %>
 
@@ -129,11 +169,12 @@
             <div class="position-relative w-100 me-2 mb-3 mb-sm-0">
                 <textarea
                     class="form-control form-control-lg"
-                    style="padding-right: 85px"
+                    style="padding-right: 85px;"
                     placeholder="Message..."
                     minlength="2"
                     maxlength="1000"
                     name="message"
+                    rows="1"
                     required
                 ></textarea>
             </div>

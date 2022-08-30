@@ -22,7 +22,7 @@
                       <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
                     </li>
                     <li class="breadcrumb-item">
-                      <a>Profile</a>
+                      <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1">Profile</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page"><%=vendor.username%></li>
                   </ol>
@@ -59,7 +59,7 @@
                 <p class="fs-sm mb-2"><%=vendor.job%></p>
 
                 <% if(authuser && vendor.username === authuser.username) { %>
-                  <a href='/edit-profile/<%=authuser.username%>?productPage=1' class=" mb-2">Edit my Profile</a>
+                  <a href='/edit-profile/<%=authuser.username%>?productPage=1&reviewPage=1' class=" mb-2">Edit my Profile</a>
                 <% } %>
 
                     <div class="text-nowrap me-1 mt-1 mb-3">
@@ -91,7 +91,7 @@
                   <hr class="my-2">
                   
                   <input class='form-check-input' type="checkbox" name="timestamps" id="timestamps">
-                  <label class='form-check-label' for="timestamps">Show timestamps</label><br>
+                  <label class='form-check-label' for="timestamps">Add timestamps</label><br>
 
                   <hr class="my-2">
 
@@ -177,8 +177,8 @@
           <div class="col-md-7 pb-5 mb-lg-2 mb-lg-4 mt-n5">
 
             <div class="d-flex align-items-center align-text-center">
-              <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
-              <% if (authuser && vendor.username === authuser.username) { %>
+              <h3 class="h3 mb-4"><%=vendor.username%> Products:</h3>
+              <% if (authuser && vendor.username === authuser.username && authuser.authorization === 'vendor') { %>
                 <a href="/create-product" class="btn btn-primary shadow-primary ms-auto mb-3"><i class='bx bx-plus-circle fs-lg me-2'></i> Create Product</a>
               <% } %>
             </div>

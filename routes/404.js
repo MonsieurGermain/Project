@@ -6,7 +6,7 @@ router.get('/404', async (req,res) => {
 })
 
 router.get('/error', async (req,res) => {
-    res.render('something-wrong')
-})
+    res.render('something-wrong') 
+})  
 
 module.exports = router

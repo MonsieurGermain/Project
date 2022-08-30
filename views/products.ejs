@@ -2,12 +2,11 @@
 <body>
     <%- include('partials/Navbar') %>
 
-<div class="container-product">
 <main class="page-wrapper">
-<section class="container">
+<section class="container pt-5"  style="max-width: 1520px;">
 
     <!-- Breadcrumb -->
-    <nav class="pt-4 mt-lg-3" aria-label="breadcrumb">
+    <nav class="pb-4 pt-2" aria-label="breadcrumb">
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
                 <a href="landing-online-courses.html"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
@@ -19,7 +18,7 @@
 
     <!-- Page title + Filters -->
     <div class="d-lg-flex align-items-center justify-content-between py-4 mt-lg-2">
-        <h1 class="me-3">Products</h1>
+        <h1 class="h2 mb-4">Products:</h1>
         <form action="/products?<%=url[1]%>" method="POST">
         <div class="d-md-flex mb-3">
           <div class="position-relative me-4" style="min-width: 300px;">
@@ -41,7 +40,7 @@
       </form>
     </div>
       <% if (paginatedProducts.results.length) { %>
-        <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3 }) %>
+        <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 4 }) %>
       <% } else { %>
         <h3 class="me-3">No Products found...</h3>
       <% } %>
@@ -70,8 +69,6 @@
 
 </section>
 </main>
-</div>
-
 <%- include('partials/Footer') %>
 </body>
 </html>
