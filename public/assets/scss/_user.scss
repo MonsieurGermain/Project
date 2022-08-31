@@ -359,8 +359,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
 
 input[id^='delete-message-input-']:not(:checked) + *,
 input#delete-convo-input:not(:checked) + *:not(.no-convo-yet),
-input[id^='edit-message-input-']:not(:checked) + *,
-input#edit-message-input:not(:checked) + *:not(.no-convo-yet) {
+input[id^='edit-message-input-']:not(:checked) + * {
    display: none;
 }
 input[id^='report-vendor-']:not(:checked) + * {
@@ -370,6 +369,17 @@ input[id^='report-product-']:not(:checked) + * {
    display: none;
 }
 input[id^='report-resolve-']:not(:checked) + * {
+   display: none;
+}
+
+// Send Message Checkbox Hack
+.advanced-settings > input[type='radio'] {
+   margin-right: 0 0.5rem 0.25rem 0;
+}
+input[id='advanced-settings']:not(:checked) ~ .advanced-settings {
+   display: none;
+}
+input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
    display: none;
 }
 

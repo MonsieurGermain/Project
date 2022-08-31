@@ -80,6 +80,9 @@ const userSchema = new mongoose.Schema({
    pgp_keys: {
       type: String,
    },
+   verifiedPgpKeys: {
+      type: String,
+   },
    pgp_keys_verification_words: {
       type: String,
    },

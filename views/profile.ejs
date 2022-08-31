@@ -22,7 +22,7 @@
                       <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
                     </li>
                     <li class="breadcrumb-item">
-                      <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1">Profile</a>
+                      <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1">Profile</a>
                     </li>
                     <li class="breadcrumb-item active" aria-current="page"><%=vendor.username%></li>
                   </ol>
@@ -75,32 +75,7 @@
                   Contact me
                 </label>
 
-                <div class="contact-div text-start">
-                  <form action="/send-message/<%=vendor.username%>" method="POST">
-                  <p class="mt-3 mb-1">Conversation Settings</p>
-
-                  <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
-                  <label class='form-check-label' for="default">Default <span class="opacity-70">(Not Recommended)</span></label><br>
-      
-                  <input class='form-check-input' type="radio" name="type" id="semi-hidden" value="semi-hidden" required checked>
-                  <label class='form-check-label' for="semi-hidden">Semi-Hidden</label><br>
-      
-                  <input class='form-check-input' type="radio" name="type" id="Hidden" value="hidden" required>
-                  <label class='form-check-label' for="Hidden">Hidden</label><br>
-
-                  <hr class="my-2">
-                  
-                  <input class='form-check-input' type="checkbox" name="timestamps" id="timestamps">
-                  <label class='form-check-label' for="timestamps">Add timestamps</label><br>
-
-                  <hr class="my-2">
-
-                  <textarea class="form-control" name="message" placeholder="Type your message..." minlength="2" maxlength='1000' required></textarea>
-
-                  <button type="submit" class="btn btn-primary mt-4">Send Message</button>
-            
-                </form>
-                </div>
+                <%- include('partials/Send-message', {Reciver: vendor.username}) %>
 
                 <% if (authuser) { %>
                   <label for="report-vendor-<%=vendor.username%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-4 mt-3">      
@@ -146,10 +121,10 @@
             <div class="mt-2">
               <hr class="my-2">
               <h5 class="fw-medium fs-lg mt-4 mb-1">Pgp Key</h5>
-              <% if (!vendor.pgp_keys) { %>
+              <% if (!vendor.verifiedPgpKeys) { %>
                 <p class="fs-sm">This User Doesnt have a Pgp Key</p>
               <% } else { %>
-                <p class="fs-sm"><%=vendor.pgp_keys%></p>
+                <p class="fs-sm"><%=vendor.verifiedPgpKeys%></p>
               <% }%>
 
           </div>

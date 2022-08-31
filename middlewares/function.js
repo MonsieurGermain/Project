@@ -210,3 +210,7 @@ exports.RandomList_ofWords = function (number) {
    }
    return merged_word;
 };
+
+exports.validatePgpKeys = function (pgpKeys) {
+   return true;
+};

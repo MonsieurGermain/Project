@@ -2,19 +2,7 @@ const Product = require('../models/product');
 const Conversation = require('../models/conversation');
 const Order = require('../models/order');
 const User = require('../models/user');
-const {
-   IsNot_String,
-   Is_Shorter,
-   Is_Longuer,
-   Is_Smaller,
-   Is_Bigger,
-   compareArray,
-   IsNot_Number,
-   deleteImage,
-   Format_Username_Settings,
-   isEmail,
-   isolate_mimetype,
-} = require('./function');
+const {IsNot_String, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteImage, isEmail, validatePgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -185,6 +173,21 @@ exports.Validate_Conversation = (req, res, next) => {
       if (!compareArray(Conversation_Type, req.body.type)) throw new Error();
 
       if (req.body.timestamps) req.body.timestamps = true;
+      //
+      switch (req.body.pgpSettings) {
+         case 'noPgp':
+            req.body.pgpKeys = undefined;
+            break;
+         case 'ownPgp':
+            req.body.pgpKeys = req.user.verifiedPgpKeys;
+            break;
+         case 'otherPgp':
+            if (!validatePgpKeys(req.body.otherPgpKeys)) throw new Error('The other Pgp Keys you provided is Invalid');
+            req.body.pgpKeys = req.body.otherPgpKeys;
+            break;
+         default:
+            req.body.pgpKeys = req.user.verifiedPgpKeys;
+      }
 
       next();
    } catch (e) {

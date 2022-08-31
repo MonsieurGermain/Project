@@ -1,18 +1,15 @@
 <div class="chat-body">
     <input id="delete-convo-input" type="checkbox" hidden></input>
     <% if  (selected_conversation) { %>
-   <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>  
+   <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>   
    <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
-
         <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
             <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
             <%- include('Popup-dialog', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this message?", confirm_text: "Yes", cancel_text: "No"}) %>
             
             <input id="edit-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
             <%- include('Popup-edit', {checkboxInputId:"edit-message-input-"+ i, action : "/edit-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id, currentMessage: selected_conversation.messages[i].message}) %>
-
         <%}%>
-
     <% } %>
     <% } %>
     <% if (selected_conversation) { %>
@@ -26,7 +23,7 @@
         </div>
         <div class="chat-user">
             <img
-                src="<%=selected_conversation.img_path%>"
+                src="<%=selected_conversation.sender2_Img%>"
                 class="smedium-rc rounded-circle"
                 width="40"
                 alt="<%=selected_conversation.sender_2%>"
@@ -39,16 +36,22 @@
             <!-- <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div> -->
         </div>
         <div class="delete-button-container">
+
+            <% if (selected_conversation.sender2_Pgp) { %>
+                <input id="user-pgp-keys" type="checkbox" hidden></input>
+                <label for="user-pgp-keys" class="btn btn-outline-white me-3">
+                    <i class='bx bxs-key fs-xl me-xl-2'></i>
+                    <span class="d-none d-xl-inline">Pgp Keys</span>
+                </label>
+            <% } %>
     
                 <label for="delete-convo-input" class="btn btn-outline-danger">
-                
                         <i class="bx bx-trash-alt fs-xl me-xl-2"></i>
                         <span class="d-none d-xl-inline">Delete Conversation</span>
                 </label>
- 
+
         </div>
     </div>
-
     <!-- Messages -->
     <div class="messages-main px-3">
         <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
@@ -97,13 +100,12 @@
                 </div>
             <% } %>
     
-
             <% } else { %>
             <!-- User message -->
             <div class="message-entry">
             <% if (i === 0 || i > 0 && selected_conversation.messages[i - 1].sender !== selected_conversation.messages[i].sender) { %>
                     <img
-                    src="<%=selected_conversation.img_path%>"
+                    src="<%=selected_conversation.sender2_Img%>"
                     class="smedium-rc rounded-circle"
                     width="40"
                     alt="<%=selected_conversation.sender_2%>"
@@ -128,7 +130,6 @@
                 </div>
             </div>
             </div>
-
             <% if (i + 1 === selected_conversation.messages.length && selected_conversation.messages[i].messageView){ %>
                 <!-- Read Template -->
                 <!--you cant put the code at differrent place if it is easier-->
@@ -139,13 +140,10 @@
                     </p>
                 </div>
             <% } %>
-
             <% } %>
         </div>
         <% } %> <!-- For loop End -->
-
    
-
         <div id="bottom" class="swiper-scrollbar end-0"></div>
     </div>
     <% } else { %>

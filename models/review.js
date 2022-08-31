@@ -35,7 +35,7 @@ reviewSchema.methods.Get_Reviewer_Profile_Pic = async function () {
          this.img_path = user.img_path;
          break;
       default:
-         this.img_path = '/default/default.png';
+         this.img_path = '/default/default-profile-pic.png';
    }
    return this;
 };

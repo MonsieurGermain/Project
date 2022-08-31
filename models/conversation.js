@@ -54,6 +54,20 @@ const conversationSchema = new mongoose.Schema({
       ref: 'User',
       required: true,
    },
+   sender1_Img: {
+      type: String,
+      required: true,
+   },
+   sender2_Img: {
+      type: String,
+      required: true,
+   },
+   sender1_Pgp: {
+      type: String,
+   },
+   sender2_Pgp: {
+      type: String,
+   },
    messages: [messageSchema],
 
    settings: {
@@ -76,18 +90,6 @@ function Create_New_Message(Message, Sender, sender_1, conversationSettings, use
 
    return New_Message;
 }
-
-conversationSchema.methods.Create_Conversation = function (body, From_User, To_User, userSettings) {
-   this.settings = {
-      type: body.type ? body.type : 'default',
-      timestamps: body.timestamps ? true : undefined,
-   };
-   this.sender_1 = From_User;
-   this.sender_2 = To_User;
-
-   this.messages.push(Create_New_Message(body.message, From_User, From_User, this.settings, userSettings));
-   return this;
-};
 
 // Add
 conversationSchema.methods.Add_New_Message = function (Message, From_User, userSettings) {
@@ -125,6 +127,20 @@ conversationSchema.methods.sawMessages = async function (userUsername) {
       }
    }
    await this.save();
+};
+
+conversationSchema.methods.updateNewPgp = async function (username, newPgp) {
+   if (username === this.sender_1) this.sender1_Pgp = newPgp;
+   else this.sender2_Pgp = newPgp;
+
+   this.save();
+};
+
+conversationSchema.methods.updateNewImgPath = async function (username, newImgPath) {
+   if (username === this.sender_1) this.sender1_Img = newImgPath;
+   else this.sender2_Img = newImgPath;
+
+   this.save();
 };
 
 // Search

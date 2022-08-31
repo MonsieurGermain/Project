@@ -105,12 +105,25 @@ const address = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 // To do
 // fix product array and product img sizing
 
+// Show of the 2 user pgp all conversation
 // Totally hidden Message
 // Encrypt Messages
 // Delete message after seing
 // Format Currency of Product
 
 // Saw or not saw message
+
+// function RandomPhase(length) {
+//    var result = '';
+//    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//    var charactersLength = characters.length;
+//    for (var i = 0; i < length; i++) {
+//       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+//    }
+//    return result;
+// }
+
+// console.log(RandomPhase(8));
 
 app.listen('3000', (req, res) => {
    console.log('Server running on port 3000');

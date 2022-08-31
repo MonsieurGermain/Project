@@ -28,7 +28,7 @@
                     <label for="change-messages">
                       <a href="/messages/<%= conversations[i].id %>#bottom" class="selected-convo position-relative d-flex align-items-start text-decoration-none pe-none py-3 px-4">
                         <div class="position-absolute top-0 start-0 bg-primary w-3 h-100"></div>
-                        <img src="<%= conversations[i].img_path%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
+                        <img src="<%= conversations[i].sender2_Img%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
                         <div class="ps-2 ms-1">
                           <div class="mb-1">
                             <h6 class="mb-0 me-2"><%= conversations[i].sender_2 %></h6>
@@ -44,7 +44,7 @@
                   
                   <% } else { %>
                     <a href="/messages?id=<%= conversations[i].id %>#bottom" class="d-flex align-items-start text-decoration-none bg-faded-primary-hover py-3 px-4">
-                      <img src="<%= conversations[i].img_path%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
+                      <img src="<%= conversations[i].sender2_Img%>" class="smedium-rc rounded-circle" alt="<%= conversations[i].sender_2 %>">
                      
                       <div class="ps-2 ms-1">
                         <div class="mb-1">

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Conversation = require('../models/conversation');
 const Product = require('../models/product');
 const Review = require('../models/review');
 const {Need_Authentification, isBuyer} = require('../middlewares/authentication');
@@ -28,7 +29,7 @@ router.get('/profile/:username', FetchData(['params', 'username'], User, 'userna
 router.get('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername, async (req, res) => {
    try {
       const {user} = req;
-      const paginatedProducts = await paginatedResults(Product, {vendor: user.username, status: 'online'}, {page: req.query.productPage});
+      const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage});
 
       const reviews = [
          {
@@ -74,12 +75,24 @@ router.get('/edit-profile/:username', Need_Authentification, paramsUsername_isRe
    }
 });
 
+async function updateConversationImg_Path(username, newImgPath) {
+   const conversations = await Conversation.Find_allConversation_ofUser(username);
+
+   for (let i = 0; i < conversations.length; i++) {
+      conversations[i].updateNewImgPath(username, newImgPath);
+   }
+}
+
 router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername, uploadUserImg.single('profileImg'), Validate_Profile, async (req, res) => {
    try {
       const {user} = req;
       const {job, description, achievement, languages} = req.body;
 
-      if (req.file) user.UploadImg(req.file);
+      if (req.file) {
+         user.UploadImg(req.file);
+
+         updateConversationImg_Path(user.username, user.img_path);
+      }
 
       user.job = job;
       user.description = description;

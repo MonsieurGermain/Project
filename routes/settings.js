@@ -3,6 +3,7 @@ const router = express.Router();
 const {Need_Authentification} = require('../middlewares/authentication');
 const User = require('../models/user');
 const Product = require('../models/product');
+const Conversation = require('../models/conversation');
 const bcrypt = require('bcrypt');
 const {
    ValidateValueByChoice,
@@ -102,32 +103,36 @@ router.post('/delete-address', Need_Authentification, async (req, res) => {
    }
 });
 
+async function updateConversationPgp(username, newPgp) {
+   const conversations = await Conversation.Find_allConversation_ofUser(username);
+
+   for (let i = 0; i < conversations.length; i++) {
+      conversations[i].updateNewPgp(username, newPgp);
+   }
+}
+
 router.post('/add-pgp', Need_Authentification, Validate_Pgp, async (req, res) => {
    try {
       const {user} = req;
       const {pgp} = req.body;
       let flash_message;
 
-      if (pgp) {
-         user.pgp_keys = pgp;
-         user.pgp_keys_verification_words = RandomList_ofWords(12);
-         user.pgp_keys_verification_words_encrypted = user.pgp_keys_verification_words; // Encrypt It with user pgp
-         flash_message = 'A new Pgp Keys as Been added, you just need Verify it';
-      } else {
-         user.pgp_keys = undefined;
-         user.pgp_keys_verification_words = undefined;
-         user.pgp_keys_verification_words_encrypted = undefined;
-         flash_message = 'Your Pgp Keys as been Deleted';
-      }
+      if (!pgp) throw new Error('Please Provide a Pgp Keys');
+      if (pgp.length > 10000) throw new Error('Invalid Pgp Keys Length');
 
-      // Send Email Containning Verification Code
+      user.pgp_keys = pgp;
+      user.verifiedPgpKeys = undefined;
+      user.pgp_keys_verification_words = RandomList_ofWords(12);
+      user.pgp_keys_verification_words_encrypted = user.pgp_keys_verification_words; // Encrypt It with user pgp
+      flash_message = 'A new Pgp Keys as Been added, you just need Verify it';
+
       await user.save();
 
       req.flash('success', flash_message);
       res.redirect(`/settings/${user.username}?section=security`);
    } catch (e) {
-      console.log(e);
-      res.redirect('/error');
+      req.flash('error', e.message);
+      res.redirect(`/settings/${user.username}?section=security`);
    }
 });
 router.post('/delete-pgp', Need_Authentification, async (req, res) => {
@@ -135,6 +140,7 @@ router.post('/delete-pgp', Need_Authentification, async (req, res) => {
       const {user} = req;
 
       user.pgp_keys = undefined;
+      user.verifiedPgpKeys = undefined;
       user.pgp_keys_verification_words = undefined;
       user.pgp_keys_verification_words_encrypted = undefined;
       user.settings.step_verification = 'pgp' ? undefined : user.settings.step_verification;
@@ -152,9 +158,12 @@ router.post('/verify-pgp', Need_Authentification, Validate_Pgp_Verification, asy
    try {
       const {user} = req;
 
+      user.verifiedPgpKeys = user.pgp_keys;
+      user.pgp_keys = undefined;
       user.pgp_keys_verification_words = undefined;
       user.pgp_keys_verification_words_encrypted = undefined;
 
+      updateConversationPgp(user.username, user.verifiedPgpKeys);
       await user.save();
 
       req.flash('success', 'Pgp Successfully Verified');
@@ -267,7 +276,7 @@ router.post('/enable-2fa', Need_Authentification, async (req, res) => {
       if (step_verification === 'email') {
          if (user.email_verification_code || !user.email) throw new Error('You cant Add Email 2 Step Verification');
       } else if (step_verification === 'pgp') {
-         if (user.pgp_keys_verification_words || !user.pgp_keys) throw new Error('You cant Add Email 2 Step Verification');
+         if (!user.verifiedPgpKeys) throw new Error('You cant Add Pgp 2 Step Verification');
       } else throw new Error('Invalid Value');
 
       let flash_message;

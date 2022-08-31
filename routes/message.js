@@ -14,9 +14,9 @@ const {
 } = require('../middlewares/validation');
 const {Format_Username_Settings} = require('../middlewares/function');
 
-function Create_Or_Update_Conversation(Found_Conversation, body, Sender, To_User, userSettings) {
-   if (!Found_Conversation) return new Conversation().Create_Conversation(body, Sender, To_User, userSettings); // If Convo Doesnt Exist Create One
-   return Found_Conversation.Add_New_Message(body.message, Sender, userSettings); // If Convo Exist add new Message
+async function getOtherUserData(username) {
+   const user = await User.findOne({username: username});
+   return [user.img_path, user.verifiedPgpKeys];
 }
 
 // CREATE MESSAGE
@@ -34,10 +34,31 @@ router.post(
    Find_ifConversation_alreadyExist,
    async (req, res) => {
       try {
-         const {Found_Conversation} = req;
+         let {user, Found_Conversation} = req;
+         const {username} = req.params;
+         const {type, timestamps, message, pgpKeys} = req.body;
 
-         const New_Or_Updated_Conversation = Create_Or_Update_Conversation(Found_Conversation, req.body, req.user.username, req.params.username, req.user.settings);
-         await New_Or_Updated_Conversation.save();
+         if (Found_Conversation) Found_Conversation.Add_New_Message(message, user.username, user.settings);
+         else {
+            Found_Conversation = new Conversation();
+
+            Found_Conversation.settings = {
+               type: type ? type : 'default',
+               timestamps: timestamps ? true : undefined,
+            };
+            Found_Conversation.sender_1 = user.username;
+            Found_Conversation.sender_2 = username;
+
+            Found_Conversation.sender1_Img = Found_Conversation.settings.type === 'default' ? user.img_path : '/default/default-profile-pic.png';
+            Found_Conversation.sender1_Pgp = pgpKeys;
+
+            [Found_Conversation.sender2_Img, Found_Conversation.sender2_Pgp] = await getOtherUserData(username);
+
+            Found_Conversation.messages = [];
+            Found_Conversation.Add_New_Message(message, user.username, user.settings);
+         }
+
+         await Found_Conversation.save();
 
          let redirect_url = '/messages';
          if (Found_Conversation) redirect_url = `/messages?id=${Found_Conversation.id}`;
@@ -88,28 +109,30 @@ router.post('/search-messages', Need_Authentification, async (req, res) => {
    }
 });
 
-async function getUserProfilePic(username) {
-   const user = await User.findOne({username: username});
-   return user.img_path;
-}
+function placeUserAtSender_1(conversation, username) {
+   originalSender_1 = Format_Username_Settings(conversation.sender_1, conversation.settings.type);
+   savedsender1_Img = conversation.sender1_Img;
+   savedsender2_Pgp = conversation.sender1_Img;
 
-async function getConversationPartner_ProfilePic(conversation, username) {
-   if (conversation.sender_1 === username) return await getUserProfilePic(conversation.sender_2);
-   if (conversation.settings.type === 'default') return await getUserProfilePic(conversation.sender_1);
-   else return '/default/default.png';
-}
+   if (username === conversation.sender_2) {
+      conversation.sender_1 = username;
+      conversation.sender_2 = originalSender_1;
 
-function formatUsernames(sender_1, sender_2, settings, username) {
-   sender_1 = Format_Username_Settings(sender_1, settings);
+      conversation.sender1_Img = conversation.sender2_Img;
+      conversation.sender2_Img = savedsender1_Img;
 
-   if (username === sender_2) return [sender_2, sender_1];
-   else return [sender_1, sender_2];
+      conversation.sender1_Pgp = conversation.sender2_Pgp;
+      conversation.sender2_Pgp = savedsender2_Pgp;
+   } else {
+      conversation.sender_1 = originalSender_1;
+   }
+
+   return conversation;
 }
 
 async function formatConversations(conversations, username) {
    for (let i = 0; i < conversations.length; i++) {
-      conversations[i].img_path = await getConversationPartner_ProfilePic(conversations[i], username); // Get Img Path Of the Conversation Partner
-      [conversations[i].sender_1, conversations[i].sender_2] = formatUsernames(conversations[i].sender_1, conversations[i].sender_2, conversations[i].settings.type, username); // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
+      conversations[i] = placeUserAtSender_1(conversations[i], username); // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
    }
 
    return conversations;
@@ -150,7 +173,7 @@ function filterConversationBySearch(userConversations, userUsername, searchQuery
    searchQuery = searchQuery.toLowerCase();
 
    for (let i = 0; i < userConversations.length; i++) {
-      if (userConversations[i].settings.type === 'default') {
+      if (userConversations[i].settings.type === 'default' || userConversations[i].sender_1 === userUsername) {
          let otherUser;
          if (userConversations[i].sender_1 === userUsername) otherUser = userConversations[i].sender_2;
          else otherUser = userConversations[i].sender_1;
@@ -169,7 +192,7 @@ router.get('/messages', Need_Authentification, Find_allConverastion_ofUser, asyn
       let id = req.query.id ? req.query.id : undefined;
       let search = req.query.searchQuery ? req.query.searchQuery : undefined;
 
-      if (search) conversations = filterConversationBySearch(conversations, username, search);
+      if (search) conversations = filterConversationBySearch(conversations, username, search); // Optimize that
 
       [conversations, selectedConversationPosition] = await getSelectedConversationPosition(conversations, id, username);
 

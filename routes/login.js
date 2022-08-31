@@ -12,7 +12,7 @@ const {RandomNumber, RandomList_ofWords} = require('../middlewares/function');
 function Create_Profile_Pic(username) {
    const img_path = `/uploads/user-img/${username}.png`;
 
-   fs.copyFile('./public/default/default.png', `./public${img_path}`, (err) => {
+   fs.copyFile('./public/default/default-profile-pic.png', `./public${img_path}`, (err) => {
       if (err) throw err;
    });
    return img_path;

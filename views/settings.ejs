@@ -169,9 +169,13 @@
                       <h2 class="h5 mb-3">Add Pgp Keys</h2>
                     <% } %>
                     <form action="/add-pgp" method="POST">
-                      <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" style="min-height:none;" required><%=authuser.pgp_keys%></textarea>
+                      <% if (authuser.verifiedPgpKeys) { %>
+                        <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" style="min-height:none;" required><%=authuser.verifiedPgpKeys%></textarea>
+                      <% } else { %>
+                        <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" style="min-height:none;" required><%=authuser.pgp_keys%></textarea>
+                      <% } %>
                       <div class="d-flex align-items-center mt-3 mb-5">
-                        <% if (authuser.pgp_keys) { %>
+                        <% if (authuser.pgp_keys || authuser.verifiedPgpKeys) { %>
                           <span class="form-check">
                             <input class="form-check-input" type="checkbox" id="confirm-pgp" required>
                             <label class="form-check-label" for="confirm-pgp">I Understand that it might cause some problems</label>
@@ -181,7 +185,7 @@
                           <button type="submit" class="btn btn-primary">Add Pgp Keys</button>
                         <% } %>
                       </form>
-                        <% if (authuser.pgp_keys) { %> 
+                        <% if (authuser.pgp_keys || authuser.verifiedPgpKeys) { %> 
                           <form action="/delete-pgp" method="POST">
                             <button type="submit" class="btn btn-danger ms-3">Delete Pgp Keys</button>
                           </form>
@@ -250,7 +254,7 @@
                           <label class='form-check-label opacity-60' for="2">Email (Add and Verify an Email to Unable this Option)</label><br>
                         <% } %>
 
-                        <% if (authuser.pgp_keys && !authuser.pgp_keys_verification_words) { %>
+                        <% if (authuser.verifiedPgpKeys) { %>
                           <div class="mt-2">
                           <input class='form-check-input' type="radio" name="step_verification" id="pgp-2fa" value="pgp" required
                           <% if (authuser.settings.step_verification === 'pgp') { %>
@@ -263,7 +267,7 @@
                         <% } %>
 
                         <span class="d-flex align-items-center">
-                        <% if ((authuser.email && !authuser.email_verification_code) || (authuser.pgp_keys && !authuser.pgp_keys_verification_words)) { %>
+                        <% if ((authuser.email && !authuser.email_verification_code) || authuser.verifiedPgpKeys) { %>
                           <% if (authuser.settings.step_verification) { %>
                             <button class="btn btn-primary mt-4" type="submit">Change 2 step Verification</button>
                           <% } else { %> 
