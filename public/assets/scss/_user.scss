@@ -188,7 +188,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
             height: 100%;
             .messages-header {
                position: relative;
-               z-index: 1;
+               z-index: 0;
                box-shadow: 0px 8px 20px rgb($body-bg, 0.25);
                @media (min-width: $min-width-bp) {
                   min-height: 6rem;
@@ -225,7 +225,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                      align-items: center;
                      cursor: pointer;
                      position: relative;
-                     bottom: 10px;
+                     // bottom: 10px;
                      right: 2px;
                      margin-right: -21px;
                   }
@@ -244,11 +244,21 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                }
 
                .delete-button-container {
+                  display: flex;
                   label {
                      @media (max-width: $max-width-bp) {
                         position: relative;
                         padding: 7px;
                         border-radius: 50rem;
+                     }
+                  }
+                  .user-pgp-keys:hover {
+                     background-color: #fff;
+                     & i {
+                        color: #ef4444;
+                     }
+                     & span {
+                        color: #ef4444;
                      }
                   }
                }
@@ -337,10 +347,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
             }
          }
          .card-footer {
-            @media (min-width: $min-width-bp) {
-               background-color: $secondary-bg;
-            }
-
+            background-color: $secondary-bg;
             box-shadow: 0 -10px 20px 0 rgb($body-bg, 0.25);
             position: relative;
             button.desktop {
@@ -397,7 +404,9 @@ input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
    z-index: 1;
    > div {
       margin: 0 1.5rem;
-      max-width: 370px;
+      min-width: 310px;
+      width: 80%;
+      max-width: 35rem;
       background-color: $secondary-bg;
       box-shadow: 0 0px 27px 0 rgb($primary, 0.15);
       .buttons {

@@ -15864,7 +15864,7 @@ img-comparison-slider:focus {
 }
 .messages-view .messages-container .chat .chat-body .messages-header {
   position: relative;
-  z-index: 1;
+  z-index: 0;
   box-shadow: 0px 8px 20px rgba(25, 25, 25, 0.25);
   background-color: #212121;
   display: flex;
@@ -15905,7 +15905,6 @@ img-comparison-slider:focus {
   align-items: center;
   cursor: pointer;
   position: relative;
-  bottom: 10px;
   right: 2px;
   margin-right: -21px;
 }
@@ -15921,12 +15920,24 @@ img-comparison-slider:focus {
 .messages-view .messages-container .chat .chat-body .messages-header .change-convo path {
   fill: #fff;
 }
+.messages-view .messages-container .chat .chat-body .messages-header .delete-button-container {
+  display: flex;
+}
 @media (max-width: 767px) {
   .messages-view .messages-container .chat .chat-body .messages-header .delete-button-container label {
     position: relative;
     padding: 7px;
     border-radius: 50rem;
   }
+}
+.messages-view .messages-container .chat .chat-body .messages-header .delete-button-container .user-pgp-keys:hover {
+  background-color: #fff;
+}
+.messages-view .messages-container .chat .chat-body .messages-header .delete-button-container .user-pgp-keys:hover i {
+  color: #ef4444;
+}
+.messages-view .messages-container .chat .chat-body .messages-header .delete-button-container .user-pgp-keys:hover span {
+  color: #ef4444;
 }
 .messages-view .messages-container .chat .chat-body .messages-main {
   flex-grow: 1;
@@ -16011,13 +16022,9 @@ img-comparison-slider:focus {
   color: #fff;
 }
 .messages-view .messages-container .chat .card-footer {
+  background-color: #212121;
   box-shadow: 0 -10px 20px 0 rgba(25, 25, 25, 0.25);
   position: relative;
-}
-@media (min-width: 768px) {
-  .messages-view .messages-container .chat .card-footer {
-    background-color: #212121;
-  }
 }
 .messages-view .messages-container .chat .card-footer button.desktop {
   height: auto;
@@ -16074,7 +16081,9 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .popup-dialog > div {
   margin: 0 1.5rem;
-  max-width: 370px;
+  min-width: 310px;
+  width: 80%;
+  max-width: 35rem;
   background-color: #212121;
   box-shadow: 0 0px 27px 0 rgba(128, 0, 128, 0.15);
 }
