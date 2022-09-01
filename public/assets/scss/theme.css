@@ -15934,10 +15934,10 @@ img-comparison-slider:focus {
   background-color: #fff;
 }
 .messages-view .messages-container .chat .chat-body .messages-header .delete-button-container .user-pgp-keys:hover i {
-  color: #ef4444;
+  color: #212121;
 }
 .messages-view .messages-container .chat .chat-body .messages-header .delete-button-container .user-pgp-keys:hover span {
-  color: #ef4444;
+  color: #212121;
 }
 .messages-view .messages-container .chat .chat-body .messages-main {
   flex-grow: 1;

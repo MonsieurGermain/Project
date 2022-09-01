@@ -255,10 +255,10 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                   .user-pgp-keys:hover {
                      background-color: #fff;
                      & i {
-                        color: #ef4444;
+                        color: #212121;
                      }
                      & span {
-                        color: #ef4444;
+                        color: #212121;
                      }
                   }
                }
