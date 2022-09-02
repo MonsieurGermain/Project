@@ -2,9 +2,9 @@
     <input id="delete-convo-input" type="checkbox" hidden></input>
     <% if  (selected_conversation) { %>
    <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>   
-        <% if  (selected_conversation) { %>
+        <% if  (selected_conversation.sender2_Pgp) { %>
             <input id="user-pgp-keys" type="checkbox" hidden></input>
-            <%- include('Popup-keys', {checkboxInputId:"user-pgp-keys", text: "When Clicked on, The Pgp Keys Button should make a popup appear that shows the pgp keys of the user.So like a div with an y-overflow of scroll, so that the user can scroll down and see all the pgp keys.It is very difficult to explain, but I want something like what is in the Image, of course make it prettier, ill let you decide how to style it, I think you are way more qualified than me in front-end Dev.In the Pgp Popup Exemple Image, the text you see in the middle is where the pgp key would be.", cancel_text: "No"}) %>   
+            <%- include('Popup-keys', {checkboxInputId:"user-pgp-keys", text: selected_conversation.sender2_Pgp, cancel_text: "No"}) %>   
         <% } %>
 
    <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
