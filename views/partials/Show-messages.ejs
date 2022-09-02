@@ -2,6 +2,11 @@
     <input id="delete-convo-input" type="checkbox" hidden></input>
     <% if  (selected_conversation) { %>
    <%- include('Popup-dialog', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>   
+        <% if  (selected_conversation) { %>
+            <input id="user-pgp-keys" type="checkbox" hidden></input>
+            <%- include('Popup-keys', {checkboxInputId:"user-pgp-keys", text: "When Clicked on, The Pgp Keys Button should make a popup appear that shows the pgp keys of the user.So like a div with an y-overflow of scroll, so that the user can scroll down and see all the pgp keys.It is very difficult to explain, but I want something like what is in the Image, of course make it prettier, ill let you decide how to style it, I think you are way more qualified than me in front-end Dev.In the Pgp Popup Exemple Image, the text you see in the middle is where the pgp key would be.", cancel_text: "No"}) %>   
+        <% } %>
+
    <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
         <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
             <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
@@ -38,7 +43,6 @@
         <div class="delete-button-container">
 
             <% if (selected_conversation.sender2_Pgp) { %>
-                <input id="user-pgp-keys" type="checkbox" hidden></input>
                 <label for="user-pgp-keys" class="btn btn-outline-white me-3 user-pgp-keys">
                     <i class='bx bxs-key fs-xl me-xl-2'></i>
                     <span class="d-none d-xl-inline">Pgp Keys</span>
@@ -82,7 +86,7 @@
                                 <i class="bx bx-trash-alt"></i>
                             
                             </label>
-                            <label for="edit-message-input-<%=i%>" class="delete-message-button btn me-4" style="background: rgb(204, 204, 204); outline: rgb(204, 204, 204);">
+                            <label for="edit-message-input-<%=i%>" class="delete-message-button b-edit btn me-4">
                              
                                 <i class='bx bxs-edit' style="color: black;"></i>
                                 
@@ -167,11 +171,11 @@
     <% if (selected_conversation) { %>
     <form method="POST" action="/messages/<%=selected_conversation.id%>#bottom">
    
-        <div class="card-footer d-sm-flex w-100 border-0 pt-3 pb-3 px-3">
-            <div class="position-relative w-100 me-2 mb-3 mb-sm-0">
+        <div class="card-footer d-flex w-100 border-0 pt-3 pb-3 px-3">
+            <div class="w-100 me-2">
                 <textarea
                     class="form-control form-control-lg py-2"
-                    style="padding-right: 85px; min-height: 42px;"
+                    style="padding-right: 85px; min-height: 42px;resize: none;"
                     placeholder="Message..."
                     minlength="1"
                     maxlength="1000"
@@ -184,9 +188,8 @@
             <button type="submit" class="desktop btn btn-primary btn-icon d-none d-sm-block">
                 <i class="bx bx-send"></i>
             </button>
-            <button type="submit" class="btn btn-primary btn-lg w-100 d-sm-none">
-                <i class="bx bx-send fs-xl me-2"></i>
-                Send
+            <button type="submit" class="btn btn-primary btn-lg d-sm-none">
+                <i class="bx bx-send fs-xl"></i>
             </button>
         </div>
     </form>

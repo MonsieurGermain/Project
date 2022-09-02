@@ -15,8 +15,10 @@
                 <label for="change-messages"><%- include ("../public/assets/img/icons/close-cross.svg") %></label>
               </div>
                <form class="search-messages px-4" action="/search-messages" method="POST">
-                <div>       
-                    <i class="bx bx-search-alt fs-xl text-light"></i> 
+                <div>
+                  <button type="submit">
+                      <i class="bx bx-search-alt fs-xl text-light"></i> 
+                  </button>
                 </div>
              
                 <input type="search" name="search" maxlength="100" placeholder="Search" required>

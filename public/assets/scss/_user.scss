@@ -133,10 +133,22 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
             border-bottom: 1px solid $body-bg;
             > div {
                display: flex;
-               flex-direction: column;
+               align-items: center;
                justify-content: center;
-               i {
+               button {
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  background-color: transparent;
+                  border: none;
                   margin-right: 1rem;
+                  i {
+                     cursor: pointer;
+                     transition: color 0.3s ease-in-out;
+                     &:hover {
+                        color: #800080!important;
+                     }
+                  }
                }
             }
             input {
@@ -340,8 +352,21 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                      right: -7px;
                      border-radius: 50rem;
                      padding: 2px;
-                     background-color: $danger;
+                     background-color: #dd5858;
                      color: $white;
+                     &:hover {
+                        background-color: $danger;
+                     }
+                     &.b-edit {
+                        outline: #212121;
+                        background-color: #fff;
+                        &:hover {
+                           background-color: #212121!important;
+                           >i {
+                              color: #fff!important;
+                           }
+                        }
+                     }
                   }
                }
             }
@@ -350,11 +375,17 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
             background-color: $secondary-bg;
             box-shadow: 0 -10px 20px 0 rgb($body-bg, 0.25);
             position: relative;
+            align-items: flex-end;
             button.desktop {
-               height: auto;
-               width: 5rem;
+               display: flex;
+               justify-content: space-around;
+               align-items: center;
+            }
+            button {
+               padding: 10px;
             }
             textarea {
+               background-color: $body-bg;
                @media (min-width: $min-width-bp) {
                   background-color: $body-bg;
                }
@@ -367,7 +398,14 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
 input[id^='delete-message-input-']:not(:checked) + *,
 input#delete-convo-input:not(:checked) + *:not(.no-convo-yet),
 input[id^='edit-message-input-']:not(:checked) + * {
-   display: none;
+   background-color: rgba(25, 25, 25, 0);
+   visibility: hidden;
+   opacity: 0;
+}
+input[id='user-pgp-keys']:not(:checked) + * {
+   background-color: rgba(25, 25, 25, 0);
+   visibility: hidden;
+   opacity: 0;
 }
 input[id^='report-vendor-']:not(:checked) + * {
    display: none;
@@ -401,26 +439,52 @@ input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
    flex-direction: column;
    justify-content: center;
    align-items: center;
-   z-index: 1;
+   transition: visibility 0.2s linear, 0.2s opacity linear;
+   -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
+   visibility: visible;
+   background-color: rgba(25, 25, 25, 0.8);
+   opacity: 1;
+   cursor: default;
+   z-index: 200;
    > div {
       margin: 0 1.5rem;
       min-width: 310px;
       width: 80%;
-      max-width: 35rem;
+      max-width: 30rem;
       background-color: $secondary-bg;
       box-shadow: 0 0px 27px 0 rgb($primary, 0.15);
+      > div {
+         text-align: center;
+      }
       .buttons {
          display: flex;
          justify-content: space-between;
-         max-width: 237px;
          width: 100%;
-         margin: 0 auto;
          > * {
             label,
             button {
                width: 100%;
             }
          }
+      }
+   }
+   >.popup-close {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+   }
+   &.pgp-keys-popup {
+      .text-content {
+         word-break: break-all;
+         max-height: 200px;
+         overflow-y: auto;
+         text-align: left;
+      }
+      .buttons {
+         justify-content: flex-end;
       }
    }
 }

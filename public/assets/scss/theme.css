@@ -15804,11 +15804,23 @@ img-comparison-slider:focus {
 }
 .messages-view .messages-container .contacts .search-messages > div {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
 }
-.messages-view .messages-container .contacts .search-messages > div i {
+.messages-view .messages-container .contacts .search-messages > div button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border: none;
   margin-right: 1rem;
+}
+.messages-view .messages-container .contacts .search-messages > div button i {
+  cursor: pointer;
+  transition: color 0.3s ease-in-out;
+}
+.messages-view .messages-container .contacts .search-messages > div button i:hover {
+  color: #800080 !important;
 }
 .messages-view .messages-container .contacts .search-messages input {
   caret-color: #fff;
@@ -16018,17 +16030,38 @@ img-comparison-slider:focus {
   right: -7px;
   border-radius: 50rem;
   padding: 2px;
-  background-color: #ef4444;
+  background-color: #dd5858;
   color: #fff;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-text .delete-message-button:hover {
+  background-color: #ef4444;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-text .delete-message-button.b-edit {
+  outline: #212121;
+  background-color: #fff;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-text .delete-message-button.b-edit:hover {
+  background-color: #212121 !important;
+}
+.messages-view .messages-container .chat .chat-body .messages-main .message-text .delete-message-button.b-edit:hover > i {
+  color: #fff !important;
 }
 .messages-view .messages-container .chat .card-footer {
   background-color: #212121;
   box-shadow: 0 -10px 20px 0 rgba(25, 25, 25, 0.25);
   position: relative;
+  align-items: flex-end;
 }
 .messages-view .messages-container .chat .card-footer button.desktop {
-  height: auto;
-  width: 5rem;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.messages-view .messages-container .chat .card-footer button {
+  padding: 10px;
+}
+.messages-view .messages-container .chat .card-footer textarea {
+  background-color: #191919;
 }
 @media (min-width: 768px) {
   .messages-view .messages-container .chat .card-footer textarea {
@@ -16039,7 +16072,15 @@ img-comparison-slider:focus {
 input[id^=delete-message-input-]:not(:checked) + *,
 input#delete-convo-input:not(:checked) + *:not(.no-convo-yet),
 input[id^=edit-message-input-]:not(:checked) + * {
-  display: none;
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
+input[id=user-pgp-keys]:not(:checked) + * {
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
 }
 
 input[id^=report-vendor-]:not(:checked) + * {
@@ -16077,26 +16118,50 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 1;
+  transition: visibility 0.2s linear, 0.2s opacity linear;
+  -webkit-transition: visibility 0.2s linear, 0.2s opacity linear;
+  visibility: visible;
+  background-color: rgba(25, 25, 25, 0.8);
+  opacity: 1;
+  cursor: default;
+  z-index: 200;
 }
 .popup-dialog > div {
   margin: 0 1.5rem;
   min-width: 310px;
   width: 80%;
-  max-width: 35rem;
+  max-width: 30rem;
   background-color: #212121;
   box-shadow: 0 0px 27px 0 rgba(128, 0, 128, 0.15);
+}
+.popup-dialog > div > div {
+  text-align: center;
 }
 .popup-dialog > div .buttons {
   display: flex;
   justify-content: space-between;
-  max-width: 237px;
   width: 100%;
-  margin: 0 auto;
 }
 .popup-dialog > div .buttons > * label,
 .popup-dialog > div .buttons > * button {
   width: 100%;
+}
+.popup-dialog > .popup-close {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+.popup-dialog.pgp-keys-popup .text-content {
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+  text-align: left;
+}
+.popup-dialog.pgp-keys-popup .buttons {
+  justify-content: flex-end;
 }
 
 @media (min-width: 768px) {
