@@ -79,7 +79,7 @@
                       <% for(let i = 0; i < product.details.length; i++) { %>
                         <li class="d-flex mb-2">
                           <i class='bx bx-list-check text-primary fs-xl mt-1'></i>
-                          <p class="ms-2 my-0"><%=product.details[i]%></p>
+                          <p class="fs-sm ms-2 my-0"><%=product.details[i]%></p>
                         </li>
                       <% } %>
                     </ul>
@@ -93,7 +93,7 @@
                     </div>
 
                     <div class="d-sm-flex mt-1">
-                        <p class="fs-sm mb-0"><span class="opacity-70"> Ship From : </span><span class="ms-3"><b><%=product.ship_from%></b></span></p>
+                        <p class="fs-sm mb-0"><span class="opacity-70"> Ship From : </span><span class="ms-1"><b><%=product.ship_from%></b></span></p>
                     </div>
 
                     <% if (product.qty_settings) { %>
