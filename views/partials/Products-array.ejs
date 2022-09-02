@@ -17,7 +17,7 @@
                     <span class="badge bg-primary position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Offline</span>
                   <% } else if (products[i].qty_settings && !products[i].qty_settings.available_qty) { %>
                     <span class="badge bg-danger position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sold Out!</span>
-                  <% } else if (products[i].default_price) { %>
+                  <% } else if (products[i].originalPrice) { %>
                     <span class="badge bg-success  position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Sales!</span>
                   <% } else if (products[i].popular) { %>
                     <span class="badge bg-success position-absolute top-0 start-0 zindex-2 mt-3 ms-3">Popular</span>
@@ -52,8 +52,8 @@
                 <div class="card-body pb-3">
                   <h3 class="h5 mb-2">
                     <a href="/product/<%=products[i].slug%>?reviewPage=1">
-                      <% if (products[i].title.length > 50) { %>
-                        <%=products[i].title.slice(0, 50)%>...
+                      <% if (products[i].title.length > 75) { %>
+                        <%=products[i].title.slice(0, 75)%>...
                       <% } else { %>
                         <%=products[i].title%>
                       <% } %>

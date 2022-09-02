@@ -76,7 +76,45 @@ router.get(
    async (req, res) => {
       const {product} = req;
 
-      res.render('product-create', {product});
+      const reviews = [
+         {
+            sender: 'Dummy Username',
+            content: 'Wow This Product was Amazing !',
+            type: 'default',
+            note: 5,
+            __v: 0,
+         },
+         {
+            sender: 'Dummy Username',
+            content: 'The shipping was a bit slow, but the product itself is really cool.',
+            type: 'default',
+            note: 4,
+            __v: 0,
+         },
+         {
+            sender: 'Dummy Username',
+            content: 'Will definetly buy again',
+            type: 'default',
+            note: 5,
+            __v: 0,
+         },
+         {
+            sender: 'Dummy Username',
+            content: 'The Product arrived broken :(, luckely, the vendor was kind enough to send me another one',
+            type: 'default',
+            note: 4,
+            __v: 0,
+         },
+         {
+            sender: 'Dummy Username',
+            content: 'Great I like it !',
+            type: 'default',
+            note: 5,
+            __v: 0,
+         },
+      ];
+
+      res.render('product-create', {product, reviews});
    }
 );
 
@@ -96,8 +134,8 @@ router.post('/create-product', Need_Authentification, uploadProductImg.single('p
          selection_1,
          selection_2,
          details,
-         sales_price,
-         sales_time,
+         salesPrice,
+         salesDuration,
          stop_sales,
          status,
       } = req.body;
@@ -115,13 +153,15 @@ router.post('/create-product', Need_Authentification, uploadProductImg.single('p
 
       // price
       if (stop_sales) {
-         // End Sales No mather what
          product.endSales();
-      } else if (product.title && !product.default_price && sales_price) {
-         // If can start Sales and want to, start Sales
-         product.startSales(price, sales_price, sales_time);
-      } else if (!product.title && !product.default_price) {
+      } else if (!product.title) {
          product.price = price;
+      } else {
+         if (!product.originalPrice && salesPrice) {
+            product.startSales(price, salesPrice, salesDuration);
+         } else {
+            product.price = price;
+         }
       }
 
       product.title = title;

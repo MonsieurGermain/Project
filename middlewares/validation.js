@@ -42,13 +42,23 @@ function Get_Selection(selected_select, available_select) {
    }
    return taken_select;
 }
-function Make_Shipping_Option(descriptions, prices) {
-   const shipping_option = [];
-   for (let i = 0; i < descriptions.length; i++) {
-      if (descriptions[i]) shipping_option.push({option_description: descriptions[i], option_price: prices[i] ? prices[i] : 0});
+function validateShippingOption(shippingOption, shippingPrices) {
+   const returnShippingOptions = [];
+
+   for (let i = 0; i < shippingOption.length; i++) {
+      if (shippingOption[i]) {
+         shippingOption[i] = ValidateText(shippingOption[i], 'Shipping Option Description #' + i, {minlength: 0, maxlength: 200, isRequired: false});
+
+         if (IsNot_Number(shippingPrices[i])) shippingPrices[i] = 0;
+         else if (shippingPrices[i] > 1000) shippingPrices[i] = 1000;
+
+         returnShippingOptions.push({option_description: shippingOption[i], option_price: shippingPrices[i]});
+      }
    }
-   return shipping_option;
+
+   return returnShippingOptions;
 }
+
 function Make_Selection(options, prices) {
    const selection = [];
    for (let i = 0; i < options.length; i++) {
@@ -341,18 +351,7 @@ exports.Validate_Product = (req, res, next) => {
       }
 
       // Shipping Option
-      for (let i = 0; i < req.body.describe_ship.length; i++) {
-         req.body.describe_ship[i] = ValidateText(req.body.describe_ship[i], 'Shipping Option Description #' + i, {minlength: 0, maxlength: 200, isRequired: false});
-      }
-
-      req.body.price_ship = Replace_Empty(req.body.price_ship);
-      for (let i = 0; i < req.body.price_ship.length; i++) {
-         if (IsNot_Number(req.body.price_ship[i])) throw new Error('Invalid Shipping Option Price Data Type');
-         req.body.price_ship[i] = parseFloat(req.body.price_ship[i]);
-         if (Is_Bigger(req.body.price_ship[i], 1000)) throw new Error('Your Shipping Option Price cannot be bigger than 1000');
-      }
-
-      req.body.shipping_option = Make_Shipping_Option(req.body.describe_ship, req.body.price_ship);
+      req.body.shipping_option = validateShippingOption(req.body.describe_ship, req.body.price_ship);
 
       // Selection #1
       req.body.selection_1_name = ValidateText(req.body.selection_1_name, 'Selection Name #1', {minlength: 0, maxlength: 100, isRequired: false});
@@ -400,28 +399,25 @@ exports.Validate_Product = (req, res, next) => {
 
       // Price
       if (!req.body.price) throw new Error(`The Price fields is Required`);
-      if (IsNot_Number(req.body.price)) throw new Error(`The Price fields need to be a number`);
       req.body.price = parseFloat(req.body.price);
-      if (req.product.default_price && req.product.default_price !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale');
-      if (Is_Smaller(req.body.price, 1) || Is_Bigger(req.body.price, 1000000)) throw new Error(`The Price cannot be less than 1 and more than 1000000`);
+      if (typeof req.body.price !== 'number' && !isNaN(req.body.price)) throw new Error(`The Price fields need to be a number`);
+      if (req.product.originalPrice && req.product.originalPrice !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale');
+      if (req.body.price < 1 || req.body.price > 1000000) throw new Error(`The Price cannot be less than 1 and more than 1000000`);
 
-      req.body.sales_price = parseFloat(req.body.sales_price);
-      if (req.product.default_price && req.product.price !== req.body.sales_price) throw new Error('You cannot make a Sales when you are already in Sales Validation');
-      if (!isNaN(req.body.sales_price)) {
-         if (Is_Smaller(req.body.sales_price, 0) || Is_Bigger(req.body.sales_price, req.body.price - 1))
-            throw new Error(`The Sales Price Need to be at least 1 less than your Price`);
+      if (!req.product.originalPrice && req.body.salesPrice) {
+         if (!req.body.salesDuration) throw new Error('You need to put a Duration on your Sales');
+
+         req.body.salesPrice = parseFloat(req.body.salesPrice);
+         req.body.salesDuration = parseFloat(req.body.salesDuration);
+
+         if ((typeof req.body.salesPrice !== 'number' && !isNaN(req.body.salesPrice)) || req.body.salesPrice > req.body.price || req.body.salesPrice < 1)
+            throw new Error('The Sales Price need to be lower than the Price of ypur Offer');
+         if ((typeof req.body.salesDuration !== 'number' && !isNaN(req.body.salesDuration)) || req.body.salesDuration > 30 || req.body.salesDuration < 1)
+            throw new Error('The Sales Duration Cannot be longuer than 30 days');
       }
 
-      req.body.sales_time = parseFloat(req.body.sales_time);
-      if (req.product.default_price && req.product.sales_time !== req.body.sales_time) throw new Error('You cannot change the duration of the Sales while it is already started');
-      if (!isNaN(req.body.sales_time)) {
-         if (Is_Smaller(req.body.sales_time, 0) || Is_Bigger(req.body.price, 30)) throw new Error(`Your Sales Cannot last more than 30 days`);
-      }
-      if (!req.body.sales_time && req.body.sales_price) req.body.sales_time = 7;
-
-      if (req.product.default_price) {
-         if (req.body.stop_sales) req.body.stop_sales = true;
-         else req.body.stop_sales = undefined;
+      if (req.product.originalPrice) {
+         req.body.stop_sales = req.body.stop_sales ? true : false;
       }
 
       if (!compareArray(['online', 'offline'], req.body.status)) throw new Error(`Invalid Status Value`);

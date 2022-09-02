@@ -26,8 +26,12 @@
                 <a href="">Order</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
-                <a href="/product/<%=product.slug%>" class="text-primary">      <%=product.title%></a>
-             </li>
+                <% if (product.title.length > 50) { %>
+                  <%=product.title.slice(0, 50)%>...
+                <% } else { %>
+                  <%=product.title%>
+                <% } %>
+              </li>
             </ol>
           </nav>
 

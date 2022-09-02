@@ -125,6 +125,11 @@ const address = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 
 // console.log(RandomPhase(8));
 
+// Max Order Default
+
+
+
+
 app.listen('3000', (req, res) => {
    console.log('Server running on port 3000');
 });

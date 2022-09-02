@@ -119,7 +119,7 @@ function Include_Delete_Link(order, isBuyer) {
 }
 async function Format_Order(order, isBuyer) {
    order.buyer = Format_Username_Settings(order.buyer, order.privacy);
-   order.Formated_Timers = Format_Timer(order.timer);
+   if (order.timer > Date.now()) order.Formated_Timers = Format_Timer(order.timer);
    order.link = Create_Order_Link(order.status, order.id, isBuyer);
    order.deletelink = Include_Delete_Link(order, isBuyer);
    order.product_img = await Get_Product_Img(order.product_slug);
