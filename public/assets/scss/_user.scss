@@ -385,6 +385,12 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                padding: 10px;
             }
             textarea {
+               padding-right: 85px;
+               height: auto;
+               min-height: 42px;
+               max-height: 100px;
+            }
+            input, textarea { 
                background-color: $body-bg;
                @media (min-width: $min-width-bp) {
                   background-color: $body-bg;

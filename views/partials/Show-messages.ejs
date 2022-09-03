@@ -172,10 +172,16 @@
     <form method="POST" action="/messages/<%=selected_conversation.id%>#bottom">
    
         <div class="card-footer d-flex w-100 border-0 pt-3 pb-3 px-3">
-            <div class="w-100 me-2">
+            <button type="submit" class="desktop btn btn-primary btn-icon d-none d-sm-block">
+                <i class="bx bx-send"></i>
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg d-sm-none">
+                <i class="bx bx-send fs-xl"></i>
+            </button>
+
+            <div class="w-100"style="margin-left: 8px">
                 <textarea
                     class="form-control form-control-lg py-2"
-                    style="padding-right: 85px; min-height: 42px;resize: none;"
                     placeholder="Message..."
                     minlength="1"
                     maxlength="1000"
@@ -183,14 +189,9 @@
                     rows="1"
                     required
                 ></textarea>
+                <!-- <input name="message" class="form-control" placeholder="Message..." required /> -->
             </div>
-            <input type="submit" hidden />
-            <button type="submit" class="desktop btn btn-primary btn-icon d-none d-sm-block">
-                <i class="bx bx-send"></i>
-            </button>
-            <button type="submit" class="btn btn-primary btn-lg d-sm-none">
-                <i class="bx bx-send fs-xl"></i>
-            </button>
+            <input id="message-submit" type="submit" hidden />
         </div>
     </form>
     <% } %>

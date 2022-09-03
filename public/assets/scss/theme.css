@@ -16061,10 +16061,16 @@ img-comparison-slider:focus {
   padding: 10px;
 }
 .messages-view .messages-container .chat .card-footer textarea {
+  padding-right: 85px;
+  height: auto;
+  min-height: 42px;
+  max-height: 100px;
+}
+.messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
   background-color: #191919;
 }
 @media (min-width: 768px) {
-  .messages-view .messages-container .chat .card-footer textarea {
+  .messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
     background-color: #191919;
   }
 }
