@@ -16062,9 +16062,7 @@ img-comparison-slider:focus {
 }
 .messages-view .messages-container .chat .card-footer textarea {
   padding-right: 85px;
-  height: auto;
-  min-height: 42px;
-  max-height: 100px;
+  height: 100%;
 }
 .messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
   background-color: #191919;

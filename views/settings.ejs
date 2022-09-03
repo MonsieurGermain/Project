@@ -530,7 +530,7 @@
                     <div>
                       <h1 class="h2 pt-xl-1 pb-3">Saved Products</h1>
                       <% if (!paginatedProducts.results.length) { %>
-                        <h6>You dont have any Saved Products</h6>
+                        <h6 style="text-align: center">You dont have any Saved Products</h6>
                       <% } else { %>
                         <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
                       <% } %>
