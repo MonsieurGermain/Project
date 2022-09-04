@@ -82,17 +82,6 @@ app.all('*', (req, res) => {
    res.render('404page');
 });
 
-const address = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa12345';
-
-// const sender = 'Username';
-
-// const search = 'name';
-
-// if (sender.toLocaleLowerCase().match(search)) {
-//    console.log(sender.toLocaleLowerCase().match(search));
-// }
-
-// generate Xmr address
 
 // Clean Code
 // Optimize Message Page
@@ -105,28 +94,12 @@ const address = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 // To do
 // fix product array and product img sizing
 
-// Show of the 2 user pgp all conversation
 // Totally hidden Message
 // Encrypt Messages
-// Delete message after seing
 // Format Currency of Product
 
-// Saw or not saw message
-
-// function RandomPhase(length) {
-//    var result = '';
-//    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-//    var charactersLength = characters.length;
-//    for (var i = 0; i < length; i++) {
-//       result += characters.charAt(Math.floor(Math.random() * charactersLength));
-//    }
-//    return result;
-// }
-
-// console.log(RandomPhase(8));
-
-// Max Order Default
-
+// Max Order Default // ?
+// Be Able to Change Conversation Settings
 
 
 

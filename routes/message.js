@@ -3,92 +3,73 @@ const router = express.Router();
 const Conversation = require('../models/conversation');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
-const {
-   Validate_Conversation,
-   Validate_Message,
-   Find_ifConversation_alreadyExist,
-   FetchData,
-   isPartofConversation,
-   Find_allConverastion_ofUser,
-   isHimself,
-} = require('../middlewares/validation');
+const { Validate_Conversation, Validate_Message } = require('../middlewares/validation');
 const {Format_Username_Settings} = require('../middlewares/function');
 
 async function getOtherUserData(username) {
-   const user = await User.findOne({username: username});
-   return [user.img_path, user.verifiedPgpKeys];
+   const userData = await User.findOne({username: username}, {img_path: 1, verifiedPgpKeys: 1});
+   return [userData.img_path, userData.verifiedPgpKeys];
 }
 
-// CREATE MESSAGE
-router.post(
-   '/send-message/:username',
-   Need_Authentification,
-   isHimself(
-      {
-         url: ['/profile/', ['user', 'username'], '?productPage=1&reviewPage=1'],
-         message: 'You cant send a Message to Yourself',
-      },
-      ['params', 'username']
-   ),
-   Validate_Conversation,
-   Find_ifConversation_alreadyExist,
+
+router.post('/send-message/:username', Need_Authentification,
+   (req,res, next) => { 
+      if (req.params.username === req.user.username) {
+         req.flash('error', 'You cant send a Message to Yourself');
+         res.redirect(`/profile/${req.params.username}?productPage=1&reviewPage=1`);
+      } else { 
+         next()
+      }
+   }, Validate_Conversation,
    async (req, res) => {
       try {
-         let {user, Found_Conversation} = req;
+         const {user} = req;
          const {username} = req.params;
          const {type, timestamps, message, pgpKeys} = req.body;
 
-         if (Found_Conversation) Found_Conversation.Add_New_Message(message, user.username, user.settings);
-         else {
-            Found_Conversation = new Conversation();
+         let foundConversation = await Conversation.isConversationExisting(username, username, type);
 
-            Found_Conversation.settings = {
+         if (!foundConversation) {
+            foundConversation = new Conversation();
+
+            foundConversation.settings = {
                type: type ? type : 'default',
                timestamps: timestamps ? true : undefined,
             };
-            Found_Conversation.sender_1 = user.username;
-            Found_Conversation.sender_2 = username;
+            foundConversation.sender_1 = user.username;
+            foundConversation.sender_2 = username;
 
-            Found_Conversation.sender1_Img = Found_Conversation.settings.type === 'default' ? user.img_path : '/default/default-profile-pic.png';
-            Found_Conversation.sender1_Pgp = pgpKeys;
+            foundConversation.sender1_Img = foundConversation.settings.type === 'default' ? user.img_path : '/default/default-profile-pic.png';
+            foundConversation.sender1_Pgp = pgpKeys;
 
-            [Found_Conversation.sender2_Img, Found_Conversation.sender2_Pgp] = await getOtherUserData(username);
-
-            Found_Conversation.messages = [];
-            Found_Conversation.Add_New_Message(message, user.username, user.settings);
+            [foundConversation.sender2_Img, foundConversation.sender2_Pgp] = await getOtherUserData(username);
          }
 
-         await Found_Conversation.save();
+         foundConversation.Add_New_Message(message, user.username, user.settings);
+
+         await foundConversation.save();
 
          let redirect_url = '/messages';
-         if (Found_Conversation) redirect_url = `/messages?id=${Found_Conversation.id}`;
+         if (foundConversation) redirect_url = `/messages?id=${foundConversation.id}`;
          res.redirect(redirect_url);
       } catch (e) {
-         console.log(e);
-         res.redirect('/error');
-         return;
+         res.redirect('/404');
       }
    }
 );
 
-router.post(
-   '/messages/:id',
-   Need_Authentification,
-   FetchData(['params', 'id'], Conversation, undefined, 'conversation'),
-   isPartofConversation,
-   Validate_Message,
+router.post('/messages/:id', Need_Authentification, Validate_Message,
    async (req, res) => {
-      try {
-         const {conversation} = req;
+      try { 
+         const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
          conversation.Add_New_Message(req.body.message, req.user.username, req.user.settings);
+
          await conversation.save();
 
          res.redirect(`/messages?id=${conversation.id}`);
       } catch (e) {
-         console.log(e);
-         res.redirect('/error');
-         return;
+         res.redirect('/404');
       }
    }
 );
@@ -97,32 +78,29 @@ router.post('/search-messages', Need_Authentification, async (req, res) => {
    try {
       let {search} = req.body;
 
-      if (!search || search.length > 100) {
-         res.redirect('/messages');
-      } // Maybe send an alert to user ?
+      if (!search || search.length > 100) res.redirect('/messages');
 
       res.redirect(`/messages?searchQuery=${search}`);
    } catch (e) {
-      console.log(e);
       res.redirect('/404');
-      return;
    }
 });
 
-function placeUserAtSender_1(conversation, username) {
+function placeAuthUserAtSender_1(conversation, username) {
    originalSender_1 = Format_Username_Settings(conversation.sender_1, conversation.settings.type);
-   savedsender1_Img = conversation.sender1_Img;
-   savedsender2_Pgp = conversation.sender1_Img;
 
    if (username === conversation.sender_2) {
+      savedSender1_Img = conversation.sender1_Img;
+      savedSender2_Pgp = conversation.sender1_Img;
+
       conversation.sender_1 = username;
       conversation.sender_2 = originalSender_1;
 
       conversation.sender1_Img = conversation.sender2_Img;
-      conversation.sender2_Img = savedsender1_Img;
+      conversation.sender2_Img = savedSender1_Img;
 
       conversation.sender1_Pgp = conversation.sender2_Pgp;
-      conversation.sender2_Pgp = savedsender2_Pgp;
+      conversation.sender2_Pgp = savedSender2_Pgp;
    } else {
       conversation.sender_1 = originalSender_1;
    }
@@ -132,37 +110,34 @@ function placeUserAtSender_1(conversation, username) {
 
 async function formatConversations(conversations, username) {
    for (let i = 0; i < conversations.length; i++) {
-      conversations[i] = placeUserAtSender_1(conversations[i], username); // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
+      conversations[i] = placeAuthUserAtSender_1(conversations[i], username); // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
    }
 
    return conversations;
 }
 
-function getPosition(conversations, id) {
+function getIndexSelectedConversation(conversations, conversationId) {
+   if (!conversations.length) return undefined
+   if (!conversationId) return conversations.length - 1;
+
    for (let i = 0; i < conversations.length; i++) {
-      if (conversations[i].id === id) return i;
+      if (conversations[i].id === conversationId) return i;
    }
    return undefined;
 }
 
 function createRedirectLink(conversation, username) {
-   let linkedUsername;
-   if (conversation.sender_1 === username) linkedUsername = conversation.sender_2;
-   else if (conversation.settings.type === 'default') linkedUsername = conversation.sender_1;
-
-   return linkedUsername ? `/profile/${linkedUsername}?productPage=1&reviewPage=1` : undefined;
+   if (conversation.sender_1 === username) return `/profile/${conversation.sender_2}?productPage=1&reviewPage=1`
+   else if (conversation.settings.type === 'default') return `/profile/${conversation.sender_1}?productPage=1&reviewPage=1`
+   return undefined
 }
 
 async function getSelectedConversationPosition(userConversations, selectedConversationId, username) {
-   let position;
-
-   if (!selectedConversationId && !userConversations.length) position = undefined;
-   else if (!selectedConversationId) position = userConversations.length - 1;
-   else position = getPosition(userConversations, selectedConversationId);
+   const position = getIndexSelectedConversation(userConversations, selectedConversationId)
 
    if (userConversations[position]) {
       userConversations[position].link = createRedirectLink(userConversations[position], username);
-      await userConversations[position].sawMessages(username);
+      if (userConversations[position].settings.type === 'default') await userConversations[position].sawMessages(username);
    }
 
    return [userConversations, position];
@@ -185,12 +160,13 @@ function filterConversationBySearch(userConversations, userUsername, searchQuery
 }
 
 // GET PAGE
-router.get('/messages', Need_Authentification, Find_allConverastion_ofUser, async (req, res) => {
+router.get('/messages', Need_Authentification, async (req, res) => {
    try {
-      let {conversations} = req;
       let {username} = req.user;
       let id = req.query.id ? req.query.id : undefined;
       let search = req.query.searchQuery ? req.query.searchQuery : undefined;
+
+      let conversations = await Conversation.findAllUserConversations(username);
 
       if (search) conversations = filterConversationBySearch(conversations, username, search); // Optimize that
 
@@ -203,53 +179,48 @@ router.get('/messages', Need_Authentification, Find_allConverastion_ofUser, asyn
          selected_conversation: conversations[selectedConversationPosition],
       });
    } catch (e) {
-      console.log(e);
       res.redirect('/404');
-      return;
    }
 });
 
-router.post('/edit-message/:id/:messageId', Need_Authentification, FetchData(['params', 'id'], Conversation, undefined, 'conversation'), isPartofConversation, async (req, res) => {
+router.post('/edit-message/:id/:messageId', Need_Authentification, async (req, res) => {
    try {
-      const {conversation} = req;
-      const {messageId} = req.params;
-      const {newMessage} = req.body;
+      const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
-      if (newMessage.length < 2 || newMessage.length > 1000) throw new Error('Invalid New Message Length');
+      const {newMessage} = req.body;
+      const {messageId} = req.params
+
+      if (newMessage.length < 2 || newMessage.length > 1000) throw new Error();
 
       await conversation.editMessage(messageId, newMessage);
 
-      res.redirect(`/messages?id=${conversation.id}#bottom`);
+      res.redirect(`/messages?id=${conversation.id}`);
    } catch (e) {
-      console.log(e);
-      res.redirect('/error');
-      return;
+      res.redirect('/404');
    }
 });
 
 // DELETE
-router.delete('/delete-conversation/:id', Need_Authentification, FetchData(['params', 'id'], Conversation, undefined, 'conversation'), isPartofConversation, async (req, res) => {
+router.delete('/delete-conversation/:id', Need_Authentification, async (req, res) => {
    try {
-      const {conversation} = req;
+      const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
       await conversation.deleteConversation();
 
       res.redirect(`/messages`);
    } catch (e) {
-      console.log(e);
       res.redirect('/error');
-      return;
    }
 });
 
-router.delete(
-   '/delete-message/:id/:message_id',
-   Need_Authentification,
-   FetchData(['params', 'id'], Conversation, undefined, 'conversation'),
-   isPartofConversation,
+// Make Prettier ?
+router.delete('/delete-message/:id/:message_id', Need_Authentification,
    async (req, res) => {
       try {
-         let {conversation, user} = req;
+         let {user} = req;
+
+         const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, user.username)
+
          let {message_id} = req.params;
 
          conversation.deleteMessageWithId(message_id);
@@ -257,17 +228,15 @@ router.delete(
          let redirect_url;
 
          if (!conversation.messages.length) {
-            let settingsdeleteEmptyConversation;
-            if (conversation.sender_1 === user.username) settingsdeleteEmptyConversation = user.settings.deleteEmptyConversation;
-            else {
-               const otherUser = await User.findOne({username: conversation.sender_1});
-               settingsdeleteEmptyConversation = otherUser ? otherUser.settings.deleteEmptyConversation : true;
-            }
-
-            if (settingsdeleteEmptyConversation) await conversation.deleteConversation();
-            else await conversation.save();
-
             redirect_url = '/messages';
+
+            if (conversation.sender_1 === user.username && user.settings.deleteEmptyConversation) await conversation.deleteConversation();
+            else if (conversation.sender_1 === user.username) await conversation.save();
+            else { 
+               const sender1Settings = await User.findOne({username: conversation.sender_1}, {"settings.deleteEmptyConversation": 1});
+               if (sender1Settings.settings.deleteEmptyConversation) await conversation.deleteConversation();
+               else await conversation.save();
+            }
          } else {
             redirect_url = `/messages?id=${conversation.id}`;
             await conversation.save();
@@ -275,9 +244,7 @@ router.delete(
 
          res.redirect(redirect_url);
       } catch (e) {
-         console.log(e);
-         res.redirect('/error');
-         return;
+         res.redirect('/404');
       }
    }
 );

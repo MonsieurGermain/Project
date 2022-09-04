@@ -147,6 +147,8 @@ const productSchema = new mongoose.Schema({
    },
 });
 
+// productSchema.index({title:'text'})
+
 // Image Path
 productSchema.methods.UploadImg = function (filename, Old_Image) {
    if (Old_Image) deleteImage(`./public/${this.img_path}`); //

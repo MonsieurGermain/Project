@@ -83,7 +83,7 @@ function Create_New_Message(Message, Sender, sender_1, conversationSettings, use
 
    if (conversationSettings.timestamps) New_Message.timestamps = format(new Date(), 'HH:mm LLLL dd yyyy'); // Add timestamp
 
-   if (conversationSettings.type === 'default' && userSettings.recordSeeingMessage) New_Message.messageView = false; // Saw Message
+   if (userSettings.recordSeeingMessage && conversationSettings.type === 'default') New_Message.messageView = false; // Saw Message
 
    if (userSettings.message_expiring === 'seeing') New_Message.expire_at = 'seeing';
    else if (userSettings.message_expiring) New_Message.expire_at = Date.now() + userSettings.message_expiring * 86400000;
@@ -117,13 +117,14 @@ conversationSchema.methods.deleteMessageWithDate = async function (date) {
 };
 
 conversationSchema.methods.deleteMessageWithId = async function (messageId) {
-   this.messages = this.messages.filter((message) => message.id !== messageId);
+   const indexOfMessage = this.messages.map((message) => message.id).indexOf(messageId)
+   this.messages.splice(indexOfMessage, 1)
 };
 
 conversationSchema.methods.sawMessages = async function (userUsername) {
    for (let i = 0; i < this.messages.length; i++) {
-      if (this.messages[i].sender !== userUsername) {
-         if (this.messages[i].messageView === false) this.messages[i].messageView = true;
+      if (this.messages[i].messageView === false && this.messages[i].sender !== userUsername) {
+         this.messages[i].messageView = true
       }
    }
    await this.save();
@@ -144,7 +145,7 @@ conversationSchema.methods.updateNewImgPath = async function (username, newImgPa
 };
 
 // Search
-conversationSchema.static('findIf_conversationExist', function (username_1, username_2, conversation_type) {
+conversationSchema.static('isConversationExisting', async function (username_1, username_2, conversation_type) {
    let query;
    if (conversation_type === 'default')
       query = {
@@ -161,11 +162,19 @@ conversationSchema.static('findIf_conversationExist', function (username_1, user
          'settings.type': conversation_type,
       };
 
-   return this.findOne(query);
+   return await this.findOne(query);
 });
 
-conversationSchema.static('Find_allConversation_ofUser', function (username) {
-   return this.find({$or: [{sender_1: username}, {sender_2: username}]});
+conversationSchema.static('findAllUserConversations', async function (username) {
+   return await this.find({$or: [{sender_1: username}, {sender_2: username}]});
 });
+
+
+conversationSchema.statics.findByIdVerifyIfPartOfConversation = async function(conversationId, username) {
+   const conversation = await this.findById(conversationId)
+
+   if (username === conversation.sender_1 || username === conversation.sender_2) return conversation
+   else throw new Error()
+}
 
 module.exports = mongoose.model('Conversation', conversationSchema);

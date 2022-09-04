@@ -196,7 +196,7 @@ exports.Validate_Conversation = (req, res, next) => {
             req.body.pgpKeys = req.body.otherPgpKeys;
             break;
          default:
-            req.body.pgpKeys = req.user.verifiedPgpKeys;
+            req.body.pgpKeys = undefined;
       }
 
       next();
@@ -542,15 +542,6 @@ exports.Validate_Pgp = (req, res, next) => {
    }
 };
 
-exports.Validate_EncryptedCodeQuery = (req, res, next) => {
-   try {
-      req.query.encrypted = ValidateText(req.query.encrypted, 'Encrypted Code', {minlength: 0, maxlength: 3000, isRequired: false});
-      next();
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect(`/login`);
-   }
-};
 
 exports.validateContactUs = (req, res, next) => {
    try {
@@ -618,31 +609,8 @@ function joinArray(array, req) {
    }
    return joinedString;
 }
-
-exports.isHimself = ({url = '/error', flashMessage_Type = 'error', message = ''} = {}, username) => {
-   return (req, res, next) => {
-      try {
-         if (req.user.username === req[username[0]][username[1]]) throw new Error();
-         next();
-      } catch (e) {
-         if (message) req.flash(flashMessage_Type, message);
-         res.redirect(joinArray(url, req));
-      }
-   };
-};
-
 // Params Query Validation
 // Product
-exports.isPartofConversation = async (req, res, next) => {
-   try {
-      if (req.user.username !== req.conversation.sender_1 && req.user.username !== req.conversation.sender_2) throw new Error('Params Id Invalid');
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/error');
-   }
-};
-
 exports.isProduct_Vendor = async (req, res, next) => {
    try {
       if (req.user.username !== req.product.vendor) throw new Error('Cant Access');
@@ -673,30 +641,6 @@ exports.Validate_Query_Product_Slug = async (req, res, next) => {
       }
       if (req.query.slug) req.product = await Product.findOne({slug: req.query.slug, vendor: req.user.username}).orFail((req.product = new Product()));
       else req.product = new Product();
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
-// Conversation
-
-exports.Find_ifConversation_alreadyExist = async (req, res, next) => {
-   try {
-      if (!req.params.username) throw new Error('Params Username Empty');
-      if (IsNot_String(req.params.username)) throw new Error('Params Username not String');
-
-      req.Found_Conversation = await Conversation.findIf_conversationExist(req.user.username, req.params.username, req.body.type);
-
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
-exports.Find_allConverastion_ofUser = async (req, res, next) => {
-   try {
-      req.conversations = await Conversation.Find_allConversation_ofUser(req.user.username);
       next();
    } catch (e) {
       console.log(e);
@@ -808,16 +752,6 @@ exports.Validate_Query_Url = async (req, res, next) => {
    }
 };
 
-exports.Is_UsernameTaken = async (req, res, next) => {
-   try {
-      const Is_Taken = await User.findOne({username: req.body.username});
-      if (Is_Taken) throw new Error('This Username is Already Taken');
-      next();
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect('/register');
-   }
-};
 
 exports.Is_titleTaken = async (req, res, next) => {
    try {

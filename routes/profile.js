@@ -76,7 +76,7 @@ router.get('/edit-profile/:username', Need_Authentification, paramsUsername_isRe
 });
 
 async function updateConversationImg_Path(username, newImgPath) {
-   const conversations = await Conversation.Find_allConversation_ofUser(username);
+   const conversations = await Conversation.findAllUserConversations(username);
 
    for (let i = 0; i < conversations.length; i++) {
       conversations[i].updateNewImgPath(username, newImgPath);

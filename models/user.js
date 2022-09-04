@@ -129,6 +129,7 @@ const userSchema = new mongoose.Schema({
    },
 });
 
+
 userSchema.methods.UploadImg = function (file) {
    if (this.img_path) deleteImage(`./public/${this.img_path}`);
    const newImg_path = `/uploads/user-img/${this.username}${isolate_mimetype(file.mimetype, '/')}`;
@@ -138,8 +139,8 @@ userSchema.methods.UploadImg = function (file) {
    this.img_path = newImg_path;
 };
 
-userSchema.methods.Update_IncativeDate = function () {
-   if (this.settings.user_expiring) this.expire_at = Date.now() + this.settings.user_expiring * 86400000;
+userSchema.methods.updateInactiveDate = function () {
+   this.expire_at = Date.now() + this.settings.user_expiring * 86400000;
 };
 
 userSchema.methods.Add_Remove_Saved_Product = function (id) {
@@ -180,6 +181,16 @@ userSchema.methods.offlineAllUserProducts = async function () {
       userProducts[i].status = 'offline';
       userProducts[i].save();
    }
+};
+
+
+userSchema.statics.deleteUsers = async function () {
+   const x = await this.find();
+
+   for(let i = 0; i < x.length; i++) {
+      x[i].deleteUser()
+   }
+   return
 };
 
 module.exports = mongoose.model('User', userSchema);

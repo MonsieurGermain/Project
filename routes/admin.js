@@ -6,7 +6,7 @@ const Report = require('../models/report');
 const Product = require('../models/product');
 const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
-const {FetchData, ValidateValueByChoice, isOrder_Admin, Validate_disputeWinner, validateReports, isHimself, validateResolveReport} = require('../middlewares/validation');
+const {FetchData, ValidateValueByChoice, isOrder_Admin, Validate_disputeWinner, validateReports, validateResolveReport} = require('../middlewares/validation');
 const {Format_Username_Settings, paginatedResults} = require('../middlewares/function');
 
 function hideBuyerUsername(disputes) {
@@ -45,7 +45,14 @@ router.post(
    '/report/:id',
    Need_Authentification,
    validateReports,
-   isHimself({url: ['/profile/', ['user', 'username'], '?productPage=1&reviewPage=1'], message: 'Why do you want to report Yourself ?'}, ['params', 'id']),
+   (req,res, next) => { 
+      if (req.params.id === req.user.username) {
+         req.flash('error', 'Why do you want to report Yourself ?')
+         res.redirect(`/profile/${req.params.id}?productPage=1&reviewPage=1`)
+      } else { 
+         next()
+      }
+   },
    ValidateValueByChoice(['query', 'type'], ['vendor', 'product']),
    check_ifReported_objectExist,
    async (req, res) => {

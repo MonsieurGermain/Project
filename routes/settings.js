@@ -104,7 +104,7 @@ router.post('/delete-address', Need_Authentification, async (req, res) => {
 });
 
 async function updateConversationPgp(username, newPgp) {
-   const conversations = await Conversation.Find_allConversation_ofUser(username);
+   const conversations = await Conversation.findAllUserConversations(username);
 
    for (let i = 0; i < conversations.length; i++) {
       conversations[i].updateNewPgp(username, newPgp);
