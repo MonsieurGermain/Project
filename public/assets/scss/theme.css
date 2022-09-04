@@ -16062,7 +16062,7 @@ img-comparison-slider:focus {
 }
 .messages-view .messages-container .chat .card-footer textarea {
   padding-right: 85px;
-  height: 100%;
+  min-height: 40px;
 }
 .messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
   background-color: #191919;
@@ -16280,4 +16280,105 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .documentation-view .docs-link-item:hover {
   background-color: #800080;
+}
+
+.setting-view .form-check {
+  padding: 0px !important;
+}
+.setting-view .form-check .form-check-input {
+  float: none !important;
+  margin-left: 0px !important;
+  margin-top: 0px !important;
+  margin-right: 10px !important;
+  min-width: 15px !important;
+}
+.setting-view .position-sticky .p-5 {
+  padding: 20px !important;
+}
+.setting-view .position-sticky .px-5 {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+.setting-view .position-sticky .pt-5 {
+  padding-top: 25px !important;
+}
+.setting-view .position-sticky .pb-5 {
+  padding-bottom: 20px !important;
+}
+.setting-view .position-sticky .pl-5 {
+  padding-bottom: 20px !important;
+}
+.setting-view .position-sticky .mb-5 {
+  margin-bottom: 20px !important;
+}
+.setting-view .padding-left-10 {
+  padding-left: 10px;
+}
+@media (max-width: 540px) {
+  .setting-view .p-5 {
+    padding: 20px !important;
+  }
+  .setting-view .px-5 {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .setting-view .pt-5 {
+    padding-top: 25px !important;
+  }
+  .setting-view .pb-5 {
+    padding-bottom: 20px !important;
+  }
+  .setting-view .pl-5 {
+    padding-bottom: 20px !important;
+  }
+  .setting-view .mb-5 {
+    margin-bottom: 20px !important;
+  }
+  .setting-view .mb-4 {
+    margin-bottom: 10px !important;
+  }
+  .setting-view .sm-flex-direction-column {
+    flex-direction: column !important;
+    align-items: baseline !important;
+  }
+  .setting-view .sm-flex-direction-column button {
+    margin-top: 14px;
+  }
+  .setting-view .responsive-column form {
+    padding-left: 10px;
+  }
+}
+@media (max-width: 400px) {
+  .setting-view .responsive-column {
+    flex-wrap: wrap;
+  }
+  .setting-view .responsive-column > * {
+    width: 100%;
+  }
+  .setting-view .responsive-column > form {
+    padding-top: 5px;
+    padding-left: 0px;
+  }
+  .setting-view .responsive-column > form button {
+    width: 100%;
+  }
+}
+@media (max-width: 320px) {
+  .setting-view button {
+    width: 100% !important;
+  }
+  .setting-view form {
+    width: 100% !important;
+  }
+  .setting-view .padding-left-10 {
+    padding-left: 0px !important;
+    padding-top: 5px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-container > div {
+    padding-left: 10% !important;
+    padding-right: 10% !important;
+  }
 }/*# sourceMappingURL=theme.css.map */

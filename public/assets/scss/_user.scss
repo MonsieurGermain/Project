@@ -389,7 +389,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
             }
             textarea {
                padding-right: 85px;
-               height: 100%;
+               min-height: 40px;
             }
             input, textarea { 
                background-color: $body-bg;
@@ -603,6 +603,116 @@ $width-docs-side-nav: 69%;
       font-weight: bold;
       &:hover {
          background-color: $primary;
+      }
+   }
+}
+
+
+.setting-view {
+   .form-check {
+      padding: 0px!important;
+      .form-check-input {
+         float: none!important;
+         margin-left: 0px!important;
+         margin-top: 0px!important;
+         margin-right: 10px!important;
+         min-width: 15px!important;
+      }
+   }
+   .position-sticky {
+      .p-5 {
+         padding: 20px!important;
+      }
+      .px-5 {
+         padding-left: 20px!important;
+         padding-right: 20px!important;
+      }
+      .pt-5 {
+         padding-top: 25px!important;
+      }
+      .pb-5 {
+         padding-bottom: 20px!important;
+      }
+      .pl-5 {
+         padding-bottom: 20px!important;
+      }
+      .mb-5 {
+         margin-bottom: 20px!important;
+      }
+   }
+   .padding-left-10 {
+      padding-left: 10px;
+   }
+   @media (max-width: 540px) {
+      .p-5 {
+         padding: 20px!important;
+      }
+      .px-5 {
+         padding-left: 20px!important;
+         padding-right: 20px!important;
+      }
+      .pt-5 {
+         padding-top: 25px!important;
+      }
+      .pb-5 {
+         padding-bottom: 20px!important;
+      }
+      .pl-5 {
+         padding-bottom: 20px!important;
+      }
+      .mb-5 {
+         margin-bottom: 20px!important;
+      }
+      .mb-4 {
+         margin-bottom: 10px!important;
+      }
+      .sm-flex-direction-column {
+         flex-direction: column!important;
+         align-items: baseline!important;
+         button {
+            margin-top: 14px;
+         }
+      }
+      .responsive-column {
+         form {
+            padding-left: 10px;
+         }
+      }
+   }
+   @media (max-width: 400px) {
+      .responsive-column {
+         flex-wrap: wrap;
+         >* {
+            width: 100%;
+         }
+         >form {
+            padding-top: 5px;
+            padding-left: 0px;
+            button {
+               width: 100%;
+            }
+         }
+      }
+   }
+   @media (max-width: 320px) {
+      button {
+         width: 100%!important;
+      }
+      form {
+         width: 100%!important;
+      }
+      .padding-left-10 {
+         padding-left: 0px!important;
+         padding-top: 5px!important;
+      }
+   }
+}
+
+.footer-container {
+   &>div {
+      @media (max-width: 640px) {
+         padding-left: 10%!important;
+         padding-right: 10%!important;
       }
    }
 }
