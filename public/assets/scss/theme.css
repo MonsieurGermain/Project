@@ -16282,6 +16282,28 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   background-color: #800080;
 }
 
+.setting-view .p-5 {
+  padding: 5% !important;
+}
+.setting-view .px-5 {
+  padding-left: 5% !important;
+  padding-right: 5% !important;
+}
+.setting-view .pt-5 {
+  padding-top: 25px !important;
+}
+.setting-view .pb-5 {
+  padding-bottom: 20px !important;
+}
+.setting-view .pl-5 {
+  padding-bottom: 20px !important;
+}
+.setting-view .mb-5 {
+  margin-bottom: 20px !important;
+}
+.setting-view .mb-4 {
+  margin-bottom: 10px !important;
+}
 .setting-view .form-check {
   padding: 0px !important;
 }

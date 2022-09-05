@@ -26,7 +26,7 @@
 
             <div class="row setting-view">
               <aside class="col-lg-4 col-md-4 pb-5 mt-n5">
-                <div class="position-sticky" style="top: 20px;">
+                <div class="position-sticky" style="top: 35px;">
                   <div class="text-center mt-5">
                     <div class="card px-5 pb-5">
                     <div class="d-table position-relative mx-auto mt-2 mt-lg-4 pt-5 mb-3">
@@ -268,12 +268,12 @@
                           <label class='form-check-label opacity-60' for="2">Pgp (Add and Verify a Pgp Keys to Unable this Option)</label><br>
                         <% } %>
 
-                        <span class="d-flex align-items-center">
+                        <div class="d-flex flex-wrap justify-content-end mb-2 responsive-column">
                         <% if ((authuser.email && !authuser.email_verification_code) || authuser.verifiedPgpKeys) { %>
                           <% if (authuser.settings.step_verification) { %>
-                            <button class="btn btn-primary mt-4" type="submit">Change 2 step Verification</button>
+                            <button class="btn btn-primary mt-2" type="submit">Change 2 step Verification</button>
                           <% } else { %> 
-                            <button class="btn btn-primary mt-4" type="submit">Add 2 step Verification</button>
+                            <button class="btn btn-primary mt-2" type="submit">Add 2 step Verification</button>
                           <% } %>
                         <% } else { %>
                           <p class="mt-4">You need to add an email or a Pgp Keys before bieng able to use 2 Step Verification</p>
@@ -281,11 +281,11 @@
 
                       </form>
                       <% if (authuser.settings.step_verification) { %>
-                        <form action="/remove-2fa" method="POST">
-                        <button class="btn btn-danger mt-4 ms-2" type="submit">Remove 2 Step Verification</button>
+                        <form action="/remove-2fa" method="POST" class="padding-left-10">
+                        <button class="btn btn-danger mt-2" type="submit">Remove 2 Step Verification</button>
                       </form>
                       <% } %>
-                    </span>
+                    </div>
 
                   </div>
   
