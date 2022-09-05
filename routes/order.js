@@ -7,7 +7,6 @@ const {Need_Authentification} = require('../middlewares/authentication');
 const {
    validateSlugParams,
    ValidateValueByChoice,
-   Validate_ProvidedInfo,
    Validate_Update_Order,
    FetchData,
    isOrder_Buyer,
@@ -16,17 +15,17 @@ const {
    paramsUsername_isReqUsername,
    Validate_OrderCustomization,
 } = require('../middlewares/validation');
-const {Format_Username_Settings, paginatedResults} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
 
-function Calculate_Price(base_price, qty, ship_opt_price, selection_1_price, selection_2_price) {
-   let price = base_price + selection_1_price + selection_2_price; // Base Price OF Each
-   price = price * qty; // Mult Qty
-   price = price + ship_opt_price; // Add Shipping Price
-   price += price * 0.03; // Market Fee
-   price = price.toString(); // Get 2 number after .
-   price = price.slice(0, price.indexOf('.') + 3);
+function calculateOrderPrice(base_price, qty, ship_opt_price, selection_1_price, selection_2_price) {
 
-   return parseFloat(price);
+   let price = (((base_price + selection_1_price + selection_2_price) * qty)  + ship_opt_price);
+
+   price += price * 0.03
+
+   price = price.toString(); 
+
+   return parseFloat(price.slice(0, price.indexOf('.') + 3));
 }
 
 async function HandleOrderRequest(request, order, user_settings) {
@@ -106,7 +105,6 @@ function Include_Delete_Link(order, isBuyer) {
       case 'awaiting_info':
          if (isBuyer) return true;
          else return;
-         break;
       case 'disputed':
          if (order.dispute_winner !== order.vendor) {
             if (isBuyer) return true;
@@ -118,7 +116,7 @@ function Include_Delete_Link(order, isBuyer) {
    return;
 }
 async function Format_Order(order, isBuyer) {
-   order.buyer = Format_Username_Settings(order.buyer, order.privacy);
+   order.buyer = formatUsernameWithSettings(order.buyer, order.privacy);
    if (order.timer > Date.now()) order.Formated_Timers = Format_Timer(order.timer);
    order.link = Create_Order_Link(order.status, order.id, isBuyer);
    order.deletelink = Include_Delete_Link(order, isBuyer);
@@ -134,18 +132,17 @@ async function Format_Orders_Array(orders, isBuyer) {
 }
 
 // Routes
-router.get('/order/:slug', Need_Authentification, validateSlugParams, async (req, res) => {
+router.get('/order/:slug', Need_Authentification, async (req, res) => {
    try {
       const product = await Product.findOne({slug: req.params.slug});
+
       if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
-      // const product = await Product.findOne({slug : req.params.slug}).orFail(new Error('Invalid Slug'))
+      
       const vendor = await User.findOne({username: product.vendor});
 
       res.render('order', {product, vendor});
    } catch (e) {
-      console.log(e);
       res.redirect('/404');
-      return;
    }
 });
 
@@ -155,9 +152,7 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
       let {qty, shipping_option, selection_1, selection_2, type} = req.body;
 
       qty = qty > 1 ? qty : 1;
-      if (product.qty_settings) {
-         product.qty_settings.available_qty += -qty;
-      }
+      if (product.qty_settings) product.qty_settings.available_qty += -qty;
 
       const order = new Order({
          buyer: req.user.username,
@@ -175,7 +170,7 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
          privacy: type,
       });
 
-      order.total_price = Calculate_Price(
+      order.total_price = calculateOrderPrice(
          order.base_price,
          order.qty,
          order.shipping_option ? order.shipping_option.option_price : 0,
@@ -189,13 +184,13 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
       res.redirect(`/submit-info/${order.id}`);
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
-      return;
+      res.redirect('/404');
    }
 });
 
 router.get('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, async (req, res) => {
    try {
+
       const {order} = req;
       const product = await Product.findOne({slug: order.product_slug});
       const user = await User.findOne({username: order.vendor});
@@ -207,37 +202,40 @@ router.get('/submit-info/:id', Need_Authentification, FetchData(['params', 'id']
    }
 });
 
-router.post('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Part, Validate_ProvidedInfo, async (req, res) => {
+router.post('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Part, async (req, res) => {
    try {
+      const {content} = req.body
+      
+      if (!content || content < 2 || content > 3000) throw new Error('Invalid Submited Information')
+
       const {order} = req;
+      const {user} = req
 
-      let redirect_url = `/order-resume/${order.id}`;
+      order.messages.push({
+         sender: user.username === order.buyer ? formatUsernameWithSettings(user.username, order.privacy) : user.username,
+         content: content
+      });
 
-      if (order.status === 'awaiting_info' && req.user.username === order.buyer) {
+      if (order.status === 'awaiting_info' && user.username === order.buyer) {
          order.status = 'awaiting_payment';
          order.timer = Date.now() + 1000 * 60 * 60;
          redirect_url = `/pay/${order.id}`;
+      } else {
+         redirect_url = `/order-resume/${order.id}`;
       }
-
-      order.messages.push({
-         sender: req.user.username === order.buyer ? Format_Username_Settings(req.user.username, order.privacy) : req.user.username,
-         content: req.body.content,
-      });
 
       await order.save();
 
       res.redirect(redirect_url);
    } catch (e) {
-      console.log(e);
+      req.flash('error', e.messages)
       res.redirect('/error');
-      return;
    }
 });
 
 router.get('/pay/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, async (req, res) => {
    try {
-      const {order} = req;
-      res.render('pay', {order});
+      res.render('pay', {order: req.order});
    } catch (e) {
       console.log(e);
       res.redirect('/error');

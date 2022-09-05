@@ -1,9 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Contactus = require('../models/contactus')
-const { Need_Authentification } = require('../middlewares/authentication')
-const { validateContactUs, ValidateValueByChoice, FetchData } = require('../middlewares/validation')
-const { paginatedResults } = require('../middlewares/function')
+const { validateContactUs} = require('../middlewares/validation')
 
 // User Docs
 router.get('/news', async (req,res) => {

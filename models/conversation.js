@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const User = require('./user');
 const slugify = require('slugify');
 const {format} = require('date-fns');
-const {Format_Username_Settings} = require('../middlewares/function');
+const {formatUsernameWithSettings} = require('../middlewares/function');
 
 const settingsSchema = new mongoose.Schema({
    type: {
@@ -77,7 +77,7 @@ const conversationSchema = new mongoose.Schema({
 
 function Create_New_Message(Message, Sender, sender_1, conversationSettings, userSettings) {
    const New_Message = {
-      sender: sender_1 === Sender ? Format_Username_Settings(Sender, conversationSettings.type) : Sender,
+      sender: sender_1 === Sender ? formatUsernameWithSettings(Sender, conversationSettings.type) : Sender,
       message: Message.trim(),
    };
 

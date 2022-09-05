@@ -30,13 +30,15 @@ setInterval(() => {
 // Dont Get Local Product
 router.get('/products', async (req, res) => {
    try {
-      let paginatedProducts;
-      let productsFuzzy;
-      if (req.query.search) {
-         const productFused = fusedProduct.search(req.query.search);
+      let paginatedProducts, productsFuzzy;
+
+      const {search, productPage} = req.query
+
+      if (search) {
+         const productFused = fusedProduct.search(search);
          productsFuzzy = productFused.map(({item}) => item);
       }
-      paginatedProducts = await paginatedResults(Product, {status: 'online'}, {page: req.query.productPage, limit: 24}, productsFuzzy);
+      paginatedProducts = await paginatedResults(Product, {status: 'online'}, {page: productPage, limit: 24}, productsFuzzy);
 
       res.render('products', {paginatedProducts});
    } catch (err) {
@@ -46,8 +48,9 @@ router.get('/products', async (req, res) => {
    }
 });
 
-router.post('/products', async (req, res) => {
-   res.redirect(`/products?search=${req.body.search}&productPage=1`);
+router.post('/search-products', async (req, res) => {
+      if (!search || search.length > 150) search = req.query.search
+      res.redirect(`/products?search=${req.body.search}&productPage=1`);
 });
 
 router.get('/product/:slug', FetchData(['params', 'slug'], Product, 'slug', 'product'), validateSlugParams, async (req, res) => {

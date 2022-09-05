@@ -7,11 +7,11 @@ const Product = require('../models/product');
 const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
 const {FetchData, ValidateValueByChoice, isOrder_Admin, Validate_disputeWinner, validateReports, validateResolveReport} = require('../middlewares/validation');
-const {Format_Username_Settings, paginatedResults} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
 
 function hideBuyerUsername(disputes) {
    for (let i = 0; i < disputes.length; i++) {
-      disputes[i].buyer = Format_Username_Settings(disputes[i].buyer, disputes[i].privacy);
+      disputes[i].buyer = formatUsernameWithSettings(disputes[i].buyer, disputes[i].privacy);
    }
    return disputes;
 }

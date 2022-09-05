@@ -101,7 +101,30 @@ app.all('*', (req, res) => {
 // Max Order Default // ?
 // Be Able to Change Conversation Settings
 
+function Calculate_Price(base_price, qty, ship_opt_price, selection_1_price, selection_2_price) {
+   let price = base_price + selection_1_price + selection_2_price; // Base Price OF Each
+   price = price * qty; // Mult Qty
+   price = price + ship_opt_price; // Add Shipping Price
+   price += price * 0.03; // Market Fee
+   price = price.toString(); // Get 2 number after .
+   price = price.slice(0, price.indexOf('.') + 3);
 
+   return parseFloat(price);
+}
+console.log(Calculate_Price(20, 2, 5, 5, 2))
+
+
+function Calculate_Price2(base_price, qty, ship_opt_price, selection_1_price, selection_2_price) {
+
+   let price = (((base_price + selection_1_price + selection_2_price) * qty)  + ship_opt_price);
+
+   price += price * 0.03
+
+   price = price.toString(); 
+
+   return parseFloat(price.slice(0, price.indexOf('.') + 3));
+}
+console.log(Calculate_Price2(20, 2, 5, 5, 2))
 
 app.listen('3000', (req, res) => {
    console.log('Server running on port 3000');

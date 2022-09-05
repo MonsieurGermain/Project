@@ -4,7 +4,7 @@ const Conversation = require('../models/conversation');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const { Validate_Conversation, Validate_Message } = require('../middlewares/validation');
-const {Format_Username_Settings} = require('../middlewares/function');
+const {formatUsernameWithSettings} = require('../middlewares/function');
 
 async function getOtherUserData(username) {
    const userData = await User.findOne({username: username}, {img_path: 1, verifiedPgpKeys: 1});
@@ -87,7 +87,7 @@ router.post('/search-messages', Need_Authentification, async (req, res) => {
 });
 
 function placeAuthUserAtSender_1(conversation, username) {
-   originalSender_1 = Format_Username_Settings(conversation.sender_1, conversation.settings.type);
+   originalSender_1 = formatUsernameWithSettings(conversation.sender_1, conversation.settings.type);
 
    if (username === conversation.sender_2) {
       savedSender1_Img = conversation.sender1_Img;
@@ -183,16 +183,14 @@ router.get('/messages', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/edit-message/:id/:messageId', Need_Authentification, async (req, res) => {
+router.post('/edit-message/:id/:messageId', Need_Authentification, Validate_Message, async (req, res) => {
    try {
       const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
-      const {newMessage} = req.body;
+      const {message} = req.body;
       const {messageId} = req.params
 
-      if (newMessage.length < 2 || newMessage.length > 1000) throw new Error();
-
-      await conversation.editMessage(messageId, newMessage);
+      await conversation.editMessage(messageId, message);
 
       res.redirect(`/messages?id=${conversation.id}`);
    } catch (e) {

@@ -153,8 +153,7 @@ exports.isolate_mimetype = (string, symbol) => {
    return `.${mimetype[mimetype.length - 1]}`;
 };
 
-// Privavy Funciton
-exports.Format_Username_Settings = (sender, setting) => {
+exports.formatUsernameWithSettings = (sender, setting) => {
    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1];
    if (setting === 'hidden') return 'Anonymous';
    return sender;

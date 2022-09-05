@@ -6,7 +6,7 @@ const User = require('../models/user');
 const Order = require('../models/order');
 const Product = require('../models/product');
 const {Validate_Reviews, FetchData, isOrder_Buyer} = require('../middlewares/validation');
-const {Format_Username_Settings} = require('../middlewares/function');
+const {formatUsernameWithSettings} = require('../middlewares/function');
 
 function updateRating(review, note) {
    review.number_review += 1;
@@ -23,7 +23,7 @@ router.post('/create-review/:id', Need_Authentification, FetchData(['params', 'i
    const review = new Review({
       product_slug: order.product_slug,
       vendor: order.vendor,
-      sender: Format_Username_Settings(username, type),
+      sender: formatUsernameWithSettings(username, type),
       content: req.body.review,
       note,
       type,

@@ -206,23 +206,13 @@ exports.Validate_Conversation = (req, res, next) => {
 };
 exports.Validate_Message = (req, res, next) => {
    try {
-      // Message
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 2, maxlength: 1000});
       next();
    } catch (e) {
       res.redirect(`/error`);
    }
 };
-exports.Validate_ProvidedInfo = (req, res, next) => {
-   try {
-      // Info
-      req.body.content = ValidateText(req.body.content, 'Content', {minlength: 2, maxlength: 3000});
-      next();
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect(`/error`);
-   }
-};
+
 exports.Validate_Reviews = (req, res, next) => {
    try {
       // Review
