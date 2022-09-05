@@ -146,24 +146,23 @@
             <p class="pb-1 mb-1"><%-product.description%></p>   
           </div>
 
+          <% if (product.shipping_option.length) { %>
           <div class="card pb-2 pt-4 px-5 mt-3 border-0">
-            <% if (product.shipping_option.length) { %>
             <h3 class="h5 mt-2 mb-3">Available Shipping Option</h3>
             <ul class="list-unstyled mb-4">
               <!-- Find Better Svg -->
               <% for(let i = 0; i < product.shipping_option.length; i++) { %>
                 <li class="d-flex align-items-center mb-2">
                   <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
-                  <b class="me-2"><%=product.shipping_option[i].option_description%> :</b> + <%=product.shipping_option[i].option_price%>$
+                  <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
                 </li>
               <% } %>
             </ul>
-            <% } %>
           </div>
+          <% } %>
 
-
+          <% if (product.selection_1) { %>
           <div class="card pb-2 pt-4 px-5 mt-3 border-0">
-            <% if (product.selection_1) { %>
             <h3 class="h5 mt-2 mb-3"><%=product.selection_1.selection_name%></h3>
             <ul class="list-unstyled mb-4">
               <!-- Find Better Svg -->
@@ -174,11 +173,11 @@
                 </li>
               <% } %>
             </ul>
-            <% } %>
           </div>
+          <% } %>
 
+          <% if (product.selection_2) { %>
           <div class="card pb-2 pt-4 px-5 mt-3 border-0">
-            <% if (product.selection_2) { %>
             <h3 class="h5 mt-2 mb-3"><%=product.selection_2.selection_name%></h3>
             <ul class="list-unstyled mb-4">
               <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
@@ -188,8 +187,8 @@
                 </li>
               <% } %>
             </ul>
-            <% } %>
           </div>
+          <% } %>
 
             <%- include('partials/Vendor-card', {vendor : vendor}) %>
 

@@ -11,7 +11,7 @@ const Fuse = require('fuse.js');
 // Create Fuzzy Product Collecion
 var fusedProduct = Product.find({status: 'online'}).then((products) => {
    const options = {
-      threshold: 0.4,
+      threshold: 0.5,
       keys: ['title', 'vendor'],
    };
    fusedProduct = new Fuse(products, options);
@@ -49,8 +49,9 @@ router.get('/products', async (req, res) => {
 });
 
 router.post('/search-products', async (req, res) => {
-      if (!search || search.length > 150) search = req.query.search
-      res.redirect(`/products?search=${req.body.search}&productPage=1`);
+   const {search} = req.body
+   if (!search || search.length > 150) search = req.query.search
+   res.redirect(`/products?search=${req.body.search}&productPage=1`);
 });
 
 router.get('/product/:slug', FetchData(['params', 'slug'], Product, 'slug', 'product'), validateSlugParams, async (req, res) => {

@@ -27,7 +27,7 @@ router.post('/send-message/:username', Need_Authentification,
          const {username} = req.params;
          const {type, timestamps, message, pgpKeys} = req.body;
 
-         let foundConversation = await Conversation.isConversationExisting(username, username, type);
+         let foundConversation = await Conversation.isConversationExisting(username, user.username, type);
 
          if (!foundConversation) {
             foundConversation = new Conversation();
@@ -39,7 +39,8 @@ router.post('/send-message/:username', Need_Authentification,
             foundConversation.sender_1 = user.username;
             foundConversation.sender_2 = username;
 
-            foundConversation.sender1_Img = foundConversation.settings.type === 'default' ? user.img_path : '/default/default-profile-pic.png';
+            console.log()
+            foundConversation.sender1_Img = type === 'default' ? user.img_path : '/default/default-profile-pic.png';
             foundConversation.sender1_Pgp = pgpKeys;
 
             [foundConversation.sender2_Img, foundConversation.sender2_Pgp] = await getOtherUserData(username);

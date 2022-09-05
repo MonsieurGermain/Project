@@ -66,8 +66,8 @@
                   <% } %>
                   <div class="d-flex">
                     <p class="fs-lg fw-semibold text-primary mb-0">$<%=products[i].price%></p>
-                    <% if (products[i].default_price) { %>
-                      <del class="fs-md fw-semibold text-primary mb-0 text-muted opacity-70 ms-2"><%=products[i].default_price%>$</del>
+                    <% if (products[i].originalPrice) { %>
+                      <del class="fs-md fw-semibold text-primary mb-0 text-muted opacity-70 ms-2"><%=products[i].originalPrice%>$</del>
                     <% }%>
                   </div>
 
