@@ -39,7 +39,6 @@ router.post('/send-message/:username', Need_Authentification,
             foundConversation.sender_1 = user.username;
             foundConversation.sender_2 = username;
 
-            console.log()
             foundConversation.sender1_Img = type === 'default' ? user.img_path : '/default/default-profile-pic.png';
             foundConversation.sender1_Pgp = pgpKeys;
 
