@@ -13,6 +13,8 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
 }
 
 .smedium-rc {
+   min-width: 3rem;
+   min-height: 3ren;
    width: 3rem;
    height: 3rem;
 }
@@ -216,11 +218,18 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                .chat-user {
                   display: flex;
                   align-items: center;
+                  flex-grow: 1;
                   .name-and-type {
                      margin-left: 1.25rem;
                      display: flex;
                      align-items: start;
                      flex-direction: column;
+                     @media (max-width: $max-width-bp) {
+                        margin-left: 10px!important;
+                        >div>p>span {
+                           display: none;
+                        }
+                     }
                   }
                }
                a {
@@ -262,6 +271,9 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                         position: relative;
                         padding: 7px;
                         border-radius: 50rem;
+                        &.me-3 {
+                           margin-right: 8px!important;
+                        }
                      }
                   }
                   .user-pgp-keys:hover {
@@ -397,6 +409,9 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                   background-color: $body-bg;
                }
             }
+            @media (max-width: $max-width-bp) {
+               padding: 8px!important;
+            }
          }
       }
    }
@@ -455,7 +470,7 @@ input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
    z-index: 200;
    > div {
       margin: 0 1.5rem;
-      min-width: 310px;
+      min-width: 240px;
       width: 80%;
       max-width: 30rem;
       background-color: $secondary-bg;

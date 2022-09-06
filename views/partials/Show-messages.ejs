@@ -19,12 +19,12 @@
     <% } %>
     <% if (selected_conversation) { %>
     <!-- Header -->
-    <div class="messages-header px-4">
-        <div class="change-convo">
-            <label for="change-messages"
-                ><%- include ("../../public/assets/img/icons/caret-down.svg") %><%- include
-                ("../../public/assets/img/icons/change-person.svg") %></label
-            >
+    <div class="messages-header px-3">
+        <div class="change-convo me-2">
+            <label for="change-messages">
+                <%- include ("../../public/assets/img/icons/caret-down.svg") %>
+                <%- include ("../../public/assets/img/icons/change-person.svg") %>
+            </label>
         </div>
         <div class="chat-user">
             <img
@@ -35,7 +35,7 @@
             />
             <div class="name-and-type">
                 <a href="<%=selected_conversation.link%>" class="mb-0 mx-0"><%=selected_conversation.sender_2 %></a>
-                <div><p class="opacity-70 m-0">Type of Conversaction: <%=selected_conversation.settings.type%></p></div>
+                <div><p class="opacity-70 m-0"><span>Type of Conversaction: </span><%=selected_conversation.settings.type%></p></div>
             </div>
            
             <!-- <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div> -->

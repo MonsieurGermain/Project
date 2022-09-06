@@ -15672,6 +15672,8 @@ img-comparison-slider:focus {
 }
 
 .smedium-rc {
+  min-width: 3rem;
+  min-height: 3ren;
   width: 3rem;
   height: 3rem;
 }
@@ -15896,12 +15898,21 @@ img-comparison-slider:focus {
 .messages-view .messages-container .chat .chat-body .messages-header .chat-user {
   display: flex;
   align-items: center;
+  flex-grow: 1;
 }
 .messages-view .messages-container .chat .chat-body .messages-header .chat-user .name-and-type {
   margin-left: 1.25rem;
   display: flex;
   align-items: start;
   flex-direction: column;
+}
+@media (max-width: 767px) {
+  .messages-view .messages-container .chat .chat-body .messages-header .chat-user .name-and-type {
+    margin-left: 10px !important;
+  }
+  .messages-view .messages-container .chat .chat-body .messages-header .chat-user .name-and-type > div > p > span {
+    display: none;
+  }
 }
 .messages-view .messages-container .chat .chat-body .messages-header a {
   font-size: 1.25rem;
@@ -15940,6 +15951,9 @@ img-comparison-slider:focus {
     position: relative;
     padding: 7px;
     border-radius: 50rem;
+  }
+  .messages-view .messages-container .chat .chat-body .messages-header .delete-button-container label.me-3 {
+    margin-right: 8px !important;
   }
 }
 .messages-view .messages-container .chat .chat-body .messages-header .delete-button-container .user-pgp-keys:hover {
@@ -16072,6 +16086,11 @@ img-comparison-slider:focus {
     background-color: #191919;
   }
 }
+@media (max-width: 767px) {
+  .messages-view .messages-container .chat .card-footer {
+    padding: 8px !important;
+  }
+}
 
 input[id^=delete-message-input-]:not(:checked) + *,
 input#delete-convo-input:not(:checked) + *:not(.no-convo-yet),
@@ -16132,7 +16151,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .popup-dialog > div {
   margin: 0 1.5rem;
-  min-width: 310px;
+  min-width: 240px;
   width: 80%;
   max-width: 30rem;
   background-color: #212121;
