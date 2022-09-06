@@ -12469,7 +12469,7 @@ hr.dropdown-divider {
   #mobile-menu-dropdown-checkbox-1:not(:checked) ~ nav.main-navbar .docs-dropdown {
     display: none;
   }
-  #mobile-menu-dropdown-checkbox-2:checked ~ nav.main-navbar .dropdown-caret {
+  #mobile-menu-dropdown-checkbox-2:checked ~ nav.main-navbar label[for=mobile-menu-dropdown-checkbox-2] .dropdown-caret {
     transform: rotate(-180deg);
   }
   #mobile-menu-dropdown-checkbox-2:not(:checked) ~ nav.main-navbar .nav-user-dropdown {

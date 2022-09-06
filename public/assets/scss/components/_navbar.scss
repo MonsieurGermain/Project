@@ -129,8 +129,10 @@ $drop-down-height: 4rem;
     // User profile drop down on click
     #mobile-menu-dropdown-checkbox-2 {
         &:checked ~ nav.main-navbar {
-            .dropdown-caret {
-                transform: rotate(-180deg);
+            label[for="mobile-menu-dropdown-checkbox-2"] {
+                .dropdown-caret {
+                    transform: rotate(-180deg);
+                }
             }
         }
         &:not(:checked) ~ nav.main-navbar {
