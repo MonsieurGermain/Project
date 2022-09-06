@@ -152,10 +152,15 @@ $drop-down-height: 4rem;
                     transform: rotate(-180deg);
                 }
             }
+            .docs-dropdown {
+                height: 190px;
+            }
         }
         &:not(:checked) ~ nav.main-navbar {
             .docs-dropdown {
-                display: none;
+                // display: none;
+                overflow: hidden;
+                height: 0px;
             }
         }
     }
@@ -167,10 +172,13 @@ $drop-down-height: 4rem;
                     transform: rotate(-180deg);
                 }
             }
+            .nav-user-dropdown {
+                height: 360px;
+            }
         }
         &:not(:checked) ~ nav.main-navbar {
             .nav-user-dropdown {
-                display: none;
+                height: 0px;
             }
         }
     }
@@ -179,10 +187,14 @@ $drop-down-height: 4rem;
     .nav-item.dropdown {
         &:not(:hover) {
             .docs-dropdown {
-                display: none;
+                // display: none;
+                height: 0px;
             }
         }
         &:hover {
+            .docs-dropdown {
+                height: 190px;
+            }
             .dropdown-caret {
                 transform: rotate(-180deg);
             }
@@ -193,10 +205,14 @@ $drop-down-height: 4rem;
             .dropdown-caret {
                 transform: rotate(-180deg);
             }
+            .nav-user-dropdown {
+                border-color: #800080!important;
+                height: 370px;
+            }
         }
         &:not(:hover) {
             .nav-user-dropdown {
-                display: none;
+                height: 0px;
             }
         }
     }
@@ -321,6 +337,10 @@ $drop-down-height: 4rem;
     /// Section for styling the dropdowns from the nav bar and in mobile menu ///
     .navbar-dropdown {
         background-color: $secondary-bg;
+        height: 0px;
+        transition: height 0.5s;
+        overflow: hidden;
+        top: -4px;
         > ul {
             margin: 0;
             list-style: none;
@@ -663,7 +683,9 @@ $drop-down-height: 4rem;
                     margin-left: 0px;
                 }
                 .nav-user-dropdown {
-                    border-top: 4px solid #800080;
+                    border-top: 4px solid transparent;
+                    transition: border 0.5s;
+                    transform: translateY(-4px);
                     left: auto;
                     right: 0px;
                 }

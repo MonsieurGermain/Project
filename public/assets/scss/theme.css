@@ -12485,19 +12485,29 @@ hr.dropdown-divider {
   #mobile-menu-dropdown-checkbox-1:checked ~ nav.main-navbar label[for=mobile-menu-dropdown-checkbox-1] .dropdown-caret {
     transform: rotate(-180deg);
   }
+  #mobile-menu-dropdown-checkbox-1:checked ~ nav.main-navbar .docs-dropdown {
+    height: 190px;
+  }
   #mobile-menu-dropdown-checkbox-1:not(:checked) ~ nav.main-navbar .docs-dropdown {
-    display: none;
+    overflow: hidden;
+    height: 0px;
   }
   #mobile-menu-dropdown-checkbox-2:checked ~ nav.main-navbar label[for=mobile-menu-dropdown-checkbox-2] .dropdown-caret {
     transform: rotate(-180deg);
   }
+  #mobile-menu-dropdown-checkbox-2:checked ~ nav.main-navbar .nav-user-dropdown {
+    height: 360px;
+  }
   #mobile-menu-dropdown-checkbox-2:not(:checked) ~ nav.main-navbar .nav-user-dropdown {
-    display: none;
+    height: 0px;
   }
 }
 @media (min-width: 768px) {
   .nav-item.dropdown:not(:hover) .docs-dropdown {
-    display: none;
+    height: 0px;
+  }
+  .nav-item.dropdown:hover .docs-dropdown {
+    height: 190px;
   }
   .nav-item.dropdown:hover .dropdown-caret {
     transform: rotate(-180deg);
@@ -12505,8 +12515,12 @@ hr.dropdown-divider {
   .user-profile-container:hover .dropdown-caret {
     transform: rotate(-180deg);
   }
+  .user-profile-container:hover .nav-user-dropdown {
+    border-color: #800080 !important;
+    height: 370px;
+  }
   .user-profile-container:not(:hover) .nav-user-dropdown {
-    display: none;
+    height: 0px;
   }
 }
 .main-navbar {
@@ -12625,6 +12639,10 @@ hr.dropdown-divider {
 }
 .main-navbar .navbar-dropdown {
   background-color: #212121;
+  height: 0px;
+  transition: height 0.5s;
+  overflow: hidden;
+  top: -4px;
 }
 .main-navbar .navbar-dropdown > ul {
   margin: 0;
@@ -12966,7 +12984,9 @@ hr.dropdown-divider {
     margin-left: 0px;
   }
   .main-navbar > .nav-content .navbar-right-cluster .nav-user-dropdown {
-    border-top: 4px solid #800080;
+    border-top: 4px solid transparent;
+    transition: border 0.5s;
+    transform: translateY(-4px);
     left: auto;
     right: 0px;
   }
