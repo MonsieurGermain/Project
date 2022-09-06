@@ -3,8 +3,8 @@ const router = express.Router();
 const Product = require('../models/product');
 const Review = require('../models/review');
 const User = require('../models/user');
-const {Need_Authentification} = require('../middlewares/authentication');
-const {Validate_Product, FetchData, isProduct_Vendor, Validate_Query_Product_Slug, Is_titleTaken, validateSlugParams} = require('../middlewares/validation');
+const {Need_Authentification, isVendor} = require('../middlewares/authentication');
+const {Validate_Product, FetchData, isProduct_Vendor, validateSlugParams} = require('../middlewares/validation');
 const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 const Fuse = require('fuse.js');
@@ -41,91 +41,93 @@ router.get('/products', async (req, res) => {
       paginatedProducts = await paginatedResults(Product, {status: 'online'}, {page: productPage, limit: 24}, productsFuzzy);
 
       res.render('products', {paginatedProducts});
-   } catch (err) {
-      console.log(err);
-      res.redirect('/error');
-      return;
+   } catch (e) {
+      console.log(e);
+      res.redirect('/404');
    }
 });
 
 router.post('/search-products', async (req, res) => {
    const {search} = req.body
-   if (!search || search.length > 150) search = req.query.search
+   if (search.length > 100) search = search.split(0, 100)
    res.redirect(`/products?search=${req.body.search}&productPage=1`);
 });
 
-router.get('/product/:slug', FetchData(['params', 'slug'], Product, 'slug', 'product'), validateSlugParams, async (req, res) => {
+router.get('/product/:slug', async (req, res) => {
    try {
       const product = await Product.findOne({slug: req.params.slug});
+
       if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
+      
       const vendor = await User.findOne({username: product.vendor});
+
       const paginatedReviews = await paginatedResults(Review, {product_slug: product.slug}, {page: req.query.reviewPage});
 
       product.description = sanitizeHTML(product.description);
 
       res.render('product-single', {product, vendor, paginatedReviews});
-   } catch (err) {
-      console.log(err);
+   } catch (e) {
+      console.log(e);
       res.redirect('/404');
-      return;
    }
 });
 
 // GET
-router.get(
-   '/create-product',
-   Need_Authentification,
-   Validate_Query_Product_Slug,
-   //isVendor,
+router.get('/create-product', Need_Authentification, isVendor,
    async (req, res) => {
-      const {product} = req;
+      try { 
 
-      const reviews = [
-         {
-            sender: 'Dummy Username',
-            content: 'Wow This Product was Amazing !',
-            type: 'default',
-            note: 5,
-            __v: 0,
-         },
-         {
-            sender: 'Dummy Username',
-            content: 'The shipping was a bit slow, but the product itself is really cool.',
-            type: 'default',
-            note: 4,
-            __v: 0,
-         },
-         {
-            sender: 'Dummy Username',
-            content: 'Will definetly buy again',
-            type: 'default',
-            note: 5,
-            __v: 0,
-         },
-         {
-            sender: 'Dummy Username',
-            content: 'The Product arrived broken :(, luckely, the vendor was kind enough to send me another one',
-            type: 'default',
-            note: 4,
-            __v: 0,
-         },
-         {
-            sender: 'Dummy Username',
-            content: 'Great I like it !',
-            type: 'default',
-            note: 5,
-            __v: 0,
-         },
-      ];
+         const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
 
-      res.render('product-create', {product, reviews});
+         const reviews = [
+            {
+               sender: 'Dummy Username',
+               content: 'Wow This Product was Amazing !',
+               type: 'default',
+               note: 5,
+               __v: 0,
+            },
+            {
+               sender: 'Dummy Username',
+               content: 'The shipping was a bit slow, but the product itself is really cool.',
+               type: 'default',
+               note: 4,
+               __v: 0,
+            },
+            {
+               sender: 'Dummy Username',
+               content: 'Will definetly buy again',
+               type: 'default',
+               note: 5,
+               __v: 0,
+            },
+            {
+               sender: 'Dummy Username',
+               content: 'The Product arrived broken :(, luckely, the vendor was kind enough to send me another one',
+               type: 'default',
+               note: 4,
+               __v: 0,
+            },
+            {
+               sender: 'Dummy Username',
+               content: 'Great I like it !',
+               type: 'default',
+               note: 5,
+               __v: 0,
+            },
+         ];
+   
+         res.render('product-create', {product, reviews});
+      } catch (e) {
+         console.log(e)
+         res.redirect('/404')
+      }
    }
 );
 
 //POST
-router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Query_Product_Slug, Validate_Product, Is_titleTaken, async (req, res) => {
+router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), async (req, res) => {
    try {
-      const {product} = req;
       const {
          title,
          description,
@@ -143,6 +145,13 @@ router.post('/create-product', Need_Authentification, uploadProductImg.single('p
          stop_sales,
          status,
       } = req.body;
+
+      const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
+
+      if (product.title !== title) {
+         const isProductTitleTaken = await Product.findOne({title: title, vendor: req.user.username})
+         if (isProductTitleTaken) throw new Error('You cant have the same title for multiple products')
+      }
 
       let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
 
@@ -195,15 +204,15 @@ router.post('/create-product', Need_Authentification, uploadProductImg.single('p
       if (req.file) {
          deleteImage(req.file.path);
       }
+      req.flash('error', e.message)
       res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
-      return;
    }
 });
 
 //Delete
-router.delete('/delete-product/:slug', Need_Authentification, FetchData(['params', 'slug'], Product, 'slug', 'product'), isProduct_Vendor, async (req, res) => {
+router.delete('/delete-product/:slug', Need_Authentification, async (req, res) => {
    try {
-      const {product} = req;
+      let product = await Product.findOne({slug: req.query.slug, vendor: req.user.username})
 
       await product.deleteProduct();
 

@@ -225,6 +225,7 @@ router.delete('/delete-message/:id/:message_id', Need_Authentification,
 
          let redirect_url;
 
+
          if (!conversation.messages.length) {
             redirect_url = '/messages';
 

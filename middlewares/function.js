@@ -14,38 +14,40 @@ function generateRandomString(length) {
 }
 
 // Html Sanitizer Function
-function Text_To_Tags(string, symbol, start_tag, end_tag) {
-   let splited_string = string.split(symbol);
-   if (splited_string.length <= 1) return string; // Return If Nothing To format
+function Text_To_Tags(string, symbol, startTag, endTag) {
+   let splitedString = string.split(symbol);
 
-   let Formated_String = splited_string[0];
-   splited_string.shift();
+   if (splitedString.length <= 1) return string; // Return If Nothing To format
+
+   let formatedString = splitedString[0];
+
+   splitedString.shift();
 
    let Start_Or_End;
-   for (let i = 0; i < splited_string.length; i++) {
+   for (let i = 0; i < splitedString.length; i++) {
       if (!Start_Or_End) {
-         Formated_String += start_tag;
+         formatedString += startTag;
          Start_Or_End = true;
       } else {
-         Formated_String += end_tag;
+         formatedString += endTag;
          Start_Or_End = undefined;
       }
-      Formated_String += splited_string[i];
+      formatedString += splitedString[i];
    }
-   return Formated_String;
+   return formatedString;
 }
-exports.sanitizeHTML = (object) => {
+exports.sanitizeHTML = (string) => {
    const filter = new HtmlFilter();
-   object = filter.filter(object);
+   string = filter.filter(string);
 
-   object = object.split('\n').join('<br>');
-   object = Text_To_Tags(object, '**', '<b>', '</b>');
-   object = Text_To_Tags(object, '*B', '<h3>', '</h3>');
-   object = Text_To_Tags(object, '*M', '<h5>', '</h5>');
-   object = Text_To_Tags(object, '*S', '<h6>', '</h6>');
-   object = Text_To_Tags(object, '*', ' <em>', '</em>');
+   string = string.split('\n').join('<br>');
+   string = Text_To_Tags(string, '**', '<b>', '</b>');
+   string = Text_To_Tags(string, '*B', '<h3>', '</h3>');
+   string = Text_To_Tags(string, '*M', '<h5>', '</h5>');
+   string = Text_To_Tags(string, '*S', '<h6>', '</h6>');
+   string = Text_To_Tags(string, '*', ' <em>', '</em>');
 
-   return object;
+   return string;
 };
 
 // Pagination

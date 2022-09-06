@@ -5,7 +5,7 @@ const Conversation = require('../models/conversation');
 const Product = require('../models/product');
 const Review = require('../models/review');
 const {Need_Authentification, isBuyer} = require('../middlewares/authentication');
-const {Validate_Profile, FetchData, paramsUsername_isReqUsername, validateSlugParams} = require('../middlewares/validation');
+const {Validate_Profile, FetchData, paramsUsername_isReqUsername} = require('../middlewares/validation');
 const {uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 // Route
@@ -19,10 +19,9 @@ router.get('/profile/:username', FetchData(['params', 'username'], User, 'userna
       const paginatedReviews = await paginatedResults(Review, {vendor: vendor.username}, {page: req.query.reviewPage});
 
       res.render('profile', {vendor, paginatedProducts, paginatedReviews});
-   } catch (err) {
-      console.log(err.message);
-      res.redirect('/error');
-      return;
+   } catch (e) {
+      console.log(e.message);
+      res.redirect('/404');
    }
 });
 
@@ -90,7 +89,6 @@ router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isRe
 
       if (req.file) {
          user.UploadImg(req.file);
-
          updateConversationImg_Path(user.username, user.img_path);
       }
 
@@ -104,7 +102,7 @@ router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isRe
       res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
    } catch (e) {
       console.log(e);
-      res.redirect(`/error`);
+      res.redirect(`/404`);
    }
 });
 
@@ -115,12 +113,12 @@ router.post('/awaiting-promotion', Need_Authentification, isBuyer, async (req, r
 
       user.awaiting_promotion = true;
 
-      await user.save();
+      user.save();
 
       req.flash('success', 'You submission to become a Vendor as been send');
       res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
    } catch (e) {
-      res.redirect('/error');
+      res.redirect('/404');
    }
 });
 

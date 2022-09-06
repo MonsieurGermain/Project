@@ -196,4 +196,25 @@ orderSchema.methods.deleteOrder = async function () {
    await this.delete();
 };
 
+orderSchema.statics.findByIdwhereYouBuyer = async function(orderId, userUsername) {
+   const order = await this.findById(orderId)
+
+   if (userUsername !== order.buyer) throw new Error('You are not the Buyer of this Order')
+   else return order
+}
+
+orderSchema.statics.findByIdwhereYouBuyerVendor = async function(orderId, userUsername) {
+   const order = await this.findById(orderId)
+
+   if (userUsername !== order.buyer && userUsername !== order.vendor) throw new Error('You are not the Buyer or Vendor of this Order')
+   else return order
+}
+
+orderSchema.statics.findByIdwhereYouBuyerVendorAdmin = async function(orderId, userUsername) {
+   const order = await this.findById(orderId)
+
+   if (userUsername !== order.buyer && userUsername !== order.vendor && userUsername !== order.admin) throw new Error('You are not Part of this Order')
+   else return order
+}
+
 module.exports = mongoose.model('Order', orderSchema);

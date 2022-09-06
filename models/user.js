@@ -184,13 +184,4 @@ userSchema.methods.offlineAllUserProducts = async function () {
 };
 
 
-userSchema.statics.deleteUsers = async function () {
-   const x = await this.find();
-
-   for(let i = 0; i < x.length; i++) {
-      x[i].deleteUser()
-   }
-   return
-};
-
 module.exports = mongoose.model('User', userSchema);

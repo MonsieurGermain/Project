@@ -224,4 +224,12 @@ productSchema.methods.startSales = function (price, salesPrice, salesDuration) {
    this.sales_end = Date.now() + 86400000 * salesDuration;
 };
 
+
+productSchema.statics.findOneOrCreateNew = async function(productSlug, productVendor) {
+   const product = await this.findOne({slug: productSlug, vendor: productVendor})
+
+   if (product) return product
+   else return new this()
+}
+
 module.exports = mongoose.model('Product', productSchema);

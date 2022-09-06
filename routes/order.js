@@ -5,13 +5,7 @@ const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const {
-   validateSlugParams,
    ValidateValueByChoice,
-   Validate_Update_Order,
-   FetchData,
-   isOrder_Buyer,
-   isOrder_VendorOrBuyer,
-   isOrder_Part,
    paramsUsername_isReqUsername,
    Validate_OrderCustomization,
 } = require('../middlewares/validation');
@@ -76,7 +70,7 @@ function Format_Timer(timer) {
    return Time_Left;
 }
 
-async function Get_Product_Img(slug) {
+async function getProductImg(slug) {
    const product = await Product.findOne({slug: slug});
    return product.img_path;
 }
@@ -93,7 +87,7 @@ function Create_Order_Link(status, id, isBuyer) {
    return `/order-resume/${id}`;
 }
 
-function Include_Delete_Link(order, isBuyer) {
+function addDeleteLink(order, isBuyer) {
    switch (order.status) {
       case 'rejected':
          if (isBuyer) return true;
@@ -115,18 +109,23 @@ function Include_Delete_Link(order, isBuyer) {
    }
    return;
 }
-async function Format_Order(order, isBuyer) {
+async function formatOrder(order, isBuyer) {
    order.buyer = formatUsernameWithSettings(order.buyer, order.privacy);
+
    if (order.timer > Date.now()) order.Formated_Timers = Format_Timer(order.timer);
+
    order.link = Create_Order_Link(order.status, order.id, isBuyer);
-   order.deletelink = Include_Delete_Link(order, isBuyer);
-   order.product_img = await Get_Product_Img(order.product_slug);
+
+   order.deletelink = addDeleteLink(order, isBuyer);
+
+   order.product_img = await getProductImg(order.product_slug);
 
    return order;
 }
-async function Format_Orders_Array(orders, isBuyer) {
+
+async function arrayFormat_Order(orders, isBuyer) {
    for (let i = 0; i < orders.length; i++) {
-      orders[i] = await Format_Order(orders[i], isBuyer);
+      orders[i] = await formatOrder(orders[i], isBuyer);
    }
    return orders;
 }
@@ -188,28 +187,28 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
    }
 });
 
-router.get('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, async (req, res) => {
+router.get('/submit-info/:id', Need_Authentification, async (req, res) => {
    try {
+      const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
-      const {order} = req;
       const product = await Product.findOne({slug: order.product_slug});
       const user = await User.findOne({username: order.vendor});
+
       res.render('submit-info', {order, product, vendor: user});
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
-      return;
+      res.redirect('/404');
    }
 });
 
-router.post('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Part, async (req, res) => {
+router.post('/submit-info/:id', Need_Authentification, async (req, res) => {
    try {
+      const {user} = req
       const {content} = req.body
       
       if (!content || content < 2 || content > 3000) throw new Error('Invalid Submited Information')
 
-      const {order} = req;
-      const {user} = req
+      const order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
 
       order.messages.push({
          sender: user.username === order.buyer ? formatUsernameWithSettings(user.username, order.privacy) : user.username,
@@ -229,51 +228,85 @@ router.post('/submit-info/:id', Need_Authentification, FetchData(['params', 'id'
       res.redirect(redirect_url);
    } catch (e) {
       req.flash('error', e.messages)
-      res.redirect('/error');
+      res.redirect('/404');
    }
 });
 
-router.get('/pay/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, async (req, res) => {
+router.get('/pay/:id', Need_Authentification, async (req, res) => {
    try {
-      res.render('pay', {order: req.order});
+      const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
+
+      res.render('pay', {order});
    } catch (e) {
-      console.log(e);
-      res.redirect('/error');
-      return;
+      res.redirect('/404');
    }
 });
 
-router.get('/order-resume/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Part, async (req, res) => {
+router.get('/order-resume/:id', Need_Authentification, async (req, res) => {
    try {
-      let {order} = req;
-      const product = await Product.findOne({slug: order.product_slug});
+      let order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
 
-      order = await Format_Order(order, order.buyer === req.user.username ? true : false);
+      order = await formatOrder(order, order.buyer === req.user.username ? true : false);
+
+      const product = await Product.findOne({slug: order.product_slug});
 
       res.render('order-resume', {order, product});
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
-      return;
+      res.redirect('/404');
    }
 });
 
-router.put('/update-order/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer, Validate_Update_Order, async (req, res) => {
-   try {
-      let {order} = req;
 
-      order = await HandleOrderRequest(req.body.status, order, req.user.settings, req.query.fromOrders);
+function verifyOrderUpdate(status, buyer, vendor, username) {
+   switch (status) {
+      case 'shipped':
+         if (username === vendor) return
+         else throw new Error('No access');
+      case 'recieved':
+         if (username === buyer) return
+         else throw new Error('No access');
+      case 'finished':
+         if (username === buyer) return
+         else throw new Error('No access');
+      case 'rejected':
+         if (username === vendor) return
+         else throw new Error('No access');
+      case 'not_recieved':
+         if (username === buyer) return
+         else throw new Error('No access');
+      case 'dispute':
+         if (username === buyer || username === vendor) return
+         else throw new Error('No access');
+      default:
+         throw new Error('Update Value Invalid');
+   }
+}
+
+
+router.put('/update-order/:id', Need_Authentification, async (req, res) => {
+   try {
+      const {user} = req
+
+      let order = await Order.findByIdwhereYouBuyerVendor(req.params.id, user.username)
+
+      verifyOrderUpdate(req.body.status, order.buyer, order.vendor, user.username)
+
+      order = await HandleOrderRequest(req.body.status, order, user.settings, req.query.fromOrders);
 
       await order.save();
 
       let redirect_url;
-      if (req.query.fromOrders) redirect_url = `/orders/${req.user.username}?ordersPage=1&clientsOrders=true&status=awaiting_shipment`;
+      if (req.query.fromOrders) {
+         if (req.query.status) redirect_url = `/orders/${user.username}?ordersPage=${req.query.ordersPage}&clientsOrders=true&status=${req.query.status}`;
+         else redirect_url = `/orders/${user.username}?clientsOrders=true&ordersPage=${req.query.ordersPage}`
+      }
       else redirect_url = `/order-resume/${req.params.id}`;
 
       res.redirect(redirect_url);
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
+      res.redirect('/404');
    }
 });
 
@@ -289,10 +322,7 @@ function constructOrdersQuery(query, user) {
    return mongooseQuery;
 }
 
-router.get(
-   '/orders/:username',
-   Need_Authentification,
-   paramsUsername_isReqUsername,
+router.get('/orders/:username', Need_Authentification, paramsUsername_isReqUsername,
    ValidateValueByChoice(
       ['body', 'status'],
       [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed']
@@ -303,7 +333,8 @@ router.get(
          const query = constructOrdersQuery(req.query, req.user);
 
          let orders = await paginatedResults(Order, query, {page: req.query.ordersPage, limit: 24});
-         orders.results = await Format_Orders_Array(orders.results, query.vendor ? false : true);
+
+         orders.results = await arrayFormat_Order(orders.results, query.vendor ? false : true);
 
          res.render('your-order', {orders});
       } catch (e) {
@@ -313,9 +344,7 @@ router.get(
    }
 );
 
-router.post(
-   '/filter-orders',
-   Need_Authentification, // isAdmin,
+router.post('/filter-orders', Need_Authentification,
    ValidateValueByChoice(
       ['body', 'status'],
       ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed']
@@ -333,30 +362,30 @@ router.post(
          res.redirect(`/orders/${req.user.username}${query}`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
 
-router.delete('/delete-order/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer, async (req, res) => {
+router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
    try {
-      const {order} = req;
+      const order = await Order.findByIdwhereYouBuyerVendor(req.params.id, req.user.username)
 
-      if (!Include_Delete_Link(order, req.user.username === order.buyer ? true : false)) throw new Error('You cant delete that'); // Check if as Auth to delete
+      if (!addDeleteLink(order, req.user.username === order.buyer ? true : false)) throw new Error('You cant delete that');
 
-      order.deleteOrder();
+      await order.deleteOrder();
 
       res.redirect(`/orders/${req.user.username}?ordersPage=1`);
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
+      res.redirect('/404');
    }
 });
 
-router.post('/create-dispute/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_VendorOrBuyer, async (req, res) => {
+router.post('/create-dispute/:id', Need_Authentification, async (req, res) => {
    try {
-      const {order} = req;
-
+      const order = await Order.findByIdwhereYouBuyerVendor(req.params.id, req.user.username)
+      
       order.status = 'dispute_progress';
       order.timer = undefined;
 
@@ -365,7 +394,7 @@ router.post('/create-dispute/:id', Need_Authentification, FetchData(['params', '
       res.redirect(`/order-resume/${order.id}`);
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
+      res.redirect('/404');
    }
 });
 

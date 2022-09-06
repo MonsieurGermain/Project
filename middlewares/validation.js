@@ -230,41 +230,6 @@ exports.Validate_Reviews = (req, res, next) => {
       res.redirect(`/error`);
    }
 };
-exports.Validate_Update_Order = (req, res, next) => {
-   try {
-      const username = req.user.username;
-      switch (req.body.status) {
-         case 'shipped':
-            if (username === req.order.vendor) next();
-            else throw new Error('No access');
-            break;
-         case 'recieved':
-            if (username === req.order.buyer) next();
-            else throw new Error('No access');
-            break;
-         case 'finished':
-            if (username === req.order.buyer) next();
-            else throw new Error('No access');
-            break;
-         case 'rejected':
-            if (username === req.order.vendor) next();
-            else throw new Error('No access');
-            break;
-         case 'not_recieved':
-            if (username === req.order.buyer) next();
-            else throw new Error('No access');
-            break;
-         case 'dispute':
-            if (username === req.order.buyer || username === req.order.vendor) next();
-            else throw new Error('No access');
-            break;
-         default:
-            throw new Error('Update Value Invalid');
-      }
-   } catch (e) {
-      res.redirect('/error');
-   }
-};
 exports.Validate_Profile = (req, res, next) => {
    try {
       // Job
@@ -623,20 +588,6 @@ exports.validateSlugParams = async (req, res, next) => {
       res.redirect('/404');
    }
 };
-
-exports.Validate_Query_Product_Slug = async (req, res, next) => {
-   try {
-      if (req.query.slug) {
-         if (IsNot_String(req.query.slug)) throw new Error('Query Slug not String');
-      }
-      if (req.query.slug) req.product = await Product.findOne({slug: req.query.slug, vendor: req.user.username}).orFail((req.product = new Product()));
-      else req.product = new Product();
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
 // Orders
 exports.isOrder_Buyer = async (req, res, next) => {
    try {
@@ -739,21 +690,5 @@ exports.Validate_Query_Url = async (req, res, next) => {
       next();
    } catch (e) {
       res.redirect('/error');
-   }
-};
-
-
-exports.Is_titleTaken = async (req, res, next) => {
-   try {
-      let maxcount;
-      if (req.product.title && req.product.title === req.body.title) maxcount = 1;
-      else maxcount = 0;
-
-      const countedProduct = await Product.countDocuments({title: req.body.title, vendor: req.user.username}).exec();
-      if (countedProduct > maxcount) throw new Error('You cant have 2 product with the same titles');
-      next();
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
    }
 };
