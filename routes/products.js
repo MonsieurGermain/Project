@@ -128,8 +128,15 @@ router.get('/create-product', Need_Authentification, isVendor,
 //POST
 router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), 
 async(req,res, next) => {
-   req.product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
-   next()
+   try { 
+      const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
+
+      req.product = product ? product : new Product();
+
+      next()
+   } catch (e) {
+      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
+   }
 },
 Validate_Product, async (req, res) => {
    try {
