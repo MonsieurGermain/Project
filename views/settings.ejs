@@ -120,7 +120,7 @@
                         <h2 class="h5 mb-3">Add Email Address</h2>
                       <% } %>
                     <form action="/add-email" method="POST">
-                      <input type="text" name="email" placeholder="Email Address" class="form-control form-control-lg mb-2" value="<%=authuser.email%>">
+                      <input type="text" name="email" placeholder="Email Address" class="form-control form-control-lg mb-2" value="<%=authuser.email%>" required>
                       <div class="d-flex align-items-center mt-3 mb-5 justify-content-end flex-wrap">
                         <% if (authuser.email) { %>
                           <div class="d-flex form-check align-items-center w-100 mb-4">
@@ -317,27 +317,27 @@
                         <label for="select-input" class="form-label">Delete my Message after :</label>
                           <select name="autoDeleteConversation" class="form-select" id="select-input">
                             <option value="never"
-                            <% if (!authuser.settings.message_expiring) { %>
+                            <% if (!authuser.settings.messageExpiring) { %>
                                selected
                             <% } %>
                             >Never</option> 
                             <option value="1"
-                            <% if (authuser.settings.message_expiring === '1') { %>
+                            <% if (authuser.settings.messageExpiring === 1) { %>
                                 selected
                             <% } %>
                             >1 days</option> 
                             <option value="3"
-                            <% if (authuser.settings.message_expiring === '3') { %>
+                            <% if (authuser.settings.messageExpiring === 3) { %>
                                 selected
                             <% } %>
                             >3 days</option> 
                             <option value="7"
-                            <% if (authuser.settings.message_expiring === '7') { %>
+                            <% if (authuser.settings.messageExpiring === 7) { %>
                                 selected
                             <% } %>
                             >1 weeks</option> 
                             <option value="30"
-                            <% if (authuser.settings.message_expiring === '30') { %>
+                            <% if (authuser.settings.messageExpiring === 30) { %>
                                 selected
                             <% } %>
                             >≈ 1 months (30days)</option> 
@@ -395,32 +395,32 @@
                           <label for="select-input" class="form-label">Delete my Provided Information after : </label>
                           <select name="autoDeleteProvidedInfo" class="form-select mb-4" id="select-input">
                             <option value="never"
-                              <% if (!authuser.settings.info_expiring) { %>
+                              <% if (!authuser.settings.privateInfoExpiring) { %>
                                  selected
                               <% } %>
                               >Never</option> 
-                              <option value="0"
-                              <% if (authuser.settings.info_expiring === '0') { %>
+                              <option value="-1"
+                              <% if (authuser.settings.privateInfoExpiring === -1) { %>
                                   selected
                               <% } %>
                               >Instantly</option> 
                               <option value="1"
-                              <% if (authuser.settings.info_expiring === '1') { %>
+                              <% if (authuser.settings.privateInfoExpiring === 1) { %>
                                   selected
                               <% } %>
                               >1 days</option> 
                               <option value="3"
-                              <% if (authuser.settings.info_expiring === '3') { %>
+                              <% if (authuser.settings.privateInfoExpiring === 3) { %>
                                   selected
                               <% } %>
                               >3 days</option> 
                               <option value="7"
-                              <% if (authuser.settings.info_expiring === '7') { %>
+                              <% if (authuser.settings.privateInfoExpiring === 7) { %>
                                   selected
                               <% } %>
                               >1 weeks</option> 
                               <option value="30"
-                              <% if (authuser.settings.info_expiring === '30') { %>
+                              <% if (authuser.settings.privateInfoExpiring === 30) { %>
                                   selected
                               <% } %>
                               >≈ 1 months (30days)</option> 
@@ -445,27 +445,27 @@
                         <label for="select-input" class="form-label mt-0">Delete my Account after:</label>
                         <select name="autoDeleteAccount" class="form-select mb-4" id="select-input">
                           <option value="never"
-                            <% if (!authuser.settings.user_expiring) { %>
+                            <% if (!authuser.settings.userExpiring) { %>
                                selected
                             <% } %>
                             >Never</option> 
                             <option value="7"
-                            <% if (authuser.settings.user_expiring === 7) { %>
+                            <% if (authuser.settings.userExpiring === 7) { %>
                                 selected
                             <% } %>
                             >1 week</option> 
                             <option value="14"
-                            <% if (authuser.settings.user_expiring === 14) { %>
+                            <% if (authuser.settings.userExpiring === 14) { %>
                                 selected
                             <% } %>
                             >2 weeks</option> 
                             <option value="30"
-                            <% if (authuser.settings.user_expiring === 30) { %>
+                            <% if (authuser.settings.userExpiring === 30) { %>
                                 selected
                             <% } %>
                             >≈ 1 months (30days)</option> 
                             <option value="365"
-                            <% if (authuser.settings.user_expiring === 365) { %>
+                            <% if (authuser.settings.userExpiring === 365) { %>
                                 selected
                             <% } %>
                             >1 years</option> 

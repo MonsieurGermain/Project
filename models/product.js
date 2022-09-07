@@ -120,11 +120,11 @@ const productSchema = new mongoose.Schema({
    details: {
       type: Array,
    },
-   default_price: {
+   originalPrice: {
       // Put Sales Related data in a new Schema salesSchema
       type: Number,
    },
-   sales_time: {
+   salesDuration: {
       type: Number,
    },
    sales_end: {
@@ -146,6 +146,8 @@ const productSchema = new mongoose.Schema({
       unique: true,
    },
 });
+
+// productSchema.index({title:'text'})
 
 // Image Path
 productSchema.methods.UploadImg = function (filename, Old_Image) {
@@ -208,18 +210,26 @@ productSchema.methods.deleteProduct = async function () {
 };
 
 productSchema.methods.endSales = function () {
-   this.price = this.default_price;
+   this.price = this.originalPrice;
 
-   this.default_price = undefined;
-   this.sales_time = undefined;
+   this.originalPrice = undefined;
+   this.salesDuration = undefined;
    this.sales_end = undefined;
 };
 
-productSchema.methods.startSales = function (price, sales_price, sales_time) {
-   this.default_price = price;
-   this.price = sales_price;
-   this.sales_time = sales_time;
-   this.sales_end = Date.now() + 86400000 * sales_time;
+productSchema.methods.startSales = function (price, salesPrice, salesDuration) {
+   this.originalPrice = price;
+   this.price = salesPrice;
+   this.salesDuration = salesDuration;
+   this.sales_end = Date.now() + 86400000 * salesDuration;
 };
+
+
+productSchema.statics.findOneOrCreateNew = async function(productSlug, productVendor) {
+   const product = await this.findOne({slug: productSlug, vendor: productVendor})
+
+   if (product) return product
+   else return new this()
+}
 
 module.exports = mongoose.model('Product', productSchema);

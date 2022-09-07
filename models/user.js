@@ -21,14 +21,14 @@ const reviewSchema = new mongoose.Schema({
 });
 
 const settingsSchema = new mongoose.Schema({
-   message_expiring: {
-      type: String,
-   },
-   info_expiring: {
-      type: String,
-   },
-   user_expiring: {
+   messageExpiring: {
       type: Number,
+   },
+   privateInfoExpiring: {
+      type: Number,
+   },
+   userExpiring: { 
+      type: Number
    },
    deleteEmptyConversation: {
       type: Boolean,
@@ -91,7 +91,7 @@ const userSchema = new mongoose.Schema({
    },
    settings: {
       type: settingsSchema,
-      default: {message_expiring: '7', info_expiring: '7', deleteEmptyConversation: true, recordSeeingMessage: false},
+      default: {messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false},
       required: true,
    },
    job: {
@@ -129,6 +129,7 @@ const userSchema = new mongoose.Schema({
    },
 });
 
+
 userSchema.methods.UploadImg = function (file) {
    if (this.img_path) deleteImage(`./public/${this.img_path}`);
    const newImg_path = `/uploads/user-img/${this.username}${isolate_mimetype(file.mimetype, '/')}`;
@@ -138,8 +139,8 @@ userSchema.methods.UploadImg = function (file) {
    this.img_path = newImg_path;
 };
 
-userSchema.methods.Update_IncativeDate = function () {
-   if (this.settings.user_expiring) this.expire_at = Date.now() + this.settings.user_expiring * 86400000;
+userSchema.methods.updateInactiveDate = function () {
+   this.expire_at = Date.now() + this.settings.userExpiring * 86400000;
 };
 
 userSchema.methods.Add_Remove_Saved_Product = function (id) {
@@ -181,5 +182,6 @@ userSchema.methods.offlineAllUserProducts = async function () {
       userProducts[i].save();
    }
 };
+
 
 module.exports = mongoose.model('User', userSchema);

@@ -150,7 +150,12 @@
                 <p class="mb-1">Status: <span><%- include('partials/Status-order', {status : orders.results[i].status}) %></span></p>
               </div>
               <h3 class="h4">
-                <a href="<%=orders.results[i].link%>"><%=orders.results[i].product_title%></a>
+                <a href="<%=orders.results[i].link%>">
+                  <% if (orders.results[i].product_title.length > 75) { %>
+                    <%=orders.results[i].product_title.slice(0, 75)%>...
+                  <% } else { %>
+                    <%=orders.results[i].product_title%>
+                  <% } %></a>
               </h3>
   
               <span>
@@ -206,7 +211,7 @@
             </span>
             <% } %>
   
-            <% if (orders.results[i].timer) { %>
+            <% if (orders.results[i].Formated_Timers) { %>
             <span class="ms-5">
                 <p class="mb-0">Time Left:</p>
                 <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
@@ -232,7 +237,13 @@
                 <div class="d-flex align-items-center mt-3">
                   <span class="me-5">
                     <p class="mb-0">Buyer Info:</p>
-                    <p class="mb-0" style="max-width: 80%;"><%=orders.results[i].messages[0].content%></p>
+                    <p class="mb-0">
+                      <% if (orders.results[i].messages[0]) { %>
+                        <%=orders.results[i].messages[0].content%>
+                      <% } else { %>
+                        This user as submit his info yet
+                      <% } %>
+                    </p>
                   </span>
   
                   <% if (orders.results[i].status === 'awaiting_shipment') { %>

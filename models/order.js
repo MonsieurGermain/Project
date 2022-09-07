@@ -117,23 +117,14 @@ orderSchema.methods.Reset_Timer = function () {
    return this;
 };
 
-async function returnUser_infoSettings(username) {
-   const user = await User.findOne({username: username});
-   return user.settings.info_expiring;
-}
-
 orderSchema.methods.Apply_buyerDeleteInfo = async function (settings) {
-   // if (!settings) {
-   //     await returnUser_infoSettings(this.buyer)
-   // }
-
    // Delete Provided Info
-   if (settings.info_expiring === 0) {
+   if (settings.privateInfoExpiring === -1) {
       this.timer = undefined;
       this.submited_info = [];
-   } // Instantly Del
-   else if (settings.info_expiring && settings.info_expiring !== 0) this.timer = Date.now() + settings.info_expiring * 86400000; //Set timer until Auto Del
-   else if (!settings.info_expiring) this.timer = undefined; //Never Delete Auto Del
+   }
+   else if (settings.privateInfoExpiring) this.timer = Date.now() + settings.privateInfoExpiring * 86400000; //Set timer until Auto Del
+   else this.timer = undefined; //Never Delete Auto Del
 
    return this;
 };
@@ -195,5 +186,26 @@ orderSchema.methods.deleteOrder = async function () {
    await this.handleOrderDeletion();
    await this.delete();
 };
+
+orderSchema.statics.findByIdwhereYouBuyer = async function(orderId, userUsername) {
+   const order = await this.findById(orderId)
+
+   if (userUsername !== order.buyer) throw new Error('You are not the Buyer of this Order')
+   else return order
+}
+
+orderSchema.statics.findByIdwhereYouBuyerVendor = async function(orderId, userUsername) {
+   const order = await this.findById(orderId)
+
+   if (userUsername !== order.buyer && userUsername !== order.vendor) throw new Error('You are not the Buyer or Vendor of this Order')
+   else return order
+}
+
+orderSchema.statics.findByIdwhereYouBuyerVendorAdmin = async function(orderId, userUsername) {
+   const order = await this.findById(orderId)
+
+   if (userUsername !== order.buyer && userUsername !== order.vendor && userUsername !== order.admin) throw new Error('You are not Part of this Order')
+   else return order
+}
 
 module.exports = mongoose.model('Order', orderSchema);

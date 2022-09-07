@@ -6,12 +6,12 @@ const Report = require('../models/report');
 const Product = require('../models/product');
 const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
-const {FetchData, ValidateValueByChoice, isOrder_Admin, Validate_disputeWinner, validateReports, isHimself, validateResolveReport} = require('../middlewares/validation');
-const {Format_Username_Settings, paginatedResults} = require('../middlewares/function');
+const {validateReports, validateResolveReport} = require('../middlewares/validation');
+const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
 
 function hideBuyerUsername(disputes) {
    for (let i = 0; i < disputes.length; i++) {
-      disputes[i].buyer = Format_Username_Settings(disputes[i].buyer, disputes[i].privacy);
+      disputes[i].buyer = formatUsernameWithSettings(disputes[i].buyer, disputes[i].privacy);
    }
    return disputes;
 }
@@ -24,32 +24,40 @@ function constructQuery(query) {
    return mongooseQuery;
 }
 
-// User Post Report // Where Should I put that ?
-async function check_ifReported_objectExist(req, res, next) {
-   try {
-      switch (req.query.type) {
-         case 'vendor':
-            await User.findOne({username: req.params.id}).orFail(new Error(''));
-            break;
-         case 'product':
-            await Product.findOne({slug: req.params.id}).orFail(new Error(''));
-            break;
-      }
-      next();
-   } catch (e) {
-      console.log('Invalid Reported Items');
-      res.redirect('/error');
+function validateData(value, acceptedValues) {
+   for (let i = 0; i < acceptedValues.length; i++) {
+      if (acceptedValues[i] === value) return true;
    }
+   return;
 }
-router.post(
-   '/report/:id',
-   Need_Authentification,
-   validateReports,
-   isHimself({url: ['/profile/', ['user', 'username'], '?productPage=1&reviewPage=1'], message: 'Why do you want to report Yourself ?'}, ['params', 'id']),
-   ValidateValueByChoice(['query', 'type'], ['vendor', 'product']),
-   check_ifReported_objectExist,
+
+
+router.post('/report/:id', Need_Authentification, validateReports,
+   (req,res, next) => { 
+      try { 
+         if (req.params.id === req.user.username) throw new Error('Why do you want to report Yourself ?')
+
+         next()
+      } catch (e) {
+         req.flash('error', e.msg)
+         res.redirect(`/profile/${req.params.id}?productPage=1&reviewPage=1`)
+      }
+   },
    async (req, res) => {
       try {
+         if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
+
+         switch (req.query.type) {
+            case 'vendor':
+               await User.findOne({username: req.params.id}).orFail(new Error());
+               break;
+            case 'product':
+               await Product.findOne({slug: req.params.id}).orFail(new Error());
+               break;
+            default:
+               throw new Error()
+         }
+
          const {type} = req.query;
          const {id} = req.params;
          const {reason, username, message} = req.body;
@@ -68,19 +76,18 @@ router.post(
          res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
 
 // Admin Report
-router.get(
-   '/reports',
-   Need_Authentification, // isAdmin,
-   ValidateValueByChoice(['query', 'reason'], [undefined, 'scam', 'blackmail', 'information', 'other']),
-   ValidateValueByChoice(['query', 'archived'], [undefined, 'true', 'false']),
+router.get('/reports', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
+         if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid type to report')
+
          const query = constructQuery(req.query);
          query.ban_requested = {$exists: false};
 
@@ -89,18 +96,17 @@ router.get(
          res.render('admin-reports', {reports});
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/report-filter',
-   Need_Authentification, // isAdmin,
-   ValidateValueByChoice(['body', 'reason'], ['all', 'scam', 'blackmail', 'information', 'other']),
-   ValidateValueByChoice(['body', 'archived'], ['all', 'true', 'false']),
+router.post('/report-filter', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
          const {reason, archived} = req.body;
+
+         if (!validateData(reason, ['all', 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
+         if (!validateData(archived, ['all', 'true', 'false'])) throw new Error('Invalid type to report')
 
          let query = '?reportsPage=1';
 
@@ -110,43 +116,39 @@ router.post(
          res.redirect(`/reports${query}`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/archive-report/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Report, undefined, 'report'),
+router.post('/archive-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {report} = req;
+         const report = await Report.findById(req.params.id).orFail(new Error())
 
          report.archived = report.archived ? undefined : true;
 
          await report.save();
+
+         req.flash('success', 'Report Successfully Archived/Unarchived');
          res.redirect(`/reports?reportsPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/dismiss-report/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Report, undefined, 'report'),
+router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {report} = req;
+         const report = await Report.findById(req.params.id).orFail(new Error())
 
          await report.deleteReport();
 
-         req.flash('success', 'Report Solved');
+         req.flash('success', 'Report Successfully Dismissed');
          res.redirect(`/reports?reportsPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
@@ -165,15 +167,13 @@ async function getResolveReportDocuments(type, id) {
    }
    return {user, product};
 }
-router.post(
-   '/resolve-report/:id',
-   Need_Authentification, // isAdmin,
+router.post('/resolve-report/:id', Need_Authentification, // isAdmin,
    validateResolveReport,
-   FetchData(['params', 'id'], Report, undefined, 'report'),
    async (req, res) => {
       try {
-         const {report} = req;
-         const {message, ban, banReason} = req.body;
+         const report = await Report.findById(req.params.id).orFail(new Error())
+
+         const {message, ban, banReason} = req.body; // Why Message ?
 
          const {user, product} = await getResolveReportDocuments(report.type, report.reference_id);
 
@@ -185,7 +185,8 @@ router.post(
          user.warning++;
          if (user.warning > 5) {
             user.deleteUser();
-         } else user.save();
+         } 
+         else user.save();
 
          let flashMessage = 'The Vendor as been given a warning';
          if (ban) {
@@ -201,19 +202,19 @@ router.post(
          res.redirect(`/reports?reportsPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
 
+
 // Ban User
-router.get(
-   '/ban-user',
-   Need_Authentification, // isAdmin,
-   ValidateValueByChoice(['query', 'reason'], [undefined, 'scam', 'blackmail', 'information', 'other']),
-   ValidateValueByChoice(['query', 'archived'], [undefined, 'true', 'false']),
+router.get('/ban-user', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
+         if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid type to report')
+
          const query = constructQuery(req.query);
          query.ban_requested = {$exists: true};
 
@@ -222,18 +223,17 @@ router.get(
          res.render('admin-ban-user', {reports});
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/ban-user-filter',
-   Need_Authentification, // isAdmin,
-   ValidateValueByChoice(['body', 'reason'], ['all', 'scam', 'blackmail', 'information', 'other']),
-   ValidateValueByChoice(['body', 'archived'], ['all', 'true', 'false']),
+router.post('/ban-user-filter', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
          const {reason, archived} = req.body;
+
+         if (!validateData(reason, ['all', 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
+         if (!validateData(archived, ['all', 'true', 'false'])) throw new Error('Invalid type to report')
 
          let query = '?reportsPage=1';
 
@@ -243,17 +243,14 @@ router.post(
          res.redirect(`/ban-user${query}`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/dismiss-report/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Report, undefined, 'report'),
+router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {report} = req;
+         const report = await Report.findById(req.params.id).orFail(new Error())
 
          await report.deleteReport();
 
@@ -261,17 +258,15 @@ router.post(
          res.redirect(`/ban-user?reportsPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/ban-user/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Report, undefined, 'report'),
+router.post('/ban-user/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {report} = req;
+         const report = await Report.findById(req.params.id).orFail(new Error())
+
          const {user} = await getResolveReportDocuments(report.type, report.reference_id);
 
          await user.deleteUser();
@@ -281,15 +276,13 @@ router.post(
          res.redirect(`/ban-user?reportsPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
 
 // Disputes
-router.get(
-   '/disputes',
-   Need_Authentification, //isAdmin,
+router.get('/disputes', Need_Authentification, //isAdmin,
    async (req, res) => {
       try {
          const {adminDispute} = req.query;
@@ -303,17 +296,14 @@ router.get(
          res.render('admin-dispute-list', {disputes});
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/disputes/:id',
-   Need_Authentification, //isAdmin,
-   FetchData(['params', 'id'], Order, undefined, 'order'),
+router.post('/disputes/:id', Need_Authentification, //isAdmin,
    async (req, res) => {
       try {
-         const {order} = req;
+         const order = await Order.findById(req.params.id).orFail(new Error())
 
          order.admin = req.user.username;
 
@@ -322,19 +312,28 @@ router.post(
          res.redirect('/disputes');
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/settle-dispute/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Order, undefined, 'order'),
-   isOrder_Admin,
-   Validate_disputeWinner,
+router.post('/settle-dispute/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {order, winner} = req;
+         const order = await Order.findById(req.params.id).orFail(new Error())
+
+         if (order.admin !== req.user.username) throw new Error('Cant Access');
+
+         let winner;
+         switch(req.body.winner) {
+            case order.vendor:
+               winner = order.vendor;
+            break
+            case  order.buyer:
+               winner = order.buyer;
+            break
+            default : 
+             throw new Error('Invalid Winner')
+         }
 
          order.status = 'disputed';
          order.timer = Date.now() + 172800000;
@@ -346,36 +345,35 @@ router.post(
          res.redirect(`/disputes?adminDispute=true`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
 
 // Feedback
-router.get(
-   '/feedback',
-   Need_Authentification, // isAdmin,
-   ValidateValueByChoice(['query', 'reason'], [undefined, 'feedback', 'bug', 'help', 'other']),
-   ValidateValueByChoice(['query', 'archived'], [undefined, 'true', 'false']),
+router.get('/feedback', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         if (!validateData(req.query.reason, [undefined, 'feedback', 'bug', 'help', 'other'])) throw new Error('Invalid Reason to feedback')
+         if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid Archived Feedback')
+
          const feedbacks = await paginatedResults(Contactus, constructQuery(req.query), {page: req.query.feedbackPage, limit: 24});
 
          res.render('admin-feedbacks', {feedbacks});
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/feedback-filter',
-   Need_Authentification, // isAdmin,
-   ValidateValueByChoice(['body', 'reason'], ['all', 'feedback', 'bug', 'help', 'other']),
-   ValidateValueByChoice(['body', 'archived'], ['all', 'true', 'false']),
+router.post('/feedback-filter', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
          const {reason, archived} = req.body;
+
+         if (!validateData(reason, ['all', 'feedback', 'bug', 'help', 'other'])) throw new Error('Invalid Reason to feedback')
+         if (!validateData(archived, ['all', 'true', 'false'])) throw new Error('Invalid Archived Feedback')
+
 
          let query = '?feedbackPage=1';
 
@@ -385,17 +383,14 @@ router.post(
          res.redirect(`/feedback${query}`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/archive-feedback/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Contactus, undefined, 'feedback'),
+router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {feedback} = req;
+         const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          feedback.archived = feedback.archived ? undefined : true;
 
@@ -403,49 +398,41 @@ router.post(
          res.redirect(`/feedback?feedbackPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/delete-feedback/:id',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'id'], Contactus, undefined, 'feedback'),
+router.post('/delete-feedback/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {feedback} = req;
+         const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          await feedback.deleteContactUs();
 
          res.redirect(`/feedback?feedbackPage=1`);
       } catch (e) {
          console.log(e);
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
 
 // Promote
-router.get(
-   '/promote-user',
-   Need_Authentification, // isAdmin,
+router.get('/promote-user', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
          const users = await paginatedResults(User, {awaiting_promotion: {$exists: true}}, {page: req.query.usersPage, limit: 24});
 
          res.render('admin-promote', {users});
       } catch (e) {
-         res.redirect('/error');
+         res.redirect('/404');
       }
    }
 );
-router.post(
-   '/promote-user/:username',
-   Need_Authentification, // isAdmin,
-   FetchData(['params', 'username'], User, 'username', 'user'),
+router.post('/promote-user/:username', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         const {user} = req;
+         const user = await User.findOne({username: req.params.username}).orFail(new Error())
 
          user.awaiting_promotion = undefined;
          if (!req.query.decline) user.authorization = 'vendor';
@@ -455,7 +442,8 @@ router.post(
          req.flash('success', 'User Sucessfully Promoted');
          res.redirect(`/promote-user?usersPage=1`);
       } catch (e) {
-         res.redirect('/error');
+         console.log(e)
+         res.redirect('/404');
       }
    }
 );

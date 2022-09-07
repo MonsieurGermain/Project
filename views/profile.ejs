@@ -169,7 +169,7 @@
             <% if (!paginatedReviews.results.length) { %>
               <p>This Vendor doesnt have any Review yet</p>
           <% } else { %>
-            <%- include('partials/Reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage}) %>
+            <%- include('partials/Reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 5}) %>
           <% } %>
           </div>
 

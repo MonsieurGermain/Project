@@ -13,7 +13,6 @@ const StepVerificationSchema = new mongoose.Schema({
    },
    encrypted_code: {
       type: String,
-      required: true,
       unique: true,
    },
    type: {

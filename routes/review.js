@@ -5,8 +5,8 @@ const Review = require('../models/review');
 const User = require('../models/user');
 const Order = require('../models/order');
 const Product = require('../models/product');
-const {Validate_Reviews, FetchData, isOrder_Buyer} = require('../middlewares/validation');
-const {Format_Username_Settings} = require('../middlewares/function');
+const {Validate_Reviews} = require('../middlewares/validation');
+const {formatUsernameWithSettings} = require('../middlewares/function');
 
 function updateRating(review, note) {
    review.number_review += 1;
@@ -15,15 +15,16 @@ function updateRating(review, note) {
    return review;
 }
 
-router.post('/create-review/:id', Need_Authentification, FetchData(['params', 'id'], Order, undefined, 'order'), isOrder_Buyer, Validate_Reviews, async (req, res) => {
-   const {order} = req;
+router.post('/create-review/:id', Need_Authentification, Validate_Reviews, async (req, res) => {
    const {username} = req.user;
    const {note, type} = req;
+
+   const order = await Order.findByIdwhereYouBuyer(req.params.id, username)
 
    const review = new Review({
       product_slug: order.product_slug,
       vendor: order.vendor,
-      sender: Format_Username_Settings(username, type),
+      sender: formatUsernameWithSettings(username, type),
       content: req.body.review,
       note,
       type,
