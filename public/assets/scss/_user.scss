@@ -744,10 +744,77 @@ $width-docs-side-nav: 69%;
 }
 
 .footer-container {
-   &>div {
-      @media (max-width: 640px) {
-         padding-left: 10%!important;
-         padding-right: 10%!important;
+   h6 {
+      margin: 0px;
+      >label {
+         color: #fff;
+         text-decoration: none;
+         cursor: pointer;
+         .dropdown-symbol {
+            margin-left: 2px;
+            margin-bottom: 3px;
+            display: inline-block;
+            transition: 0.2s transform ease-in-out;
+            transform: rotate(0deg);
+         }
+      }
+   }
+   .useful-links-wrap {
+      transition: all 0.5s;
+      height: 35px;
+      overflow: hidden;
+   }
+   .social-links-wrap {
+      transition: all 0.5s;
+      height: 35px;
+      overflow: hidden;
+   }
+   [for="useful-links-checkbox"]>a::after {
+      transform: rotate(0deg);
+      transition: all 0.3s;
+   }
+   [for="social-links-checkbox"]>a::after {
+      transform: rotate(0deg);
+      transition: all 0.3s;
+   }
+
+   @media (max-width: 992px) {
+      padding-left: 10%!important;
+      padding-right: 10%!important;
+      .collapse {
+         padding-left: 30px;
+         overflow: hidden;
+         transition: height 0.5s;
+         display: block;
+      }
+   }
+   @media (min-width: $min-width-bp) {
+      .useful-links-wrap:hover {
+         height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;
+         .dropdown-symbol {
+            transform: rotate(180deg);
+         }
+      }
+      .social-links-wrap:hover {
+         height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;
+         .dropdown-symbol {
+            transform: rotate(180deg);
+         }
+      }
+   }
+}
+@media (max-width: $max-width-bp) {
+   #useful-links-checkbox:checked ~ .footer-container .useful-links-wrap {
+      height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;
+      .dropdown-symbol {
+         transform: rotate(180deg);
+      }
+   }
+
+   #social-links-checkbox:checked ~ .footer-container .social-links-wrap {
+      height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;
+      .dropdown-symbol {
+         transform: rotate(180deg);
       }
    }
 }
