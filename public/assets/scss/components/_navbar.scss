@@ -153,7 +153,7 @@ $drop-down-height: 4rem;
                 }
             }
             .docs-dropdown {
-                height: 190px;
+                height: calc($drop-down-height * 3 + 2px);
             }
         }
         &:not(:checked) ~ nav.main-navbar {
@@ -173,7 +173,7 @@ $drop-down-height: 4rem;
                 }
             }
             .nav-user-dropdown {
-                height: 360px;
+                height: calc($drop-down-height * 6 + 5px);
             }
         }
         &:not(:checked) ~ nav.main-navbar {
@@ -193,7 +193,7 @@ $drop-down-height: 4rem;
         }
         &:hover {
             .docs-dropdown {
-                height: 190px;
+                height: calc($drop-down-height * 3 + 2px);
             }
             .dropdown-caret {
                 transform: rotate(-180deg);
@@ -207,7 +207,7 @@ $drop-down-height: 4rem;
             }
             .nav-user-dropdown {
                 border-color: #800080!important;
-                height: 370px;
+                height: calc($drop-down-height * 6 + 5px);
             }
         }
         &:not(:hover) {
