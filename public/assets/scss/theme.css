@@ -12498,6 +12498,9 @@ hr.dropdown-divider {
   #mobile-menu-dropdown-checkbox-2:checked ~ nav.main-navbar .nav-user-dropdown {
     height: calc(24rem + 5px);
   }
+  #mobile-menu-dropdown-checkbox-2:checked ~ nav.main-navbar .nav-user-dropdown.vendor {
+    height: calc(28rem + 6px);
+  }
   #mobile-menu-dropdown-checkbox-2:not(:checked) ~ nav.main-navbar .nav-user-dropdown {
     height: 0px;
   }
@@ -12518,6 +12521,9 @@ hr.dropdown-divider {
   .user-profile-container:hover .nav-user-dropdown {
     border-color: #800080 !important;
     height: calc(24rem + 5px);
+  }
+  .user-profile-container:hover .nav-user-dropdown.vendor {
+    height: calc(28rem + 6px);
   }
   .user-profile-container:not(:hover) .nav-user-dropdown {
     height: 0px;
