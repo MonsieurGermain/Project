@@ -4,7 +4,7 @@ const Product = require('../models/product');
 const Review = require('../models/review');
 const User = require('../models/user');
 const {Need_Authentification, isVendor} = require('../middlewares/authentication');
-const {Validate_Product, FetchData, isProduct_Vendor, validateSlugParams} = require('../middlewares/validation');
+const {Validate_Product} = require('../middlewares/validation');
 const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 const Fuse = require('fuse.js');
@@ -126,7 +126,7 @@ router.get('/create-product', Need_Authentification, isVendor,
 );
 
 //POST
-router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), async (req, res) => {
+router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Product, async (req, res) => {
    try {
       const {
          title,

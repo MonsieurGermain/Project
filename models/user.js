@@ -21,14 +21,14 @@ const reviewSchema = new mongoose.Schema({
 });
 
 const settingsSchema = new mongoose.Schema({
-   message_expiring: {
-      type: String,
-   },
-   info_expiring: {
-      type: String,
-   },
-   user_expiring: {
+   messageExpiring: {
       type: Number,
+   },
+   privateInfoExpiring: {
+      type: Number,
+   },
+   userExpiring: { 
+      type: Number
    },
    deleteEmptyConversation: {
       type: Boolean,
@@ -91,7 +91,7 @@ const userSchema = new mongoose.Schema({
    },
    settings: {
       type: settingsSchema,
-      default: {message_expiring: '7', info_expiring: '7', deleteEmptyConversation: true, recordSeeingMessage: false},
+      default: {messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false},
       required: true,
    },
    job: {
@@ -140,7 +140,7 @@ userSchema.methods.UploadImg = function (file) {
 };
 
 userSchema.methods.updateInactiveDate = function () {
-   this.expire_at = Date.now() + this.settings.user_expiring * 86400000;
+   this.expire_at = Date.now() + this.settings.userExpiring * 86400000;
 };
 
 userSchema.methods.Add_Remove_Saved_Product = function (id) {

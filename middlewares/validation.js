@@ -87,44 +87,10 @@ function ValidateText(value, name, {minlength = 3, maxlength = 50, isRequired = 
    return value;
 }
 
-exports.ValidateValueByChoice = (path, allowed_value) => {
-   return (req, res, next) => {
-      try {
-         const value = req[path[0]][path[1]];
-
-         if (!compareArray(allowed_value, value)) throw new Error(`Invalid ${path[0]} ${path[1]} Value`);
-         next();
-      } catch (e) {
-         console.log(e);
-         res.redirect('/error');
-      }
-   };
-};
-
 async function Fetch_inDatabase(model, query, value) {
    if (query) return await model.findOne({[query]: value});
    else return await model.findById(value);
 }
-
-exports.FetchData = (path, model, query, varName) => {
-   return async (req, res, next) => {
-      try {
-         const value = req[path[0]][path[1]];
-
-         if (!value) throw new Error(`${path[0]} ${path[1]} Empty`);
-         if (typeof value !== 'string') throw new Error(`${path[0]} ${path[1]} isnt a String`);
-         if (value.length > 200) throw new Error(`${path[0]} ${path[1]} is too long`);
-
-         req[varName] = await Fetch_inDatabase(model, query, value);
-         if (!req[varName]) throw new Error(`${path[0]} ${path[1]} Invalid`);
-
-         next();
-      } catch (e) {
-         console.log(e);
-         res.redirect('/404');
-      }
-   };
-};
 
 exports.ValidateNumber = (path, {min = 1, max = 99999} = {}) => {
    let value = req[path[0]][path[1]];
@@ -201,7 +167,7 @@ exports.Validate_Conversation = (req, res, next) => {
 
       next();
    } catch (e) {
-      res.redirect(`/error`);
+      res.redirect(`/404`);
    }
 };
 exports.Validate_Message = (req, res, next) => {
@@ -209,7 +175,7 @@ exports.Validate_Message = (req, res, next) => {
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 2, maxlength: 1000});
       next();
    } catch (e) {
-      res.redirect(`/error`);
+      res.redirect(`/404`);
    }
 };
 
@@ -227,7 +193,7 @@ exports.Validate_Reviews = (req, res, next) => {
 
       next();
    } catch (e) {
-      res.redirect(`/error`);
+      res.redirect(`/404`);
    }
 };
 exports.Validate_Profile = (req, res, next) => {
@@ -425,28 +391,6 @@ exports.Validate_AutoDel_Settings = (req, res, next) => {
       res.redirect(url);
    }
 };
-exports.Validate_disputeWinner = async (req, res, next) => {
-   try {
-      if (req.body.winner === req.order.vendor) req.winner = req.order.vendor;
-      else req.winner = req.order.buyer;
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/error');
-   }
-};
-exports.Validate_Email = (req, res, next) => {
-   try {
-      if (!req.body.email) {
-         req.body.email = undefined;
-         next();
-      } else if (isEmail(req.body.email)) next();
-      else throw new Error('Invalid Email Address');
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?sec=security`);
-   }
-};
 exports.Validate_SearchInput = (req, res, next) => {
    try {
       // Search
@@ -468,32 +412,6 @@ exports.Validate_Code = (req, res, next) => {
    } catch (e) {
       req.flash('error', e.message);
       res.redirect(`/2fa?type=${req.query.type}`);
-   }
-};
-exports.Validate_Pgp_Verification = (req, res, next) => {
-   try {
-      req.body.pgp_verification = ValidateText(req.body.pgp_verification, 'Pgp Verification Code', {maxlength: 250});
-
-      if (req.body.pgp_verification !== req.user.pgp_keys_verification_words) throw new Error('Invalid Code... try Again');
-
-      next();
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?sec=security`);
-   }
-};
-function is_pgpKeys(pgpKeys) {
-   if (pgpKeys) return true;
-   return false;
-}
-exports.Validate_Pgp = (req, res, next) => {
-   try {
-      // Validate User Pgp Keys
-      if (!is_pgpKeys(req.body.pgp)) throw new Error('You pgp Key is Invalid');
-      next();
-   } catch (e) {
-      req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?sec=security`);
    }
 };
 
@@ -551,43 +469,23 @@ exports.validateReports = (req, res, next) => {
       next();
    } catch (e) {
       console.log(e);
-      res.redirect('/error');
+      res.redirect('/404');
    }
 };
 
-function joinArray(array, req) {
-   let joinedString = '';
-   for (let i = 0; i < array.length; i++) {
-      console.log(array[i]);
-      if (typeof array[i] !== 'string') joinedString += `${req[array[i][0]][array[i][1]]}`;
-      else joinedString += array[i];
-   }
-   return joinedString;
-}
+// function joinArray(array, req) {
+//    let joinedString = '';
+//    for (let i = 0; i < array.length; i++) {
+//       console.log(array[i]);
+//       if (typeof array[i] !== 'string') joinedString += `${req[array[i][0]][array[i][1]]}`;
+//       else joinedString += array[i];
+//    }
+//    return joinedString;
+// }
+
 // Params Query Validation
 // Product
-exports.isProduct_Vendor = async (req, res, next) => {
-   try {
-      if (req.user.username !== req.product.vendor) throw new Error('Cant Access');
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
 
-exports.validateSlugParams = async (req, res, next) => {
-   try {
-      if (!req.params.slug) throw new Error(`The Slug Params Empty`);
-      if (typeof req.params.slug !== 'string') throw new Error(`The Slug Params isnt a String`);
-      if (req.params.slug.length > 200) throw new Error(`The Slug Params is too long`);
-
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
 // Orders
 exports.isOrder_Buyer = async (req, res, next) => {
    try {
@@ -616,15 +514,7 @@ exports.isOrder_Part = async (req, res, next) => {
       res.redirect('/404');
    }
 };
-exports.isOrder_Admin = async (req, res, next) => {
-   try {
-      if (req.user.username === req.order.admin) next();
-      else throw new Error('Cant Access');
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
+
 
 // USERS
 exports.paramsUsername_isReqUsername = async (req, res, next) => {
@@ -680,15 +570,5 @@ exports.Validate_OrderCustomization = async (req, res, next) => {
       console.log(e);
       req.flash('error', e.message);
       res.redirect(`/order/${req.params.slug}`);
-   }
-};
-
-exports.Validate_Query_Url = async (req, res, next) => {
-   try {
-      if (!req.query.url) req.query.url = '/';
-      if (IsNot_String(req.query.url)) throw new Error('Invalid Query Url');
-      next();
-   } catch (e) {
-      res.redirect('/error');
    }
 };

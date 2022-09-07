@@ -5,13 +5,13 @@ const Conversation = require('../models/conversation');
 const Product = require('../models/product');
 const Review = require('../models/review');
 const {Need_Authentification, isBuyer} = require('../middlewares/authentication');
-const {Validate_Profile, FetchData, paramsUsername_isReqUsername} = require('../middlewares/validation');
+const {Validate_Profile, paramsUsername_isReqUsername} = require('../middlewares/validation');
 const {uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 // Route
-router.get('/profile/:username', FetchData(['params', 'username'], User, 'username', 'vendor'), async (req, res) => {
+router.get('/profile/:username', async (req, res) => {
    try {
-      const {vendor} = req;
+      const vendor = await User.findOne({username: req.params.username}).orFail('This User doesnt Exist')
       vendor.description = sanitizeHTML(vendor.description);
 
       const productQuery = req.user && req.params.username === req.user.username ? {vendor: vendor.username} : {vendor: vendor.username, status: 'online'};
@@ -107,9 +107,11 @@ router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isRe
 });
 
 // Where to put that
-router.post('/awaiting-promotion', Need_Authentification, isBuyer, async (req, res) => {
+router.post('/awaiting-promotion', Need_Authentification, async (req, res) => {
    try {
       const {user} = req;
+
+      if (user.authorization !== 'buyer') throw new Error('You are already a Vendor')
 
       user.awaiting_promotion = true;
 
@@ -118,7 +120,8 @@ router.post('/awaiting-promotion', Need_Authentification, isBuyer, async (req, r
       req.flash('success', 'You submission to become a Vendor as been send');
       res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
    } catch (e) {
-      res.redirect('/404');
+      req.flash('error', e.message);
+      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
    }
 });
 

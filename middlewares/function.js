@@ -199,8 +199,23 @@ exports.IsNot_Number = (value) => {
 };
 
 exports.isEmail = (email) => {
+   if (!email || typeof(email) !== 'string') return undefined
    return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 };
+
+exports.isPgpKeys = (pgpKeys) => { 
+   if (!pgpKeys || typeof(pgpKeys) !== 'string') return undefined
+   if (pgpKeys.length > 10000 || pgpKeys.length < 1) return undefined
+   
+   return true
+}
+
+exports.isMoneroAddress = (address) => {
+   if (!address || typeof(address) !== 'string') return undefined
+   if (address.length > 106 || address.length < 95) return undefined
+   
+   return true
+}
 
 var randomWords = require('random-words');
 exports.RandomList_ofWords = function (number) {
@@ -210,8 +225,4 @@ exports.RandomList_ofWords = function (number) {
       merged_word += ' ' + randomSentence[i];
    }
    return merged_word;
-};
-
-exports.validatePgpKeys = function (pgpKeys) {
-   return true;
 };

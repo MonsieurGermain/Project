@@ -85,8 +85,7 @@ function Create_New_Message(Message, Sender, sender_1, conversationSettings, use
 
    if (userSettings.recordSeeingMessage && conversationSettings.type === 'default') New_Message.messageView = false; // Saw Message
 
-   if (userSettings.message_expiring === 'seeing') New_Message.expire_at = 'seeing';
-   else if (userSettings.message_expiring) New_Message.expire_at = Date.now() + userSettings.message_expiring * 86400000;
+   if (userSettings.messageExpiring) New_Message.expire_at = Date.now() + userSettings.messageExpiring * 86400000;
 
    return New_Message;
 }

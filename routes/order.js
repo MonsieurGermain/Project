@@ -5,11 +5,18 @@ const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const {
-   ValidateValueByChoice,
    paramsUsername_isReqUsername,
    Validate_OrderCustomization,
 } = require('../middlewares/validation');
 const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
+
+
+function validateData(value, acceptedValues) {
+   for (let i = 0; i < acceptedValues.length; i++) {
+      if (acceptedValues[i] === value) return true;
+   }
+   return;
+}
 
 function calculateOrderPrice(base_price, qty, ship_opt_price, selection_1_price, selection_2_price) {
 
@@ -323,13 +330,11 @@ function constructOrdersQuery(query, user) {
 }
 
 router.get('/orders/:username', Need_Authentification, paramsUsername_isReqUsername,
-   ValidateValueByChoice(
-      ['body', 'status'],
-      [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed']
-   ),
-   ValidateValueByChoice(['body', 'clientsOrders'], [undefined, 'true']),
    async (req, res) => {
       try {
+         if (!validateData(req.body.status, [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid type to report')
+         if (!validateData(req.body.clientsOrders, [undefined, 'true'])) throw new Error('Invalid type to report')
+
          const query = constructOrdersQuery(req.query, req.user);
 
          let orders = await paginatedResults(Order, query, {page: req.query.ordersPage, limit: 24});
@@ -345,13 +350,11 @@ router.get('/orders/:username', Need_Authentification, paramsUsername_isReqUsern
 );
 
 router.post('/filter-orders', Need_Authentification,
-   ValidateValueByChoice(
-      ['body', 'status'],
-      ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed']
-   ),
-   ValidateValueByChoice(['body', 'clientsOrders'], [undefined, 'true', 'false']),
    async (req, res) => {
       try {
+         if (!validateData(req.body.status, ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid type to report')
+         if (!validateData(req.body.clientsOrders, ['body', 'clientsOrders'])) throw new Error('Invalid type to report')
+
          const {status, clientsOrders} = req.body;
 
          let query = '?ordersPage=1';

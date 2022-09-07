@@ -49,7 +49,7 @@ router.post('/login', Should_Not_Be_Authenticated, Validate_Login,
          if (!user) throw new Error('Username or Password Invalid')
          if (!bcrypt.compareSync(password, user.password)) throw new Error('Username or Password Invalid');
 
-         if (user.settings.user_expiring) user.updateInactiveDate();
+         if (user.settings.userExpiring) user.updateInactiveDate();
          user.save();
 
          if (user.settings.step_verification) {

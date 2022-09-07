@@ -207,7 +207,7 @@ router.delete('/delete-conversation/:id', Need_Authentification, async (req, res
 
       res.redirect(`/messages`);
    } catch (e) {
-      res.redirect('/error');
+      res.redirect('/404');
    }
 });
 

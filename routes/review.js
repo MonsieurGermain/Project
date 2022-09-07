@@ -5,7 +5,7 @@ const Review = require('../models/review');
 const User = require('../models/user');
 const Order = require('../models/order');
 const Product = require('../models/product');
-const {Validate_Reviews, FetchData} = require('../middlewares/validation');
+const {Validate_Reviews} = require('../middlewares/validation');
 const {formatUsernameWithSettings} = require('../middlewares/function');
 
 function updateRating(review, note) {

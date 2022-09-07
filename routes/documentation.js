@@ -30,7 +30,7 @@ router.post('/contactus', validateContactUs, async (req,res) => {
         res.redirect('/contactus')
     } catch(e) {
         console.log(e)
-        res.redirect('/error')
+        res.redirect('/404')
     }
 })
 
