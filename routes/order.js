@@ -305,6 +305,7 @@ router.put('/update-order/:id', Need_Authentification, async (req, res) => {
 
       let redirect_url;
       if (req.query.fromOrders) {
+         console.log(req.query)
          if (req.query.status) redirect_url = `/orders/${user.username}?ordersPage=${req.query.ordersPage}&clientsOrders=true&status=${req.query.status}`;
          else redirect_url = `/orders/${user.username}?clientsOrders=true&ordersPage=${req.query.ordersPage}`
       }

@@ -126,7 +126,12 @@ router.get('/create-product', Need_Authentification, isVendor,
 );
 
 //POST
-router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), Validate_Product, async (req, res) => {
+router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), 
+async(req,res, next) => {
+   req.product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
+   next()
+},
+Validate_Product, async (req, res) => {
    try {
       const {
          title,
@@ -146,7 +151,7 @@ router.post('/create-product', Need_Authentification, uploadProductImg.single('p
          status,
       } = req.body;
 
-      const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
+      const {product} = req
 
       if (product.title !== title) {
          const isProductTitleTaken = await Product.findOne({title: title, vendor: req.user.username})

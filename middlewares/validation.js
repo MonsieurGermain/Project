@@ -345,6 +345,7 @@ exports.Validate_Product = (req, res, next) => {
 
       next();
    } catch (e) {
+      console.log(e)
       let url = `${req.url}`;
 
       if (req.file) {
