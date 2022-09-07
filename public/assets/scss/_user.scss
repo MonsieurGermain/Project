@@ -75,10 +75,12 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
          padding: 0px;
       }
       #change-messages:checked ~ .messages-container .chat {
-         display: none;
+         // display: none;
+         left: 100%!important;
       }
-      #change-messages:not(:checked) ~ .messages-container .contacts {
-         display: none;
+      #change-messages:checked ~ .messages-container .contacts {
+         // display: none;
+         left: 0px!important;
       }
    }
 
@@ -88,6 +90,9 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
       min-height: 0px;
       height: 100%;
       overflow: hidden;
+      @media (max-width: $max-width-bp) {
+         position: relative;
+      }
       @media (min-width: $min-width-bp) {
          $margin-y-message-container: 1.5rem;
          margin: 1.5rem 0px;
@@ -98,6 +103,13 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
          min-height: 0px;
          flex-direction: column;
          width: 100%;
+         @media (max-width: $max-width-bp) {
+            position: absolute;
+            width: 100%;
+            top: 0px;
+            left: -100%;
+            transition: left 0.5s;
+         }
          @media (min-width: $min-width-bp) {
             border-right: 1px solid $body-bg;
             width: 40%;
@@ -196,6 +208,14 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
       }
       .chat {
          flex-grow: 1;
+         height: 100%;
+         @media (max-width: $max-width-bp) {
+            position: absolute;
+            width: 100%;
+            top: 0px;
+            left: 0px;
+            transition: left 0.5s;
+         }
          .chat-body {
             display: flex;
             flex-direction: column;
