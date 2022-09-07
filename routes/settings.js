@@ -163,7 +163,7 @@ router.post('/verify-pgp', Need_Authentification, Validate_Pgp_Verification, asy
       user.pgp_keys_verification_words = undefined;
       user.pgp_keys_verification_words_encrypted = undefined;
 
-      updateConversationPgp(user.username, user.verifiedPgpKeys);
+      await updateConversationPgp(user.username, user.verifiedPgpKeys);
       await user.save();
 
       req.flash('success', 'Pgp Successfully Verified');
