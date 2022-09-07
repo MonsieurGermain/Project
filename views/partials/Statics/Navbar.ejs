@@ -27,12 +27,6 @@
                             <span class="menu-line"></span>
                         </div>
                     </label>
-                    <!-- <label id="open-mobile-menu" for="mobile-menu-button-checkbox" class="mobile-hamburger">
-                        <%- include ("../../public/assets/img/icons/hamburger-menu.svg") %>
-                    </label>
-                    <label id="close-mobile-menu" for="mobile-menu-button-checkbox" class="mobile-cross">
-                        <%- include ("../../public/assets/img/icons/cross.svg") %>
-                    </label> -->
                 </div>
             </div>
             <div class="nav-content">
@@ -56,7 +50,7 @@
                             <label for="mobile-menu-dropdown-checkbox-1"
                                 ><div>Docs
                                     <span class="dropdown-caret"
-                                        ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
+                                        ><%- include ("../../../public/assets/img/icons/caret-down.svg") %></span
                                     ></div></label
                             ></a
                         >
@@ -119,7 +113,7 @@
                                     </div>
                                     <div>
                                         <span class="dropdown-caret"
-                                            ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
+                                            ><%- include ("../../../public/assets/img/icons/caret-down.svg") %></span
                                         >
                                     </div>
                                 </div>
@@ -141,7 +135,7 @@
                                 </div>
                                 <div>
                                     <span class="dropdown-caret"
-                                        ><%- include ("../../public/assets/img/icons/caret-down.svg") %></span
+                                        ><%- include ("../../../public/assets/img/icons/caret-down.svg") %></span
                                     >
                                 </div>
                             </label>
@@ -156,14 +150,14 @@
                                 <% if (authuser.authorization === 'vendor') { %>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a href="/orders/<%=authuser.username%>?clientsOrders=true&ordersPage=1">
+                                    <a href="/orders?clientsOrders=true&ordersPage=1">
                                         <span><i class="bx bx-shopping-bag fs-base opacity-60 me-2"></i>Your Clients Order</span>
                                     </a>
                                 </li>
                                 <% } %>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a href="/orders/<%=authuser.username%>?ordersPage=1">
+                                    <a href="/orders?ordersPage=1">
                                         <span><i class="bx bx-shopping-bag fs-base opacity-60 me-2"></i>Your Orders</span>
                                     </a>
                                 </li>
@@ -179,7 +173,7 @@
                                 </li>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a href="/settings/<%=authuser.username%>?section=saved&productPage=1">
+                                    <a href="/settings?section=saved&productPage=1">
                                         <span>
                                             <i class="bx bx-heart fs-base opacity-60 me-2"></i>
                                             Saved Product
@@ -191,7 +185,7 @@
                                 </li>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a href="/settings/<%=authuser.username%>">
+                                    <a href="/settings?section=security">
                                         <!-- Change Icon -->
                                         <span><i class="bx bx-cog fs-base opacity-60 me-2"></i> Settings</span>
                                     </a>
@@ -244,7 +238,7 @@
                     </form>
 
                     <label for="search-checkbox" close-cross class="close-cross">
-                        <%- include ("../../public/assets/img/icons/close-cross.svg") %>
+                        <%- include ("../../../public/assets/img/icons/close-cross.svg") %>
                     </label>
                 </div>
                 <label class="search-box-clickout" for="search-checkbox"></label>

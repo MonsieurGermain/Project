@@ -1,10 +1,10 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: 'Order Details ' + product.title}) %>
 <body>
     <!-- Page wrapper for sticky footer -->
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
 
-        <%- include('partials/Navbar') %>
+        <%- include('partials/Statics/Navbar') %>
   
         <!-- Hero -->
         <section class="pt-2 pt-lg-3 pb-lg-4" >
@@ -13,7 +13,7 @@
             <nav class="py-4 mb-5" aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item">
-                        <a href="/orders/<%=authuser.username%>?ordersPage=1">Your Orders</a>
+                        <a href="/orders?ordersPage=1">Your Orders</a>
                     </li>
                   <li class="breadcrumb-item active" aria-current="page">Order Resume</li>
                 </ol>
@@ -257,7 +257,7 @@
 </div>
 </section>
 
-        <%- include('partials/Footer') %>
+        <%- include('partials/Statics/Footer') %>
       </main>
   
 </body>

@@ -33,17 +33,14 @@ function validateData(value, acceptedValues) {
 
 
 router.post('/report/:id', Need_Authentification, validateReports,
-   (req,res, next) => { 
+   async (req, res) => {
       try { 
          if (req.params.id === req.user.username) throw new Error('Why do you want to report Yourself ?')
-
-         next()
       } catch (e) {
-         req.flash('error', e.msg)
-         res.redirect(`/profile/${req.params.id}?productPage=1&reviewPage=1`)
+         req.flash('error', e.message);
+         res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
-   },
-   async (req, res) => {
+
       try {
          if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
 

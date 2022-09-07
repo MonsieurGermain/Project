@@ -7,8 +7,14 @@
             <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1"> <%=vendor.username%> </a>
          </h2>
          <p class="opacity-70 pb-4" style="max-height: 10rem; overflow: hidden">
-            <% if (vendor.description) { %> <% if (vendor.description.length > 50) { %> <%=vendor.description.slice(0, 50)%>... <% } else { %> <%=vendor.description%> <% } %> <% }
-            else { %> This Vendor doesnt have a description... <% } %>
+            <% if (vendor.description) { %>
+               <%=vendor.description.slice(0, 75)%>
+               <% if (vendor.description.length > 50) { %>
+                 ...
+               <% } %>
+            <% } else { %> 
+               This Vendor doesnt have a description...
+            <% } %>
          </p>
          <div class="d-flex flex-column flex-sm-row">
             <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1" class="btn btn-primary me-sm-4 mb-3 mb-sm-0"> See Profile </a>

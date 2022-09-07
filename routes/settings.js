@@ -7,7 +7,6 @@ const Conversation = require('../models/conversation');
 const bcrypt = require('bcrypt');
 const {
    Validate_Change_Password,
-   paramsUsername_isReqUsername,
 } = require('../middlewares/validation');
 const {paginatedResults, RandomNumber, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress} = require('../middlewares/function');
 
@@ -20,7 +19,7 @@ function validateData(value, acceptedValues) {
 }
 
 
-router.get('/settings/:username', Need_Authentification, paramsUsername_isReqUsername,
+router.get('/settings', Need_Authentification,
    async (req, res) => {
       try {
          if (!validateData(req.query.section, [undefined, 'security', 'privacy', 'payment', 'saved'])) throw new Error('Invalid Section Query');
@@ -53,10 +52,10 @@ router.post('/add-xmr-address', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', successMessage);
-      res.redirect(`/settings/${req.user.username}?section=payment`);
+      res.redirect(`/settings?section=payment`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=payment`);
+      res.redirect(`/settings?section=payment`);
    }
 });
 router.post('/add-xmr-refund-address', Need_Authentification, async (req, res) => {
@@ -73,10 +72,10 @@ router.post('/add-xmr-refund-address', Need_Authentification, async (req, res) =
       await user.save();
 
       req.flash('success', successMessage);
-      res.redirect(`/settings/${req.user.username}?section=payment`);
+      res.redirect(`/settings?section=payment`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=payment`);
+      res.redirect(`/settings?section=payment`);
    }
 });
 router.post('/delete-address', Need_Authentification, async (req, res) => {
@@ -101,10 +100,10 @@ router.post('/delete-address', Need_Authentification, async (req, res) => {
 
       await user.save();
 
-      res.redirect(`/settings/${req.user.username}?section=payment`);
+      res.redirect(`/settings?section=payment`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=payment`);
+      res.redirect(`/settings?section=payment`);
    }
 });
 
@@ -133,10 +132,10 @@ router.post('/add-pgp', Need_Authentification, async (req, res) => {
       console.log(user.pgp_keys_verification_words)
 
       req.flash('success', 'A new Pgp Keys as Been added, you just need Verify it');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    }
 });
 router.post('/delete-pgp', Need_Authentification, async (req, res) => {
@@ -152,7 +151,7 @@ router.post('/delete-pgp', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', 'Pgp Keys Successfully Deleted');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -174,7 +173,7 @@ router.post('/verify-pgp', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', 'Pgp Successfully Verified');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -200,10 +199,10 @@ router.post('/add-email', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', 'Email Address Successfully Added');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    }
 });
 router.post('/delete-email', Need_Authentification, async (req, res) => {
@@ -217,7 +216,7 @@ router.post('/delete-email', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', 'Email Address Successfully Deleted');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -235,10 +234,10 @@ router.post('/confirm-email', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', 'Email Successfully Verified');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    }
 });
 router.post('/resend-email-verification', Need_Authentification, async (req, res) => {
@@ -255,9 +254,9 @@ router.post('/resend-email-verification', Need_Authentification, async (req, res
       await user.save();
 
       req.flash('success', 'Verifaction Code Resended');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
-      res.redirect(`/settings/${req.user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    }
 });
 
@@ -282,10 +281,10 @@ router.post('/enable-2fa', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', '2 Step Verification Successfully Activated');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    }
 });
 router.post('/remove-2fa', Need_Authentification, async (req, res) => {
@@ -297,14 +296,14 @@ router.post('/remove-2fa', Need_Authentification, async (req, res) => {
       await user.save();
 
       req.flash('success', '2 Step Verification Successfully Removed');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       console.log(e);
       res.redirect(`/404`);
    }
 });
 
-router.put('/change-password/:username', Need_Authentification, paramsUsername_isReqUsername, Validate_Change_Password, async (req, res) => {
+router.put('/change-password', Need_Authentification, Validate_Change_Password, async (req, res) => {
    try {
       const {user} = req;
       const {password, newPassword} = req.body;
@@ -316,19 +315,21 @@ router.put('/change-password/:username', Need_Authentification, paramsUsername_i
       await user.save();
 
       req.flash('success', 'Password Successfully Changed');
-      res.redirect(`/settings/${user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/settings/${req.user.username}?section=security`);
+      res.redirect(`/settings?section=security`);
    }
 });
 
-router.delete('/delete-user/:username', Need_Authentification, paramsUsername_isReqUsername, async (req, res) => {
+router.delete('/delete-user', Need_Authentification, async (req, res) => {
    try {
       await req.user.deleteUser();
 
-      res.redirect('/logout');
+      req.logOut();      
+      res.redirect('/login');
    } catch (e) {
+      console.log('here')
       console.log(e);
       res.redirect('/404');
    }
@@ -349,7 +350,7 @@ router.post('/conversation-settings', Need_Authentification, async (req, res) =>
 
       await user.save();
 
-      res.redirect(`/settings/${user.username}?section=privacy`);
+      res.redirect(`/settings?section=privacy`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -366,7 +367,7 @@ router.post('/order-settings', Need_Authentification, async (req, res) => {
 
       await user.save();
 
-      res.redirect(`/settings/${user.username}?section=privacy`);
+      res.redirect(`/settings?section=privacy`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -384,7 +385,7 @@ router.post('/account-settings', Need_Authentification, async (req, res) => {
 
       await user.save();
 
-      res.redirect(`/settings/${user.username}?section=privacy`);
+      res.redirect(`/settings?section=privacy`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -410,7 +411,7 @@ router.post('/reset-privacy', Need_Authentification, async (req, res) => {
 
       await user.save();
 
-      res.redirect(`/settings/${user.username}?section=privacy`);
+      res.redirect(`/settings?section=privacy`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -431,7 +432,7 @@ router.post('/saved_product/:slug', Need_Authentification, async (req, res) => {
       user.Add_Remove_Saved_Product(req.params.slug);
 
       await user.save();
-      if (productPage) res.redirect(`/settings/${req.user.username}?section=saved&productPage=${productPage}`);
+      if (productPage) res.redirect(`/settings?section=saved&productPage=${productPage}`);
       else res.redirect(`${url}`);
    } catch (e) {
       console.log(e);

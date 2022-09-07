@@ -4,9 +4,10 @@ const User = require('../models/user');
 const Conversation = require('../models/conversation');
 const Product = require('../models/product');
 const Review = require('../models/review');
-const {Need_Authentification, isBuyer} = require('../middlewares/authentication');
-const {Validate_Profile, paramsUsername_isReqUsername} = require('../middlewares/validation');
-const {uploadUserImg, sanitizeHTML, paginatedResults} = require('../middlewares/function');
+const {copyFile} = require('fs');
+const {Need_Authentification} = require('../middlewares/authentication');
+const {Validate_Profile} = require('../middlewares/validation');
+const {uploadUserImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 // Route
 router.get('/profile/:username', async (req, res) => {
@@ -25,7 +26,7 @@ router.get('/profile/:username', async (req, res) => {
    }
 });
 
-router.get('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername, async (req, res) => {
+router.get('/edit-profile', Need_Authentification, async (req, res) => {
    try {
       const {user} = req;
       const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage});
@@ -82,7 +83,7 @@ async function updateConversationImg_Path(username, newImgPath) {
    }
 }
 
-router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isReqUsername, uploadUserImg.single('profileImg'), Validate_Profile, async (req, res) => {
+router.put('/edit-profile', Need_Authentification, uploadUserImg.single('profileImg'), Validate_Profile, async (req, res) => {
    try {
       const {user} = req;
       const {job, description, achievement, languages} = req.body;
@@ -104,7 +105,30 @@ router.put('/edit-profile/:username', Need_Authentification, paramsUsername_isRe
       console.log(e);
       res.redirect(`/404`);
    }
+}); 
+
+router.get('/reset-profile-picture', Need_Authentification, async (req, res) => {
+   try {
+      const {user} = req
+
+      deleteImage(`./public/${user.img_path}`);
+
+      user.img_path = `/uploads/user-img/${user.username}.png`;
+
+      copyFile('./public/default/default-profile-pic.png', `./public${user.img_path}`, (err) => {
+         if (err) throw err;
+      });
+
+      await user.save()
+
+      req.flash('success', 'Profile Picture Successfully Reseted');
+      res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
+   } catch (e) {
+      console.log(e);
+      res.redirect(`/404`);
+   }
 });
+
 
 // Where to put that
 router.post('/awaiting-promotion', Need_Authentification, async (req, res) => {

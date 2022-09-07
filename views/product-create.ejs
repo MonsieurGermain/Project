@@ -1,4 +1,4 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: 'Create Product'}) %>
 
 
 <body>
@@ -7,7 +7,7 @@
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
 
-      <%- include('partials/Navbar') %>
+      <%- include('partials/Statics/Navbar') %>
 
       <!-- Hero -->
       <section class="pt-2 pt-lg-3 pb-lg-4" >
@@ -398,7 +398,7 @@
 
       <!-- Review Section -->
         <h2 class="h3 mb-4 mt-4">Reviews :</h2>
-        <%- include('partials/Reviews', {reviews: reviews, nextPage: [1], padding: 4}) %>
+        <%- include('partials/Display_Data/Display-reviews', {reviews: reviews, nextPage: [1], padding: 4}) %>
 
           </div>
         </div>
@@ -407,6 +407,6 @@
 
 
     <!-- Footer -->
-    <%- include('partials/Footer') %>
+    <%- include('partials/Statics/Footer') %>
   </body>
 </html>

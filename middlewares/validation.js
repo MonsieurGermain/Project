@@ -2,7 +2,7 @@ const Product = require('../models/product');
 const Conversation = require('../models/conversation');
 const Order = require('../models/order');
 const User = require('../models/user');
-const {IsNot_String, Is_Smaller, Is_Bigger, compareArray, IsNot_Number, deleteImage, isEmail, validatePgpKeys} = require('./function');
+const {Is_Bigger, compareArray, IsNot_Number, deleteImage, isEmail, validatePgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -370,7 +370,7 @@ exports.Validate_Change_Password = (req, res, next) => {
 
       next();
    } catch (e) {
-      let url = `/settings/${req.user.username}?section=security`;
+      let url = `/settings?section=security`;
       req.flash('error', e.message);
       res.redirect(url);
    }
@@ -387,7 +387,7 @@ exports.Validate_AutoDel_Settings = (req, res, next) => {
 
       next();
    } catch (e) {
-      let url = `/settings/${req.user.username}?section=privacy`;
+      let url = `/settings?section=privacy`;
       req.flash('error', e.message);
       res.redirect(url);
    }
@@ -487,50 +487,6 @@ exports.validateReports = (req, res, next) => {
 // Params Query Validation
 // Product
 
-// Orders
-exports.isOrder_Buyer = async (req, res, next) => {
-   try {
-      if (req.user.username !== req.order.buyer) throw new Error('Cant Access');
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
-exports.isOrder_VendorOrBuyer = async (req, res, next) => {
-   try {
-      if (req.user.username !== req.order.buyer && req.user.username !== req.order.vendor) throw new Error('Cant Access');
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
-exports.isOrder_Part = async (req, res, next) => {
-   try {
-      if (req.user.username !== req.order.buyer && req.user.username !== req.order.vendor && req.user.username !== req.order.admin) throw new Error('Cant Access');
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
-
-
-// USERS
-exports.paramsUsername_isReqUsername = async (req, res, next) => {
-   try {
-      if (IsNot_String(req.params.username)) throw new Error('Params Username not String');
-      if (!req.params.username) throw new Error('Params Username Empty');
-
-      if (req.params.username !== req.user.username) throw new Error('Cant Access');
-
-      next();
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-};
 
 // Custom Validation
 

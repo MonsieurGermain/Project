@@ -1,10 +1,10 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: !query.section ? 'Security Settings' : query.section[0].toUpperCase() + query.section.slice(1, 8) + ' Settings'}) %>
 <body>
 
     
         <main class="page-wrapper">
 
-            <%- include('partials/Navbar') %>
+            <%- include('partials/Statics/Navbar') %>
 
           <!-- Breadcrumb -->
 
@@ -34,31 +34,31 @@
                     </div>
                     <h2 class="h5 mb-1"><%=authuser.username%></h2>
                     <p class="fs-sm mb-2"><%=authuser.job%></p>
-                    <a href='/edit-profile/<%=authuser.username%>?productPage=1&reviewPage=1' class="mb-3">Edit Profile</a>
+                    <a href='/edit-profile?productPage=1&reviewPage=1' class="mb-3">Edit Profile</a>
                     <hr class="my-2">
                     <div id="account-menu" class="list-group-flush d-md-block mt-3">
-                        <a href="/settings/<%=authuser.username%>?section=security" class="list-group-item  d-flex align-items-center border-0
+                        <a href="/settings?section=security" class="list-group-item  d-flex align-items-center border-0
                             <% if(!query.section || query.section === 'security') { %>
                                 active
                             <% } %>">
                             <i class="bx bx-lock-alt fs-xl opacity-60 me-2"></i>
                             Security Settings
                           </a>
-                      <a href="/settings/<%=authuser.username%>?section=privacy" class="list-group-item  d-flex align-items-center border-0
+                      <a href="/settings?section=privacy" class="list-group-item  d-flex align-items-center border-0
                         <% if(query.section === 'privacy') { %>
                             active
                         <% } %>">
                         <i class="bx bx-mask fs-xl opacity-60 me-2"></i>
                         Privacy Settings
                       </a>
-                      <a href="/settings/<%=authuser.username%>?section=payment" class="list-group-item  d-flex align-items-center border-0
+                      <a href="/settings?section=payment" class="list-group-item  d-flex align-items-center border-0
                         <% if(query.section === 'payment') { %>
                             active
                         <% } %>">
                         <i class='bx bxs-credit-card fs-xl opacity-60 me-2'></i>
                         Payment Settings
                       </a>
-                      <a href="/settings/<%=authuser.username%>?section=saved&productPage=1" class="list-group-item d-flex align-items-center border-0
+                      <a href="/settings?section=saved&productPage=1" class="list-group-item d-flex align-items-center border-0
                         <% if(query.section === 'saved') { %>
                             active
                         <% } %>">
@@ -66,12 +66,12 @@
                         Saved Items
                       </a>
                       <% if (authuser.authorization === 'vendor') { %>
-                        <a href="/orders/<%=authuser.username%>?clientsOrders=true&ordersPage=1" class="list-group-item d-flex align-items-center border-0">
+                        <a href="/orders?clientsOrders=true&ordersPage=1" class="list-group-item d-flex align-items-center border-0">
                           <i class="bx bx-shopping-bag fs-xl opacity-60 me-2"></i>
                           Your Clients Order
                         </a>
                       <% } %>
-                      <a href="/orders/<%=authuser.username%>?ordersPage=1" class="list-group-item d-flex align-items-center border-0">
+                      <a href="/orders?ordersPage=1" class="list-group-item d-flex align-items-center border-0">
                         <i class="bx bx-shopping-bag fs-xl opacity-60 me-2"></i>
                         Your Orders
                       </a>
@@ -213,7 +213,7 @@
 
                   <div class="card px-5 pt-5 mt-4">
                     <h2 class="h5 mb-4">Password</h2>
-                    <form class="needs-validation border-bottom pb-3 pb-lg-4" action="/change-password/<%=authuser.username%>?_method=PUT" method="POST">
+                    <form class="needs-validation border-bottom pb-3 pb-lg-4" action="/change-password?_method=PUT" method="POST">
                       <div class="row">
                         <div class="col-sm-6 mb-4">
                           <label for="cp" class="form-label fs-base">Current password</label>
@@ -294,7 +294,7 @@
                 <div class="card border-danger p-5 mt-4">
                 <h2 class="h5">Delete account</h2>
                 <p>This action is irreversible and will result in the lost of <b>ALL</b> data of your profile except the reviews that you have posted</p>
-                <form action="/delete-user/<%=authuser.username%>?_method=DELETE" method="POST">
+                <form action="/delete-user?_method=DELETE" method="POST">
                 <div class="form-check d-flex align-items-center sm-flex-direction-column">
                   <div class="d-flex align-items-center">
                     <input type="checkbox" id="delete-account" class="form-check-input mb-1" required>
@@ -538,7 +538,7 @@
                       <% if (!paginatedProducts.results.length) { %>
                         <h6 style="text-align: center">You dont have any Saved Products</h6>
                       <% } else { %>
-                        <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+                        <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
                       <% } %>
 
                     </div>
@@ -553,7 +553,7 @@
     
     
         <!-- Footer -->
-        <%- include('partials/Footer') %>
+        <%- include('partials/Statics/Footer') %>
       </body>
     </html>
     

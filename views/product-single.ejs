@@ -1,4 +1,4 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: product.title}) %>
 
 
   <!-- Body -->
@@ -8,7 +8,7 @@
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
 
-      <%- include('partials/Navbar') %>
+      <%- include('partials/Statics/Navbar') %>
 
       <!-- Hero -->
       <section class="pt-2 pt-lg-3 pb-lg-4" >
@@ -24,10 +24,9 @@
                 <a href="/products?productPage=1">Product</a>
               </li>
               <li class="breadcrumb-item active" aria-current="page">
+                <%=product.title.slice(0, 50)%>
                 <% if (product.title.length > 50) { %>
-                  <%=product.title.slice(0, 50)%>...
-                <% } else { %>
-                  <%=product.title%>
+                  ...
                 <% } %>
               </li>
             </ol>
@@ -198,7 +197,7 @@
       <% if (!paginatedReviews.results.length) { %>
         <p>This Product Doesnt have any Review Yet</p>
       <% } else { %> 
-        <%- include('partials/Reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 4}) %>
+        <%- include('partials/Display_Data/Display-reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 4}) %>
       <% } %>
       
           </div>
@@ -209,6 +208,6 @@
 
 
     <!-- Footer -->
-    <%- include('partials/Footer') %>
+    <%- include('partials/Statics/Footer') %>
   </body>
 </html>

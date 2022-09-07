@@ -11,7 +11,7 @@ router.get('/docs', async (req,res) => {
     res.render('documentation')
 })
 router.get('/contactus', async (req,res) => {
-    res.render('contact')
+    res.render('contactUs')
 })
 router.post('/contactus', validateContactUs, async (req,res) => {
     try {  

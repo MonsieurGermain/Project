@@ -1,7 +1,7 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: 'Reports List'}) %>
 
 <body class="documentation-view">
-    <%- include('partials/Navbar') %>
+    <%- include('partials/Statics/Navbar') %>
     <!-- Page wrapper for sticky footer -->
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <input id="mobile-menu-toggle" type="checkbox" hidden/>
@@ -63,7 +63,7 @@
                 <% for(let i = 0; i < reports.results.length; i++) { %>
 
                   <input id="report-resolve-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-                  <%- include('partials/Popop-admin-report', {checkboxInputId: "report-resolve-" + i, action : "/resolve-report/" + reports.results[i].id, method: "POST", report: reports.results[i]}) %>
+                  <%- include('partials/Popup/ResolveReport-popup', {checkboxInputId: "report-resolve-" + i, action : "/resolve-report/" + reports.results[i].id, method: "POST", report: reports.results[i]}) %>
 
 
                   <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
@@ -169,6 +169,6 @@
             </div>
         </div>
     </main>
-    <%- include('partials/Footer') %>
+    <%- include('partials/Statics/Footer') %>
 </body>
 

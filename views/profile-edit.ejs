@@ -1,8 +1,8 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: 'Edit Profile'}) %>
 
   <body>
 
-    <%- include('partials/Navbar') %>
+    <%- include('partials/Statics/Navbar') %>
     <!-- Page wrapper for sticky footer -->
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
@@ -37,15 +37,21 @@
         <div class="row">
           <aside class="col-lg-4 col-md-4 pb-5 mt-n5">
 
-            <form action="/edit-profile/<%=vendor.username%>?_method=PUT" enctype="multipart/form-data" method="POST">
+            <form action="/edit-profile?_method=PUT" enctype="multipart/form-data" method="POST">
 
             <div class="card card-body shadow-sm border-0 text-center">
                 <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162" alt="<%=vendor.username%>">
 
                 <label for="file-input" class="form-label">Profile Picture</label>
-                <p class="form-label opacity-60">If you want to keep the current profile picture, leave this field Empty</p>
-                <p class="form-label opacity-60">For Maximun Privacy we suggest you to keep the default picture</p>
+                <p class="form-label fs-xs opacity-60">If you want to keep the current profile picture, leave this field Empty</p>
+                <p class="form-label fs-xs opacity-60">For Maximun Privacy we suggest you to keep the default picture</p>
+
                 <input class="form-control" type="file" id="file-input" name="profileImg">
+
+                <div class="d-flex align-items mt-1">
+                  <p class="form-label fs-xs opacity-60 me-auto">I want to Reset my profile picture</p>
+                  <a class="fs-xs ms-auto" href="/reset-profile-picture">Reset Profile Picture</a>
+                </div>
 
                 <h5 class="fw-medium fs-lg mb-1 mt-3"><%=vendor.username%></h5>
                 <input class="form-control mt-3 mb-3" id="inline-form-input" type="text" name="job" placeholder="Specialization/Jobs" value="<%=vendor.job%>" maxlength="100">
@@ -94,7 +100,7 @@
               <h5 class="fw-medium fs-lg mb-1">Pgp Key</h5>
               <p class="fs-sm"><%=vendor.verifiedPgpKeys%></p>
               
-              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="/settings/<%=authuser.username%>">Go Here</a></p>
+              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="/settings?section=security">Go Here</a></p>
           </div>
 
           <!-- Spoken Language -->
@@ -128,13 +134,13 @@
             <% if (!paginatedProducts.results.length) { %>
               <p>You dont have any Product</p>
             <% } else { %>
-              <%- include('partials/Products-array', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+              <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
             <% } %>
 
 
             <hr class="my-2">
             <h2 class="h3 mb-4 mt-5">Reviews :</h2>
-            <%- include('partials/Reviews', {reviews: reviews , nextPage: [1], padding: 5}) %>
+            <%- include('partials/Display_Data/Display-reviews', {reviews: reviews , nextPage: [1], padding: 5}) %>
           </div>
 
         </div>
@@ -143,7 +149,7 @@
     </main>
 
     <!-- Footer -->
-    <%- include('partials/Footer') %>
+    <%- include('partials/Statics/Footer') %>
     
   </body>
 </html>

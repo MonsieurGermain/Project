@@ -23,10 +23,10 @@
         <p class="mt-4">Awaiting Buyer Payment</p>
     <%}%>
     <%if (order.status === 'awaiting_shipment') {%>
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/update-order/<%=order.id%>" method="POST">
             <button class="btn btn-warning" type="submit" name="status" value="shipped" style="width: 80%;">I have shipped the Product</button>
         </form>
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/update-order/<%=order.id%>" method="POST">
             <button class="btn btn-danger mt-3" type="submit" name="status" value="rejected" style="width: 80%;">I want to Cancel this Order</button>
         </form>
     <%}%>
@@ -51,12 +51,12 @@
         <p class="mt-4">Waiting for the Vendor to ship the Product</p>
     <%}%>
     <%if (order.status === 'shipped') {%>
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/update-order/<%=order.id%>" method="POST">
             <button class="btn btn-success" type="submit" name="status" value="recieved" style="width: 80%;">I have recieved the Product</button>
         </form>
 
         <% if (order.reset_left) { %>
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/update-order/<%=order.id%>" method="POST">
             <button class="btn btn-primary mt-3" type="submit" name="status" value="not_recieved" style="width: 80%;">I didnt recieve the product yet (<%=order.reset_left%>)</button>
         </form>
         <% } %>
@@ -66,7 +66,7 @@
         </form>
     <%}%>
     <%if (order.status === 'recieved') {%>
-        <form action="/update-order/<%=order.id%>?_method=PUT" method="POST">
+        <form action="/update-order/<%=order.id%>?" method="POST">
             <button class="btn btn-success" type="submit" name="status" value="finished" style="width: 80%;">Everything is good, finalize this order</button>
         </form>
         <form action="/create-dispute/<%=order.id%>" method="POST">

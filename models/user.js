@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
 const Product = require('./product');
 const Conversation = require('./conversation');
 const Review = require('./review');

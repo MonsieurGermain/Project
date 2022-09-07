@@ -4,10 +4,7 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
-const {
-   paramsUsername_isReqUsername,
-   Validate_OrderCustomization,
-} = require('../middlewares/validation');
+const { Validate_OrderCustomization } = require('../middlewares/validation');
 const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
 
 
@@ -291,52 +288,26 @@ function verifyOrderUpdate(status, buyer, vendor, username) {
 }
 
 
-router.put('/update-order/:id', Need_Authentification, async (req, res) => {
-   try {
-      const {user} = req
 
-      let order = await Order.findByIdwhereYouBuyerVendor(req.params.id, user.username)
-
-      verifyOrderUpdate(req.body.status, order.buyer, order.vendor, user.username)
-
-      order = await HandleOrderRequest(req.body.status, order, user.settings, req.query.fromOrders);
-
-      await order.save();
-
-      let redirect_url;
-      if (req.query.fromOrders) {
-         console.log(req.query)
-         if (req.query.status) redirect_url = `/orders/${user.username}?ordersPage=${req.query.ordersPage}&clientsOrders=true&status=${req.query.status}`;
-         else redirect_url = `/orders/${user.username}?clientsOrders=true&ordersPage=${req.query.ordersPage}`
-      }
-      else redirect_url = `/order-resume/${req.params.id}`;
-
-      res.redirect(redirect_url);
-   } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-   }
-});
-
-function constructOrdersQuery(query, user) {
+function constructOrdersQuery(query, username) {
    const mongooseQuery = {};
 
    if (query.status) mongooseQuery.status = query.status;
 
-   if (query.clientsOrders === 'true') mongooseQuery.vendor = user.username;
-   else if (query.clientsOrders === 'false') mongooseQuery.buyer = user.username;
-   else mongooseQuery.buyer = user.username;
+   if (query.clientsOrders === 'true') mongooseQuery.vendor = username;
+   else if (query.clientsOrders === 'false') mongooseQuery.buyer = username;
+   else mongooseQuery.buyer = username;
 
    return mongooseQuery;
 }
 
-router.get('/orders/:username', Need_Authentification, paramsUsername_isReqUsername,
+router.get('/orders', Need_Authentification,
    async (req, res) => {
       try {
          if (!validateData(req.body.status, [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid type to report')
          if (!validateData(req.body.clientsOrders, [undefined, 'true'])) throw new Error('Invalid type to report')
 
-         const query = constructOrdersQuery(req.query, req.user);
+         const query = constructOrdersQuery(req.query, req.user.username);
 
          let orders = await paginatedResults(Order, query, {page: req.query.ordersPage, limit: 24});
 
@@ -353,8 +324,9 @@ router.get('/orders/:username', Need_Authentification, paramsUsername_isReqUsern
 router.post('/filter-orders', Need_Authentification,
    async (req, res) => {
       try {
-         if (!validateData(req.body.status, ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid type to report')
-         if (!validateData(req.body.clientsOrders, ['body', 'clientsOrders'])) throw new Error('Invalid type to report')
+         console.log(req.body)
+         if (!validateData(req.body.status, ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid status to filter')
+         if (!validateData(req.body.clientsOrders, [undefined, 'true', 'false'])) throw new Error('Invalid type to filter')
 
          const {status, clientsOrders} = req.body;
 
@@ -363,13 +335,40 @@ router.post('/filter-orders', Need_Authentification,
          if (status !== 'all') query += `&status=${status}`;
          if (clientsOrders === 'true') query += `&clientsOrders=true`;
 
-         res.redirect(`/orders/${req.user.username}${query}`);
+         res.redirect(`/orders${query}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
       }
    }
 );
+
+router.post('/update-order/:id', Need_Authentification, async (req, res) => {
+   try {
+      const {user} = req
+
+      let order = await Order.findByIdwhereYouBuyerVendor(req.params.id, user.username)
+
+      verifyOrderUpdate(req.body.status, order.buyer, order.vendor, user.username)
+
+      order = await HandleOrderRequest(req.body.status, order, user.settings, req.query.fromOrders);
+
+      await order.save();
+
+      let redirect_url;
+      if (req.query.fromOrders) {
+         console.log(req.query)
+         if (req.query.status) redirect_url = `/orders?ordersPage=${req.query.ordersPage}&clientsOrders=true&status=${req.query.status}`;
+         else redirect_url = `/orders?clientsOrders=true&ordersPage=${req.query.ordersPage}`
+      }
+      else redirect_url = `/order-resume/${req.params.id}`;
+
+      res.redirect(redirect_url);
+   } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+   }
+});
 
 router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
    try {
@@ -379,7 +378,7 @@ router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
 
       await order.deleteOrder();
 
-      res.redirect(`/orders/${req.user.username}?ordersPage=1`);
+      res.redirect(`/orders?ordersPage=1`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');

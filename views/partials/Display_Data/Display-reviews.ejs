@@ -6,7 +6,7 @@
          <div class="mb-2">
             <h6 class="fw-semibold text-primary mb-0"><%=reviews[i].sender%></h6>
          </div>
-         <div class="ms-auto me-5"><%- include('./Rating', {rating: reviews[i].note}) %></div>
+         <div class="ms-auto me-5"><%- include('../Rating', {rating: reviews[i].note}) %></div>
       </div>
 
       <p class="my-0"><%=reviews[i].content%></p>
@@ -14,5 +14,5 @@
    <hr class="my-3 opacity-70" />
    <% } %>
 
-   <div class="mt-5"><%- include('./Pagination', {nextPage, currentPage: parseInt(query.reviewPage), queryName: 'reviewPage'}) %></div>
+   <div class="mt-5"><%- include('../Pagination', {nextPage, currentPage: parseInt(query.reviewPage), queryName: 'reviewPage'}) %></div>
 </section>

@@ -1,4 +1,4 @@
-<%- include('partials/Head') %>
+<%- include('partials/Statics/Head', {page: query.clientsOrders ? 'Clients Orders' : 'Your Orders'}) %>
 
   <!-- Body -->
 <body>
@@ -8,7 +8,7 @@
     <main class="page-wrapper">
 
 
-      <%- include('partials/Navbar') %>
+      <%- include('partials/Statics/Navbar') %>
 
       <section class="container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
 
@@ -27,85 +27,75 @@
           <form action="/filter-orders" method="POST">
           <div class="d-md-flex mb-3">
               <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
+                <option value="all"
                 <% if (!query.status) { %>
-                  <option value="all" selected>All status</option>
-                <% } else { %>
-                  <option value="all">All status</option>
-                <% } %>
+                   selected
+                <% } %> >All status</option>
                   
+                <option value="awaiting_info" 
                   <% if (query.status === 'awaiting_info') { %>
-                    <option value="awaiting_info" selected>Awaiting Information</option>
-                  <% } else { %>
-                    <option value="awaiting_info">Awaiting Information</option>
-                  <% } %>
-
-                  <% if (query.status === 'awaiting_payment') { %>
-                    <option value="awaiting_payment" selected>Awaiting Payment</option>
-                  <% } else { %>
-                    <option value="awaiting_payment">Awaiting Payment</option>
-                  <% } %>
-
-                  <% if (query.status === 'awaiting_shipment') { %>
-                    <option value="awaiting_shipment" selected>Awaiting Shipment</option>
-                  <% } else { %>
-                    <option value="awaiting_shipment">Awaiting Shipment</option>
-                  <% } %>
-
-                  <% if (query.status === 'shipped') { %>
-                    <option value="shipped" selected>Shipped</option>
-                  <% } else { %>
-                    <option value="shipped">Shipped</option>
-                  <% } %>
-
-                  <% if (query.status === 'recieved') { %>
-                    <option value="recieved" selected>Recieved</option>
-                  <% } else { %>
-                    <option value="recieved">Recieved</option>
-                  <% } %>
-
-                  <% if (query.status === 'finalized') { %>
-                    <option value="finalized" selected>Finalized</option>
-                  <% } else { %>
-                    <option value="finalized">Finalized</option>
-                  <% } %>
-
-                  <% if (query.status === 'rejected') { %>
-                    <option value="rejected" selected>Rejected</option>
-                  <% } else { %>
-                    <option value="rejected">Rejected</option>
-                  <% } %>
-
-                  <% if (query.status === 'expired') { %>
-                    <option value="expired" selected>Expired</option>
-                  <% } else { %>
-                    <option value="expired">Expired</option>
-                  <% } %>
-
-                  <% if (query.status === 'dispute_progress') { %>
-                    <option value="dispute_progress" selected>Dispute in Progress</option>
-                  <% } else { %>
-                    <option value="dispute_progress">Dispute in Progress</option>
-                  <% } %>
+                    selected
+                  <% } %> >Awaiting Information</option> 
                   
+                  <option value="awaiting_payment"
+                  <% if (query.status === 'awaiting_payment') { %>
+                     selected
+                  <% } %> >Awaiting Payment</option>
+
+                  <option value="awaiting_shipment"
+                  <% if (query.status === 'awaiting_shipment') { %>
+                     selected
+                  <% } %>>Awaiting Shipment</option>
+
+                  <option value="shipped" 
+                  <% if (query.status === 'shipped') { %>
+                    selected
+                  <% } %> >Shipped</option>
+
+                  <option value="recieved"
+                  <% if (query.status === 'recieved') { %>
+                     selected
+                  <% } %> >Recieved</option>
+
+                  <option value="finalized"
+                  <% if (query.status === 'finalized') { %>
+                     selected
+                  <% } %> >Finalized</option>
+                    
+                  <option value="rejected" 
+                  <% if (query.status === 'rejected') { %>
+                    selected
+                  <% } %> >Rejected</option>
+
+                  <option value="expired"
+                  <% if (query.status === 'expired') { %>
+                     selected
+                  <% } %> >Expired</option>
+
+                  <option value="dispute_progress"
+                  <% if (query.status === 'dispute_progress') { %>
+                     selected
+                  <% } %> >Dispute in Progress</option>
+                  
+                  <option value="disputed"
                   <% if (query.status === 'disputed') { %>
-                    <option value="disputed" selected>Disputed</option>
-                  <% } else { %>
-                    <option value="disputed">Disputed</option>
-                  <% } %>
+                     selected
+                  <% } %> >Disputed</option>
 
           </select>
           <% if (authuser.authorization === 'vendor') { %>
             <select class="form-select me-4 mb-2 mb-md-0" name="clientsOrders" style="min-width: 240px;" required>
+
               <option value="true" 
               <% if (query.clientsOrders) { %>
                 selected
-              <% } %> 
-              >Clients Orders</option>
+              <% } %> >Clients Orders</option>
+              
               <option value="false"
               <% if (!query.clientsOrders) { %>
                 selected
-              <% } %>
-              >Your Orders</option>
+              <% } %> >Your Orders</option>
+
             </select>
           <% } %>
 
@@ -151,11 +141,11 @@
               </div>
               <h3 class="h4">
                 <a href="<%=orders.results[i].link%>">
-                  <% if (orders.results[i].product_title.length > 75) { %>
-                    <%=orders.results[i].product_title.slice(0, 75)%>...
-                  <% } else { %>
-                    <%=orders.results[i].product_title%>
-                  <% } %></a>
+                  <%=orders.results[i].product_title.slice(0, 50)%>
+                  <% if (orders.results[i].product_title.length > 50) { %>
+                    ...
+                  <% } %>
+                </a>
               </h3>
   
               <span>
@@ -250,13 +240,13 @@
   
                     <div class="d-flex ms-auto">
                       <span class="">
-                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&_method=PUT" method="POST">
+                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&ordersPage=<%=query.ordersPage%>&status=<%=query.status%>" method="POST">
                           <button class="btn btn-warning me-4" type="submit" name="status" value="shipped">I have shipped the Product</button>
                       </form>
                       </span>
     
                       <span class="">
-                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&_method=PUT" method="POST">
+                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&ordersPage=<%=query.ordersPage%>&status=<%=query.status%>" method="POST">
                           <button class="btn btn-danger" type="submit" name="status" value="rejected">I want to Cancel this Order</button>
                       </form>
                       </span>
@@ -279,7 +269,7 @@
   </section>
 
     <!-- Footer -->
-    <%- include('partials/Footer') %>
+    <%- include('partials/Statics/Footer') %>
     </main>
 
 
