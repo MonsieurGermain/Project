@@ -1,32 +1,38 @@
 <!--designed to work with css input popup technique - no js -->
 <div class="popup-dialog" style="max-width:none;">
-    <form class="row justify-content-center py-lg-3 py-xl-4" action="<%=action%>" method="<%=method%>">
-        <div class="col-xl-8 col-lg-9 col-md-10 col-sm-11">
-          <h2 class="h1 pb-lg-1 mb-4">Report this <%=type%></h2>
-          <p class="fs-lg text-muted pb-lg-1 mb-4">Why do you want to report this <%=type%>?</p>
-          <div class="row">
-            <div class="col-sm-6 mb-4">
-              <label for="reason" class="form-label fs-base">Reason</label>
-              <select name="reason" id="reason" class="form-select form-control-lg" required> 
-                <option value="scam">Scam</option>
-                <option value="blackmail">Blackmail</option>
-                <option value="information">Private Infotmation Gathering</option>
-                <option value="other">Other</option>
-              </select>
-            </div>              
-            <% if (authuser) { %>
-                <div class="col-sm-6 mb-4">
-                  <input class="form-check-input" type="checkbox" name="username" id="username">
-                  <label class="form-check-label ms-2" for="username">Include My Username</label>
-                </div>
-            <% } %>
-            <div class="col-12 mb-4">
-              <label for="message" class="form-label fs-base">Message</label>
-              <textarea id="message" name="message" class="form-control form-control-lg" rows="4" minlength="10" maxlength="3000" required></textarea>
-            </div>
+  <div class="rounded px-4 py-4 my-4">
+    <form class="row justify-content-center" action="<%=action%>" method="<%=method%>">
+      <div class="col-12">
+        <h2 class="h2 pb-lg-1 mb-4">Report this <%=type%></h2>
+        <p class="fs-lg text-muted pb-lg-1 mb-4">Why do you want to report this <%=type%>?</p>
+        <div class="row">
+          <div class="col-sm-6 mb-4">
+            <label for="reason" class="form-label fs-base">Reason</label>
+            <select name="reason" id="reason" class="form-select form-control-lg" required>
+              <option value="scam">Scam</option>
+              <option value="blackmail">Blackmail</option>
+              <option value="information">Private Infotmation Gathering</option>
+              <option value="other">Other</option>
+            </select>
           </div>
-          <label for="<%=checkboxInputId%>" class="btn btn-danger btn-lg shadow-danger me-2">Cancel</label>
-          <button type="submit" class="btn btn-success btn-lg shadow-success">Report</button>  
+          <% if (authuser) { %>
+          <div class="col-sm-6 mb-4">
+            <input class="form-check-input" type="checkbox" name="username" id="username">
+            <label class="form-check-label ms-2" for="username">Include My Username</label>
+          </div>
+          <% } %>
+          <div class="col-12 mb-4">
+            <label for="message" class="form-label fs-base">Message</label>
+            <textarea id="message" name="message" class="form-control form-control-lg" rows="4" minlength="10"
+              maxlength="3000" required></textarea>
+          </div>
         </div>
-      </form>
+        <div class="d-flex justify-content-end button-group">
+          <label for="<%=checkboxInputId%>" class="btn btn-danger btn-lg shadow-danger me-2">Cancel</label>
+          <button type="submit" class="btn btn-success btn-lg shadow-success">Report</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <label for="<%=checkboxInputId%>" class="popup-close"></label>
 </div>

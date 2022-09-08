@@ -16206,11 +16206,15 @@ input[id=user-pgp-keys]:not(:checked) + * {
 }
 
 input[id^=report-vendor-]:not(:checked) + * {
-  display: none;
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
 }
 
 input[id^=report-product-]:not(:checked) + * {
-  display: none;
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
 }
 
 input[id^=report-resolve-]:not(:checked) + * {
@@ -16231,12 +16235,13 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 
 .popup-dialog {
   background-color: rgba(25, 25, 25, 0.8);
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   display: flex;
+  overflow: auto;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -16246,7 +16251,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   background-color: rgba(25, 25, 25, 0.8);
   opacity: 1;
   cursor: default;
-  z-index: 200;
+  z-index: 4000;
 }
 .popup-dialog > div {
   margin: 0 1.5rem;
@@ -16267,6 +16272,18 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 .popup-dialog > div .buttons > * label,
 .popup-dialog > div .buttons > * button {
   width: 100%;
+}
+@media (max-width: 400px) {
+  .popup-dialog > div .button-group {
+    flex-direction: column;
+  }
+  .popup-dialog > div .button-group > * {
+    width: 100%;
+    margin: 0px !important;
+  }
+  .popup-dialog > div .button-group > *:last-child {
+    margin-top: 10px !important;
+  }
 }
 .popup-dialog > .popup-close {
   position: absolute;
