@@ -818,3 +818,37 @@ $width-docs-side-nav: 69%;
       }
    }
 }
+
+.profile-container {
+   .report-btn {
+      outline: #212121;
+      background-color: #fff!important;
+      transition: all 0.3s;
+      >i {
+         color: black!important;
+         position: relative;
+         left: 1px;
+         top: 1px;
+      }
+      &:hover {
+         background-color: #212121!important;
+         >i {
+            color: white!important;
+         }
+      }
+   }
+   .btn-edit {
+      outline: #212121;
+      background-color: #fff!important;
+      transition: all 0.3s;
+      >i {
+         color: black!important;
+      }
+      &:hover {
+         background-color: #212121!important;
+         >i {
+            color: white!important;
+         }
+      }
+   }
+}

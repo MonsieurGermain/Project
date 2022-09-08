@@ -24,7 +24,7 @@
                   <% } %>
 
                   <% if (authuser && authuser.username === products[i].vendor) { %>
-                    <a href="/create-product?slug=<%=products[i].slug%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit This Product">
+                    <a href="/create-product?slug=<%=products[i].slug%>" class="btn-edit btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit This Product">
                       <i class="bx bx-edit"></i>
                     </a>
                   <% } else if (authuser) { %>
