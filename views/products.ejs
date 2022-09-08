@@ -1,4 +1,4 @@
-<%- include('partials/Statics/Head', {page: query.search}) %>
+<%- include('partials/Statics/Head', {page: query.search ? "- " + query.search : "- Search"}) %>
 <body>
     <%- include('partials/Statics/Navbar') %>
 

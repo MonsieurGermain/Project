@@ -1,8 +1,5 @@
 const Product = require('../models/product');
-const Conversation = require('../models/conversation');
-const Order = require('../models/order');
-const User = require('../models/user');
-const {Is_Bigger, compareArray, IsNot_Number, deleteImage, isEmail, validatePgpKeys} = require('./function');
+const {compareArray, IsNot_Number, deleteImage, isEmail, validatePgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -87,26 +84,9 @@ function ValidateText(value, name, {minlength = 3, maxlength = 50, isRequired = 
    return value;
 }
 
-async function Fetch_inDatabase(model, query, value) {
-   if (query) return await model.findOne({[query]: value});
-   else return await model.findById(value);
-}
-
-exports.ValidateNumber = (path, {min = 1, max = 99999} = {}) => {
-   let value = req[path[0]][path[1]];
-   value = parseInt(value);
-
-   if (typeof value !== 'number') value = 1;
-   if (value > max) value = max;
-   if (value < min) value = min;
-
-   req[path[0]][path[1]] = value;
-
-   next();
-};
 
 // Input Validation
-exports.Validate_Login = (req, res, next) => {
+function Validate_Login(req, res, next) {
    try {
       // Username
       req.body.username = ValidateText(req.body.username, 'Username');
@@ -120,7 +100,7 @@ exports.Validate_Login = (req, res, next) => {
       res.redirect(req.url);
    }
 };
-exports.Validate_Register = (req, res, next) => {
+function Validate_Register(req, res, next) {
    try {
       // Username
       req.body.username = ValidateText(req.body.username, 'Username');
@@ -140,7 +120,7 @@ exports.Validate_Register = (req, res, next) => {
       res.redirect(req.url);
    }
 };
-exports.Validate_Conversation = (req, res, next) => {
+function Validate_Conversation(req, res, next) {
    try {
       // Message
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 2, maxlength: 1000});
@@ -170,7 +150,7 @@ exports.Validate_Conversation = (req, res, next) => {
       res.redirect(`/404`);
    }
 };
-exports.Validate_Message = (req, res, next) => {
+function Validate_Message(req, res, next) {
    try {
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 2, maxlength: 1000});
       next();
@@ -179,7 +159,7 @@ exports.Validate_Message = (req, res, next) => {
    }
 };
 
-exports.Validate_Reviews = (req, res, next) => {
+function Validate_Reviews(req, res, next) {
    try {
       // Review
       req.body.review = ValidateText(req.body.review, 'Review', {minlength: 5, maxlength: 5000});
@@ -196,7 +176,8 @@ exports.Validate_Reviews = (req, res, next) => {
       res.redirect(`/404`);
    }
 };
-exports.Validate_Profile = (req, res, next) => {
+
+function Validate_Profile(req, res, next) {
    try {
       // Job
       if (req.body.job) req.body.job = ValidateText(req.body.job, 'Job', {minlength: 0, maxlength: 100, isRequired: false});
@@ -228,7 +209,8 @@ exports.Validate_Profile = (req, res, next) => {
       res.redirect(url);
    }
 };
-exports.Validate_Product = (req, res, next) => {
+
+function Validate_Product(req, res, next) {
    try {
       // Title
       req.body.title = ValidateText(req.body.title, 'Title', {minlength: 5, maxlength: 150});
@@ -255,7 +237,7 @@ exports.Validate_Product = (req, res, next) => {
       if (req.body.available_qty) {
          if (IsNot_Number(req.body.available_qty)) throw new Error(`The Available Quantity fields is need to be a number`);
          req.body.available_qty = parseFloat(req.body.available_qty);
-         if (Is_Bigger(req.body.available_qty, 1000)) throw new Error(`The Available Quantity cannot be more than 1000`);
+         if (req.body.available_qty > 1000) throw new Error(`The Available Quantity cannot be more than 1000`);
       }
 
       // Max Orders
@@ -263,7 +245,7 @@ exports.Validate_Product = (req, res, next) => {
          if (!req.body.max_order) req.body.max_order = 1;
          if (IsNot_Number(req.body.max_order)) req.body.max_order = 1;
          req.body.max_order = parseFloat(req.body.max_order);
-         if (Is_Bigger(req.body.max_order, req.body.available_qty)) req.body.max_order = req.body.available_qty;
+         if (req.body.max_order > req.body.available_qty) req.body.max_order = req.body.available_qty;
       }
 
       // Quantity Settings
@@ -288,7 +270,7 @@ exports.Validate_Product = (req, res, next) => {
          for (let i = 0; i < req.body.se_1_price.length; i++) {
             if (IsNot_Number(req.body.se_1_price[i])) throw new Error('Invalid Selection #1 Price Data Type');
             req.body.se_1_price[i] = parseFloat(req.body.se_1_price[i]);
-            if (Is_Bigger(req.body.se_1_price[i], 1000)) throw new Error('Your Selection #1 Price cannot be bigger than 1000');
+            if (req.body.se_1_price[i] > 1000) throw new Error('Your Selection #1 Price cannot be bigger than 1000');
          }
       }
 
@@ -310,7 +292,7 @@ exports.Validate_Product = (req, res, next) => {
          for (let i = 0; i < req.body.se_2_price.length; i++) {
             if (IsNot_Number(req.body.se_2_price[i])) throw new Error('Invalid Selection #1 Price Data Type');
             req.body.se_2_price[i] = parseFloat(req.body.se_2_price[i]);
-            if (Is_Bigger(req.body.describe_ship[i], 1000)) throw new Error('Your Selection #1 Price cannot be bigger than 1000');
+            if (req.body.describe_ship[i] > 1000) throw new Error('Your Selection #1 Price cannot be bigger than 1000');
          }
       }
 
@@ -355,7 +337,8 @@ exports.Validate_Product = (req, res, next) => {
       res.redirect(url);
    }
 };
-exports.Validate_Change_Password = (req, res, next) => {
+
+function Validate_Change_Password(req, res, next) {
    try {
       // Old Password
       req.body.password = ValidateText(req.body.password, 'Password', {minlength: 8, maxlength: 200});
@@ -375,7 +358,8 @@ exports.Validate_Change_Password = (req, res, next) => {
       res.redirect(url);
    }
 };
-exports.Validate_AutoDel_Settings = (req, res, next) => {
+
+function Validate_AutoDel_Settings(req, res, next) {
    try {
       if (!compareArray(List_Message_AutoDel, req.body.messages)) throw new Error('The Selected Auto Delete Message Settings is Invalid');
       if (!compareArray(List_Information_AutoDel, req.body.informations)) throw new Error('The Selected Auto Delete Information Settings is Invalid');
@@ -392,7 +376,8 @@ exports.Validate_AutoDel_Settings = (req, res, next) => {
       res.redirect(url);
    }
 };
-exports.Validate_SearchInput = (req, res, next) => {
+
+function Validate_SearchInput(req, res, next) {
    try {
       // Search
       req.body.search = ValidateText(req.body.search, 'Search', {minlength: 0, maxlength: 500, isRequired: false});
@@ -405,7 +390,8 @@ exports.Validate_SearchInput = (req, res, next) => {
       res.redirect(`/products?productPage=1`);
    }
 };
-exports.Validate_Code = (req, res, next) => {
+
+function Validate_Code(req, res, next) {
    try {
       const lengths = req.query.type === 'email' ? [9, 9] : [9, 300];
       req.body.code = ValidateText(req.body.code, 'Code', {minlength: lengths[0], maxlength: lengths[1]});
@@ -417,7 +403,7 @@ exports.Validate_Code = (req, res, next) => {
 };
 
 
-exports.validateContactUs = (req, res, next) => {
+function validateContactUs(req, res, next) {
    try {
       if (!req.body.username) req.body.username = undefined;
 
@@ -436,7 +422,7 @@ exports.validateContactUs = (req, res, next) => {
    }
 };
 
-exports.validateResolveReport = (req, res, next) => {
+function validateResolveReport(req, res, next) {
    try {
       req.body.message = ValidateText(req.body.message, 'Message to the vendor', {minlength: 10, maxlength: 3000});
 
@@ -456,7 +442,7 @@ exports.validateResolveReport = (req, res, next) => {
    }
 };
 
-exports.validateReports = (req, res, next) => {
+function validateReports(req, res, next) {
    try {
       if (req.body.username) req.body.username = req.user.username;
       else req.body.username = undefined;
@@ -490,7 +476,7 @@ exports.validateReports = (req, res, next) => {
 
 // Custom Validation
 
-exports.Validate_OrderCustomization = async (req, res, next) => {
+async function Validate_OrderCustomization(req, res, next) {
    try {
       // Params
       if (!req.params.slug) throw new Error(`The Slug Params Empty`);
@@ -529,3 +515,5 @@ exports.Validate_OrderCustomization = async (req, res, next) => {
       res.redirect(`/order/${req.params.slug}`);
    }
 };
+
+module.exports = {Validate_OrderCustomization, validateReports, validateResolveReport, validateContactUs, Validate_Code, Validate_SearchInput, Validate_AutoDel_Settings, Validate_Change_Password, Validate_Product, Validate_Profile, Validate_Reviews, Validate_Message, Validate_Conversation, Validate_Register, Validate_Login}

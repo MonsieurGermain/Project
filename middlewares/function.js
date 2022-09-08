@@ -1,5 +1,6 @@
 const multer = require('multer');
 const path = require('path');
+const  randomWords = require('random-words');
 const HtmlFilter = require('html-filter');
 const {unlink, rename} = require('fs');
 
@@ -36,7 +37,7 @@ function Text_To_Tags(string, symbol, startTag, endTag) {
    }
    return formatedString;
 }
-exports.sanitizeHTML = (string) => {
+function sanitizeHTML(string) {
    const filter = new HtmlFilter();
    string = filter.filter(string);
 
@@ -51,7 +52,7 @@ exports.sanitizeHTML = (string) => {
 };
 
 // Pagination
-exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, paginateArray) => {
+async function paginatedResults(model, query = {}, {page = 1, limit = 12}, paginateArray) {
    page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page);
    if (page > 5000) page = 5000;
 
@@ -102,7 +103,7 @@ function checkFileType(file, cb) {
    }
 }
 
-exports.uploadProductImg = multer({
+uploadProductImg = multer({
    storage: multer.diskStorage({
       destination: './public/uploads/product-img',
       filename: function (req, file, cb) {
@@ -115,7 +116,7 @@ exports.uploadProductImg = multer({
    },
 });
 
-exports.uploadUserImg = multer({
+uploadUserImg = multer({
    storage: multer.diskStorage({
       destination: './public/uploads/user-img',
       filename: function (req, file, cb) {
@@ -128,7 +129,7 @@ exports.uploadUserImg = multer({
    },
 });
 
-exports.RandomNumber = function (length) {
+function RandomNumber(length) {
    var result = '';
    var characters = '0123456789';
    var charactersLength = characters.length;
@@ -138,87 +139,60 @@ exports.RandomNumber = function (length) {
    return result;
 };
 
-exports.deleteImage = (path) => {
+function deleteImage(path) {
    unlink(path, (err) => {
       if (err) console.log('Img needing deletion doesnt exist');
    });
 };
 
-exports.renameImage = (oldName, newName) => {
+function renameImage(oldName, newName) {
    rename(oldName, newName, (err) => {
       if (err) throw err;
    });
 };
 
-exports.isolate_mimetype = (string, symbol) => {
+function isolate_mimetype(string, symbol) {
    const mimetype = string.split(symbol);
    return `.${mimetype[mimetype.length - 1]}`;
 };
 
-exports.formatUsernameWithSettings = (sender, setting) => {
+function formatUsernameWithSettings(sender, setting) {
    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1];
    if (setting === 'hidden') return 'Anonymous';
    return sender;
 };
 
-exports.IsNot_String = (value) => {
-   if (typeof value !== 'string') return true;
-   return;
-};
-
-exports.Is_Shorter = (value, length) => {
-   if (value.length < length) return true;
-   return;
-};
-
-exports.Is_Longuer = (value, length) => {
-   if (value.length > length) return true;
-   return;
-};
-
-exports.Is_Smaller = (value, number) => {
-   if (value < number) return true;
-   return;
-};
-
-exports.Is_Bigger = (value, number) => {
-   if (value > number) return true;
-   return;
-};
-
-exports.compareArray = (array, value) => {
+function compareArray(array, value) {
    for (let i = 0; i < array.length; i++) {
       if (array[i] === value) return true;
    }
    return;
 };
 
-exports.IsNot_Number = (value) => {
+function IsNot_Number(value) {
    if (isNaN(parseFloat(value))) return true;
    return;
 };
 
-exports.isEmail = (email) => {
+function isEmail(email) {
    if (!email || typeof(email) !== 'string') return undefined
    return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 };
 
-exports.isPgpKeys = (pgpKeys) => { 
+function isPgpKeys(pgpKeys) { 
    if (!pgpKeys || typeof(pgpKeys) !== 'string') return undefined
    if (pgpKeys.length > 10000 || pgpKeys.length < 1) return undefined
    
    return true
 }
-
-exports.isMoneroAddress = (address) => {
+function isMoneroAddress(address) {
    if (!address || typeof(address) !== 'string') return undefined
    if (address.length > 106 || address.length < 95) return undefined
    
    return true
 }
 
-var randomWords = require('random-words');
-exports.RandomList_ofWords = function (number) {
+function RandomList_ofWords(number) {
    let randomSentence = randomWords(number);
    let merged_word = randomSentence[0];
    for (let i = 1; i < randomSentence.length; i++) {
@@ -226,3 +200,5 @@ exports.RandomList_ofWords = function (number) {
    }
    return merged_word;
 };
+
+module.exports = {RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, RandomNumber, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}

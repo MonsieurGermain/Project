@@ -21,7 +21,7 @@ async function deleteExpiredMessage() {
    }
    console.log('Delete Expired Message Runned');
 }
-exports.autoDeleteExpiredMessage = setInterval(() => {
+autoDeleteExpiredMessage = setInterval(() => {
    deleteExpiredMessage();
 }, 300000); // 5 min
 
@@ -33,7 +33,7 @@ async function Check_Recieved_Payment() {
       orders[i].save();
    }
 }
-exports.Auto_Check_Recieved_Payment = setInterval(() => {
+Auto_Check_Recieved_Payment = setInterval(() => {
    Check_Recieved_Payment();
 }, 60000); //1 min
 
@@ -46,7 +46,7 @@ async function Update_Order() {
       orders[i].save();
    }
 }
-exports.Update_Order_ExpiredTimer = setInterval(() => {
+Update_Order_ExpiredTimer = setInterval(() => {
    Update_Order();
 }, 450000); //7.5 min
 
@@ -56,7 +56,7 @@ async function Delete_InactiveUser() {
       await users[i].deleteUser();
    }
 }
-exports.autoDelete_InactiveUser = setInterval(() => {
+autoDelete_InactiveUser = setInterval(() => {
    Delete_InactiveUser();
 }, 86400000); // 1day
 
@@ -68,6 +68,9 @@ async function automaticlyEndSales() {
       products[i].save();
    }
 }
-exports.automaticly_EndSales = setInterval(() => {
+automaticly_EndSales = setInterval(() => {
    automaticlyEndSales();
 }, 300000); // 5min 300000
+
+
+module.exports = {automaticly_EndSales, autoDelete_InactiveUser, Update_Order_ExpiredTimer, Auto_Check_Recieved_Payment, autoDeleteExpiredMessage}
