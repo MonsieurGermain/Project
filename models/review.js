@@ -18,10 +18,6 @@ const reviewSchema = new mongoose.Schema({
       type: String,
       required: true,
    },
-   type: {
-      type: String,
-      required: true,
-   },
    note: {
       type: Number,
       required: true,

@@ -137,6 +137,25 @@ router.post('/register', Should_Not_Be_Authenticated, Validate_Register, async (
    }
 });
 
+router.get('/generate-account', Should_Not_Be_Authenticated, async (req, res) => {
+   try {
+      res.render('generate-account')
+   } catch (e) {
+      req.flash('error', e.message)
+      res.redirect('/register');
+   }
+})
+
+router.post('/generate-account', Should_Not_Be_Authenticated, async (req, res) => {
+   try {
+      req.flash('success', 'Account Successfully Created');
+      res.redirect('/login');
+   } catch (e) {
+      req.flash('error', e.message)
+      res.redirect('/register');
+   }
+})
+
 // Redirect to /
 router.get('/logout', (req, res) => {
    req.logOut();

@@ -16,8 +16,8 @@ function updateRating(review, note) {
 }
 
 router.post('/create-review/:id', Need_Authentification, Validate_Reviews, async (req, res) => {
-   const {username} = req.user;
-   const {note, type} = req;
+   const {username} = req.user,
+         {note, type} = req.body;
 
    const order = await Order.findByIdwhereYouBuyer(req.params.id, username)
 
@@ -27,7 +27,6 @@ router.post('/create-review/:id', Need_Authentification, Validate_Reviews, async
       sender: formatUsernameWithSettings(username, type),
       content: req.body.review,
       note,
-      type,
    });
 
    order.let_review = true;
