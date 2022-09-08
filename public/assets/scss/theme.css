@@ -15741,9 +15741,71 @@ img-comparison-slider:focus {
   background: linear-gradient(to right, rgba(255, 255, 255, 0.55) var(--buffered-width), rgba(255, 255, 255, 0.3) var(--buffered-width));
 }
 
+@media (max-width: 1720px) {
+  .container {
+    padding-left: 80px;
+    padding-right: 80px;
+  }
+}
+@media (max-width: 1320px) {
+  .container {
+    padding-left: 60px;
+    padding-right: 60px;
+  }
+}
+@media (max-width: 1000px) {
+  .container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+@media (max-width: 767px) {
+  .container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+@media (max-width: 320px) {
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
 .small-rc {
   width: 2.5rem;
   height: 2.5rem;
+}
+
+.btn-hover-white {
+  outline: #212121;
+  background-color: #fff !important;
+  transition: all 0.3s;
+}
+.btn-hover-white > i {
+  color: black !important;
+}
+.btn-hover-white > i.bx-flag {
+  position: relative;
+  left: 1px;
+  top: 1px;
+}
+.btn-hover-white:hover {
+  background-color: #212121 !important;
+}
+.btn-hover-white:hover > i {
+  color: white !important;
+}
+
+.btn-hover-red {
+  background-color: #fff !important;
+  transition: all 0.3s;
+}
+.btn-hover-red:hover {
+  background-color: #ef4444 !important;
+}
+.btn-hover-red:hover > i {
+  color: #fff !important;
 }
 
 .smedium-rc {
@@ -16605,35 +16667,4 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   #social-links-checkbox:checked ~ .footer-container .social-links-wrap .dropdown-symbol {
     transform: rotate(180deg);
   }
-}
-.profile-container .report-btn {
-  outline: #212121;
-  background-color: #fff !important;
-  transition: all 0.3s;
-}
-.profile-container .report-btn > i {
-  color: black !important;
-  position: relative;
-  left: 1px;
-  top: 1px;
-}
-.profile-container .report-btn:hover {
-  background-color: #212121 !important;
-}
-.profile-container .report-btn:hover > i {
-  color: white !important;
-}
-.profile-container .btn-edit {
-  outline: #212121;
-  background-color: #fff !important;
-  transition: all 0.3s;
-}
-.profile-container .btn-edit > i {
-  color: black !important;
-}
-.profile-container .btn-edit:hover {
-  background-color: #212121 !important;
-}
-.profile-container .btn-edit:hover > i {
-  color: white !important;
 }/*# sourceMappingURL=theme.css.map */

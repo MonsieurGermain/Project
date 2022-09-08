@@ -24,11 +24,12 @@
                   <% } %>
 
                   <% if (authuser && authuser.username === products[i].vendor) { %>
-                    <a href="/create-product?slug=<%=products[i].slug%>" class="btn-edit btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit This Product">
+                    <a href="/create-product?slug=<%=products[i].slug%>" class="btn-hover-white btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3" data-bs-toggle="tooltip" data-bs-placement="left" title="Edit This Product">
                       <i class="bx bx-edit"></i>
                     </a>
                   <% } else if (authuser) { %>
-                    <label for="report-product-<%=products[i].slug%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-5 mt-3">      
+                    <label for="report-product-<%=products[i].slug%>" class="btn-hover-white btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 mt-3"
+                      style="margin-right: 55px!important;">
                       <i class="bx bx-flag"></i>
                    </label>
                     <% if (settingsPage) { %>
@@ -36,7 +37,7 @@
                     <% } else { %> 
                       <form action="/saved_product/<%=products[i].slug%>?url=<%=url[0]%>?<%=url[1]%>" method="POST">
                     <% } %>
-                      <button type="submit" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3">
+                      <button type="submit" class="btn-hover-red btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-3 mt-3">
                         <% if (authuser.saved_product.includes(products[i].slug)) { %>
                           <i class="bx bxs-heart text-danger"></i>
                         <% } else { %> 

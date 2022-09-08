@@ -6,10 +6,63 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
 // user.scss
 // Use this to write your custom SCSS
 //
+.container {
+   @media (max-width: 1720px) {
+      padding-left: 80px;
+      padding-right: 80px;
+   }
+   @media (max-width: 1320px) {
+      padding-left: 60px;
+      padding-right: 60px;
+   }
+   @media (max-width: 1000px) {
+      padding-left: 40px;
+      padding-right: 40px;
+   }
+   @media (max-width: $max-width-bp) {
+      padding-left: 20px;
+      padding-right: 20px;
+   }
+   @media (max-width: 320px) {
+      padding-left: 10px;
+      padding-right: 10px;
+   }
+}
 
 .small-rc {
    width: 2.5rem;
    height: 2.5rem;
+}
+
+.btn-hover-white {
+   outline: #212121;
+   background-color: #fff!important;
+   transition: all 0.3s;
+   >i {
+      color: black!important;
+      &.bx-flag {
+         position: relative;
+         left: 1px;
+         top: 1px;
+      }
+   }
+   &:hover {
+      background-color: #212121!important;
+      >i {
+         color: white!important;
+      }
+   }
+}
+
+.btn-hover-red {
+   background-color: #fff!important;
+   transition: all 0.3s;
+   &:hover {
+      background-color: $danger!important;
+      >i {
+         color: #fff!important;
+      }
+   }
 }
 
 .smedium-rc {
@@ -849,40 +902,6 @@ $width-docs-side-nav: 69%;
       height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;
       .dropdown-symbol {
          transform: rotate(180deg);
-      }
-   }
-}
-
-.profile-container {
-   .report-btn {
-      outline: #212121;
-      background-color: #fff!important;
-      transition: all 0.3s;
-      >i {
-         color: black!important;
-         position: relative;
-         left: 1px;
-         top: 1px;
-      }
-      &:hover {
-         background-color: #212121!important;
-         >i {
-            color: white!important;
-         }
-      }
-   }
-   .btn-edit {
-      outline: #212121;
-      background-color: #fff!important;
-      transition: all 0.3s;
-      >i {
-         color: black!important;
-      }
-      &:hover {
-         background-color: #212121!important;
-         >i {
-            color: white!important;
-         }
       }
    }
 }
