@@ -150,7 +150,7 @@
           </div>
         </aside>
 
-        <div class="col-md-7 pb-5 mb-lg-2 mb-lg-4">
+        <div class="col-md-8 pb-5 mb-lg-2 mb-lg-4">
 
           <div class="d-flex flex-wrap align-items-center align-text-center">
             <h3 class="h3 mb-4"><%=vendor.username%> Products:</h3>
@@ -163,7 +163,7 @@
           <% if (!paginatedProducts.results.length) { %>
           <p>This Vendor doesnt have any Product</p>
           <% } else { %>
-          <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+          <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3}) %>
           <% } %>
 
           <hr class="my-2">

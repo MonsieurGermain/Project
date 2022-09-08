@@ -15749,8 +15749,8 @@ img-comparison-slider:focus {
 }
 @media (max-width: 1320px) {
   .container {
-    padding-left: 60px;
-    padding-right: 60px;
+    padding-left: 50px;
+    padding-right: 50px;
   }
 }
 @media (max-width: 1000px) {
@@ -16297,6 +16297,10 @@ input[id=advanced-settings]:not(:checked) ~ .advanced-settings {
   height: 0px;
 }
 
+input[id=advanced-settings]:checked + * > svg {
+  transform: rotate(180deg);
+}
+
 input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   display: none;
 }
@@ -16357,6 +16361,10 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   height: calc(5.625rem + 66px + 0.5rem);
   transition: height 0.5s;
   overflow: hidden;
+}
+.popup-dialog > div [for=advanced-settings] + {
+  transition: all 0.3s;
+  transform: rotate(0deg);
 }
 .popup-dialog > .popup-close {
   position: absolute;

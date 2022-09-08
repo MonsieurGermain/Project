@@ -12,8 +12,8 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
       padding-right: 80px;
    }
    @media (max-width: 1320px) {
-      padding-left: 60px;
-      padding-right: 60px;
+      padding-left: 50px;
+      padding-right: 50px;
    }
    @media (max-width: 1000px) {
       padding-left: 40px;
@@ -529,6 +529,9 @@ input[id^='report-resolve-']:not(:checked) + * {
 input[id='advanced-settings']:not(:checked) ~ .advanced-settings {
    height: 0px;
 }
+input[id='advanced-settings']:checked + *>svg {
+   transform: rotate(180deg);
+}
 input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
    display: none;
 }
@@ -589,6 +592,10 @@ input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
          height: calc(3 * 1.875rem + 66px + 0.5rem);
          transition: height 0.5s;
          overflow: hidden;
+      }
+      [for="advanced-settings"] + {
+         transition: all 0.3s;
+         transform: rotate(0deg);
       }
    }
    >.popup-close {
