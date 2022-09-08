@@ -16514,10 +16514,20 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   height: 35px;
   overflow: hidden;
 }
+@media (min-width: 991px) {
+  .footer-container .useful-links-wrap {
+    height: calc((24px + 0.75rem) * 4 + 2.875rem) !important;
+  }
+}
 .footer-container .social-links-wrap {
   transition: all 0.5s;
   height: 35px;
   overflow: hidden;
+}
+@media (min-width: 991px) {
+  .footer-container .social-links-wrap {
+    height: calc((24px + 0.75rem) * 4 + 2.875rem) !important;
+  }
 }
 .footer-container [for=useful-links-checkbox] > a::after {
   transform: rotate(0deg);

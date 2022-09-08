@@ -763,11 +763,17 @@ $width-docs-side-nav: 69%;
       transition: all 0.5s;
       height: 35px;
       overflow: hidden;
+      @media (min-width: 991px) {
+         height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;;
+      }
    }
    .social-links-wrap {
       transition: all 0.5s;
       height: 35px;
       overflow: hidden;
+      @media (min-width: 991px) {
+         height: calc((24px + 0.75rem) * 4 + 2.875rem)!important;;
+      }
    }
    [for="useful-links-checkbox"]>a::after {
       transform: rotate(0deg);
