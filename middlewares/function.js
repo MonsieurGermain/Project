@@ -4,12 +4,31 @@ const  randomWords = require('random-words');
 const HtmlFilter = require('html-filter');
 const {unlink, rename} = require('fs');
 
-function generateRandomString(length) {
-   var result = '';
-   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-   var charactersLength = characters.length;
+
+function RandomList_ofWords(number) {
+   let randomSentence = randomWords(number);
+   let merged_word = randomSentence[0];
+   for (let i = 1; i < randomSentence.length; i++) {
+      merged_word += ' ' + randomSentence[i];
+   }
+   return merged_word;
+};
+
+function getAllowedCharacters(allowedCharacters) {
+   if (allowedCharacters === 'letterAndnumber') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+   if (allowedCharacters === 'number') return '0123456789'
+   if (allowedCharacters === 'letter') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+   return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&'
+}
+
+function generateRandomString(length, allowedCharacters) {
+   allowedCharacters = getAllowedCharacters(allowedCharacters);
+
+   var result = '',
+   charactersLength = allowedCharacters.length; 
+
    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      result += allowedCharacters.charAt(Math.floor(Math.random() * charactersLength));
    }
    return result;
 }
@@ -107,7 +126,7 @@ uploadProductImg = multer({
    storage: multer.diskStorage({
       destination: './public/uploads/product-img',
       filename: function (req, file, cb) {
-         cb(null, generateRandomString(25) + path.extname(file.originalname));
+         cb(null, generateRandomString(25, 'letterAndnumber') + path.extname(file.originalname));
       },
    }),
    limits: {fileSize: 5000000},
@@ -120,7 +139,7 @@ uploadUserImg = multer({
    storage: multer.diskStorage({
       destination: './public/uploads/user-img',
       filename: function (req, file, cb) {
-         cb(null, generateRandomString(25) + path.extname(file.originalname));
+         cb(null, generateRandomString(25, 'letterAndnumber') + path.extname(file.originalname));
       },
    }),
    limits: {fileSize: 5000000},
@@ -128,16 +147,6 @@ uploadUserImg = multer({
       checkFileType(file, cb);
    },
 });
-
-function RandomNumber(length) {
-   var result = '';
-   var characters = '0123456789';
-   var charactersLength = characters.length;
-   for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
-   return result;
-};
 
 function deleteImage(path) {
    unlink(path, (err) => {
@@ -192,13 +201,11 @@ function isMoneroAddress(address) {
    return true
 }
 
-function RandomList_ofWords(number) {
-   let randomSentence = randomWords(number);
-   let merged_word = randomSentence[0];
-   for (let i = 1; i < randomSentence.length; i++) {
-      merged_word += ' ' + randomSentence[i];
-   }
-   return merged_word;
-};
+function sanitizeParams(slug) {
+   if (!slug) throw new Error('Invalid Params')
+   if (typeof(slug) !== 'string') throw new Error('Invalid Params')
+   if (slug.length < 5 || slug.length > 200) throw new Error('Invalid Params')
+   return
+}
 
-module.exports = {RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, RandomNumber, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}
+module.exports = {sanitizeParams, generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}

@@ -15,18 +15,43 @@
         <% } %>
 
         <!-- Sign in form -->
-        <div class="container d-flex flex-wrap justify-content-center justify-content-xl-start h-100 mt-4 pt-5 p-5" style="border-radius: 5px; background:#212121">
-          <div class="w-100 align-self-end pt-1 pt-md-4 pb-4" style="max-width: 526px;">
-            <h1 class="text-center text-xl-center">2 Step Verification</h1>
-              <p class="text-center text-xl-start mb-1 mt-3">Please Check your Email and verify your Identity</p>
-              <p class="text-center text-xl-start my-0 pb-3"><b>No Email ?</b><a class="ms-2" href="/login">Log In Again</a></p>
+        <div class="container d-flex flex-wrap justify-content-center justify-content-xl-start h-100 pt-5 p-5" style="border-radius: 5px; background:#212121">
+          <div class="w-100 align-self-end " style="max-width: 526px;">
+            <h1 class="text-center text-xl-center">Generate an Account</h1>
+            <form class="needs-validation mb-2" action="generate-account" method="POST">
 
-            <form class="needs-validation mb-2" action="/2fa?<%=url[1]%>" method="POST">
-              <div class="position-relative mb-4">
-                <label for="code" class="form-label fs-base"> </label>
-                <input type="text" id="code" name="code" class="form-control form-control-lg" required>
+            <div class="">
+              <p class="fs-sm mb-2">How do you want your account username ?</p>
+
+              <input class="form-check-input" type="radio" name="usernameSettings" id="words" value="words" required checked/>
+              <label class="form-check-label ms-2" for="words">In Random Words</label><br />
+
+              <input class="form-check-input" type="radio" name="usernameSettings" id="characters" value="characters" required />
+              <label class="form-check-label ms-2" for="characters">In Random Characters<span class="opacity-70 ms-2"></span></label>
+           
+            </div>
+
+            <hr class="my-3">
+
+            <div class="mb-4">
+              <p class="fs-sm mb-2">Do you want to choose your default Password ?</p>
+              <input class="form-check-input" type="radio" name="passwordSettings" id="generate-password" value="generate-password" required checked/>
+              <label class="form-check-label ms-2" for="generate-password">Generate Me a Strong Password<span class="opacity-70 ms-2">(Best for Privacy)</span></label>
+            <br />
+        
+              <input class="form-check-input" type="radio" name="passwordSettings" id="choose-password" value="choose-password" required />
+              <label class="form-check-label ms-2" for="choose-password">I want to choose my own Password</label><br />
+           
+           
+              <div class="position-relative mt-3">
+                <label for="password" class="form-label fs-base" maxlength="200">Password</label>
+                <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="Enter your Password">
               </div>
-              <button type="submit" class="btn btn-primary shadow-primary btn-lg w-100">Confirm Identity</button>
+           
+            </div>
+
+              <p class="fs-sm opacity-70 mb-2"><b>*Note:</b> If you plan on keeping this account, you might want to change the Inactivity Settings after login in.</p>
+              <button type="submit" class="btn btn-primary shadow-primary btn-lg w-100 mb-0">Generate Account</button>
             </form>
           </div>
         </div>

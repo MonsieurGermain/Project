@@ -82,15 +82,12 @@ app.all('*', (req, res) => {
    res.render('404page');
 });
 
-// const x = '1sdasd'
-
 // if (x.a?.length) console.log('asdad')
 
 
-// const a = true
+// const a = 'adsad'
 
-// a && console.log('True')
-
+// a === 'adsad' && console.log('True')
 
 // function bar(fruit, number) {
 //    console.log(fruit, number)
@@ -99,6 +96,7 @@ app.all('*', (req, res) => {
 // let z
 
 // bar(z || 'apple', 3)
+
 
 
 // let a = d

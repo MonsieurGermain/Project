@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router(); 
 
 router.get('/', async (req, res) => {
-   res.render('home');
+   try { 
+      res.render('home');
+   } catch (e) {
+      console.log(e)
+      res.redirect('/404')
+   }
 });
 
 module.exports = router;

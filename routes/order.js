@@ -5,7 +5,7 @@ const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const { Validate_OrderCustomization } = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults, sanitizeParams} = require('../middlewares/function');
 
 
 function validateData(value, acceptedValues) {
@@ -137,6 +137,7 @@ async function arrayFormat_Order(orders, isBuyer) {
 // Routes
 router.get('/order/:slug', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.slug)
       const product = await Product.findOne({slug: req.params.slug});
 
       if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
@@ -193,6 +194,8 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
 
 router.get('/submit-info/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
       const product = await Product.findOne({slug: order.product_slug});
@@ -207,6 +210,8 @@ router.get('/submit-info/:id', Need_Authentification, async (req, res) => {
 
 router.post('/submit-info/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const {user} = req
       const {content} = req.body
       
@@ -238,6 +243,8 @@ router.post('/submit-info/:id', Need_Authentification, async (req, res) => {
 
 router.get('/pay/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
       res.render('pay', {order});
@@ -248,6 +255,8 @@ router.get('/pay/:id', Need_Authentification, async (req, res) => {
 
 router.get('/order-resume/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       let order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
 
       order = await formatOrder(order, order.buyer === req.user.username ? true : false);
@@ -345,6 +354,8 @@ router.post('/filter-orders', Need_Authentification,
 
 router.post('/update-order/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const {user} = req
 
       let order = await Order.findByIdwhereYouBuyerVendor(req.params.id, user.username)
@@ -372,6 +383,8 @@ router.post('/update-order/:id', Need_Authentification, async (req, res) => {
 
 router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const order = await Order.findByIdwhereYouBuyerVendor(req.params.id, req.user.username)
 
       if (!addDeleteLink(order, req.user.username === order.buyer ? true : false)) throw new Error('You cant delete that');
@@ -387,6 +400,8 @@ router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
 
 router.post('/create-dispute/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const order = await Order.findByIdwhereYouBuyerVendor(req.params.id, req.user.username)
       
       order.status = 'dispute_progress';

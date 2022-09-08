@@ -4,7 +4,7 @@ const Conversation = require('../models/conversation');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const { Validate_Conversation, Validate_Message } = require('../middlewares/validation');
-const {formatUsernameWithSettings} = require('../middlewares/function');
+const {formatUsernameWithSettings, sanitizeParams} = require('../middlewares/function');
 
 async function getOtherUserData(username) {
    const userData = await User.findOne({username: username}, {img_path: 1, verifiedPgpKeys: 1});
@@ -23,6 +23,8 @@ router.post('/send-message/:username', Need_Authentification,
    }, Validate_Conversation,
    async (req, res) => {
       try {
+         sanitizeParams(req.params.username)
+
          const {user} = req;
          const {username} = req.params;
          const {type, timestamps, message, pgpKeys} = req.body;
@@ -49,8 +51,8 @@ router.post('/send-message/:username', Need_Authentification,
 
          await foundConversation.save();
 
-         let redirect_url = '/messages';
-         if (foundConversation) redirect_url = `/messages?id=${foundConversation.id}`;
+         let redirect_url = '/messages#bottom';
+         if (foundConversation) redirect_url = `/messages?id=${foundConversation.id}#bottom`;
          res.redirect(redirect_url);
       } catch (e) {
          res.redirect('/404');
@@ -61,13 +63,15 @@ router.post('/send-message/:username', Need_Authentification,
 router.post('/messages/:id', Need_Authentification, Validate_Message,
    async (req, res) => {
       try { 
+         sanitizeParams(req.params.id)
+
          const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
          conversation.Add_New_Message(req.body.message, req.user.username, req.user.settings);
 
          await conversation.save();
 
-         res.redirect(`/messages?id=${conversation.id}`);
+         res.redirect(`/messages?id=${conversation.id}#bottom`);
       } catch (e) {
          res.redirect('/404');
       }
@@ -78,9 +82,9 @@ router.post('/search-messages', Need_Authentification, async (req, res) => {
    try {
       let {search} = req.body;
 
-      if (!search || search.length > 100) res.redirect('/messages');
+      if (!search || search.length > 100) res.redirect('/messages#bottom');
 
-      res.redirect(`/messages?searchQuery=${search}`);
+      res.redirect(`/messages?searchQuery=${search}#bottom`);
    } catch (e) {
       res.redirect('/404');
    }
@@ -185,6 +189,9 @@ router.get('/messages', Need_Authentification, async (req, res) => {
 
 router.post('/edit-message/:id/:messageId', Need_Authentification, Validate_Message, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+      sanitizeParams(req.params.messageId)
+
       const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
       const {message} = req.body;
@@ -192,7 +199,7 @@ router.post('/edit-message/:id/:messageId', Need_Authentification, Validate_Mess
 
       await conversation.editMessage(messageId, message);
 
-      res.redirect(`/messages?id=${conversation.id}`);
+      res.redirect(`/messages?id=${conversation.id}#bottom`);
    } catch (e) {
       res.redirect('/404');
    }
@@ -201,11 +208,13 @@ router.post('/edit-message/:id/:messageId', Need_Authentification, Validate_Mess
 // DELETE
 router.delete('/delete-conversation/:id', Need_Authentification, async (req, res) => {
    try {
+      sanitizeParams(req.params.id)
+
       const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
       await conversation.deleteConversation();
 
-      res.redirect(`/messages`);
+      res.redirect(`/messages#bottom`);
    } catch (e) {
       res.redirect('/404');
    }
@@ -227,7 +236,7 @@ router.delete('/delete-message/:id/:message_id', Need_Authentification,
 
 
          if (!conversation.messages.length) {
-            redirect_url = '/messages';
+            redirect_url = '/messages#bottom';
 
             if (conversation.sender_1 === user.username && user.settings.deleteEmptyConversation) await conversation.deleteConversation();
             else if (conversation.sender_1 === user.username) await conversation.save();
@@ -237,7 +246,7 @@ router.delete('/delete-message/:id/:message_id', Need_Authentification,
                else await conversation.save();
             }
          } else {
-            redirect_url = `/messages?id=${conversation.id}`;
+            redirect_url = `/messages?id=${conversation.id}#bottom`;
             await conversation.save();
          }
 

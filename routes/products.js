@@ -5,7 +5,7 @@ const Review = require('../models/review');
 const User = require('../models/user');
 const {Need_Authentification, isVendor} = require('../middlewares/authentication');
 const {Validate_Product} = require('../middlewares/validation');
-const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
+const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults, sanitizeParams} = require('../middlewares/function');
 
 const Fuse = require('fuse.js');
 // Create Fuzzy Product Collecion
@@ -55,6 +55,7 @@ router.post('/search-products', async (req, res) => {
 
 router.get('/product/:slug', async (req, res) => {
    try {
+      sanitizeParams(req.params.slug)
       const product = await Product.findOne({slug: req.params.slug});
 
       if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
@@ -224,7 +225,11 @@ Validate_Product, async (req, res) => {
 //Delete
 router.delete('/delete-product/:slug', Need_Authentification, async (req, res) => {
    try {
-      let product = await Product.findOne({slug: req.query.slug, vendor: req.user.username})
+      sanitizeParams(req.params.slug)
+
+      let product = await Product.findOne({slug: req.params.slug, vendor: req.user.username})
+
+      if (!product) throw new Error('Invalid Slug Params')
 
       await product.deleteProduct();
 

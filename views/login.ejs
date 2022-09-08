@@ -28,14 +28,12 @@
             <form action='/login' method="POST" class="needs-validation mb-2">
               <div class="position-relative mb-4">
                 <label for="username" class="form-label fs-base">Username</label>
-                <input type="text" id="username" class="form-control form-control-lg" name="username" minlength="3" maxlength="50" required>
-                <div class="invalid-feedback position-absolute start-0 top-100">Please enter a valid Username!</div>
+                <input type="text" id="username" class="form-control form-control-lg" name="username" minlength="3" maxlength="25" required>
               </div>
               <div class="mb-4">
                 <label for="password" class="form-label fs-base">Password</label>
                 <div class="password-toggle">
                   <input type="password" id="password" class="form-control form-control-lg" name="password" minlength="8" maxlength="200" required>
-                  <div class="invalid-feedback position-absolute start-0 top-100">Please enter your password!</div>
                 </div>
               </div>
               <div class="mb-4">

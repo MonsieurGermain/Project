@@ -269,7 +269,7 @@
 
   <div>
   <input class="form-check-input" type="checkbox" id="quantity-settings-checkbox"
-  <% if (product.qty_settings) { %>
+  <% if (product.qty_settings?.available_qty || product.qty_settings?.max_order) { %>
     checked
   <% } %> >
   <label class="form-check-label ms-2" for="quantity-settings-checkbox">I have a limited stocks</label> <br>
