@@ -16217,6 +16217,12 @@ input[id^=report-product-]:not(:checked) + * {
   opacity: 0;
 }
 
+input[id=contact-checkbox]:not(:checked) + * {
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
 input[id^=report-resolve-]:not(:checked) + * {
   display: none;
 }
@@ -16226,7 +16232,7 @@ input[id^=report-resolve-]:not(:checked) + * {
 }
 
 input[id=advanced-settings]:not(:checked) ~ .advanced-settings {
-  display: none;
+  height: 0px;
 }
 
 input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
@@ -16284,6 +16290,11 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   .popup-dialog > div .button-group > *:last-child {
     margin-top: 10px !important;
   }
+}
+.popup-dialog > div .advanced-settings {
+  height: calc(5.625rem + 66px + 0.5rem);
+  transition: height 0.5s;
+  overflow: hidden;
 }
 .popup-dialog > .popup-close {
   position: absolute;

@@ -459,6 +459,12 @@ input[id^='report-product-']:not(:checked) + * {
    visibility: hidden;
    opacity: 0;
 }
+input[id='contact-checkbox']:not(:checked) + * {
+   background-color: rgba(25, 25, 25, 0);
+   visibility: hidden;
+   opacity: 0;
+}
+
 input[id^='report-resolve-']:not(:checked) + * {
    display: none;
 }
@@ -468,7 +474,7 @@ input[id^='report-resolve-']:not(:checked) + * {
    margin-right: 0 0.5rem 0.25rem 0;
 }
 input[id='advanced-settings']:not(:checked) ~ .advanced-settings {
-   display: none;
+   height: 0px;
 }
 input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
    display: none;
@@ -525,6 +531,11 @@ input[id='otherpgp']:not(:checked) ~ .otherPgpTextarea {
                margin-top: 10px!important;
             }
          }
+      }
+      .advanced-settings {
+         height: calc(3 * 1.875rem + 66px + 0.5rem);
+         transition: height 0.5s;
+         overflow: hidden;
       }
    }
    >.popup-close {
