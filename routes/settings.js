@@ -422,7 +422,7 @@ router.post('/saved_product/:slug', Need_Authentification, async (req, res) => {
    try {
       sanitizeParams(req.params.slug)
 
-      const {url, productPage} = req.query
+      let {url, productPage} = req.query
 
       if (!url) url = '/';
       if (typeof(url) !== 'string') throw new Error('Invalid Query Url');
