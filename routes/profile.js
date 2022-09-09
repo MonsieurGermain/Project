@@ -124,7 +124,7 @@ router.get('/reset-profile-picture', Need_Authentification, async (req, res) => 
       await user.save()
 
       req.flash('success', 'Profile Picture Successfully Reseted');
-      res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/edit-profile?productPage=1&reviewPage=1`);
    } catch (e) {
       console.log(e);
       res.redirect(`/404`);
