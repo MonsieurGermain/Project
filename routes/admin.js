@@ -7,7 +7,7 @@ const Product = require('../models/product');
 const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
 const {validateReports, validateResolveReport} = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults, isValidParams} = require('../middlewares/function');
 
 function hideBuyerUsername(disputes) {
    for (let i = 0; i < disputes.length; i++) {
@@ -40,8 +40,8 @@ router.post('/report/:id', Need_Authentification, validateReports,
          req.flash('error', e.message);
          res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
-
       try {
+         isValidParams(req.params.id)
          if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
 
          switch (req.query.type) {
@@ -120,6 +120,8 @@ router.post('/report-filter', Need_Authentification, // isAdmin,
 router.post('/archive-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          report.archived = report.archived ? undefined : true;
@@ -137,6 +139,8 @@ router.post('/archive-report/:id', Need_Authentification, // isAdmin,
 router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          await report.deleteReport();
@@ -168,6 +172,8 @@ router.post('/resolve-report/:id', Need_Authentification, // isAdmin,
    validateResolveReport,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          const {message, ban, banReason} = req.body; // Why Message ?
@@ -247,6 +253,8 @@ router.post('/ban-user-filter', Need_Authentification, // isAdmin,
 router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          await report.deleteReport();
@@ -262,6 +270,8 @@ router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
 router.post('/ban-user/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          const {user} = await getResolveReportDocuments(report.type, report.reference_id);
@@ -300,6 +310,8 @@ router.get('/disputes', Need_Authentification, //isAdmin,
 router.post('/disputes/:id', Need_Authentification, //isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const order = await Order.findById(req.params.id).orFail(new Error())
 
          order.admin = req.user.username;
@@ -316,6 +328,8 @@ router.post('/disputes/:id', Need_Authentification, //isAdmin,
 router.post('/settle-dispute/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const order = await Order.findById(req.params.id).orFail(new Error())
 
          if (order.admin !== req.user.username) throw new Error('Cant Access');
@@ -387,6 +401,8 @@ router.post('/feedback-filter', Need_Authentification, // isAdmin,
 router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          feedback.archived = feedback.archived ? undefined : true;
@@ -402,6 +418,8 @@ router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
 router.post('/delete-feedback/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.id)
+
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          await feedback.deleteContactUs();
@@ -429,6 +447,8 @@ router.get('/promote-user', Need_Authentification, // isAdmin,
 router.post('/promote-user/:username', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
+         isValidParams(req.params.username)
+
          const user = await User.findOne({username: req.params.username}).orFail(new Error())
 
          user.awaiting_promotion = undefined;

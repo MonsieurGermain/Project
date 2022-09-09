@@ -76,18 +76,18 @@ const conversationSchema = new mongoose.Schema({
 });
 
 function Create_New_Message(Message, Sender, sender_1, conversationSettings, userSettings) {
-   const New_Message = {
+   const newMessage = {
       sender: sender_1 === Sender ? formatUsernameWithSettings(Sender, conversationSettings.type) : Sender,
       message: Message.trim(),
    };
 
-   if (conversationSettings.timestamps) New_Message.timestamps = format(new Date(), 'HH:mm LLLL dd yyyy'); // Add timestamp
+   if (conversationSettings.timestamps) newMessage.timestamps = format(new Date(), 'HH:mm LLLL dd yyyy'); // Add timestamp
 
-   if (userSettings.recordSeeingMessage && conversationSettings.type === 'default') New_Message.messageView = false; // Saw Message
+   if (userSettings.recordSeeingMessage && conversationSettings.type === 'default') newMessage.messageView = false; // Saw Message
 
-   if (userSettings.messageExpiring) New_Message.expire_at = Date.now() + userSettings.messageExpiring * 86400000;
+   if (userSettings.messageExpiring) newMessage.expire_at = Date.now() + userSettings.messageExpiring * 86400000;
 
-   return New_Message;
+   return newMessage;
 }
 
 // Add

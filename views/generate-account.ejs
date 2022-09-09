@@ -1,0 +1,63 @@
+<%- include('partials/Statics/Head', {page: '- 2 Step Verification'}) %>
+  <!-- Body -->
+  <body>
+    <%- include('partials/Statics/Navbar') %>
+
+    <!-- Page wrapper for sticky footer -->
+    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+    <main class="page-wrapper d-grid" style="place-content: center;">
+
+      <!-- Page content -->
+      <section class="position-relative h-100 pt-5 pb-4">
+
+        <% if (error.length) { %>
+          <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
+        <% } %>
+
+        <!-- Sign in form -->
+        <div class="container d-flex flex-wrap justify-content-center justify-content-xl-start h-100 pt-5 p-5" style="border-radius: 5px; background:#212121">
+          <div class="w-100 align-self-end " style="max-width: 526px;">
+            <h1 class="text-center text-xl-center">Generate an Account</h1>
+            <form class="needs-validation mb-2" action="generate-account" method="POST">
+
+            <div class="">
+              <p class="fs-sm mb-2">How do you want your account username ?</p>
+
+              <input class="form-check-input" type="radio" name="usernameSettings" id="words" value="words" required checked/>
+              <label class="form-check-label ms-2" for="words">In Random Words</label><br />
+
+              <input class="form-check-input" type="radio" name="usernameSettings" id="characters" value="characters" required />
+              <label class="form-check-label ms-2" for="characters">In Random Characters<span class="opacity-70 ms-2"></span></label>
+           
+            </div>
+
+            <hr class="my-3">
+
+            <div class="mb-4">
+              <p class="fs-sm mb-2">Do you want to choose your default Password ?</p>
+              <input class="form-check-input" type="radio" name="passwordSettings" id="generate-password" value="generate-password" required checked/>
+              <label class="form-check-label ms-2" for="generate-password">Generate Me a Strong Password<span class="opacity-70 ms-2">(Best for Privacy)</span></label>
+            <br />
+        
+              <input class="form-check-input" type="radio" name="passwordSettings" id="choose-password" value="choose-password" required />
+              <label class="form-check-label ms-2" for="choose-password">I want to choose my own Password</label><br />
+           
+           
+              <div class="position-relative mt-3">
+                <label for="password" class="form-label fs-base" maxlength="200">Password</label>
+                <input type="password" id="password" name="password" class="form-control form-control-lg" placeholder="Enter your Password">
+              </div>
+           
+            </div>
+
+              <p class="fs-sm opacity-70 mb-2"><b>*Note:</b> If you plan on keeping this account, you might want to change the Inactivity Settings after login in.</p>
+              <button type="submit" class="btn btn-primary shadow-primary btn-lg w-100 mb-0">Generate Account</button>
+            </form>
+          </div>
+        </div>
+        
+     </section>
+    </main>
+
+  </body>
+</html>

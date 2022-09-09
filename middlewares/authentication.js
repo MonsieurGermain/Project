@@ -1,4 +1,4 @@
-exports.Need_Authentification = (req, res, next) => {
+function Need_Authentification(req, res, next) {
     if (req.isAuthenticated()) {
         return next()
     }
@@ -7,7 +7,7 @@ exports.Need_Authentification = (req, res, next) => {
     res.redirect('/login')
 }
 
-exports.Should_Not_Be_Authenticated = (req, res, next) => {
+function Should_Not_Be_Authenticated(req, res, next) {
     if (req.isAuthenticated()) {
         console.log('you are already auth')
         return res.redirect('/')
@@ -15,7 +15,7 @@ exports.Should_Not_Be_Authenticated = (req, res, next) => {
     next()
 }
 
-exports.isBuyer = (req,res, next) => {
+function isBuyer(req,res, next) {
     if (req.user.authorization === 'buyer') {
         next(); return
     }
@@ -24,7 +24,7 @@ exports.isBuyer = (req,res, next) => {
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
 }
 
-exports.isVendor = (req,res, next) => {
+function isVendor(req,res, next) {
     if (req.user.authorization === 'vendor') {
         next(); return
     }
@@ -33,7 +33,7 @@ exports.isVendor = (req,res, next) => {
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
 }
 
-exports.isAdmin = (req,res, next) => {
+function isAdmin(req,res, next) {
     if (req.user.authorization === 'admin') {
         next(); return
     }
@@ -41,3 +41,5 @@ exports.isAdmin = (req,res, next) => {
     console.log('You need to be an Admin to perform this action')
     res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`) // change that
 }
+
+module.exports = { Need_Authentification, Should_Not_Be_Authenticated, isBuyer, isVendor, isAdmin}

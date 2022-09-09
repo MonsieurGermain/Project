@@ -82,10 +82,35 @@ app.all('*', (req, res) => {
    res.render('404page');
 });
 
-const x = '1sdasd'
+// if (x.a?.length) console.log('asdad')
 
-console.log(x.slice(1, 15))
 
+// const a = 'adsad'
+
+// a === 'adsad' && console.log('True')
+
+// function bar(fruit, number) {
+//    console.log(fruit, number)
+// }
+
+// let z
+
+// bar(z || 'apple', 3)
+
+
+
+// let a = d
+// let b = d
+// let c = d
+
+// let a = b = c = d
+
+// c = 'as'
+
+// console.log(c)
+
+// const x = { a: 'a' },
+//       c = { b: 'a2'}
 
 app.listen('3000', (req, res) => {
    console.log('Server running on port 3000');

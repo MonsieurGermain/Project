@@ -1,4 +1,4 @@
-<%- include('partials/Statics/Head', {page: !query.section ? 'Security Settings' : query.section[0].toUpperCase() + query.section.slice(1, 8) + ' Settings'}) %>
+<%- include('partials/Statics/Head', {page: !query.section ? '- Security Settings' : "- " + query.section[0].toUpperCase() + query.section.slice(1, 8) + ' Settings'}) %>
 <body>
 
     
@@ -251,21 +251,19 @@
                           <% if (authuser.settings.step_verification === 'email') { %>
                             checked
                           <% } %>>
-                          <label class='form-check-label ms-2' for="email-2fa">Email</label><br>
+                          <label class='form-check-label ms-2' for="email-2fa">Activate 2 step Verification by Email</label><br>
                         <% } else { %>
-                          <label class='form-check-label opacity-60' for="2">Email (Add and Verify an Email to Unable this Option)</label><br>
+                          <label class='form-check-label opacity-60' for="2">Activate 2 step Verification by Email (Add and Verify an Email to Unable this Option)</label><br>
                         <% } %>
 
                         <% if (authuser.verifiedPgpKeys) { %>
-                          <div class="my-3">
                           <input class='form-check-input' type="radio" name="step_verification" id="pgp-2fa" value="pgp" required
                           <% if (authuser.settings.step_verification === 'pgp') { %>
                             checked
                           <% } %>>
-                          <label class='form-check-label ms-2' for="pgp-2fa">Pgp Keys</label><br>
-                        </div>
+                          <label class='form-check-label ms-2' for="pgp-2fa">Activate 2 step Verification by Pgp Keys</label><br>
                         <% } else { %>
-                          <label class='form-check-label opacity-60' for="2">Pgp (Add and Verify a Pgp Keys to Unable this Option)</label><br>
+                          <label class='form-check-label opacity-60' for="2">Activate 2 step Verification by Pgp Keys (Add and Verify a Pgp Keys to Unable this Option)</label><br>
                         <% } %>
 
                         <div class="d-flex align-items-center justify-content-end flex-wrap  mt-2">

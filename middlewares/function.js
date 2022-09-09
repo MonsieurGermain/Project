@@ -1,14 +1,34 @@
 const multer = require('multer');
 const path = require('path');
+const  randomWords = require('random-words');
 const HtmlFilter = require('html-filter');
 const {unlink, rename} = require('fs');
 
-function generateRandomString(length) {
-   var result = '';
-   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-   var charactersLength = characters.length;
+
+function RandomList_ofWords(number) {
+   let randomSentence = randomWords(number);
+   let merged_word = randomSentence[0];
+   for (let i = 1; i < randomSentence.length; i++) {
+      merged_word += ' ' + randomSentence[i];
+   }
+   return merged_word;
+};
+
+function getAllowedCharacters(allowedCharacters) {
+   if (allowedCharacters === 'letterAndnumber') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+   if (allowedCharacters === 'number') return '0123456789'
+   if (allowedCharacters === 'letter') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+   return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&'
+}
+
+function generateRandomString(length, allowedCharacters) {
+   allowedCharacters = getAllowedCharacters(allowedCharacters);
+
+   var result = '',
+   charactersLength = allowedCharacters.length; 
+
    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      result += allowedCharacters.charAt(Math.floor(Math.random() * charactersLength));
    }
    return result;
 }
@@ -36,7 +56,7 @@ function Text_To_Tags(string, symbol, startTag, endTag) {
    }
    return formatedString;
 }
-exports.sanitizeHTML = (string) => {
+function sanitizeHTML(string) {
    const filter = new HtmlFilter();
    string = filter.filter(string);
 
@@ -51,7 +71,7 @@ exports.sanitizeHTML = (string) => {
 };
 
 // Pagination
-exports.paginatedResults = async (model, query = {}, {page = 1, limit = 12}, paginateArray) => {
+async function paginatedResults(model, query = {}, {page = 1, limit = 12}, paginateArray) {
    page = isNaN(parseInt(page)) || page == 0 ? 1 : parseInt(page);
    if (page > 5000) page = 5000;
 
@@ -102,11 +122,11 @@ function checkFileType(file, cb) {
    }
 }
 
-exports.uploadProductImg = multer({
+uploadProductImg = multer({
    storage: multer.diskStorage({
       destination: './public/uploads/product-img',
       filename: function (req, file, cb) {
-         cb(null, generateRandomString(25) + path.extname(file.originalname));
+         cb(null, generateRandomString(25, 'letterAndnumber') + path.extname(file.originalname));
       },
    }),
    limits: {fileSize: 5000000},
@@ -115,11 +135,11 @@ exports.uploadProductImg = multer({
    },
 });
 
-exports.uploadUserImg = multer({
+uploadUserImg = multer({
    storage: multer.diskStorage({
       destination: './public/uploads/user-img',
       filename: function (req, file, cb) {
-         cb(null, generateRandomString(25) + path.extname(file.originalname));
+         cb(null, generateRandomString(25, 'letterAndnumber') + path.extname(file.originalname));
       },
    }),
    limits: {fileSize: 5000000},
@@ -128,101 +148,64 @@ exports.uploadUserImg = multer({
    },
 });
 
-exports.RandomNumber = function (length) {
-   var result = '';
-   var characters = '0123456789';
-   var charactersLength = characters.length;
-   for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   }
-   return result;
-};
-
-exports.deleteImage = (path) => {
+function deleteImage(path) {
    unlink(path, (err) => {
       if (err) console.log('Img needing deletion doesnt exist');
    });
 };
 
-exports.renameImage = (oldName, newName) => {
+function renameImage(oldName, newName) {
    rename(oldName, newName, (err) => {
       if (err) throw err;
    });
 };
 
-exports.isolate_mimetype = (string, symbol) => {
+function isolate_mimetype(string, symbol) {
    const mimetype = string.split(symbol);
    return `.${mimetype[mimetype.length - 1]}`;
 };
 
-exports.formatUsernameWithSettings = (sender, setting) => {
+function formatUsernameWithSettings(sender, setting) {
    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1];
    if (setting === 'hidden') return 'Anonymous';
    return sender;
 };
 
-exports.IsNot_String = (value) => {
-   if (typeof value !== 'string') return true;
-   return;
-};
-
-exports.Is_Shorter = (value, length) => {
-   if (value.length < length) return true;
-   return;
-};
-
-exports.Is_Longuer = (value, length) => {
-   if (value.length > length) return true;
-   return;
-};
-
-exports.Is_Smaller = (value, number) => {
-   if (value < number) return true;
-   return;
-};
-
-exports.Is_Bigger = (value, number) => {
-   if (value > number) return true;
-   return;
-};
-
-exports.compareArray = (array, value) => {
+function compareArray(array, value) {
    for (let i = 0; i < array.length; i++) {
       if (array[i] === value) return true;
    }
    return;
 };
 
-exports.IsNot_Number = (value) => {
+function IsNot_Number(value) {
    if (isNaN(parseFloat(value))) return true;
    return;
 };
 
-exports.isEmail = (email) => {
+function isEmail(email) {
    if (!email || typeof(email) !== 'string') return undefined
    return email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 };
 
-exports.isPgpKeys = (pgpKeys) => { 
+function isPgpKeys(pgpKeys) { 
    if (!pgpKeys || typeof(pgpKeys) !== 'string') return undefined
    if (pgpKeys.length > 10000 || pgpKeys.length < 1) return undefined
    
    return true
 }
-
-exports.isMoneroAddress = (address) => {
+function isMoneroAddress(address) {
    if (!address || typeof(address) !== 'string') return undefined
    if (address.length > 106 || address.length < 95) return undefined
    
    return true
 }
 
-var randomWords = require('random-words');
-exports.RandomList_ofWords = function (number) {
-   let randomSentence = randomWords(number);
-   let merged_word = randomSentence[0];
-   for (let i = 1; i < randomSentence.length; i++) {
-      merged_word += ' ' + randomSentence[i];
-   }
-   return merged_word;
-};
+function sanitizeParams(slug) {
+   if (!slug) throw new Error('Invalid Params')
+   if (typeof(slug) !== 'string') throw new Error('Invalid Params')
+   if (slug.length < 5 || slug.length > 200) throw new Error('Invalid Params')
+   return
+}
+
+module.exports = {sanitizeParams, generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}

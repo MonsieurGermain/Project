@@ -3,7 +3,6 @@ const slugify = require('slugify');
 const Order = require('./order');
 const Review = require('./review');
 const fs = require('fs');
-const {unlink} = require('fs');
 const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
 
 const reviewSchema = new mongoose.Schema({
@@ -133,7 +132,7 @@ const productSchema = new mongoose.Schema({
    shipping_option: [shipping_option],
 
    qty_settings: {
-      type: qty_settingsSchema,
+      type : qty_settingsSchema
    },
    review: {
       type: reviewSchema,

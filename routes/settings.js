@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 const {
    Validate_Change_Password,
 } = require('../middlewares/validation');
-const {paginatedResults, RandomNumber, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress} = require('../middlewares/function');
+const {paginatedResults, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress, sanitizeParams} = require('../middlewares/function');
 
 
 function validateData(value, acceptedValues) {
@@ -191,7 +191,7 @@ router.post('/add-email', Need_Authentification, async (req, res) => {
 
       user.email = email;
 
-      user.email_verification_code = RandomNumber(6);
+      user.email_verification_code = generateRandomString(6, 'number');
 
       // Send Email Containning Verification Code
       console.log(`The Verification Code is: ${user.email_verification_code}`);
@@ -246,7 +246,7 @@ router.post('/resend-email-verification', Need_Authentification, async (req, res
 
       if (!user.email || !user.email_verification_code) throw new Error()
 
-      user.email_verification_code = RandomNumber(6);
+      user.email_verification_code = generateRandomString(6, 'number');
       console.log(user.email_verification_code)
 
       // Resend Email with new Confirmation Code
@@ -420,7 +420,9 @@ router.post('/reset-privacy', Need_Authentification, async (req, res) => {
 
 router.post('/saved_product/:slug', Need_Authentification, async (req, res) => {
    try {
-      const {url, productPage} = req.query
+      sanitizeParams(req.params.slug)
+
+      let {url, productPage} = req.query
 
       if (!url) url = '/';
       if (typeof(url) !== 'string') throw new Error('Invalid Query Url');
