@@ -924,3 +924,26 @@ $width-docs-side-nav: 69%;
 //       }
 //    }
 // }
+
+.your-order-container {
+   .order-card-btn-wrap {
+      >*:last-child {
+         margin-right: 0px!important;
+      }
+   }
+}
+
+.submit-info-container {
+   @media (max-width: 400px) {
+      .responsive-column {
+         flex-wrap: wrap;
+         >* {
+            width: 100%;
+         }
+         > button {
+            width: 100%;
+            margin-top: 10px;
+         }
+      }
+   }
+}

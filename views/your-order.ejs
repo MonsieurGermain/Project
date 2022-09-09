@@ -10,7 +10,7 @@
 
       <%- include('partials/Statics/Navbar') %>
 
-      <section class="container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
+      <section class="container your-order-container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
 
         <!-- BreadCrumb -->
         <nav class="py-4 mb-3" aria-label="breadcrumb">
@@ -157,7 +157,7 @@
   
              <hr class="my-4">
   
-              <div class="d-flex align-items-center flex-wrap">
+              <div class="d-flex align-items-center flex-wrap order-card-btn-wrap">
                 <span class="me-5 mb-2">
                   <p class="mb-0">Vendor:</p>
                   <a href="/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
@@ -211,7 +211,7 @@
             <% } %>
             
             <% if (orders.results[i].deletelink) { %>
-              <span class="position-absolute top-0 end-0 zindex-2 me-3 mt-3">
+              <span class="position-absolute top-0 zindex-2 me-3 mt-3" style="right: 10px;">
                 <form action="/delete-order/<%=orders.results[i].id%>?_method=DELETE" method="POST">
                 <button type="submit" class="btn btn-primary">
                     <i class="bx bx-trash"></i>

@@ -16669,4 +16669,20 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   #social-links-checkbox:checked ~ .footer-container .social-links-wrap .dropdown-symbol {
     transform: rotate(180deg);
   }
+}
+.your-order-container .order-card-btn-wrap > *:last-child {
+  margin-right: 0px !important;
+}
+
+@media (max-width: 400px) {
+  .submit-info-container .responsive-column {
+    flex-wrap: wrap;
+  }
+  .submit-info-container .responsive-column > * {
+    width: 100%;
+  }
+  .submit-info-container .responsive-column > button {
+    width: 100%;
+    margin-top: 10px;
+  }
 }/*# sourceMappingURL=theme.css.map */
