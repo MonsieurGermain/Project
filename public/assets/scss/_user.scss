@@ -12,12 +12,8 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
       padding-right: 80px;
    }
    @media (max-width: 1320px) {
-      padding-left: 50px;
-      padding-right: 50px;
-   }
-   @media (max-width: 1000px) {
       padding-left: 40px;
-      padding-right: 40px;
+      padding-right: 50px;
    }
    @media (max-width: $max-width-bp) {
       padding-left: 20px;

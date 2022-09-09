@@ -127,7 +127,7 @@
             <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover">
               <a href="<%=orders.results[i].link%>" class="position-absolute top-0 start-0 w-100 h-100" aria-label="Read more">
   
-              <img src="<%=orders.results[i].product_img%>" style="min-height: 18rem;" alt="Product Img">
+              <img src="<%=orders.results[i].product_img%>" style="min-width: 100%;max-height: 100%;" alt="Product Img">
             </a>
           </div>
           <div class="col-sm-8">
@@ -157,15 +157,15 @@
   
              <hr class="my-4">
   
-              <div class="d-flex align-items-center">
-                <span class="me-5">
+              <div class="d-flex align-items-center flex-wrap">
+                <span class="me-5 mb-2">
                   <p class="mb-0">Vendor:</p>
                   <a href="/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
                     <%= orders.results[i].vendor%>
                   </a>
                 </span>
   
-            <span>
+            <span class="me-5 mb-2">
                 <p class="mb-0">Buyer:</p>
                 <a 
                 <% if (orders.results[i].privacy === 'default') { %>
@@ -178,12 +178,12 @@
   
             <% if (orders.results[i].status === 'dispute_progress') { %>
               <% if (orders.results[i].admin) { %>
-                <span class="ms-5">
+                <span class="me-5 mb-2">
                   <p class="mb-0">Admin:</p>
                   <p class="mb-0"><%=orders.result[i].admin%></p>
               </span>
               <% } else { %> 
-                <span class="ms-5">
+                <span class="me-5 mb-2">
                   <p class="mb-0">Admin:</p>
                   <p class="mb-0">Awaiting Admin...</p>
               </span>
@@ -191,7 +191,7 @@
             <% } %>
   
             <% if (orders.results[i].status === 'disputed') { %>
-              <span class="ms-5">
+              <span class="me-5 mb-2">
                 <p class="mb-0">Winner:</p>
                 <% if (orders.results[i].dispute_winner === orders.results[i].vendor) { %>
                   <p class="mb-0"><b><%=orders.results[i].vendor%></b></p>
@@ -202,7 +202,7 @@
             <% } %>
   
             <% if (orders.results[i].Formated_Timers) { %>
-            <span class="ms-5">
+            <span class="me-5 mb-2">
                 <p class="mb-0">Time Left:</p>
                 <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
                   <%= orders.results[i].Formated_Timers%>
