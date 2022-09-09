@@ -95,14 +95,14 @@
                         <p class="fs-sm mb-0"><span class="opacity-70"> Ship From : </span><span class="ms-1"><b><%=product.ship_from%></b></span></p>
                     </div>
 
-                    <% if (product.qty_settings) { %>
-                      <div class="d-sm-flex justify-content-between mt-2">
-                          <p class="fs-xs opacity-70 mb-0">Available Quantity : <%=product.qty_settings.available_qty%></p>
-                        <% if (product.qty_settings.max_order) { %>
-                          <p class="fs-xs opacity-70 mb-0">Maximun per Order : <%=product.qty_settings.max_order%></p>
-                        <% } %>
-                      </div>
-                    <% } %>
+                    <div class="d-sm-flex justify-content-between mt-2">
+                     <% if (product.qty_settings.available_qty) { %>
+                      <p class="fs-xs opacity-70 mb-0">Available Quantity : <%=product.qty_settings.available_qty%></p>
+                     <% } %>
+                     <% if (product.qty_settings.max_order) { %>
+                      <p class="fs-xs opacity-70 mb-0">Maximun per Order : <%=product.qty_settings.max_order%></p>
+                     <% } %>
+                    </div>
 
                   </div>
                   <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary mt-0">Buy This Product</a>

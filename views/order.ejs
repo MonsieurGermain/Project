@@ -158,21 +158,15 @@
 
                             <div class="mb-3">
                                 <label for="number-input" class="form-label">Quantity</label>
-                                <% if (product.qty_settings) { %>
+                                <input class="form-control" type="number" id="number-input" max="<%=product.qty_settings.max_order%>" value="1" name="qty">
+       
+                                <div class="d-flex">
                                   <% if (product.qty_settings.max_order) { %>
-                                    <input class="form-control" type="number" id="number-input" max="<%=product.qty_settings.max_order%>" value="1" name="qty">
-                                    <div class="d-flex">
-                                      <p class="fs-xs opacity-70 ms-auto mt-1 mb-0">Max per Order: <b><%=product.qty_settings.max_order%></b></p>
-                                  </div>
-                                  <% } else { %>
-                                    <input class="form-control" type="number" id="number-input" max="<%=product.qty_settings.available_qty%>" value="1" name="qty">
-                                    <div class="d-flex">
-                                      <p class="fs-xs opacity-70 ms-auto mt-1 mb-0">Max per Order: <b><%=product.qty_settings.available_qty%></b></p>
-                                  </div>
-                                  <% }
-                                } else { %>
-                                  <input class="form-control" type="number" id="number-input" value="1" name="qty">
-                                <% } %>
+                                    <p class="fs-xs opacity-70 ms-auto mt-1 mb-0">Max per Order: <b><%=product.qty_settings.max_order%></b></p>
+                                  <% } else if (product.qty_settings.available_qty) { %>
+                                    <p class="fs-xs opacity-70 ms-auto mt-1 mb-0">Max per Order: <b><%=product.qty_settings.available_qty%></b></p>
+                                  <% } %>
+                                 </div> 
                             </div>  
 
                            <p class="mb-2">Market Fee: <b>3%</b></p>         

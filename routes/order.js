@@ -217,29 +217,49 @@ router.post('/submit-info/:id', Need_Authentification, async (req, res) => {
       
       if (!content || content < 2 || content > 3000) throw new Error('Invalid Submited Information')
 
-      const order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
+      const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
       order.messages.push({
          sender: user.username === order.buyer ? formatUsernameWithSettings(user.username, order.privacy) : user.username,
          content: content
       });
 
-      if (order.status === 'awaiting_info' && user.username === order.buyer) {
-         order.status = 'awaiting_payment';
-         order.timer = Date.now() + 1000 * 60 * 60;
-         redirect_url = `/pay/${order.id}`;
-      } else {
-         redirect_url = `/order-resume/${order.id}`;
-      }
+      order.status = 'awaiting_payment';
+      order.timer = Date.now() + 1000 * 60 * 60;
 
       await order.save();
 
-      res.redirect(redirect_url);
+      res.redirect(`/pay/${order.id}`);
    } catch (e) {
       req.flash('error', e.messages)
       res.redirect('/404');
    }
 });
+
+router.post('/send-order-message/:id', Need_Authentification, async (req,res) => {
+   try {
+      sanitizeParams(req.params.id)
+
+      const {user} = req
+      const {message} = req.body
+
+      if (!message || message < 2 || message > 3000) throw new Error('Invalid Message')
+
+      const order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
+
+      order.messages.push({
+         sender: user.username === order.buyer ? formatUsernameWithSettings(user.username, order.privacy) : user.username,
+         content: message
+      });
+
+      await order.save();
+
+      res.redirect(`/order-resume/${order.id}`);
+   } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+   }
+})
 
 router.get('/pay/:id', Need_Authentification, async (req, res) => {
    try {
@@ -380,6 +400,7 @@ router.post('/update-order/:id', Need_Authentification, async (req, res) => {
       res.redirect('/404');
    }
 });
+
 
 router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
    try {
