@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-const {compareArray, IsNot_Number, deleteImage, isEmail, isPgpKeys, isValidParams} = require('./function');
+const {compareArray, IsNot_Number, deleteImage, isEmail, isPgpKeys, sanitizeParams} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -428,7 +428,7 @@ throw new Error('Invalid Selected Selection')
 async function Validate_OrderCustomization(req, res, next) {
    try {
       
-      isValidParams(req.params.slug)
+      sanitizeParams(req.params.slug)
 
       req.product = await Product.findOne({slug: req.params.slug, status: 'online'}).orFail(new Error('Invalid Slug Params'));
 

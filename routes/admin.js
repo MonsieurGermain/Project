@@ -7,7 +7,7 @@ const Product = require('../models/product');
 const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
 const {validateReports, validateResolveReport} = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults, isValidParams} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults, sanitizeParams} = require('../middlewares/function');
 
 function hideBuyerUsername(disputes) {
    for (let i = 0; i < disputes.length; i++) {
@@ -41,7 +41,7 @@ router.post('/report/:id', Need_Authentification, validateReports,
          res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
          if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
 
          switch (req.query.type) {
@@ -120,7 +120,7 @@ router.post('/report-filter', Need_Authentification, // isAdmin,
 router.post('/archive-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const report = await Report.findById(req.params.id).orFail(new Error())
 
@@ -139,7 +139,7 @@ router.post('/archive-report/:id', Need_Authentification, // isAdmin,
 router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const report = await Report.findById(req.params.id).orFail(new Error())
 
@@ -172,7 +172,7 @@ router.post('/resolve-report/:id', Need_Authentification, // isAdmin,
    validateResolveReport,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const report = await Report.findById(req.params.id).orFail(new Error())
 
@@ -253,7 +253,7 @@ router.post('/ban-user-filter', Need_Authentification, // isAdmin,
 router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const report = await Report.findById(req.params.id).orFail(new Error())
 
@@ -270,7 +270,7 @@ router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
 router.post('/ban-user/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const report = await Report.findById(req.params.id).orFail(new Error())
 
@@ -310,7 +310,7 @@ router.get('/disputes', Need_Authentification, //isAdmin,
 router.post('/disputes/:id', Need_Authentification, //isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const order = await Order.findById(req.params.id).orFail(new Error())
 
@@ -328,7 +328,7 @@ router.post('/disputes/:id', Need_Authentification, //isAdmin,
 router.post('/settle-dispute/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const order = await Order.findById(req.params.id).orFail(new Error())
 
@@ -401,7 +401,7 @@ router.post('/feedback-filter', Need_Authentification, // isAdmin,
 router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
@@ -418,7 +418,7 @@ router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
 router.post('/delete-feedback/:id', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.id)
+         sanitizeParams(req.params.id)
 
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
@@ -447,7 +447,7 @@ router.get('/promote-user', Need_Authentification, // isAdmin,
 router.post('/promote-user/:username', Need_Authentification, // isAdmin,
    async (req, res) => {
       try {
-         isValidParams(req.params.username)
+         sanitizeParams(req.params.username)
 
          const user = await User.findOne({username: req.params.username}).orFail(new Error())
 

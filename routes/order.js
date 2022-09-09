@@ -104,10 +104,10 @@ function addDeleteLink(order, isBuyer) {
          if (isBuyer) return true;
          else return;
       case 'disputed':
-         if (order.dispute_winner !== order.vendor) {
-            if (isBuyer) return true;
-         } else if (!order.timer) return true;
-         break;
+         if (isBuyer && order.dispute_winner === order.buyer) return true;
+         if (!isBuyer && order.dispute_winner === order.vendor) return true;
+         if (!order.timer) return true;
+         else return;
       default:
          return;
    }
@@ -156,7 +156,7 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
       let {qty, shipping_option, selection_1, selection_2, type} = req.body;
 
       qty = qty > 1 ? qty : 1;
-      if (product.qty_settings) product.qty_settings.available_qty += -qty;
+      if (product.qty_settings.available_qty) product.qty_settings.available_qty += -qty;
 
       const order = new Order({
          buyer: req.user.username,
@@ -385,8 +385,9 @@ router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
    try {
       sanitizeParams(req.params.id)
 
-      const order = await Order.findByIdwhereYouBuyerVendor(req.params.id, req.user.username)
+      const order = await Order.findById(req.params.id)
 
+      if (!order) throw new Error('Invalid Params Id');
       if (!addDeleteLink(order, req.user.username === order.buyer ? true : false)) throw new Error('You cant delete that');
 
       await order.deleteOrder();
