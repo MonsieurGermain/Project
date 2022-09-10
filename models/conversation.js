@@ -176,4 +176,5 @@ conversationSchema.statics.findByIdVerifyIfPartOfConversation = async function(c
    else throw new Error()
 }
 
+
 module.exports = mongoose.model('Conversation', conversationSchema);
