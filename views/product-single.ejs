@@ -96,10 +96,10 @@
                     </div>
 
                     <div class="d-sm-flex justify-content-between mt-2">
-                     <% if (product.qty_settings.available_qty) { %>
+                     <% if (product.qty_settings?.available_qty) { %>
                       <p class="fs-xs opacity-70 mb-0">Available Quantity : <%=product.qty_settings.available_qty%></p>
                      <% } %>
-                     <% if (product.qty_settings.max_order) { %>
+                     <% if (product.qty_settings?.max_order) { %>
                       <p class="fs-xs opacity-70 mb-0">Maximun per Order : <%=product.qty_settings.max_order%></p>
                      <% } %>
                     </div>
