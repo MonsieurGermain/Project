@@ -5,10 +5,8 @@ const User = require('../models/user');
 const Product = require('../models/product');
 const Conversation = require('../models/conversation');
 const bcrypt = require('bcrypt');
-const {
-   Validate_Change_Password,
-} = require('../middlewares/validation');
-const {paginatedResults, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress, sanitizeParams} = require('../middlewares/function');
+const {Validate_Change_Password, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
+const {paginatedResults, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress} = require('../middlewares/function');
 
 
 function validateData(value, acceptedValues) {
@@ -19,7 +17,7 @@ function validateData(value, acceptedValues) {
 }
 
 
-router.get('/settings', Need_Authentification,
+router.get('/settings', Need_Authentification, sanitizeQuerys,
    async (req, res) => {
       try {
          if (!validateData(req.query.section, [undefined, 'security', 'privacy', 'payment', 'saved'])) throw new Error('Invalid Section Query');
@@ -78,7 +76,7 @@ router.post('/add-xmr-refund-address', Need_Authentification, async (req, res) =
       res.redirect(`/settings?section=payment`);
    }
 });
-router.post('/delete-address', Need_Authentification, async (req, res) => {
+router.post('/delete-address', Need_Authentification, sanitizeQuerys, async (req, res) => {
    try {
       const {user} = req;
       const {addressType} = req.query;
@@ -247,6 +245,7 @@ router.post('/resend-email-verification', Need_Authentification, async (req, res
       if (!user.email || !user.email_verification_code) throw new Error()
 
       user.email_verification_code = generateRandomString(6, 'number');
+
       console.log(user.email_verification_code)
 
       // Resend Email with new Confirmation Code
@@ -391,7 +390,7 @@ router.post('/account-settings', Need_Authentification, async (req, res) => {
       res.redirect('/404');
    }
 });
-router.post('/reset-privacy', Need_Authentification, async (req, res) => {
+router.post('/reset-privacy', Need_Authentification, sanitizeQuerys, async (req, res) => {
    try {
       const {user} = req;
       const {type} = req.query;
@@ -418,10 +417,8 @@ router.post('/reset-privacy', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/saved_product/:slug', Need_Authentification, async (req, res) => {
+router.post('/saved_product/:slug', Need_Authentification, sanitizeParamsQuerys, async (req, res) => {
    try {
-      sanitizeParams(req.params.slug)
-
       let {url, productPage} = req.query
 
       if (!url) url = '/';

@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-const {compareArray, IsNot_Number, deleteImage, isEmail, isPgpKeys, sanitizeParams} = require('./function');
+const {compareArray, IsNot_Number, deleteImage, isEmail, isPgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -427,8 +427,6 @@ throw new Error('Invalid Selected Selection')
 
 async function Validate_OrderCustomization(req, res, next) {
    try {
-      
-      sanitizeParams(req.params.slug)
 
       req.product = await Product.findOne({slug: req.params.slug, status: 'online'}).orFail(new Error('Invalid Slug Params'));
 
@@ -455,4 +453,65 @@ async function Validate_OrderCustomization(req, res, next) {
    }
 };
 
-module.exports = {Validate_OrderCustomization, validateReports, validateResolveReport, validateContactUs, Validate_Code, Validate_SearchInput, Validate_AutoDel_Settings, Validate_Change_Password, Validate_Product, Validate_Profile, Validate_Reviews, Validate_Message, Validate_Conversation, Validate_Register, Validate_Login}
+function isObject(value) {
+   if (value instanceof Object) {
+      if (value instanceof Array) return undefined
+      else return true
+   }
+   return undefined
+}
+
+function sanitizeInput(value) {
+   if (!value) throw new Error()
+   if (typeof(value) !== 'string') throw new Error()
+   if (value.length > 200) throw new Error()
+   return
+}
+
+function sanitizeObject(object) {
+   if (!isObject(object)) throw new Error()
+
+   const querysValues = Object.keys(object)
+
+   for(let i = 0; i < querysValues.length; i++) {
+      sanitizeInput(object[querysValues[i]])
+   }
+   return 
+}
+
+function sanitizeQuerys(req, res, next) {
+   try { 
+      console.log(req.query)
+      if (req.query) sanitizeObject(req.query)
+
+      next()
+   } catch (e) {
+      console.log('Invalid Query')
+      res.redirect('/404')
+   }
+}
+
+function sanitizeParams(req, res, next) {
+   try { 
+      if (req.params)sanitizeObject(req.params)
+
+      next()
+   } catch (e) {
+      console.log('Invalid Params')
+      res.redirect('/404')
+   }
+}
+
+function sanitizeParamsQuerys(req, res, next) {
+   try { 
+      if (req.query)sanitizeObject(req.query)
+      if (req.params)sanitizeObject(req.params)
+
+      next()
+   } catch (e) {
+      console.log('Invalid Query or Params')
+      res.redirect('/404')
+   }
+}
+
+module.exports = {sanitizeQuerys, sanitizeParams, sanitizeParamsQuerys, Validate_OrderCustomization, validateReports, validateResolveReport, validateContactUs, Validate_Code, Validate_SearchInput, Validate_AutoDel_Settings, Validate_Change_Password, Validate_Product, Validate_Profile, Validate_Reviews, Validate_Message, Validate_Conversation, Validate_Register, Validate_Login}

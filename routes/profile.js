@@ -6,14 +6,12 @@ const Product = require('../models/product');
 const Review = require('../models/review');
 const {copyFile} = require('fs');
 const {Need_Authentification} = require('../middlewares/authentication');
-const {Validate_Profile} = require('../middlewares/validation');
-const {uploadUserImg, deleteImage, sanitizeHTML, paginatedResults, sanitizeParams} = require('../middlewares/function');
+const {Validate_Profile, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
+const {uploadUserImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 // Route
-router.get('/profile/:username', async (req, res) => {
+router.get('/profile/:username', sanitizeParamsQuerys, async (req, res) => {
    try {
-      sanitizeParams(req.params.username)
-
       const vendor = await User.findOne({username: req.params.username}).orFail('This User doesnt Exist')
       vendor.description = sanitizeHTML(vendor.description);
 
@@ -28,7 +26,7 @@ router.get('/profile/:username', async (req, res) => {
    }
 });
 
-router.get('/edit-profile', Need_Authentification, async (req, res) => {
+router.get('/edit-profile', Need_Authentification, sanitizeQuerys, async (req, res) => {
    try {
       const {user} = req;
       const paginatedProducts = await paginatedResults(Product, {vendor: user.username}, {page: req.query.productPage});

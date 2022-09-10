@@ -201,11 +201,4 @@ function isMoneroAddress(address) {
    return true
 }
 
-function sanitizeParams(slug) {
-   if (!slug) throw new Error('Invalid Params')
-   if (typeof(slug) !== 'string') throw new Error('Invalid Params')
-   if (slug.length < 5 || slug.length > 200) throw new Error('Invalid Params')
-   return
-}
-
-module.exports = {sanitizeParams, generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}
+module.exports = {generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}

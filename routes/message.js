@@ -3,8 +3,8 @@ const router = express.Router();
 const Conversation = require('../models/conversation');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
-const { Validate_Conversation, Validate_Message } = require('../middlewares/validation');
-const {formatUsernameWithSettings, sanitizeParams} = require('../middlewares/function');
+const { Validate_Conversation, Validate_Message, sanitizeParams, sanitizeQuerys} = require('../middlewares/validation');
+const {formatUsernameWithSettings} = require('../middlewares/function');
 
 async function getOtherUserData(username) {
    const userData = await User.findOne({username: username}, {img_path: 1, verifiedPgpKeys: 1});
@@ -12,7 +12,7 @@ async function getOtherUserData(username) {
 }
 
 
-router.post('/send-message/:username', Need_Authentification,
+router.post('/send-message/:username', Need_Authentification, sanitizeParams,
    (req,res, next) => { 
       if (req.params.username === req.user.username) {
          req.flash('error', 'You cant send a Message to Yourself');
@@ -23,8 +23,6 @@ router.post('/send-message/:username', Need_Authentification,
    }, Validate_Conversation,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.username)
-
          const {user} = req;
          const {username} = req.params;
          const {type, timestamps, message, pgpKeys} = req.body;
@@ -60,11 +58,9 @@ router.post('/send-message/:username', Need_Authentification,
    }
 );
 
-router.post('/messages/:id', Need_Authentification, Validate_Message,
+router.post('/messages/:id', Need_Authentification, sanitizeParams, Validate_Message,
    async (req, res) => {
       try { 
-         sanitizeParams(req.params.id)
-
          const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
          conversation.Add_New_Message(req.body.message, req.user.username, req.user.settings);
@@ -164,7 +160,7 @@ function filterConversationBySearch(userConversations, userUsername, searchQuery
 }
 
 // GET PAGE
-router.get('/messages', Need_Authentification, async (req, res) => {
+router.get('/messages', Need_Authentification, sanitizeQuerys, async (req, res) => {
    try {
       let {username} = req.user;
       let id = req.query.id ? req.query.id : undefined;
@@ -187,11 +183,8 @@ router.get('/messages', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/edit-message/:id/:messageId', Need_Authentification, Validate_Message, async (req, res) => {
+router.post('/edit-message/:id/:messageId', Need_Authentification, sanitizeParams, Validate_Message, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-      sanitizeParams(req.params.messageId)
-
       const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
       const {message} = req.body;
@@ -206,10 +199,8 @@ router.post('/edit-message/:id/:messageId', Need_Authentification, Validate_Mess
 });
 
 // DELETE
-router.delete('/delete-conversation/:id', Need_Authentification, async (req, res) => {
+router.delete('/delete-conversation/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username)
 
       await conversation.deleteConversation();
@@ -221,7 +212,7 @@ router.delete('/delete-conversation/:id', Need_Authentification, async (req, res
 });
 
 // Make Prettier ?
-router.delete('/delete-message/:id/:message_id', Need_Authentification,
+router.delete('/delete-message/:id/:message_id', Need_Authentification, sanitizeParams,
    async (req, res) => {
       try {
          let {user} = req;

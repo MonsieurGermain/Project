@@ -6,8 +6,9 @@ const Report = require('../models/report');
 const Product = require('../models/product');
 const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
-const {validateReports, validateResolveReport} = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults, sanitizeParams} = require('../middlewares/function');
+const {validateReports, validateResolveReport, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
+const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
+const { sanitizeParam } = require('express-validator');
 
 function hideBuyerUsername(disputes) {
    for (let i = 0; i < disputes.length; i++) {
@@ -32,7 +33,7 @@ function validateData(value, acceptedValues) {
 }
 
 
-router.post('/report/:id', Need_Authentification, validateReports,
+router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validateReports,
    async (req, res) => {
       try { 
          if (req.params.id === req.user.username) throw new Error('Why do you want to report Yourself ?')
@@ -41,7 +42,6 @@ router.post('/report/:id', Need_Authentification, validateReports,
          res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
       try {
-         sanitizeParams(req.params.id)
          if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
 
          switch (req.query.type) {
@@ -79,7 +79,7 @@ router.post('/report/:id', Need_Authentification, validateReports,
 );
 
 // Admin Report
-router.get('/reports', Need_Authentification, // isAdmin,
+router.get('/reports', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
@@ -97,7 +97,7 @@ router.get('/reports', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/report-filter', Need_Authentification, // isAdmin,
+router.post('/report-filter', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          const {reason, archived} = req.body;
@@ -117,11 +117,9 @@ router.post('/report-filter', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/archive-report/:id', Need_Authentification, // isAdmin,
+router.post('/archive-report/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          report.archived = report.archived ? undefined : true;
@@ -136,11 +134,9 @@ router.post('/archive-report/:id', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
+router.post('/dismiss-report/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          await report.deleteReport();
@@ -168,12 +164,10 @@ async function getResolveReportDocuments(type, id) {
    }
    return {user, product};
 }
-router.post('/resolve-report/:id', Need_Authentification, // isAdmin,
+router.post('/resolve-report/:id', Need_Authentification, sanitizeParams,// isAdmin,
    validateResolveReport,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          const {message, ban, banReason} = req.body; // Why Message ?
@@ -212,7 +206,7 @@ router.post('/resolve-report/:id', Need_Authentification, // isAdmin,
 
 
 // Ban User
-router.get('/ban-user', Need_Authentification, // isAdmin,
+router.get('/ban-user', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
@@ -230,7 +224,7 @@ router.get('/ban-user', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/ban-user-filter', Need_Authentification, // isAdmin,
+router.post('/ban-user-filter', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          const {reason, archived} = req.body;
@@ -250,11 +244,9 @@ router.post('/ban-user-filter', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
+router.post('/dismiss-report/:id', Need_Authentification, sanitizeParams, // isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          await report.deleteReport();
@@ -267,11 +259,9 @@ router.post('/dismiss-report/:id', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/ban-user/:id', Need_Authentification, // isAdmin,
+router.post('/ban-user/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          const {user} = await getResolveReportDocuments(report.type, report.reference_id);
@@ -289,7 +279,7 @@ router.post('/ban-user/:id', Need_Authentification, // isAdmin,
 );
 
 // Disputes
-router.get('/disputes', Need_Authentification, //isAdmin,
+router.get('/disputes', Need_Authentification, sanitizeQuerys,//isAdmin,
    async (req, res) => {
       try {
          const {adminDispute} = req.query;
@@ -307,10 +297,9 @@ router.get('/disputes', Need_Authentification, //isAdmin,
       }
    }
 );
-router.post('/disputes/:id', Need_Authentification, //isAdmin,
+router.post('/disputes/:id', Need_Authentification, sanitizeParams,//isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
 
          const order = await Order.findById(req.params.id).orFail(new Error())
 
@@ -325,11 +314,9 @@ router.post('/disputes/:id', Need_Authentification, //isAdmin,
       }
    }
 );
-router.post('/settle-dispute/:id', Need_Authentification, // isAdmin,
+router.post('/settle-dispute/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const order = await Order.findById(req.params.id).orFail(new Error())
 
          if (order.admin !== req.user.username) throw new Error('Cant Access');
@@ -362,7 +349,7 @@ router.post('/settle-dispute/:id', Need_Authentification, // isAdmin,
 );
 
 // Feedback
-router.get('/feedback', Need_Authentification, // isAdmin,
+router.get('/feedback', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          if (!validateData(req.query.reason, [undefined, 'feedback', 'bug', 'help', 'other'])) throw new Error('Invalid Reason to feedback')
@@ -377,7 +364,7 @@ router.get('/feedback', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/feedback-filter', Need_Authentification, // isAdmin,
+router.post('/feedback-filter', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          const {reason, archived} = req.body;
@@ -398,11 +385,9 @@ router.post('/feedback-filter', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
+router.post('/archive-feedback/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          feedback.archived = feedback.archived ? undefined : true;
@@ -415,11 +400,9 @@ router.post('/archive-feedback/:id', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/delete-feedback/:id', Need_Authentification, // isAdmin,
+router.post('/delete-feedback/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.id)
-
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          await feedback.deleteContactUs();
@@ -433,7 +416,7 @@ router.post('/delete-feedback/:id', Need_Authentification, // isAdmin,
 );
 
 // Promote
-router.get('/promote-user', Need_Authentification, // isAdmin,
+router.get('/promote-user', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          const users = await paginatedResults(User, {awaiting_promotion: {$exists: true}}, {page: req.query.usersPage, limit: 24});
@@ -444,11 +427,9 @@ router.get('/promote-user', Need_Authentification, // isAdmin,
       }
    }
 );
-router.post('/promote-user/:username', Need_Authentification, // isAdmin,
+router.post('/promote-user/:username', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
-         sanitizeParams(req.params.username)
-
          const user = await User.findOne({username: req.params.username}).orFail(new Error())
 
          user.awaiting_promotion = undefined;

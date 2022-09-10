@@ -5,8 +5,8 @@ const Review = require('../models/review');
 const User = require('../models/user');
 const Order = require('../models/order');
 const Product = require('../models/product');
-const {Validate_Reviews} = require('../middlewares/validation');
-const {formatUsernameWithSettings, sanitizeParams} = require('../middlewares/function');
+const {Validate_Reviews, sanitizeParams} = require('../middlewares/validation');
+const {formatUsernameWithSettings} = require('../middlewares/function');
 
 function updateRating(review, note) {
    review.number_review += 1;
@@ -15,10 +15,8 @@ function updateRating(review, note) {
    return review;
 }
 
-router.post('/create-review/:id', Need_Authentification, Validate_Reviews, async (req, res) => {
+router.post('/create-review/:id', Need_Authentification, sanitizeParams, Validate_Reviews, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const {username} = req.user,
             {note, type} = req.body;
    

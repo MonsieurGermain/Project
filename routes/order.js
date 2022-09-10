@@ -4,8 +4,8 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
-const { Validate_OrderCustomization } = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults, sanitizeParams} = require('../middlewares/function');
+const { Validate_OrderCustomization, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
+const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
 
 
 function validateData(value, acceptedValues) {
@@ -135,9 +135,8 @@ async function arrayFormat_Order(orders, isBuyer) {
 }
 
 // Routes
-router.get('/order/:slug', Need_Authentification, async (req, res) => {
+router.get('/order/:slug', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.slug)
       const product = await Product.findOne({slug: req.params.slug});
 
       if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
@@ -150,7 +149,7 @@ router.get('/order/:slug', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomization, async (req, res) => {
+router.post('/create-order/:slug', Need_Authentification, sanitizeParams, Validate_OrderCustomization, async (req, res) => {
    try {
       const {product} = req;
       let {qty, shipping_option, selection_1, selection_2, type} = req.body;
@@ -192,10 +191,8 @@ router.post('/create-order/:slug', Need_Authentification, Validate_OrderCustomiz
    }
 });
 
-router.get('/submit-info/:id', Need_Authentification, async (req, res) => {
+router.get('/submit-info/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
       const product = await Product.findOne({slug: order.product_slug});
@@ -208,10 +205,8 @@ router.get('/submit-info/:id', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/submit-info/:id', Need_Authentification, async (req, res) => {
+router.post('/submit-info/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const {user} = req
       const {content} = req.body
       
@@ -236,10 +231,8 @@ router.post('/submit-info/:id', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/send-order-message/:id', Need_Authentification, async (req,res) => {
+router.post('/send-order-message/:id', Need_Authentification, sanitizeParams, async (req,res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const {user} = req
       const {message} = req.body
 
@@ -261,9 +254,8 @@ router.post('/send-order-message/:id', Need_Authentification, async (req,res) =>
    }
 })
 
-router.get('/pay/:id', Need_Authentification, async (req, res) => {
+router.get('/pay/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
 
       const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
@@ -273,10 +265,8 @@ router.get('/pay/:id', Need_Authentification, async (req, res) => {
    }
 });
 
-router.get('/order-resume/:id', Need_Authentification, async (req, res) => {
+router.get('/order-resume/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       let order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
 
       order = await formatOrder(order, order.buyer === req.user.username ? true : false);
@@ -330,7 +320,7 @@ function constructOrdersQuery(query, username) {
    return mongooseQuery;
 }
 
-router.get('/orders', Need_Authentification,
+router.get('/orders', Need_Authentification, sanitizeQuerys,
    async (req, res) => {
       try {
          if (!validateData(req.body.status, [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid type to report')
@@ -350,10 +340,9 @@ router.get('/orders', Need_Authentification,
    }
 );
 
-router.post('/filter-orders', Need_Authentification,
+router.post('/filter-orders', Need_Authentification, sanitizeQuerys,
    async (req, res) => {
       try {
-         console.log(req.body)
          if (!validateData(req.body.status, ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid status to filter')
          if (!validateData(req.body.clientsOrders, [undefined, 'true', 'false'])) throw new Error('Invalid type to filter')
 
@@ -372,10 +361,8 @@ router.post('/filter-orders', Need_Authentification,
    }
 );
 
-router.post('/update-order/:id', Need_Authentification, async (req, res) => {
+router.post('/update-order/:id', Need_Authentification, sanitizeParamsQuerys, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const {user} = req
 
       let order = await Order.findByIdwhereYouBuyerVendor(req.params.id, user.username)
@@ -388,7 +375,6 @@ router.post('/update-order/:id', Need_Authentification, async (req, res) => {
 
       let redirect_url;
       if (req.query.fromOrders) {
-         console.log(req.query)
          if (req.query.status) redirect_url = `/orders?ordersPage=${req.query.ordersPage}&clientsOrders=true&status=${req.query.status}`;
          else redirect_url = `/orders?clientsOrders=true&ordersPage=${req.query.ordersPage}`
       }
@@ -402,10 +388,8 @@ router.post('/update-order/:id', Need_Authentification, async (req, res) => {
 });
 
 
-router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
+router.delete('/delete-order/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const order = await Order.findById(req.params.id)
 
       if (!order) throw new Error('Invalid Params Id');
@@ -420,10 +404,8 @@ router.delete('/delete-order/:id', Need_Authentification, async (req, res) => {
    }
 });
 
-router.post('/create-dispute/:id', Need_Authentification, async (req, res) => {
+router.post('/create-dispute/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.id)
-
       const order = await Order.findByIdwhereYouBuyerVendor(req.params.id, req.user.username)
       
       order.status = 'dispute_progress';

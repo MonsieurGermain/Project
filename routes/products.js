@@ -4,8 +4,8 @@ const Product = require('../models/product');
 const Review = require('../models/review');
 const User = require('../models/user');
 const {Need_Authentification, isVendor} = require('../middlewares/authentication');
-const {Validate_Product} = require('../middlewares/validation');
-const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults, sanitizeParams} = require('../middlewares/function');
+const {Validate_Product, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
+const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 const Fuse = require('fuse.js');
 // Create Fuzzy Product Collecion
@@ -27,8 +27,8 @@ setInterval(() => {
    });
 }, 300000); // 5min 300000
 
-// Dont Get Local Product
-router.get('/products', async (req, res) => {
+
+router.get('/products', sanitizeQuerys, async (req, res) => {
    try {
       let paginatedProducts, productsFuzzy;
 
@@ -53,9 +53,8 @@ router.post('/search-products', async (req, res) => {
    res.redirect(`/products?search=${req.body.search}&productPage=1`);
 });
 
-router.get('/product/:slug', async (req, res) => {
+router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
    try {
-      sanitizeParams(req.params.slug)
       const product = await Product.findOne({slug: req.params.slug});
 
       if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
@@ -74,7 +73,7 @@ router.get('/product/:slug', async (req, res) => {
 });
 
 // GET
-router.get('/create-product', Need_Authentification, isVendor,
+router.get('/create-product', Need_Authentification, isVendor, sanitizeQuerys,
    async (req, res) => {
       try { 
 
@@ -127,7 +126,7 @@ router.get('/create-product', Need_Authentification, isVendor,
 );
 
 //POST
-router.post('/create-product', Need_Authentification, uploadProductImg.single('productImage'), 
+router.post('/create-product', Need_Authentification, sanitizeQuerys, uploadProductImg.single('productImage'), 
 async(req,res, next) => {
    try { 
       const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
@@ -139,7 +138,8 @@ async(req,res, next) => {
       res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`)
    }
 },
-Validate_Product, async (req, res) => {
+Validate_Product, 
+async (req, res) => {
    try {
       const {
          title,
@@ -223,10 +223,8 @@ Validate_Product, async (req, res) => {
 });
 
 //Delete
-router.delete('/delete-product/:slug', Need_Authentification, async (req, res) => {
+router.delete('/delete-product/:slug', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      sanitizeParams(req.params.slug)
-
       let product = await Product.findOne({slug: req.params.slug, vendor: req.user.username})
 
       if (!product) throw new Error('Invalid Slug Params')
