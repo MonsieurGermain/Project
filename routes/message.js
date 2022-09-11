@@ -190,7 +190,9 @@ router.post('/edit-message/:id/:messageId', Need_Authentification, sanitizeParam
       const {message} = req.body;
       const {messageId} = req.params
 
-      await conversation.editMessage(messageId, message);
+      conversation.editMessage(messageId, message, req.user.username);
+
+      await conversation.save()
 
       res.redirect(`/messages?id=${conversation.id}#bottom`);
    } catch (e) {

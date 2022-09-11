@@ -96,14 +96,24 @@ conversationSchema.methods.Add_New_Message = function (Message, From_User, userS
    return this;
 };
 
-conversationSchema.methods.editMessage = async function (messageId, newMessage) {
+
+function canCRUDMessage(messageSender, conversationSender_1, conversationSender_2, userUsername) {
+   if (conversationSender_1 === userUsername) {
+      if (messageSender !== conversationSender_1) return true
+   } else if (conversationSender_2 === userUsername) {
+      if (messageSender === conversationSender_2) return true
+   }
+   return;
+}
+
+conversationSchema.methods.editMessage = async function (messageId, newMessage, userUsername) {
    for (let i = 0; i < this.messages.length; i++) {
       if (this.messages[i].id === messageId) {
-         this.messages[i].message = newMessage;
+
+         if (canCRUDMessage(this.messages[i].sender, this.sender_1, this.sender_2, userUsername)) this.messages[i].message = newMessage;
          break;
       }
    }
-   await this.save();
 };
 
 // Delete
@@ -115,9 +125,10 @@ conversationSchema.methods.deleteMessageWithDate = async function (date) {
    this.messages = this.messages.filter((message) => message.expire_at > date);
 };
 
-conversationSchema.methods.deleteMessageWithId = async function (messageId) {
+conversationSchema.methods.deleteMessageWithId = async function (messageId, userUsername) {
    const indexOfMessage = this.messages.map((message) => message.id).indexOf(messageId)
-   this.messages.splice(indexOfMessage, 1)
+   
+   if (canCRUDMessage(this.messages[indexOfMessage].sender, this.sender_1, this.sender_2, userUsername)) this.messages.splice(indexOfMessage, 1)
 };
 
 conversationSchema.methods.sawMessages = async function (userUsername) {

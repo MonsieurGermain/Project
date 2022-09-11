@@ -481,7 +481,6 @@ function sanitizeObject(object) {
 
 function sanitizeQuerys(req, res, next) {
    try { 
-      console.log(req.query)
       if (req.query) sanitizeObject(req.query)
 
       next()

@@ -8,7 +8,7 @@
 
     <input id="report-vendor-<%=vendor.username%>" type="checkbox" hidden></input>
     <!-- when checked css shows next element -->
-    <%- include('partials/Popup/Report-popup', { checkboxInputId: "report-vendor-" + vendor.username,  method: "POST", action: '/report/' + vendor.username + '?type=vendor', type: "vendor"}) %>
+    <%- include('partials/Popup/Report-popup', { checkboxInputId: "report-vendor-" + vendor.username,  method: "POST", action: '/report/' + vendor.username, type: "vendor"}) %>
 
     <input type="checkbox" class="d-none" id="contact-checkbox">
     <%- include('partials/Popup/SendMessage-popup', {Reciver: vendor.username, checkboxInputId: 'contact-checkbox'}) %>

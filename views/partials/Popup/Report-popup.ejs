@@ -1,7 +1,7 @@
 <!--designed to work with css input popup technique - no js -->
 <div class="popup-dialog" style="max-width:none;">
   <div class="rounded px-4 py-4 my-4">
-    <form class="row justify-content-center" action="<%=action%>" method="<%=method%>">
+    <form class="row justify-content-center" action="<%=action%>?type=<%=type%>&url=<%=url[0]%>?<%=url[1]%>" method="<%=method%>">
       <div class="col-12">
         <h2 class="h2 pb-lg-1 mb-4">Report this <%=type%></h2>
         <p class="fs-lg text-muted pb-lg-1 mb-4">Why do you want to report this <%=type%>?</p>

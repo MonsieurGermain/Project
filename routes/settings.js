@@ -328,7 +328,6 @@ router.delete('/delete-user', Need_Authentification, async (req, res) => {
       req.logOut();      
       res.redirect('/login');
    } catch (e) {
-      console.log('here')
       console.log(e);
       res.redirect('/404');
    }

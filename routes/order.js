@@ -209,8 +209,8 @@ router.post('/submit-info/:id', Need_Authentification, sanitizeParams, async (re
    try {
       const {user} = req
       const {content} = req.body
-      
-      if (!content || content < 2 || content > 3000) throw new Error('Invalid Submited Information')
+
+      if (!content || typeof(content) !== 'string' || content.length < 2 || content.length > 3000) throw new Error('Invalid Submited Information')
 
       const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
@@ -226,8 +226,8 @@ router.post('/submit-info/:id', Need_Authentification, sanitizeParams, async (re
 
       res.redirect(`/pay/${order.id}`);
    } catch (e) {
-      req.flash('error', e.messages)
-      res.redirect('/404');
+      req.flash('error', e.message)
+      res.redirect(`/submit-info/${req.params.id}`);
    }
 });
 
@@ -236,7 +236,7 @@ router.post('/send-order-message/:id', Need_Authentification, sanitizeParams, as
       const {user} = req
       const {message} = req.body
 
-      if (!message || message < 2 || message > 3000) throw new Error('Invalid Message')
+      if (!message || typeof(message) !== 'string' || message.length < 2 || message.length > 3000) throw new Error('Invalid Message')
 
       const order = await Order.findByIdwhereYouBuyerVendorAdmin(req.params.id, req.user.username)
 
@@ -256,7 +256,6 @@ router.post('/send-order-message/:id', Need_Authentification, sanitizeParams, as
 
 router.get('/pay/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-
       const order = await Order.findByIdwhereYouBuyer(req.params.id, req.user.username)
 
       res.render('pay', {order});
@@ -364,20 +363,18 @@ router.post('/filter-orders', Need_Authentification, sanitizeQuerys,
 router.post('/update-order/:id', Need_Authentification, sanitizeParamsQuerys, async (req, res) => {
    try {
       const {user} = req
+      const {ordersPage, status, clientsOrders, fromOrders} = req.query
 
       let order = await Order.findByIdwhereYouBuyerVendor(req.params.id, user.username)
 
       verifyOrderUpdate(req.body.status, order.buyer, order.vendor, user.username)
 
-      order = await HandleOrderRequest(req.body.status, order, user.settings, req.query.fromOrders);
+      order = await HandleOrderRequest(req.body.status, order, user.settings, fromOrders);
 
       await order.save();
 
       let redirect_url;
-      if (req.query.fromOrders) {
-         if (req.query.status) redirect_url = `/orders?ordersPage=${req.query.ordersPage}&clientsOrders=true&status=${req.query.status}`;
-         else redirect_url = `/orders?clientsOrders=true&ordersPage=${req.query.ordersPage}`
-      }
+      if (fromOrders) redirect_url = `/orders?ordersPage=${ordersPage ? ordersPage : '1'}${status ? `&status=${status}` : ''}${clientsOrders ? `&clientsOrders=true` : ''}`
       else redirect_url = `/order-resume/${req.params.id}`;
 
       res.redirect(redirect_url);
@@ -390,14 +387,24 @@ router.post('/update-order/:id', Need_Authentification, sanitizeParamsQuerys, as
 
 router.delete('/delete-order/:id', Need_Authentification, sanitizeParams, async (req, res) => {
    try {
-      const order = await Order.findById(req.params.id)
+      const {user} = req,
+            {id} = req.params,
+            {ordersPage, status, clientsOrders, fromOrders} = req.query
+
+            console.log(req.query)
+ 
+      const order = await Order.findById(id)
 
       if (!order) throw new Error('Invalid Params Id');
-      if (!addDeleteLink(order, req.user.username === order.buyer ? true : false)) throw new Error('You cant delete that');
+      if (!addDeleteLink(order, user.username === order.buyer ? true : false)) throw new Error('You cant delete that');
 
       await order.deleteOrder();
 
-      res.redirect(`/orders?ordersPage=1`);
+      let redirect_url
+      if (fromOrders) redirect_url = `/orders?ordersPage=${ordersPage ? ordersPage : '1'}${status ? `&status=${status}` : ''}${clientsOrders ? `&clientsOrders=true` : ''}`
+      else redirect_url = `/orders?ordersPage=1`;
+
+      res.redirect(redirect_url);
    } catch (e) {
       console.log(e);
       res.redirect('/404');

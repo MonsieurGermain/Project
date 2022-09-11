@@ -31,7 +31,7 @@
 
 
                   <div>
-                    <h2>Feedbacks :</h2>
+                    <h3>Reports :</h3>
                   </div>
 
                    <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
@@ -39,16 +39,49 @@
                     <form action="/report-filter" method="POST">
                     <div class="d-md-flex mb-3">
                         <select class="form-select me-4 mb-2 mb-md-0" name="reason" style="min-width: 240px;" required>
-                          <option value="all">All</option>
-                          <option value="scam">Scam</option>
-                          <option value="blackmail">Blackmail</option>
-                          <option value="information">Private Infotmation Gathering</option>
-                          <option value="other">Other</option>
+                          <option value="all"
+                          <% if (!query.reason) { %>
+                            selected
+                          <% } %> >All</option>
+
+                          <option value="scam"
+                          <% if (query.reason === 'scam') { %>
+                            selected
+                          <% } %> >Scam</option>
+
+                          <option value="blackmail"
+                          <% if (query.reason === 'blackmail') { %>
+                            selected
+                          <% } %> >Blackmail</option>
+
+                          <option value="information"
+                          <% if (query.reason === 'information') { %>
+                            selected
+                          <% } %> >Private Infotmation Gathering</option>
+
+                          <option value="other"
+                          <% if (query.reason === 'other') { %>
+                            selected
+                          <% } %> >Other</option>
                     </select>
                     <select class="form-select me-4 mb-2 mb-md-0" name="archived" style="min-width: 240px;" required>
-                            <option value="all">Archived/Not Archived</option>
-                            <option value="true">Archived</option>
-                            <option value="false">Not Archived</option>
+                            <option value="all"
+                            <% if (!query.archived) { %>
+                              selected
+                            <% } %>
+                            >Archived/Not Archived</option>
+                            
+                            <option value="true"
+                            <% if (query.archived === 'true') { %>
+                              selected
+                            <% } %>
+                            >Archived</option>
+
+                            <option value="false"
+                            <% if (query.archived === 'false') { %>
+                              selected
+                            <% } %>
+                            >Not Archived</option>
                     </select>
                         <button type="submit" class="btn btn-primary">Filter</button>
                     </div>
@@ -56,8 +89,8 @@
                 </div>
 
                 <% if (!reports.results.length) { %>
-                  <h4 class="my-3">No Report !!</h3>
-                  <h4 class="my-3">Yall are so good !!</h3>
+                  <h6 style="text-align: center" class="mt-5">No Report</h6>
+                  <h6 style="text-align: center">Yall are so good !!</h6>
                  <% } %>
 
                 <% for(let i = 0; i < reports.results.length; i++) { %>
@@ -134,7 +167,7 @@
 
 
                               <div class="ms-auto d-flex flex-column flex-sm-row">
-                                <form action="/archive-report/<%=reports.results[i].id%>" method="POST">
+                                <form action="/archive-report/<%=reports.results[i].id%>?<%=url[1]%>" method="POST">
                                     <% if (!reports.results[i].archived) { %> 
                                       <button type="submit" class="btn btn-success">Archive Reports</button>
                                     <% } else { %> 
@@ -142,7 +175,7 @@
                                     <% } %>
                                 </form>
 
-                                <form action="/dismiss-report/<%=reports.results[i].id%>" method="POST">
+                                <form action="/dismiss-report/<%=reports.results[i].id%>?<%=url[1]%>" method="POST">
                                   <button type="submit" class="btn btn-primary ms-3">
                                     Dismiss Report
                                   </button>

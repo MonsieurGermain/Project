@@ -23,10 +23,15 @@
                   <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
                 </div>   
                 <% } %>
+                <% if (error.length) { %>
+                  <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+                  <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
+                </div>   
+                <% } %>
 
 
                   <div>
-                    <h2>Feedbacks :</h2>
+                    <h3>Feedbacks :</h3>
                   </div>
 
                    <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
@@ -34,16 +39,42 @@
                     <form action="/feedback-filter" method="POST">
                     <div class="d-md-flex mb-3">
                         <select class="form-select me-4 mb-2 mb-md-0" name="reason" style="min-width: 240px;" required>
-                            <option value="all">All reason</option>
-                            <option value="feedback">Feedback</option>
-                            <option value="bug">Bug/Vulnerability</option>
-                            <option value="help">Help</option>
-                            <option value="other">Other</option>
+                            <option value="all"
+                            <% if (!query.reason){ %>
+                              selected
+                            <% } %> >All reason</option>
+                            <option value="feedback"
+                            <% if (query.reason === 'feedback'){ %>
+                              selected
+                            <% } %> >Feedback</option>
+                            <option value="bug"
+                            <% if (query.reason === 'bug'){ %>
+                              selected
+                            <% } %> >Bug/Vulnerability</option>
+                            <option value="help"
+                            <% if (query.reason === 'help'){ %>
+                              selected
+                            <% } %> >Help</option>
+                            <option value="other"
+                            <% if (query.reason === 'other'){ %>
+                              selected
+                            <% } %> >Other</option>
                     </select>
                     <select class="form-select me-4 mb-2 mb-md-0" name="archived" style="min-width: 240px;" required>
-                            <option value="all">Archived/Not Archived</option>
-                            <option value="true">Archived</option>
-                            <option value="false">Not Archived</option>
+                            <option value="all"
+                            <% if (!query.archived) { %>
+                              selected
+                            <% } %> >Archived/Not Archived</option>
+
+                            <option value="true"
+                            <% if (query.archived === 'true') { %>
+                              selected
+                            <% } %> >Archived</option>
+
+                            <option value="false"
+                            <% if (query.archived === 'false') { %>
+                              selected
+                            <% } %> >Not Archived</option>
                     </select>
                         <button type="submit" class="btn btn-primary">Filter</button>
                     </div>
@@ -51,7 +82,8 @@
                 </div>
 
                 <% if (!feedbacks.results.length) { %>
-                  <h4 class="my-3">No feedback</h3>
+                  <h6 style="text-align: center" class="mt-5">No feedback Available</h6>
+                  <h6 style="text-align: center" class="mt-5">Niceee</h6>
                  <% } %>
 
                 <% for(let i = 0; i < feedbacks.results.length; i++) { %>
@@ -100,7 +132,7 @@
 
 
                               <div class="ms-auto d-flex flex-column flex-sm-row">
-                                <form action="/archive-feedback/<%=feedbacks.results[i].id%>" method="POST">
+                                <form action="/archive-feedback/<%=feedbacks.results[i].id%>?<%=url[1]%>" method="POST">
                                     <% if (!feedbacks.results[i].archived) { %> 
                                       <button type="submit" class="btn btn-success">Archive Feedback</button>
                                     <% } else { %> 
@@ -108,7 +140,7 @@
                                     <% } %>
                                 </form>
 
-                                <form action="/delete-feedback/<%=feedbacks.results[i].id%>" method="POST">
+                                <form action="/delete-feedback/<%=feedbacks.results[i].id%>?<%=url[1]%>" method="POST">
                                   <button type="submit" class="btn btn-danger ms-3">
                                     Delete Feedback
                                   </button>

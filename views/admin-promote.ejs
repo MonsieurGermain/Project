@@ -22,10 +22,16 @@
                   <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
                 </div>   
                 <% } %>
+                <% if (error.length) { %>
+                  <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
+                  <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
+                </div>   
+                <% } %>
                 
                 <div>
-                <h2>Promote User :</h2>
+                <h3>Promote User :</h3>
               </div>
+
               <% if (users.results.length) { %>
                 <% const usersResult = users.results %> 
                 <% for(let i = usersResult.length - 1; i > -1; i--) { %>
@@ -59,8 +65,8 @@
                   </div>
                   <% } %>
                <% } else { %> 
-                  <h4 class="my-3">No User to Promote !</h3>
-                  <h5 class="my-3">Keep it up !</h5>
+                <h6 style="text-align: center" class="mt-5">No User to Promote</h6>
+                <h6 style="text-align: center">Keep it up !</h6>
                <% } %>
                <div class="mt-4">
                <%- include('partials/Pagination', {nextPage: users.nextPage, currentPage: parseInt(query.usersPage), queryName: 'usersPage'}) %>

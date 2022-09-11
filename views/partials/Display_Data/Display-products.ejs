@@ -11,7 +11,7 @@
 
             <% for(let i = 0; i < products.length; i++) { %>
               <input id="report-product-<%=products[i].slug%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-              <%- include('../Popup/Report-popup', { checkboxInputId: "report-product-" + products[i].slug,  method: "POST", action: '/report/' + products[i].slug + '?type=product', type: "product"}) %>
+              <%- include('../Popup/Report-popup', { checkboxInputId: "report-product-" + products[i].slug,  method: "POST", action: '/report/' + products[i].slug, type: "product"}) %>
         
             <div class="col pb-1 pb-lg-3 mb-4">
               <article class="card card-hover h-100 border-0 shadow-sm">

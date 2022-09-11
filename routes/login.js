@@ -110,7 +110,7 @@ router.post('/login', Should_Not_Be_Authenticated, Validate_Login,
       failureRedirect: '/login',
       failureFlash: true,
    }), (req, res) => {
-      if (req.user.authorization === 'admin') res.redirect('/disputes');
+      if (req.user.authorization === 'admin') res.redirect('/disputes?disputesPage=1');
       else res.redirect('/');
    }
 );
@@ -148,7 +148,7 @@ router.post('/2fa', Should_Not_Be_Authenticated, Validate_Code,
       failureRedirect: `/login`,
       failureFlash: true,
    }), (req, res) => {
-      if (req.user.authorization === 'admin') res.redirect('/disputes');
+      if (req.user.authorization === 'admin') res.redirect('/disputes?disputesPage=1');
       else res.redirect('/');
    }
 );

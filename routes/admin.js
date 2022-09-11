@@ -8,7 +8,22 @@ const Contactus = require('../models/contactus');
 const {Need_Authentification} = require('../middlewares/authentication');
 const {validateReports, validateResolveReport, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
 const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
-const { sanitizeParam } = require('express-validator');
+
+async function getResolveReportDocuments(type, id) {
+   let user, product;
+   switch (type) {
+      case 'vendor':
+         user = await User.findOne({username: id});
+         break;
+      case 'product':
+         product = await Product.findOne({slug: id});
+         user = await User.findOne({username: product.vendor});
+         break;
+      default:
+         throw new Error('Invalid Type');
+   }
+   return {user, product};
+}
 
 function hideBuyerUsername(disputes) {
    for (let i = 0; i < disputes.length; i++) {
@@ -34,14 +49,18 @@ function validateData(value, acceptedValues) {
 
 
 router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validateReports,
-   async (req, res) => {
+   async (req, res, next) => {
       try { 
          if (req.params.id === req.user.username) throw new Error('Why do you want to report Yourself ?')
+         next()
       } catch (e) {
          req.flash('error', e.message);
          res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
-      try {
+   },
+   async (req, res, next) => { 
+       try {
+         console.log(req.query)
          if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
 
          switch (req.query.type) {
@@ -55,7 +74,7 @@ router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validate
                throw new Error()
          }
 
-         const {type} = req.query;
+         const {type, url} = req.query;
          const {id} = req.params;
          const {reason, username, message} = req.body;
 
@@ -70,7 +89,7 @@ router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validate
          report.save();
 
          req.flash('success', 'Thank you for your Report, we are now Investigating');
-         res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+         res.redirect(url);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -86,6 +105,7 @@ router.get('/reports', Need_Authentification, sanitizeQuerys,// isAdmin,
          if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid type to report')
 
          const query = constructQuery(req.query);
+
          query.ban_requested = {$exists: false};
 
          const reports = await paginatedResults(Report, query, {page: req.query.reportsPage, limit: 24});
@@ -117,7 +137,7 @@ router.post('/report-filter', Need_Authentification, sanitizeQuerys,// isAdmin,
       }
    }
 );
-router.post('/archive-report/:id', Need_Authentification, sanitizeParams,// isAdmin,
+router.post('/archive-report/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
          const report = await Report.findById(req.params.id).orFail(new Error())
@@ -127,14 +147,14 @@ router.post('/archive-report/:id', Need_Authentification, sanitizeParams,// isAd
          await report.save();
 
          req.flash('success', 'Report Successfully Archived/Unarchived');
-         res.redirect(`/reports?reportsPage=1`);
+         res.redirect(`/reports?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}${req.query.archived ? `&archived=${req.query.archived}`: ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
       }
    }
 );
-router.post('/dismiss-report/:id', Need_Authentification, sanitizeParams,// isAdmin,
+router.post('/dismiss-report/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
          const report = await Report.findById(req.params.id).orFail(new Error())
@@ -142,29 +162,14 @@ router.post('/dismiss-report/:id', Need_Authentification, sanitizeParams,// isAd
          await report.deleteReport();
 
          req.flash('success', 'Report Successfully Dismissed');
-         res.redirect(`/reports?reportsPage=1`);
+         res.redirect(`/reports?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}${req.query.archived ? `&archived=${req.query.archived}`: ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
       }
    }
 );
-async function getResolveReportDocuments(type, id) {
-   let user, product;
-   switch (type) {
-      case 'vendor':
-         user = await User.findOne({username: id});
-         break;
-      case 'product':
-         product = await Product.findOne({slug: id});
-         user = await User.findOne({username: product.vendor});
-         break;
-      default:
-         throw new Error('Invalid Type');
-   }
-   return {user, product};
-}
-router.post('/resolve-report/:id', Need_Authentification, sanitizeParams,// isAdmin,
+router.post('/resolve-report/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    validateResolveReport,
    async (req, res) => {
       try {
@@ -180,6 +185,7 @@ router.post('/resolve-report/:id', Need_Authentification, sanitizeParams,// isAd
          }
 
          user.warning++;
+         
          if (user.warning > 5) {
             user.deleteUser();
          } 
@@ -196,7 +202,7 @@ router.post('/resolve-report/:id', Need_Authentification, sanitizeParams,// isAd
          // Send Message to Vendor
 
          req.flash('success', flashMessage);
-         res.redirect(`/reports?reportsPage=1`);
+         res.redirect(`/reports?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}${req.query.archived ? `&archived=${req.query.archived}`: ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -210,7 +216,6 @@ router.get('/ban-user', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
          if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
-         if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid type to report')
 
          const query = constructQuery(req.query);
          query.ban_requested = {$exists: true};
@@ -230,12 +235,10 @@ router.post('/ban-user-filter', Need_Authentification, sanitizeQuerys,// isAdmin
          const {reason, archived} = req.body;
 
          if (!validateData(reason, ['all', 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
-         if (!validateData(archived, ['all', 'true', 'false'])) throw new Error('Invalid type to report')
 
          let query = '?reportsPage=1';
 
          if (reason !== 'all') query += `&reason=${reason}`;
-         if (archived !== 'all') query += `&archived=${archived}`;
 
          res.redirect(`/ban-user${query}`);
       } catch (e) {
@@ -244,33 +247,33 @@ router.post('/ban-user-filter', Need_Authentification, sanitizeQuerys,// isAdmin
       }
    }
 );
-router.post('/dismiss-report/:id', Need_Authentification, sanitizeParams, // isAdmin,
+router.post('/dismiss-ban-request/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
          const report = await Report.findById(req.params.id).orFail(new Error())
 
-         await report.deleteReport();
+         report.deleteReport();
 
-         req.flash('success', 'Ban Request Succesfully Refused');
-         res.redirect(`/ban-user?reportsPage=1`);
+         req.flash('success', 'Ban Request Successfully Dismissed');
+         res.redirect(`/ban-user?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
       }
    }
 );
-router.post('/ban-user/:id', Need_Authentification, sanitizeParams,// isAdmin,
+router.post('/ban-user/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
          const report = await Report.findById(req.params.id).orFail(new Error())
 
          const {user} = await getResolveReportDocuments(report.type, report.reference_id);
 
-         await user.deleteUser();
-         await report.deleteReport();
+         user.deleteUser();
+         report.deleteReport();
 
          req.flash('success', 'User Successfully Banned');
-         res.redirect(`/ban-user?reportsPage=1`);
+         res.redirect(`/ban-user?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -286,9 +289,9 @@ router.get('/disputes', Need_Authentification, sanitizeQuerys,//isAdmin,
 
          const query = adminDispute ? {status: 'dispute_progress', admin: req.user.username} : {status: 'dispute_progress', admin: undefined};
 
-         let disputes = await Order.find(query);
+         let disputes = await paginatedResults(Order, query, {page: req.query.disputesPage, limit: 24});
 
-         disputes = hideBuyerUsername(disputes);
+         disputes.results = hideBuyerUsername(disputes.results);
 
          res.render('admin-dispute-list', {disputes});
       } catch (e) {
@@ -307,7 +310,7 @@ router.post('/disputes/:id', Need_Authentification, sanitizeParams,//isAdmin,
 
          await order.save();
 
-         res.redirect('/disputes');
+         res.redirect('/disputes?disputesPage=1');
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -326,11 +329,8 @@ router.post('/settle-dispute/:id', Need_Authentification, sanitizeParams,// isAd
             case order.vendor:
                winner = order.vendor;
             break
-            case  order.buyer:
-               winner = order.buyer;
-            break
             default : 
-             throw new Error('Invalid Winner')
+            winner = order.buyer;
          }
 
          order.status = 'disputed';
@@ -340,7 +340,7 @@ router.post('/settle-dispute/:id', Need_Authentification, sanitizeParams,// isAd
          await order.save();
 
          req.flash('success', 'Dispute Successfully Settle');
-         res.redirect(`/disputes?adminDispute=true`);
+         res.redirect(`/disputes?disputesPage=1&adminDispute=true`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -385,7 +385,7 @@ router.post('/feedback-filter', Need_Authentification, sanitizeQuerys,// isAdmin
       }
    }
 );
-router.post('/archive-feedback/:id', Need_Authentification, sanitizeParams,// isAdmin,
+router.post('/archive-feedback/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
@@ -393,21 +393,22 @@ router.post('/archive-feedback/:id', Need_Authentification, sanitizeParams,// is
          feedback.archived = feedback.archived ? undefined : true;
 
          await feedback.save();
-         res.redirect(`/feedback?feedbackPage=1`);
+
+         res.redirect(`/feedback?feedbackPage=${req.query.feedbackPage ? req.query.feedbackPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}${req.query.archived ? `&archived=${req.query.archived}`: ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
       }
    }
 );
-router.post('/delete-feedback/:id', Need_Authentification, sanitizeParams,// isAdmin,
+router.post('/delete-feedback/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
          const feedback = await Contactus.findById(req.params.id).orFail(new Error())
 
          await feedback.deleteContactUs();
 
-         res.redirect(`/feedback?feedbackPage=1`);
+         res.redirect(`/feedback?feedbackPage=${req.query.feedbackPage ? req.query.feedbackPage : '1'}${req.query.reason ? `&reason=${req.query.reason}`: ''}${req.query.archived ? `&archived=${req.query.archived}`: ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
