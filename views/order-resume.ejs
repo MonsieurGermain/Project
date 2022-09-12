@@ -33,7 +33,7 @@
                 <div style="margin-top: -96px;"></div>
                 <div class="position-sticky top-0 pt-5">
                   <div class="pt-5">
-                    <div class="card shadow-sm p-sm-3 text-center">
+                    <div class="card p-3 text-center">
                         <%- include('partials/Update-order') %>
 
                         <div class="mt-4 text-start">
@@ -43,16 +43,16 @@
                         <div class="d-flex">
                             <div>
                                 <p class="mb-0"><b>Needed Amount :</b></p>
-                                <p>XMR PRICE</p>
+                                <p class="mb-0">XMR PRICE</p>
                             </div>
                             <div class="ms-auto">
                                 <p class="mb-0"><b>Amount Paid : </b></p>
-                                <p>XMR PRICE</p>
+                                <p class="mb-0">XMR PRICE</p>
                             </div>
                         </div>
                         <div>
                             <p class="mt-2 mb-0"><b>Balance : </b></p>
-                            <p>XMR PRICE</p>
+                            <p class="mb-0">XMR PRICE</p>
                         </div>
                         
                     </div>
@@ -65,15 +65,15 @@
               <!-- Content -->
             <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
 
-              <article class="card border-0 ps-2 pe-5 py-2">
+              <article class="card border-0 p-3">
                 <div class="row g-0">
-                  <div class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3">
+                  <div class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3 overflow-hidden">
                     <a href="/product/<%=product.slug%>?reviewPage=1" class="position-absolute top-0 start-0 w-100 h-100">
                       <img src="<%=product.img_path%>" style="object-fit: 15rem;" alt="Product Img">
                     </a>
                   </div>
                   <div class="col-sm-7">
-                    <div class="card-body px-0 pt-sm-0 ps-sm-4 pb-0 pb-sm-4">
+                    <div class="card-body px-0 pt-sm-0 pb-0">
                       <a href="#" class="badge fs-sm text-white bg-info shadow-info text-decoration-none mb-3">Category</a>
                       <h3 class="h4">
                         <a href="/product/<%=product.slug%>?reviewPage=1"><%=product.title%></a>
@@ -183,10 +183,10 @@
 <!-- CHAT -->
 <p class="h5 ">Order Chat</p>
 <div class="w-100 mt-2" style="max-height: 712px; height: 400px;">
-    <div class="card shadow-sm h-100 border-0 bg-transparent pb-3">
+    <div class="card h-100">
 
       <!-- Messages -->
-      <div class="card-body swiper scrollbar-hover overflow-hidden w-100 pb-0" >
+      <div class="card-body swiper scrollbar-hover overflow-hidden w-100 p-3 pb-0" >
         <div class="swiper-wrapper">
           <div class="swiper-slide h-auto">
 
@@ -243,7 +243,7 @@
 
       <!-- Footer (Send message form) -->
       <form action="/send-order-message/<%=order.id%>" method="POST">
-      <div class="card-footer d-sm-flex w-100 border-0 pt-3 pb-3 px-4">
+      <div class="card-footer d-sm-flex w-100 border-0 p-3">
         <div class="position-relative w-100 me-2 mb-3 mb-sm-0">
           <input type="text" class="form-control form-control-lg" style="padding-right: 85px;" placeholder="Type your Message" name="message">
         </div>
