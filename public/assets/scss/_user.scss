@@ -25,6 +25,11 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
    }
 }
 
+.card {
+   border-color: none!important;
+   border: transparent!important;
+}
+
 .small-rc {
    width: 2.5rem;
    height: 2.5rem;

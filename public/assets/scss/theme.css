@@ -15766,6 +15766,11 @@ img-comparison-slider:focus {
   }
 }
 
+.card {
+  border-color: none !important;
+  border: transparent !important;
+}
+
 .small-rc {
   width: 2.5rem;
   height: 2.5rem;
