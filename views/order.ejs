@@ -1,12 +1,13 @@
 <%- include('partials/Statics/Head', {page: '- Order ' + product.title}) %>
 
 
-  <!-- Body -->
+<!-- Body -->
+
 <body>
 
-    <!-- Page wrapper for sticky footer -->
-    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
-    <form action="/create-order/<%=product.slug%>" method="POST">
+  <!-- Page wrapper for sticky footer -->
+  <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+  <form action="/create-order/<%=product.slug%>" method="POST">
     <main class="page-wrapper">
 
       <%- include('partials/Statics/Navbar') %>
@@ -15,33 +16,33 @@
 
 
         <nav class="py-4" aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item">
-                <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
-              </li>
-              <li class="breadcrumb-item">
-                <a href="/products?productPage=1">Product</a>
-              </li>
-              <li class="breadcrumb-item">
-                <a href="">Order</a>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">
-                <%=product.title.slice(0, 50)%>
-                <% if (product.title.length > 50) { %>
-                  ...
-                <% } %>
-              </li>
-            </ol>
-          </nav>
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+              <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="/products?productPage=1">Product</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="">Order</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <%=product.title.slice(0, 50)%>
+              <% if (product.title.length > 50) { %>
+              ...
+              <% } %>
+            </li>
+          </ol>
+        </nav>
 
 
-          <% if (error.length) { %>
-            <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-            <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
-          </div>   
-          <% } %>
+        <% if (error.length) { %>
+        <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
+          <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
+        </div>
+        <% } %>
 
-          
+
 
 
         <!-- Page title + Layout switcher -->
@@ -55,39 +56,42 @@
           <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
 
 
-            <article class="card border-0 ps-4 pe-5 py-2">
+            <article class="card border-0 px-3 px-md-4 py-3">
               <div class="row g-0">
-                <div class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3 overflow-hidden">
+                <div
+                  class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3 overflow-hidden">
                   <a href="/product/<%=product.slug%>?reviewPage=1" class="position-absolute top-0 start-0 w-100 h-100">
                     <img src="<%=product.img_path%>" style="object-fit: 15rem;" alt="Product Img">
                   </a>
                 </div>
                 <div class="col-sm-7">
-                  <div class="card-body px-0 pt-sm-0 ps-sm-4 pb-0 pb-sm-4">
-                    <a href="#" class="badge fs-sm text-white bg-info shadow-info text-decoration-none mb-3">Category</a>
+                  <div class="card-body px-0 ps-sm-4 py-2">
+                    <a href="#"
+                      class="badge fs-sm text-white bg-info shadow-info text-decoration-none mb-3">Category</a>
                     <h3 class="h4">
                       <a href="/product/<%=product.slug%>?reviewPage=1">
                         <%=product.title.slice(0, 50)%>
                         <% if (product.title.length > 50) { %>
-                          ...
+                        ...
                         <% } %>
                       </a>
                     </h3>
                     <p class="mb-4">
                       <%=product.description.slice(0, 75)%>
                       <% if (product.description.length > 75) { %>
-                        ...
+                      ...
                       <% } %>
                     </p>
                     <div class="d-flex text-muted flex-wrap">
                       <div class="d-flex me-3">
-                        <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1"><%=product.vendor%></a></p>
+                        <p class="fs-sm mb-2">Vendor : <a
+                            href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1"><%=product.vendor%></a></p>
                       </div>
                       <div class="d-flex me-3 align-items-center">
                         <%- include('partials/Rating', {rating: product.review.average_note}) %>
-                       <span class="opacity-70">
-                      <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
-                       </span>
+                        <span class="opacity-70">
+                          <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -99,109 +103,121 @@
 
 
             <% if (product.shipping_option.length) { %>
-              <div class="card px-5 py-4 my-3 border-0">
-                <h3 class="h5 mb-2">Shipping Option</h3>
-                    <select name='shipping_option' class="form-select" id="select-input">
-                    <% for(let i = 0; i < product.shipping_option.length; i++) { %>
-                      <option value="<%=product.shipping_option[i].option_description%>"><%=product.shipping_option[i].option_description%> - <%=product.shipping_option[i].option_price%>$</option>
-                      <% } %>
-                    </select>
-              </div>
-              <% } %>
+            <div class="card px-3 px-md-4 py-4 my-3 border-0">
+              <h3 class="h5 mb-2">Shipping Option</h3>
+              <select name='shipping_option' class="form-select" id="select-input">
+                <% for(let i = 0; i < product.shipping_option.length; i++) { %>
+                <option value="<%=product.shipping_option[i].option_description%>">
+                  <%=product.shipping_option[i].option_description%> - <%=product.shipping_option[i].option_price%>$
+                </option>
+                <% } %>
+              </select>
+            </div>
+            <% } %>
 
 
-              <% if (product.selection_1) { %>
-                <div class="card px-5 py-4 my-3 border-0">
-                <h3 class="h5 mb-2">Select the <%=product.selection_1.selection_name%></h3>
-                    <select name='selection_1' class="form-select" id="select-input">
-                    <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
-                      <option value="<%=product.selection_1.selection_choices[i].choice_name%>"><%=product.selection_1.selection_choices[i].choice_name%> - <%=product.selection_1.selection_choices[i].choice_price%>$</option>
-                      <% } %>
-                    </select>
-                  </div>
-              <% } %>
+            <% if (product.selection_1) { %>
+            <div class="card px-3 px-md-4 py-4 my-3 border-0">
+              <h3 class="h5 mb-2">Select the <%=product.selection_1.selection_name%></h3>
+              <select name='selection_1' class="form-select" id="select-input">
+                <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
+                <option value="<%=product.selection_1.selection_choices[i].choice_name%>">
+                  <%=product.selection_1.selection_choices[i].choice_name%> -
+                  <%=product.selection_1.selection_choices[i].choice_price%>$</option>
+                <% } %>
+              </select>
+            </div>
+            <% } %>
 
 
-              <% if (product.selection_2) { %>
-                <div class="card px-5 py-4 my-3 border-0">
-                <h3 class="h5 mb-2">Select the <%=product.selection_2.selection_name%></h3>
-                    <select name='selection_2' class="form-select" id="select-input">
-                    <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
-                      <option value="<%=product.selection_2.selection_choices[i].choice_name%>"><%=product.selection_2.selection_choices[i].choice_name%> - <%=product.selection_2.selection_choices[i].choice_price%>$</option>
-                      <% } %>
-                    </select>
-                  </div>
-              <% } %>
+            <% if (product.selection_2) { %>
+            <div class="card px-3 px-md-4 py-4 border-0">
+              <h3 class="h5 mb-2">Select the <%=product.selection_2.selection_name%></h3>
+              <select name='selection_2' class="form-select" id="select-input">
+                <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
+                <option value="<%=product.selection_2.selection_choices[i].choice_name%>">
+                  <%=product.selection_2.selection_choices[i].choice_name%> -
+                  <%=product.selection_2.selection_choices[i].choice_price%>$</option>
+                <% } %>
+              </select>
+            </div>
+            <% } %>
 
           </div>
 
 
           <aside class="col-lg-4 col-md-5 order-md-2 mb-5 position-sticky">
 
-                <div class="position-sticky top-0">
-                      <div class="card shadow-sm p-sm-3 border-0">
-                        <div class="card-body">
-                            <p class="mb-2">Privacy Settings</p>
-                            <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
-                            <label class='form-check-label mb-2' for="default">Default <span class="opacity-70">(Not Recommended)</span></label><br>
-                
-                            <input class='form-check-input' type="radio" name="type" id="semi-hidden" value="semi-hidden" required checked>
-                            <label class='form-check-label mb-2' for="semi-hidden">Semi-Hidden</label><br>
-                
-                            <% if (product.allow_hidden) { %>
-                                <input class='form-check-input' type="radio" name="type" id="Hidden" value="hidden" required>
-                                <label class='form-check-label mb-2' for="Hidden">Hidden</label><br>
-                            <% } %>
+            <div class="position-sticky top-0">
+              <div class="card shadow-sm p-sm-3 border-0">
+                <div class="card-body">
+                  <p class="mb-2">Privacy Settings</p>
+                  <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
+                  <label class='form-check-label mb-2' for="default">Default <span class="opacity-70">(Not
+                      Recommended)</span></label><br>
 
-                            <hr class="my-2">
+                  <input class='form-check-input' type="radio" name="type" id="semi-hidden" value="semi-hidden" required
+                    checked>
+                  <label class='form-check-label mb-2' for="semi-hidden">Semi-Hidden</label><br>
+
+                  <% if (product.allow_hidden) { %>
+                  <input class='form-check-input' type="radio" name="type" id="Hidden" value="hidden" required>
+                  <label class='form-check-label mb-2' for="Hidden">Hidden</label><br>
+                  <% } %>
+
+                  <hr class="my-2">
 
 
-                            <div class="mb-3">
-                                <label for="number-input" class="form-label">Quantity</label>
+                  <div class="mb-3">
+                    <label for="number-input" class="form-label">Quantity</label>
 
-       
-                                <div class="d-flex">
-                                  <% if (product.qty_settings?.max_order) { %>
-                                    <input class="form-control" type="number" id="number-input" max="product.qty_settings?.max_order" value="1" name="qty">
-                                    <p class="fs-xs opacity-70 ms-auto mt-1 mb-0">Max per Order: <b><%=product.qty_settings?.max_order%></b></p>
-                                  <% } else if (product.qty_settings?.available_qty) { %>
-                                    <input class="form-control" type="number" id="number-input" max="product.qty_settings?.available_qty" value="1" name="qty">
-                                    <p class="fs-xs opacity-70 ms-auto mt-1 mb-0">Max per Order: <b><%=product.qty_settings?.available_qty%></b></p>
-                                  <% } else { %>
-                                    <input class="form-control" type="number" id="number-input" value="1" name="qty">
-                                  <% } %>
-                                 </div> 
-                            </div>  
 
-                           <p class="mb-2">Market Fee: <b>3%</b></p>         
-                           <hr class="my-2">
+                    <div class="d-flex">
+                      <% if (product.qty_settings?.max_order) { %>
+                      <input class="form-control" type="number" id="number-input" max="product.qty_settings?.max_order"
+                        placeholder="Max Per Order: <%=product.qty_settings?.max_order%>" name="qty">
+                      <!-- <p class="fs-xs opacity-70 ms-2 mt-1 mb-0">Max per Order:
+                        <b><%=product.qty_settings?.max_order%></b></p> -->
+                      <% } else if (product.qty_settings?.available_qty) { %>
+                      <input class="form-control" type="number" id="number-input"
+                        max="product.qty_settings?.available_qty" placeholder="Max Per Order: <%=product.qty_settings?.available_qty%>" name="qty">
+                      <p class="fs-xs opacity-70 ms-2 mt-1 mb-0">Max per Order:
+                        <b><%=product.qty_settings?.available_qty%></b></p>
+                      <% } else { %>
+                      <input class="form-control" type="number" id="number-input" value="1" name="qty">
+                      <% } %>
+                    </div>
+                  </div>
 
-                          <p class="mb-2">Base Price: <b><%=product.price%>$</b></p>
-                          <hr class="my-2">
+                  <p class="mb-2">Market Fee: <b>3%</b></p>
+                  <hr class="my-2">
 
-                          <p class="mb-0 mt-4">Final Price: <b>
-                            <% if (product.shipping_option.length || product.selection_1 || product.selection_2) { %>
-                              (<%=product.price%> + Added Price)
-                            <% } else { %> 
-                              <%=product.price%>
-                            <% } %>
-                             × QTY  + 3%</b></p>
-                          <a href="/docs" class="fs-sm">Learn More</a>
+                  <p class="mb-2">Base Price: <b><%=product.price%>$</b></p>
+                  <hr class="my-2">
 
-                          </div>
-                          <button type="submit" class="btn btn-primary rounded-pill shadow-primary">Make Order</button>
-                        </div>
-                      </div>
+                  <p class="mb-0 mt-4">Final Price: <b>
+                      <% if (product.shipping_option.length || product.selection_1 || product.selection_2) { %>
+                      (<%=product.price%> + Added Price)
+                      <% } else { %>
+                      <%=product.price%>
+                      <% } %>
+                      × QTY + 3%</b></p>
+                  <a href="/docs" class="fs-sm">Learn More</a>
+
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill shadow-primary">Make Order</button>
+              </div>
+            </div>
           </aside>
         </div>
       </section>
-    </form>
-    
-    <!-- Footer -->
-    <%- include('partials/Statics/Footer') %>
-    </main>
+  </form>
+
+  <!-- Footer -->
+  <%- include('partials/Statics/Footer') %>
+  </main>
 
 
-  </body>
+</body>
+
 </html>
-

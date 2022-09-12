@@ -15766,6 +15766,11 @@ img-comparison-slider:focus {
   }
 }
 
+.card {
+  border-color: none !important;
+  border: transparent !important;
+}
+
 .small-rc {
   width: 2.5rem;
   height: 2.5rem;
@@ -16670,8 +16675,44 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     transform: rotate(180deg);
   }
 }
+@media (max-width: 400px) {
+  .product-container .search-wrap {
+    flex-direction: column !important;
+  }
+  .product-container .search-wrap > * {
+    width: 100% !important;
+    margin-right: 0px !important;
+  }
+}
+
 .your-order-container .order-card-btn-wrap > *:last-child {
   margin-right: 0px !important;
+}
+.your-order-container .button-group > span {
+  width: 100%;
+  display: block;
+}
+.your-order-container .button-group > span > form {
+  width: 100%;
+}
+.your-order-container .button-group > span > form button {
+  width: 100%;
+  margin: 0px !important;
+}
+@media (max-width: 540px) {
+  .your-order-container .button-group {
+    flex-direction: column;
+    margin-top: 10px !important;
+    width: 100% !important;
+  }
+  .your-order-container .button-group > span {
+    margin-right: 0px !important;
+  }
+}
+@media (max-width: 767px) {
+  .your-order-container .filter-wrap > button {
+    width: 100%;
+  }
 }
 
 @media (max-width: 400px) {
@@ -16684,5 +16725,14 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   .submit-info-container .responsive-column > button {
     width: 100%;
     margin-top: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .contactus-container .responsive-element > * {
+    width: 100% !important;
+  }
+  .contactus-container .responsive-element > button {
+    margin-top: 10px !important;
   }
 }/*# sourceMappingURL=theme.css.map */

@@ -18,13 +18,13 @@
 
     <!-- Page title + Filters -->
     <div class="d-lg-flex align-items-center justify-content-between py-4 mt-lg-2">
-        <h1 class="h2 mb-4">Products:</h1>
-        <form action="/search-products?<%=url[1]%>" method="POST">
-        <div class="d-md-flex mb-3">
-          <div class="position-relative me-4" style="min-width: 300px;">
+      <h1 class="h2 mb-4">Products:</h1>
+      <form action="/search-products?<%=url[1]%>" method="POST">
+        <div class="d-flex justify-content-between search-wrap">
+          <div class="position-relative me-4 mb-3 w-100">
             <input type="text" name="search" class="form-control pe-5" placeholder="Search courses" maxlength="500">
             <i class="bx bx-search text-nav fs-lg position-absolute top-50 end-0 translate-middle-y me-3"></i>
-         </div>
+          </div>
             <!-- <select class="form-select me-4 mb-2 mb-md-0" name="category" style="min-width: 240px;">
                 <option value="All">All categories</option>
                 <option value="Web Development">Web Development</option>
@@ -35,7 +35,7 @@
                 <option value="Software Engineering">Software Engineering</option>
                 <option value="Network & Security">Network &amp; Security</option>
             </select> -->
-            <button type="submit" class="btn btn-primary">Search</button>
+          <button type="submit" class="btn btn-primary mb-3">Search</button>
         </div>
       </form>
     </div>

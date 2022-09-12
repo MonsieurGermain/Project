@@ -1,213 +1,220 @@
 <%- include('partials/Statics/Head', {page: "- " + product.title}) %>
 
 
-  <!-- Body -->
+<!-- Body -->
+
 <body>
 
-    <!-- Page wrapper for sticky footer -->
-    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
-    <main class="page-wrapper">
+  <!-- Page wrapper for sticky footer -->
+  <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+  <main class="page-wrapper">
 
-      <%- include('partials/Statics/Navbar') %>
+    <%- include('partials/Statics/Navbar') %>
 
-      <!-- Hero -->
-      <section class="pt-2 pt-lg-3 pb-lg-4" >
-        <div class="container">
+    <!-- Hero -->
+    <section class="pt-2 pt-lg-3 pb-lg-4">
+      <div class="container">
 
-          <!-- Breadcrumb -->
-          <nav class="py-4" aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item">
-                <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
-              </li>
-              <li class="breadcrumb-item">
-                <a href="/products?productPage=1">Product</a>
-              </li>
-              <li class="breadcrumb-item active" aria-current="page">
-                <%=product.title.slice(0, 50)%>
-                <% if (product.title.length > 50) { %>
-                  ...
-                <% } %>
-              </li>
-            </ol>
-          </nav>
+        <!-- Breadcrumb -->
+        <nav class="py-4" aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item">
+              <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="/products?productPage=1">Product</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              <%=product.title.slice(0, 50)%>
+              <% if (product.title.length > 50) { %>
+              ...
+              <% } %>
+            </li>
+          </ol>
+        </nav>
 
 
-          <!-- Badges -->
-          <div class="d-flex py-sm-2 pt-lg-4">
-            <span class="badge bg-success fs-sm me-2">Best Seller</span>
-            <% if (product.default_price) { %>
-              <span class="badge bg-success fs-sm me-2">Sales!</span>
-            <% } %>
-            <a href="#" class="badge bg-white text-dark fs-sm text-decoration-none">Web Development</a>
-          </div>
-
-                  <!-- Title -->
-                  <h1 class="h3 mt-3"><%=product.title%></h1>
-
-                  <!-- Stats -->
-                  <div class="d-sm-flex ">
-                    <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">  
-                      <div class="text-nowrap me-1">
-                        <%- include('partials/Rating', {rating: product.review.average_note}) %>
-                      </div>
-                    <span class="opacity-70">
-                      <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
-                    </span>
-                    </div>
-                  </div>
-
+        <!-- Badges -->
+        <div class="d-flex py-sm-2 pt-lg-4">
+          <span class="badge bg-success fs-sm me-2">Best Seller</span>
+          <% if (product.default_price) { %>
+          <span class="badge bg-success fs-sm me-2">Sales!</span>
+          <% } %>
+          <a href="#" class="badge bg-white text-dark fs-sm text-decoration-none">Web Development</a>
         </div>
-      </section>
 
-      <!-- Sidebar (Course summary) -->
-      <!-- MAke it look better when no Details -->
-      <section class="container">
-        <div class="row">
+        <!-- Title -->
+        <h1 class="h3 mt-3"><%=product.title%></h1>
 
-          <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-5">
-            <div style="margin-top: -96px;"></div>
-            <div class="position-sticky top-0 pt-5">
-              <div class="pt-5">
-                <div class="card shadow-sm p-sm-3">
-                  <div class="card-body">
-                    <% if (product.details.length) { %>
-                      <h5 class="mb-4">About this Product:</h5>
-                    <ul class="list-unstyled">
-                      <!-- Allow User to Choose SVG -->
-                      <% for(let i = 0; i < product.details.length; i++) { %>
-                        <li class="d-flex mb-2">
-                          <i class='bx bx-list-check text-primary fs-xl mt-1'></i>
-                          <p class="fs-sm ms-2 my-0"><%=product.details[i]%></p>
-                        </li>
-                      <% } %>
-                    </ul>
+        <!-- Stats -->
+        <div class="d-sm-flex ">
+          <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">
+            <div class="text-nowrap me-1">
+              <%- include('partials/Rating', {rating: product.review.average_note}) %>
+            </div>
+            <span class="opacity-70">
+              <%- include('partials/Number-Reviews', {number_reviews: product.review.number_review}) %>
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Sidebar (Course summary) -->
+    <!-- MAke it look better when no Details -->
+    <section class="container">
+      <div class="row">
+
+        <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-5">
+          <div style="margin-top: -96px;"></div>
+          <div class="position-sticky top-0 pt-5">
+            <div class="pt-5">
+              <div class="card p-3">
+                <div class="card-body">
+                  <% if (product.details.length) { %>
+                  <h5 class="mb-4">About this Product:</h5>
+                  <ul class="list-unstyled">
+                    <!-- Allow User to Choose SVG -->
+                    <% for(let i = 0; i < product.details.length; i++) { %>
+                    <li class="d-flex mb-2">
+                      <i class='bx bx-list-check text-primary fs-xl mt-1'></i>
+                      <p class="fs-sm ms-2 my-0"><%=product.details[i]%></p>
+                    </li>
                     <% } %>
-                    <div class="d-flex align-items-end mb-0">
-                      <p class="h5 mb-0 mt-2">Price:</p>
-                      <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.price%>$</p>
-                      <% if (product.originalPrice) { %>
-                        <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.originalPrice%>$</del>
-                      <% }%>
-                    </div>
-
-                    <div class="d-sm-flex mt-1">
-                        <p class="fs-sm mb-0"><span class="opacity-70"> Ship From : </span><span class="ms-1"><b><%=product.ship_from%></b></span></p>
-                    </div>
-
-                    <div class="d-sm-flex justify-content-between mt-2">
-                     <% if (product.qty_settings?.available_qty) { %>
-                      <p class="fs-xs opacity-70 mb-0">Available Quantity : <%=product.qty_settings.available_qty%></p>
-                     <% } %>
-                     <% if (product.qty_settings?.max_order) { %>
-                      <p class="fs-xs opacity-70 mb-0">Maximun per Order : <%=product.qty_settings.max_order%></p>
-                     <% } %>
-                    </div>
-
+                  </ul>
+                  <% } %>
+                  <div class="d-flex align-items-end mb-0">
+                    <p class="h5 mb-0 mt-2">Price:</p>
+                    <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.price%>$</p>
+                    <% if (product.originalPrice) { %>
+                    <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.originalPrice%>$</del>
+                    <% }%>
                   </div>
-                  <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary mt-0">Buy This Product</a>
+
+                  <div class="d-sm-flex mt-1">
+                    <p class="fs-sm mb-0"><span class="opacity-70"> Ship From : </span><span
+                        class="ms-1"><b><%=product.ship_from%></b></span></p>
+                  </div>
+
+                  <div class="d-sm-flex justify-content-between mt-2">
+                    <% if (product.qty_settings?.available_qty) { %>
+                    <p class="fs-xs opacity-70 mb-0">Available Quantity : <%=product.qty_settings.available_qty%></p>
+                    <% } %>
+                    <% if (product.qty_settings?.max_order) { %>
+                    <p class="fs-xs opacity-70 mb-0">Maximun per Order : <%=product.qty_settings.max_order%></p>
+                    <% } %>
+                  </div>
+
+                </div>
+                <a href="/order/<%=product.slug%>" class="btn btn-primary rounded-pill shadow-primary mt-0">Buy This
+                  Product</a>
               </div>
             </div>
-            </div>
-          </aside>
+          </div>
+        </aside>
 
-          <!-- Content --> 
-          <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
-            <img src="<%=product.img_path%>" class="card-img-top" style="object-fit:cover;" alt="Product Image">
+        <!-- Content -->
+        <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
+          <img src="<%=product.img_path%>" class="card-img-top" style="object-fit:cover;" alt="Product Image">
 
           <!-- Vendor -->
-          <div class="card py-3 px-5 mt-3 border-0">
-          <div class="d-sm-flex align-items-center">
-            
-            <a href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1">
-              <img src="<%=vendor.img_path%>" class="medium-rc rounded-circle" width="60" alt="<%=vendor.username%>">
-            </a>
-            <div class="ps-3 pe-sm-3 me-sm-5">
-              <div class="opacity-80 mb-1">Vendor :</div>
-              <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1"><%=vendor.username%></a>
-            </div>
-            <div class="ps-3 pe-sm-3 me-sm-5">
-              <div class="opacity-80 mb-1">Vendor Rating :</div>
-              <div class="d-flex border-sm-end ">
-                <div class="text-nowrap me-1">
-                  <%- include('partials/Rating', {rating: vendor.review.average_note}) %>
-                </div>
-                <span class="opacity-70">
-                  <%- include('partials/Number-Reviews', {number_reviews: vendor.review.number_review}) %>
-                </span>
+          <div class="card py-3 px-3 px-md-4 mt-3 border-0">
+            <div class="d-flex align-items-center flex-wrap">
+
+              <a href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1">
+                <img src="<%=vendor.img_path%>" class="medium-rc rounded-circle" width="60" style="min-width: 60px"
+                  alt="<%=vendor.username%>">
+              </a>
+              <div class="px-2 px-sm-3 me-md-3">
+                <div class="opacity-80 mb-1">Vendor:</div>
+                <a href="/profile/<%=vendor.username%>?productPage=1&reviewPage=1"><%=vendor.username%></a>
               </div>
-            </div>
+              <div class="px-2 px-sm-3 py-3">
+                <div class="opacity-80 mb-1">Vendor Rating :</div>
+                <div class="d-flex flex-row border-sm-end ">
+                  <div class="text-nowrap me-1">
+                    <%- include('partials/Rating', {rating: vendor.review.average_note}) %>
+                  </div>
+                  <span class="opacity-70">
+                    <%- include('partials/Number-Reviews', {number_reviews: vendor.review.number_review}) %>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
-            <div class="card px-5 py-4 border-0 my-4">
+          <div class="card px-3 px-md-4 py-4 border-0 my-4">
             <h5 class="mb-4 mt-2">Product description :</h5>
-            <p class="pb-1 mb-1"><%-product.description%></p>   
+            <p class="pb-1 mb-1"><%-product.description%></p>
           </div>
 
           <% if (product.shipping_option.length) { %>
-          <div class="card pb-2 pt-4 px-5 mt-3 border-0">
+          <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
             <h3 class="h5 mt-2 mb-3">Available Shipping Option</h3>
             <ul class="list-unstyled mb-4">
               <!-- Find Better Svg -->
               <% for(let i = 0; i < product.shipping_option.length; i++) { %>
-                <li class="d-flex align-items-center mb-2">
-                  <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
-                  <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
-                </li>
+              <li class="d-flex align-items-center mb-2">
+                <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
+                <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
+              </li>
               <% } %>
             </ul>
           </div>
           <% } %>
 
           <% if (product.selection_1) { %>
-          <div class="card pb-2 pt-4 px-5 mt-3 border-0">
+          <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
             <h3 class="h5 mt-2 mb-3"><%=product.selection_1.selection_name%></h3>
             <ul class="list-unstyled mb-4">
               <!-- Find Better Svg -->
               <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
-                <li class="d-flex mb-2">
-                  <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
-                  <%=product.selection_1.selection_choices[i].choice_name%> : + <%=product.selection_1.selection_choices[i].choice_price%>
-                </li>
+              <li class="d-flex mb-2">
+                <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
+                <%=product.selection_1.selection_choices[i].choice_name%> : +
+                <%=product.selection_1.selection_choices[i].choice_price%>
+              </li>
               <% } %>
             </ul>
           </div>
           <% } %>
 
           <% if (product.selection_2) { %>
-          <div class="card pb-2 pt-4 px-5 mt-3 border-0">
+          <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
             <h3 class="h5 mt-2 mb-3"><%=product.selection_2.selection_name%></h3>
             <ul class="list-unstyled mb-4">
               <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
-                <li class="d-flex mb-2">
-                  <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
-                  <%=product.selection_2.selection_choices[i].choice_name%> : + <%=product.selection_2.selection_choices[i].choice_price%>
-                </li>
+              <li class="d-flex mb-2">
+                <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
+                <%=product.selection_2.selection_choices[i].choice_name%> : +
+                <%=product.selection_2.selection_choices[i].choice_price%>
+              </li>
               <% } %>
             </ul>
           </div>
           <% } %>
 
-            <%- include('partials/Vendor-card', {vendor : vendor}) %>
+          <%- include('partials/Vendor-card', {vendor : vendor}) %>
 
-            <hr class="my-2 mt-5">
-      <!-- Review Section -->
-      <h2 class="h3 mb-4 mt-4">Reviews :</h2>
-      <% if (!paginatedReviews.results.length) { %>
-        <p>This Product Doesnt have any Review Yet</p>
-      <% } else { %> 
-        <%- include('partials/Display_Data/Display-reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 4}) %>
-      <% } %>
-      
-          </div>
+          <hr class="my-2 mt-5">
+          <!-- Review Section -->
+          <h2 class="h3 mb-4 mt-4">Reviews :</h2>
+          <% if (!paginatedReviews.results.length) { %>
+          <p>This Product Doesnt have any Review Yet</p>
+          <% } else { %>
+          <%- include('partials/Display_Data/Display-reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 4}) %>
+          <% } %>
+
         </div>
-      </section>
+      </div>
+    </section>
 
-    </main>
+  </main>
 
 
-    <!-- Footer -->
-    <%- include('partials/Statics/Footer') %>
-  </body>
+  <!-- Footer -->
+  <%- include('partials/Statics/Footer') %>
+</body>
+
 </html>

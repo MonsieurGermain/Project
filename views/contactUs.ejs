@@ -8,7 +8,7 @@
 
 
       <!-- Page content -->
-      <section class="container">
+      <section class="container contactus-container">
 
         <% if (error.length) { %>
           <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
@@ -58,15 +58,15 @@
                   <textarea id="message" name="message" class="form-control form-control-lg" rows="4" minlength="10" maxlength="3000" placeholder="Type your Message here..." required></textarea>
                 </div>
               </div>
-              <div class="d-flex align-items-center">
-              <button type="submit" class="btn btn-primary btn-lg shadow-primary">Contact Us</button>  
-              <% if (authuser) { %>
-                <div class="col-sm-6 ms-5">
-                  <input class="form-check-input" type="checkbox" name="username" id="username">
-                  <label class="form-check-label ms-2" for="username">Include My Username</label>
-                </div>
-              <% } %>
-            </div>
+              <div class="d-flex align-items-center justify-content-between flex-wrap responsive-element">
+                <% if (authuser) { %>
+                  <div class="col-sm-6">
+                    <input class="form-check-input" type="checkbox" name="username" id="username">
+                    <label class="form-check-label ms-2" for="username">Include My Username</label>
+                  </div>
+                <% } %>
+                <button type="submit" class="btn btn-primary btn-lg shadow-primary">Contact Us</button>  
+              </div>
             </div>
           </form>
         </div>

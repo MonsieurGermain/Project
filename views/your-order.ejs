@@ -25,11 +25,11 @@
         <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
           <h1 class="me-3"></h1>
           <form action="/filter-orders" method="POST">
-          <div class="d-md-flex mb-3">
+            <div class="d-md-flex mb-3 filter-wrap">
               <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
                 <option value="all"
                 <% if (!query.status) { %>
-                   selected
+                  selected
                 <% } %> >All status</option>
                   
                 <option value="awaiting_info" 
@@ -37,72 +37,71 @@
                     selected
                   <% } %> >Awaiting Information</option> 
                   
-                  <option value="awaiting_payment"
-                  <% if (query.status === 'awaiting_payment') { %>
-                     selected
-                  <% } %> >Awaiting Payment</option>
+                <option value="awaiting_payment"
+                <% if (query.status === 'awaiting_payment') { %>
+                  selected
+                <% } %> >Awaiting Payment</option>
 
-                  <option value="awaiting_shipment"
-                  <% if (query.status === 'awaiting_shipment') { %>
-                     selected
-                  <% } %>>Awaiting Shipment</option>
+                <option value="awaiting_shipment"
+                <% if (query.status === 'awaiting_shipment') { %>
+                  selected
+                <% } %>>Awaiting Shipment</option>
 
-                  <option value="shipped" 
-                  <% if (query.status === 'shipped') { %>
-                    selected
-                  <% } %> >Shipped</option>
+                <option value="shipped" 
+                <% if (query.status === 'shipped') { %>
+                  selected
+                <% } %> >Shipped</option>
 
-                  <option value="recieved"
-                  <% if (query.status === 'recieved') { %>
-                     selected
-                  <% } %> >Recieved</option>
+                <option value="recieved"
+                <% if (query.status === 'recieved') { %>
+                  selected
+                <% } %> >Recieved</option>
 
-                  <option value="finalized"
-                  <% if (query.status === 'finalized') { %>
-                     selected
-                  <% } %> >Finalized</option>
-                    
-                  <option value="rejected" 
-                  <% if (query.status === 'rejected') { %>
-                    selected
-                  <% } %> >Rejected</option>
-
-                  <option value="expired"
-                  <% if (query.status === 'expired') { %>
-                     selected
-                  <% } %> >Expired</option>
-
-                  <option value="dispute_progress"
-                  <% if (query.status === 'dispute_progress') { %>
-                     selected
-                  <% } %> >Dispute in Progress</option>
+                <option value="finalized"
+                <% if (query.status === 'finalized') { %>
+                  selected
+                <% } %> >Finalized</option>
                   
-                  <option value="disputed"
-                  <% if (query.status === 'disputed') { %>
-                     selected
-                  <% } %> >Disputed</option>
+                <option value="rejected" 
+                <% if (query.status === 'rejected') { %>
+                  selected
+                <% } %> >Rejected</option>
 
-          </select>
-          <% if (authuser.authorization === 'vendor') { %>
-            <select class="form-select me-4 mb-2 mb-md-0" name="clientsOrders" style="min-width: 240px;" required>
+                <option value="expired"
+                <% if (query.status === 'expired') { %>
+                  selected
+                <% } %> >Expired</option>
 
-              <option value="true" 
-              <% if (query.clientsOrders) { %>
-                selected
-              <% } %> >Clients Orders</option>
-              
-              <option value="false"
-              <% if (!query.clientsOrders) { %>
-                selected
-              <% } %> >Your Orders</option>
+                <option value="dispute_progress"
+                <% if (query.status === 'dispute_progress') { %>
+                  selected
+                <% } %> >Dispute in Progress</option>
+                
+                <option value="disputed"
+                <% if (query.status === 'disputed') { %>
+                  selected
+                <% } %> >Disputed</option>
+              </select>
+            <% if (authuser.authorization === 'vendor') { %>
+              <select class="form-select me-4 mb-2 mb-md-0" name="clientsOrders" style="min-width: 240px;" required>
 
-            </select>
-          <% } %>
+                <option value="true" 
+                <% if (query.clientsOrders) { %>
+                  selected
+                <% } %> >Clients Orders</option>
+                
+                <option value="false"
+                <% if (!query.clientsOrders) { %>
+                  selected
+                <% } %> >Your Orders</option>
+
+              </select>
+            <% } %>
 
             <button type="submit" class="btn btn-primary">Filter</button>
-          </div>
-        </form>
-      </div>
+            </div>
+          </form>
+        </div>
 
 <% if (!orders.results.length) { %>
   <div>
@@ -124,7 +123,7 @@
     <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
         <div class="row g-0">
           <% if(!query.clientsOrders) { %>
-            <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover">
+            <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover ps-2">
               <a href="<%=orders.results[i].link%>" class="position-absolute top-0 start-0 w-100 h-100" aria-label="Read more">
   
               <img src="<%=orders.results[i].product_img%>" style="min-width: 100%;max-height: 100%;" alt="Product Img">
@@ -224,8 +223,8 @@
               </div>
   
               <% if(query.clientsOrders === 'true') { %>
-                <div class="d-flex align-items-center mt-3">
-                  <span class="me-5">
+                <div class="d-flex align-items-center mt-3 justify-content-between flex-wrap">
+                  <span class="">
                     <p class="mb-0">Buyer Info:</p>
                     <p class="mb-0">
                       <% if (orders.results[i].messages[0]) { %>
