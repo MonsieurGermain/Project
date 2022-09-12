@@ -226,33 +226,38 @@
                 <div class="d-flex align-items-center mt-3 justify-content-between flex-wrap">
                   <span class="">
                     <p class="mb-0">Buyer Info:</p>
-                    <p class="mb-0">
+                    <p class="fs-sm mb-0">
                       <% if (orders.results[i].messages[0]) { %>
-                        <%=orders.results[i].messages[0].content%>
+                        <%=orders.results[i].messages[0].content%> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vero non nostrum aspernatur consequatur fugit in possimus ab error officia aliquam iusto molestias, sequi ex! Lorem ipsum dolor sit amet consectetur, adipisicing elit. Qui fugiat a pariatur sit rem, impedit accusantium nulla! Doloremque unde fugiat porro eaque numquam veritatis ratione. Sint repudiandae, quae officia, impedit voluptates quisquam voluptas animi incidunt, ipsam asperiores facere nemo. Et dolore provident ut, eius, debitis facere, quae beatae eum quos delectus earum. Maxime obcaecati a doloremque. Voluptatum quidem sapiente, fugit repudiandae fugiat nulla natus vero ad consequatur velit, blanditiis architecto corporis expedita, laudantium ipsa. Fugiat esse nihil id sint iste odit eaque excepturi quisquam dicta alias illo voluptatum sit possimus adipisci, dolorem fugit perspiciatis aut necessitatibus praesentium minus exercitationem impedit minima? Tempore ea voluptatum cumque unde fugiat id saepe, iure odit minima nam quia vel aperiam molestias, placeat eum debitis quidem ullam? Quaerat dolores beatae consectetur reiciendis dignissimos maxime neque necessitatibus magnam temporibus fugit saepe cumque placeat, obcaecati rem, velit quam quisquam, corrupti odio vero nobis. Dolorum nobis voluptas, quas illo natus consequuntur necessitatibus fugiat laudantium sunt quaerat expedita excepturi nam ratione numquam! Reprehenderit non, molestiae ratione, nesciunt distinctio impedit dolorem consequatur possimus nam eum perferendis provident? Molestiae deserunt, repellat omnis numquam porro ex delectus quod consequatur amet nesciunt, natus accusamus ipsam totam ut velit sunt ducimus ipsa optio dolor.
                       <% } else { %>
-                        This user as submit his info yet
+                        This buyer hasnt submit his info yet
                       <% } %>
                     </p>
                   </span>
+                </div>
   
                   <% if (orders.results[i].status === 'awaiting_shipment') { %>
   
-                    <div class="d-flex ms-auto">
+                    <div class="d-flex align-items-end">
+                      <div class="mt-3 ms-auto">
                       <span class="">
                         <form action="/update-order/<%=orders.results[i].id%>?<%=url[1]%>&fromOrders=true" method="POST">
                           <button class="btn btn-warning me-4" type="submit" name="status" value="shipped">I have shipped the Product</button>
                       </form>
                       </span>
-    
+                    </div>
+
+                    <div>
                       <span class="">
                         <form action="/update-order/<%=orders.results[i].id%>?<%=url[1]%>&fromOrders=true" method="POST">
                           <button class="btn btn-danger" type="submit" name="status" value="rejected">I want to Cancel this Order</button>
                       </form>
                       </span>
                     </div>
+
+                    </div>
                   <% } %>
   
-              </div>
               <% } %>
   
             </div>

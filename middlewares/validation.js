@@ -428,6 +428,7 @@ async function Validate_OrderCustomization(req, res, next) {
 
       if (req.product.available_qty == 0) throw new Error('This Product is Sold Out');
 
+      if (!req.body.qty) req.body.qty = 1
       req.body.qty = validateNumber(req.body.qty, 'Quantity', {max: req.product.qty_settings?.max_order ? req.product.qty_settings?.max_order : req.product.qty_settings?.available_qty})
 
       // Shipping Option

@@ -175,14 +175,10 @@
                     <div class="d-flex">
                       <% if (product.qty_settings?.max_order) { %>
                       <input class="form-control" type="number" id="number-input" max="product.qty_settings?.max_order"
-                        placeholder="Max Per Order: <%=product.qty_settings?.max_order%>" name="qty">
-                      <!-- <p class="fs-xs opacity-70 ms-2 mt-1 mb-0">Max per Order:
-                        <b><%=product.qty_settings?.max_order%></b></p> -->
+                        placeholder="Maximun: <%=product.qty_settings?.max_order%>" name="qty">
                       <% } else if (product.qty_settings?.available_qty) { %>
                       <input class="form-control" type="number" id="number-input"
-                        max="product.qty_settings?.available_qty" placeholder="Max Per Order: <%=product.qty_settings?.available_qty%>" name="qty">
-                      <p class="fs-xs opacity-70 ms-2 mt-1 mb-0">Max per Order:
-                        <b><%=product.qty_settings?.available_qty%></b></p>
+                        max="product.qty_settings?.available_qty" placeholder="Maximun: <%=product.qty_settings?.available_qty%>" name="qty">
                       <% } else { %>
                       <input class="form-control" type="number" id="number-input" value="1" name="qty">
                       <% } %>
