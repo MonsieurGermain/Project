@@ -64,6 +64,10 @@ const orderSchema = new mongoose.Schema({
    reset_left: {
       type: Number,
    },
+   orderMoneroAddress: { 
+      type: String, 
+      required: true
+   },
    let_review: {
       type: Boolean,
    },

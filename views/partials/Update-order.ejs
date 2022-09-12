@@ -45,7 +45,6 @@
 <%if (authuser.username !== order.vendor && authuser.username !== order.admin) {%>
     <%if (order.status === 'awaiting_payment') {%>
         <p class="mt-4 mb-0">Waiting for your Payment...</p>
-        <p class="mb-3 mt-2">Send <span class="text-primary"><%=order.total_price%>XMR</span> To this address <span class="text-primary"><%=order.address%>XMR.</span></p>
     <%}%>
     <%if (order.status === 'awaiting_shipment') {%>
         <p class="mt-4">Waiting for the Vendor to ship the Product</p>

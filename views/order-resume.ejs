@@ -33,26 +33,26 @@
                 <div style="margin-top: -96px;"></div>
                 <div class="position-sticky top-0 pt-5">
                   <div class="pt-5">
-                    <div class="card shadow-sm p-sm-3 text-center">
+                    <div class="card p-sm-3 text-center">
                         <%- include('partials/Update-order') %>
 
                         <div class="mt-4 text-start">
                         <p class="h6 mb-0">Send XMR PRICE to this address</p>
-                        <p><%= order.address %></p>  
+                        <p class="text-primary"><%=order.orderMoneroAddress%></p>
                 
                         <div class="d-flex">
                             <div>
                                 <p class="mb-0"><b>Needed Amount :</b></p>
-                                <p>XMR PRICE</p>
+                                <p>Order Price</p>
                             </div>
                             <div class="ms-auto">
                                 <p class="mb-0"><b>Amount Paid : </b></p>
-                                <p>XMR PRICE</p>
+                                <p>Amout Paid</p>
                             </div>
                         </div>
                         <div>
                             <p class="mt-2 mb-0"><b>Balance : </b></p>
-                            <p>XMR PRICE</p>
+                            <p>Balance of Order</p>
                         </div>
                         
                     </div>

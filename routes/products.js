@@ -157,6 +157,7 @@ async (req, res) => {
          salesDuration,
          stop_sales,
          status,
+         customMoneroAddress,
       } = req.body;
 
       const {product} = req
@@ -166,7 +167,6 @@ async (req, res) => {
          if (isProductTitleTaken) throw new Error('You cant have the same title for multiple products')
       }
 
-      let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
 
       // Title and Slug
       if (!product.title) product.createSlug(title, req.user.username); // Create Slug if Creating New Product
@@ -201,17 +201,23 @@ async (req, res) => {
       product.details = details;
       product.shipping_option = shipping_option;
       product.qty_settings = qty_settings;
-      product.status = req.user.xmr_address ? status : 'offline';
+      product.customMoneroAddress = customMoneroAddress;
+      product.status = req.user.vendorMoneroAddress || product.customMoneroAddress ? status : 'offline';
 
       await product.save();
 
-      if (!req.user.xmr_address && status === 'online') {
-         req.flash('warning', 'You need to add a Monero Address to your account to be able to put a product online, we have change the state of your product to offline');
-         res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
-      } else {
+      let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
+
+      if (product.status === 'offline' && status === 'online') {
+         req.flash('warning', 'You need to add a Monero Address to your account or a custom Monero address to the Product in order to put it online');
+      } else if (status === 'offline') {
+         req.flash('warning', `${success_message} and Offline`);
+      } else {        
          req.flash('success', success_message);
-         res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
+
+      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+
    } catch (e) {
       console.log(e);
       if (req.file) {

@@ -161,7 +161,7 @@
           </div>
 
           <% if (!paginatedProducts.results.length) { %>
-          <p>This Vendor doesnt have any Product</p>
+          <h6 class="mb-4">This Vendor doesnt have any Product</h6>
           <% } else { %>
           <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3}) %>
           <% } %>
@@ -169,7 +169,7 @@
           <hr class="my-2">
           <h2 class="h3 mb-4 mt-5">Reviews :</h2>
           <% if (!paginatedReviews.results.length) { %>
-          <p>This Vendor doesnt have any Review yet</p>
+          <h6 class="mb-4">This Vendor doesnt have any Review yet</h6>
           <% } else { %>
           <%- include('partials/Display_Data/Display-reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 5}) %>
           <% } %>

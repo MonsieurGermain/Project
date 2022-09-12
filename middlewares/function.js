@@ -194,11 +194,14 @@ function isPgpKeys(pgpKeys) {
    
    return true
 }
-function isMoneroAddress(address) {
-   if (!address || typeof(address) !== 'string') return undefined
-   if (address.length > 106 || address.length < 95) return undefined
+function isMoneroAddress(address, addressType) {
+   if (!address || typeof(address) !== 'string') throw new Error(`Invalid ${addressType} Monero Address`)
    
-   return true
+   address = address.trim()
+
+   if (address.length > 106 || address.length < 95) throw new Error(`Invalid ${addressType} Monero Address`)
+   
+   return address
 }
 
 module.exports = {generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}

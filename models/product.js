@@ -93,6 +93,9 @@ const productSchema = new mongoose.Schema({
       minlength: 1,
       maxlength: 15,
    },
+   customMoneroAddress: { 
+      type: String
+   },
    currency: {
       type: String,
       required: true,

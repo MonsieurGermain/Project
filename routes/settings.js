@@ -39,13 +39,11 @@ router.post('/add-xmr-address', Need_Authentification, async (req, res) => {
    try {
       const {user} = req;
 
-      const moneroAddress = req.body.xmr_address.trim();
-
-      if (!isMoneroAddress(moneroAddress)) throw new Error('Invalid Monero Address');
+      const moneroAddress = isMoneroAddress(req.body.vendorMoneroAddress, '')
 
       const successMessage = user.moneroAddress ? 'Monero Address Successfully Changed' : 'Monero Address Successfully Added';
 
-      user.xmr_address = moneroAddress;
+      user.vendorMoneroAddress = moneroAddress;
 
       await user.save();
 
@@ -59,9 +57,7 @@ router.post('/add-xmr-address', Need_Authentification, async (req, res) => {
 router.post('/add-xmr-refund-address', Need_Authentification, async (req, res) => {
    try {
       const {user} = req;
-      const moneroRefundAddress = req.body.xmrRefundAddress.trim();
-
-      if (!isMoneroAddress(moneroRefundAddress)) throw new Error('Invalid Monero Address')
+      const moneroRefundAddress = isMoneroAddress(req.body.xmrRefundAddress, 'Refund')
 
       const successMessage = user.moneroRefundAddress ? 'Monero Address Successfully Changed' : 'Monero Address Successfully Added';
 
@@ -84,9 +80,9 @@ router.post('/delete-address', Need_Authentification, sanitizeQuerys, async (req
 
       switch(addressType) {
          case 'personal':
-            user.xmr_address = undefined;
+            user.vendorMoneroAddress = undefined;
             await user.offlineAllUserProducts();
-            req.flash('warning', 'Your Monero Address as been Deleted, all of your Product are now offline since you dont have a Monero Address');
+            req.flash('warning', 'Your Monero Address as been Deleted, all of your Product with no Custom Monero Address are now Offline');
          break
          case 'refund':
             user.xmrRefundAddress = undefined;

@@ -108,7 +108,7 @@ const userSchema = new mongoose.Schema({
    saved_product: {
       type: Array,
    },
-   xmr_address: {
+   vendorMoneroAddress: {
       type: String,
    },
    xmrRefundAddress: {
@@ -177,8 +177,10 @@ userSchema.methods.offlineAllUserProducts = async function () {
    const userProducts = await Product.find({vendor: this.username});
 
    for (let i = 0; i < userProducts.length; i++) {
-      userProducts[i].status = 'offline';
-      userProducts[i].save();
+      if (!userProducts[i].customMoneroAddress) {
+         userProducts[i].status = 'offline';
+         userProducts[i].save();
+      }
    }
 };
 

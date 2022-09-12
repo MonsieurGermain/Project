@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-const {compareArray, IsNot_Number, deleteImage, isEmail, isPgpKeys} = require('./function');
+const {compareArray, isMoneroAddress, deleteImage, isEmail, isPgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -132,29 +132,20 @@ function Validate_Conversation(req, res, next) {
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 2, maxlength: 1000});
 
       // Conversation Type
-      if (!compareArray(Conversation_Type, req.body.type)) throw new Error();
+      if (!compareArray(Conversation_Type, req.body.type)) throw new Error('Invalid Conversation Type');
 
       req.body.timestamps = req.body.timestamps ? true : undefined;
-      //
-      switch (req.body.pgpSettings) {
-         case 'noPgp':
-            req.body.pgpKeys = undefined;
-            break;
-         case 'ownPgp':
-            req.body.pgpKeys = req.user.verifiedPgpKeys;
-            break;
-         case 'otherPgp':
-            if (!isPgpKeys(req.body.otherPgpKeys)) throw new Error('The other Pgp Keys you provided is Invalid');
-            req.body.pgpKeys = req.body.otherPgpKeys;
-            break;
-         default:
-            req.body.pgpKeys = undefined;
+
+      if (!compareArray(['noPgp', 'ownPgp', 'otherPgp'], req.body.pgpSettings)) throw new Error('Invalid Pgp Settings');
+
+      if (req.body.otherPgpKeys) {
+         if (!isPgpKeys(req.body.otherPgpKeys)) throw new Error('The other Pgp Keys you provided is Invalid');
       }
 
       next();
    } catch (e) {
       req.flash('error', e.message)
-      res.redirect(`/profile/${req.params.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/profile/${req.params.username}?productPage=1&reviewPage=1`);
    }
 };
 function Validate_Message(req, res, next) {
@@ -228,6 +219,9 @@ function Validate_Product(req, res, next) {
       for (let i = 0; i < req.body.details.length; i++) {
          req.body.details[i] = ValidateText(req.body.details[i], 'Details #' + i, {minlength: 0, maxlength: 100, isRequired: false});
       }
+
+      // Custom Monero Address
+      req.body.customMoneroAddress = req.body.customMoneroAddress ? isMoneroAddress(req.body.customMoneroAddress, 'Custom') : undefined
 
       // Availble Quantity
       req.body.available_qty = validateNumber(req.body.available_qty, 'Available', {min: 1, max: 1000, isRequired: false})

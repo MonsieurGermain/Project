@@ -149,6 +149,13 @@ router.get('/order/:slug', Need_Authentification, sanitizeParams, async (req, re
    }
 });
 
+async function getVendorMoneroAddress(vendorUsername) {
+   const vendor = await User.findOne({username: vendorUsername})
+
+   if (vendor.vendorMoneroAddress) return vendor.vendorMoneroAddress;
+   else throw new Error('Invalid Vendor')
+}
+
 router.post('/create-order/:slug', Need_Authentification, sanitizeParams, Validate_OrderCustomization, async (req, res) => {
    try {
       const {product} = req;
@@ -172,6 +179,8 @@ router.post('/create-order/:slug', Need_Authentification, sanitizeParams, Valida
          timer: Date.now() + 30 * 60 * 1000, // 30min
          privacy: type,
       });
+
+      order.orderMoneroAddress = product.customMoneroAddress ? product.customMoneroAddress : await getVendorMoneroAddress(product.vendor)
 
       order.total_price = calculateOrderPrice(
          order.base_price,

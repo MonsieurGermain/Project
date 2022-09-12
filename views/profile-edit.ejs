@@ -132,7 +132,7 @@
             <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
 
             <% if (!paginatedProducts.results.length) { %>
-              <p>You dont have any Product</p>
+              <h6 class="mb-4">You dont have any Product</h6>
             <% } else { %>
               <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
             <% } %>

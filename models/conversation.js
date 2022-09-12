@@ -68,6 +68,9 @@ const conversationSchema = new mongoose.Schema({
    sender2_Pgp: {
       type: String,
    },
+   includePgp : { 
+      type: Boolean,
+   },
    messages: [messageSchema],
 
    settings: {
@@ -141,7 +144,10 @@ conversationSchema.methods.sawMessages = async function (userUsername) {
 };
 
 conversationSchema.methods.updateNewPgp = async function (username, newPgp) {
-   if (username === this.sender_1) this.sender1_Pgp = newPgp;
+   if (username === this.sender_1)
+    if (this.includePgp === false) {
+      this.sender1_Pgp = newPgp;
+    } 
    else this.sender2_Pgp = newPgp;
 
    this.save();

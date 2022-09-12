@@ -25,9 +25,10 @@ router.post('/send-message/:username', Need_Authentification, sanitizeParams,
       try {
          const {user} = req;
          const {username} = req.params;
-         const {type, timestamps, message, pgpKeys} = req.body;
+         const {type, timestamps, message, pgpSettings, otherPgpKeys, includePgp} = req.body;
 
-         let foundConversation = await Conversation.isConversationExisting(username, user.username, type);
+         let foundConversation = await Conversation.isConversationExisting(user.username, username, type);
+
 
          if (!foundConversation) {
             foundConversation = new Conversation();
@@ -38,9 +39,22 @@ router.post('/send-message/:username', Need_Authentification, sanitizeParams,
             };
             foundConversation.sender_1 = user.username;
             foundConversation.sender_2 = username;
+            
+            foundConversation.includePgp = includePgp
 
             foundConversation.sender1_Img = type === 'default' ? user.img_path : '/default/default-profile-pic.png';
-            foundConversation.sender1_Pgp = pgpKeys;
+
+            switch (pgpSettings) {
+               case 'ownPgp':
+                  foundConversation.sender1_Pgp = req.user.verifiedPgpKeys;
+                  break;
+               case 'otherPgp':
+                  foundConversation.sender1_Pgp = otherPgpKeys;
+                  break;
+               default:
+                  req.body.pgpKeys = undefined;
+                  req.body.includePgp = false;
+            }
 
             [foundConversation.sender2_Img, foundConversation.sender2_Pgp] = await getOtherUserData(username);
          }
@@ -53,6 +67,7 @@ router.post('/send-message/:username', Need_Authentification, sanitizeParams,
          if (foundConversation) redirect_url = `/messages?id=${foundConversation.id}#bottom`;
          res.redirect(redirect_url);
       } catch (e) {
+         console.log(e)
          res.redirect('/404');
       }
    }
@@ -91,7 +106,7 @@ function placeAuthUserAtSender_1(conversation, username) {
 
    if (username === conversation.sender_2) {
       savedSender1_Img = conversation.sender1_Img;
-      savedSender2_Pgp = conversation.sender1_Img;
+      savedSender1_Pgp = conversation.sender1_Pgp;
 
       conversation.sender_1 = username;
       conversation.sender_2 = originalSender_1;
@@ -100,7 +115,7 @@ function placeAuthUserAtSender_1(conversation, username) {
       conversation.sender2_Img = savedSender1_Img;
 
       conversation.sender1_Pgp = conversation.sender2_Pgp;
-      conversation.sender2_Pgp = savedSender2_Pgp;
+      conversation.sender2_Pgp = savedSender1_Pgp;
    } else {
       conversation.sender_1 = originalSender_1;
    }
