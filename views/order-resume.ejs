@@ -165,71 +165,68 @@
               <div class="card h-100">
 
                 <!-- Messages -->
-                <div class="card-body swiper scrollbar-hover overflow-hidden w-100 p-3 pb-0">
-                  <div class="swiper-wrapper">
-                    <div class="swiper-slide h-auto">
+                <div class="card-body swiper scrollbar-hover w-100 p-3 pb-0" style="overflow-y: auto;">
+                  <div class="swiper-slide h-auto">
 
-                      <% for(let i = 0; i < order.messages.length ; i++) {%>
+                    <% for(let i = 0; i < order.messages.length ; i++) {%>
 
-                      <% if (order.messages[i].sender === order.admin) { %>
-                      <div class="d-flex align-items-center justify-content-center mb-1">
-                        <!--Put message in middle-->
-                        <div class="ps-2 ms-1" style="max-width: 348px;">
-                          <div class="bg-warning card p-3 mb-1"
-                            style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <%= order.messages[i].content %></div>
-                        </div>
+                    <% if (order.messages[i].sender === order.admin) { %>
+                    <div class="d-flex align-items-center justify-content-center mb-1">
+                      <!--Put message in middle-->
+                      <div class="ps-2 ms-1" style="max-width: 348px;">
+                        <div class="bg-warning card p-3 mb-1"
+                          style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                          <%= order.messages[i].content %></div>
                       </div>
-                      <% } else if (order.messages[i].sender === order.vendor) { %>
-                      <% if (authuser.username === order.vendor) { %>
-                      <div class="d-flex align-items-end justify-content-end mb-1">
-                        <div class="pe-2 me-1" style="max-width: 348px;">
-                          <div class="bg-primary text-light p-3 mb-1"
-                            style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <%= order.messages[i].content %></div>
-                        </div>
-                      </div>
-                      <% } else { %>
-                      <div class="d-flex align-items-start mb-1">
-                        <div class="ps-2 ms-1" style="max-width: 348px;">
-                          <div class="card p-3 mb-1"
-                            style="background-color: #18171785;border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <%= order.messages[i].content %></div>
-                        </div>
-                      </div>
-                      <% } %>
-                      <% } else { %>
-                      <% if (authuser.username === order.admin) { %>
-                      <div class="d-flex align-items-end justify-content-end mb-1">
-                        <div class="pe-2 me-1" style="max-width: 348px;">
-                          <div class="bg-primary text-light p-3 mb-1"
-                            style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <%= order.messages[i].content %></div>
-                        </div>
-                      </div>
-                      <% } else if (authuser.username === order.vendor) { %>
-                      <div class="d-flex align-items-start mb-1">
-                        <div class="ps-2 ms-1" style="max-width: 348px;">
-                          <div class="card p-3 mb-1"
-                            style="border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <%= order.messages[i].content %></div>
-                        </div>
-                      </div>
-                      <% } else { %>
-                      <div class="d-flex align-items-end justify-content-end mb-1">
-                        <div class="pe-2 me-1" style="max-width: 348px;">
-                          <div class="bg-primary text-light p-3 mb-1"
-                            style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <%= order.messages[i].content %></div>
-                        </div>
-                      </div>
-                      <% } %>
-                      <% } %>
-                      <% } %>
-
                     </div>
+                    <% } else if (order.messages[i].sender === order.vendor) { %>
+                    <% if (authuser.username === order.vendor) { %>
+                    <div class="d-flex align-items-end justify-content-end mb-1">
+                      <div class="pe-2 me-1" style="max-width: 348px;">
+                        <div class="bg-primary text-light p-3 mb-1"
+                          style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                          <%= order.messages[i].content %></div>
+                      </div>
+                    </div>
+                    <% } else { %>
+                    <div class="d-flex align-items-start mb-1">
+                      <div class="ps-2 ms-1" style="max-width: 348px;">
+                        <div class="card p-3 mb-1"
+                          style="background-color: #18171785;border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                          <%= order.messages[i].content %></div>
+                      </div>
+                    </div>
+                    <% } %>
+                    <% } else { %>
+                    <% if (authuser.username === order.admin) { %>
+                    <div class="d-flex align-items-end justify-content-end mb-1">
+                      <div class="pe-2 me-1" style="max-width: 348px;">
+                        <div class="bg-primary text-light p-3 mb-1"
+                          style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                          <%= order.messages[i].content %></div>
+                      </div>
+                    </div>
+                    <% } else if (authuser.username === order.vendor) { %>
+                    <div class="d-flex align-items-start mb-1">
+                      <div class="ps-2 ms-1" style="max-width: 348px;">
+                        <div class="card p-3 mb-1"
+                          style="border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                          <%= order.messages[i].content %></div>
+                      </div>
+                    </div>
+                    <% } else { %>
+                    <div class="d-flex align-items-end justify-content-end mb-1">
+                      <div class="pe-2 me-1" style="max-width: 348px;">
+                        <div class="bg-primary text-light p-3 mb-1"
+                          style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                          <%= order.messages[i].content %></div>
+                      </div>
+                    </div>
+                    <% } %>
+                    <% } %>
+                    <% } %>
+
                   </div>
-                  <div class="swiper-scrollbar end-0"></div>
                 </div>
 
 
