@@ -16799,4 +16799,11 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .list-card .list-content > span {
   font-size: 24px;
+}
+
+@media (max-width: 767px) {
+  .order-resume-container .position-sticky {
+    position: static !important;
+    position: -webkit-sticky !important;
+  }
 }/*# sourceMappingURL=theme.css.map */

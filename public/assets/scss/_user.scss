@@ -1261,3 +1261,12 @@ $width-docs-side-nav: 69%;
       }
    }
 }
+
+.order-resume-container {
+   @media (max-width: $max-width-bp) {
+      .position-sticky {
+         position: static!important;
+         position: -webkit-sticky !important;
+      }
+   }
+}
