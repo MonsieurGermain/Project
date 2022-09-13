@@ -152,14 +152,14 @@
           <% if (product.shipping_option.length) { %>
           <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
             <h3 class="h5 mt-2 mb-3">Available Shipping Option</h3>
-            <div class="list-unstyled mb-4">
+            <div class="list-unstyled mb-4 d-flex flex-wrap justify-content-between">
               <!-- Find Better Svg -->
               <% for(let i = 0; i < product.shipping_option.length; i++) { %>
-              <!-- <li class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
                 <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
-              </li> -->
-              <div class="list-card d-flex my-2">
+              </div>
+              <!-- <div class="list-card d-flex my-2">
                 <div class="list-number d-flex align-items-center justify-content-around ps-2">
                   <span class="d-flex align-items-center"><i class="bx bxs-plane-alt"></i></span>
                 </div>
@@ -168,7 +168,7 @@
                     <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
                   </span>
                 </div>
-              </div>
+              </div> -->
               <% } %>
             </div>
           </div>
@@ -177,15 +177,15 @@
           <% if (product.selection_1) { %>
           <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
             <h3 class="h5 mt-2 mb-3"><%=product.selection_1.selection_name%></h3>
-            <div class="list-unstyled mb-4">
+            <div class="list-unstyled mb-4 d-flex flex-wrap justify-content-between">
               <!-- Find Better Svg -->
               <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
-              <!-- <li class="d-flex mb-2">
+              <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
                 <%=product.selection_1.selection_choices[i].choice_name%> : +
                 <%=product.selection_1.selection_choices[i].choice_price%>
-              </li> -->
-              <div class="list-card d-flex my-2">
+              </div>
+              <!-- <div class="list-card d-flex my-2">
                 <div class="list-number d-flex align-items-center justify-content-around ps-2">
                   <span class="d-flex align-items-center"><i class="bx bx-spreadsheet"></i></span>
                 </div>
@@ -195,7 +195,7 @@
                     <%=product.selection_1.selection_choices[i].choice_price%>
                   </span>
                 </div>
-              </div>
+              </div> -->
               <% } %>
             </div>
           </div>
@@ -204,14 +204,14 @@
           <% if (product.selection_2) { %>
           <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
             <h3 class="h5 mt-2 mb-3"><%=product.selection_2.selection_name%></h3>
-            <div class="list-unstyled mb-4">
+            <div class="list-unstyled mb-4 d-flex flex-wrap justify-content-between">
               <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
-              <!-- <li class="d-flex mb-2">
+              <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
                 <%=product.selection_2.selection_choices[i].choice_name%> : +
                 <%=product.selection_2.selection_choices[i].choice_price%>
-              </li> -->
-              <div class="list-card d-flex my-2">
+              </div>
+              <!-- <div class="list-card d-flex my-2">
                 <div class="list-number d-flex align-items-center justify-content-around ps-2">
                   <span class="d-flex align-items-center"><i class="bx bx-spreadsheet"></i></span>
                 </div>
@@ -221,7 +221,7 @@
                     <%=product.selection_2.selection_choices[i].choice_price%>
                   </span>
                 </div>
-              </div>
+              </div> -->
               <% } %>
             </div>
           </div>

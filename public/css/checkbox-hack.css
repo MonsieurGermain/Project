@@ -30,7 +30,7 @@
 }
 
 #settings-checkbox:checked~.settings-container {
-  height: 12rem !important;
+  height: 12.5rem !important;
 }
 
 #settings-checkbox:checked~.settings-container.title-height {
