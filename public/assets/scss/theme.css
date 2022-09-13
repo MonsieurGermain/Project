@@ -16238,11 +16238,13 @@ img-comparison-slider:focus {
   padding-right: 85px;
   min-height: 40px;
 }
-.messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
+.messages-view .messages-container .chat .card-footer input,
+.messages-view .messages-container .chat .card-footer textarea {
   background-color: #191919;
 }
 @media (min-width: 768px) {
-  .messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
+  .messages-view .messages-container .chat .card-footer input,
+.messages-view .messages-container .chat .card-footer textarea {
     background-color: #191919;
   }
 }
@@ -16685,6 +16687,9 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   }
 }
 
+.your-order-container {
+  min-height: calc(100vh - 400px);
+}
 .your-order-container .order-card-btn-wrap > *:last-child {
   margin-right: 0px !important;
 }
@@ -16714,6 +16719,22 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     width: 100%;
   }
 }
+.your-order-container .buyer-detail-wrap {
+  display: none !important;
+  opacity: 0 !important;
+  transition: all 0.3s;
+}
+.your-order-container [for^=buyer-detail-check] > svg {
+  transform: rotate(0deg);
+  transition: all 0.5s;
+}
+.your-order-container [id^=buyer-detail-checkbox]:checked ~ .buyer-detail-wrap {
+  display: flex !important;
+  opacity: 1 !important;
+}
+.your-order-container [id^=buyer-detail-checkbox]:checked ~ label > svg {
+  transform: rotate(180deg);
+}
 
 @media (max-width: 400px) {
   .submit-info-container .responsive-column {
@@ -16735,4 +16756,47 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   .contactus-container .responsive-element > button {
     margin-top: 10px !important;
   }
+}
+
+.list-card .list-number {
+  background-color: #800080;
+  width: 80px;
+  height: 80px;
+  border-radius: 30px 0px 0px 30px;
+  background-image: linear-gradient(230deg, #401919, transparent);
+  position: relative;
+}
+.list-card .list-number::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: -6px;
+  border-style: solid;
+  border-width: 5px 3px;
+  border-color: transparent transparent #401218 #401218;
+}
+.list-card .list-number::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: -6px;
+  border-style: solid;
+  border-width: 5px 3px;
+  border-color: #401218 transparent transparent #401218;
+}
+.list-card .list-number > span {
+  font-size: 42px;
+  font-weight: 900;
+}
+.list-card .list-content {
+  background-color: rgba(52, 52, 58, 0.3215686275);
+  border-radius: 0px 500px 500px 0px;
+  z-index: 2;
+  box-shadow: 2px 2px 10px 0px rgba(255, 0, 177, 0.1607843137);
+  margin: 10px 0px;
+}
+.list-card .list-content > span {
+  font-size: 24px;
 }/*# sourceMappingURL=theme.css.map */

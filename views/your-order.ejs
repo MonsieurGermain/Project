@@ -1,277 +1,241 @@
 <%- include('partials/Statics/Head', {page: query.clientsOrders ? '- Clients Orders' : '- Your Orders'}) %>
 
-  <!-- Body -->
+<!-- Body -->
+
 <body>
 
-    <!-- Page wrapper for sticky footer -->
-    <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
-    <main class="page-wrapper">
+  <!-- Page wrapper for sticky footer -->
+  <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
+  <main class="page-wrapper">
 
 
-      <%- include('partials/Statics/Navbar') %>
+    <%- include('partials/Statics/Navbar') %>
 
-      <section class="container your-order-container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
+    <section class="container your-order-container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
 
-        <!-- BreadCrumb -->
-        <nav class="py-4 mb-3" aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-              <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
+      <!-- BreadCrumb -->
+      <nav class="py-4 mb-3" aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="bx bx-home-alt fs-lg me-1"></i>Home</a>
           </li>
-            <li class="breadcrumb-item active" aria-current="page">Your Order(s)</li>
-          </ol>
-        </nav>
+          <li class="breadcrumb-item active" aria-current="page">Your Order(s)</li>
+        </ol>
+      </nav>
 
-        <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
-          <h1 class="me-3"></h1>
-          <form action="/filter-orders" method="POST">
-            <div class="d-md-flex mb-3 filter-wrap">
-              <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
-                <option value="all"
-                <% if (!query.status) { %>
-                  selected
-                <% } %> >All status</option>
-                  
-                <option value="awaiting_info" 
-                  <% if (query.status === 'awaiting_info') { %>
-                    selected
-                  <% } %> >Awaiting Information</option> 
-                  
-                <option value="awaiting_payment"
-                <% if (query.status === 'awaiting_payment') { %>
-                  selected
-                <% } %> >Awaiting Payment</option>
+      <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
+        <h1 class="me-3"></h1>
+        <form action="/filter-orders" method="POST">
+          <div class="d-md-flex mb-3 filter-wrap">
+            <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
+              <option value="all" <% if (!query.status) { %> selected <% } %>>All status</option>
+              <option value="awaiting_info" <% if (query.status === 'awaiting_info') { %> selected <% } %>>Awaiting
+                Information</option>
+              <option value="awaiting_payment" <% if (query.status === 'awaiting_payment') { %> selected <% } %>>
+                Awaiting Payment</option>
+              <option value="awaiting_shipment" <% if (query.status === 'awaiting_shipment') { %> selected <% } %>>
+                Awaiting Shipment</option>
+              <option value="shipped" <% if (query.status === 'shipped') { %> selected <% } %>>Shipped</option>
+              <option value="recieved" <% if (query.status === 'recieved') { %> selected <% } %>>Recieved</option>
+              <option value="finalized" <% if (query.status === 'finalized') { %> selected <% } %>>Finalized</option>
+              <option value="rejected" <% if (query.status === 'rejected') { %> selected <% } %>>Rejected</option>
+              <option value="expired" <% if (query.status === 'expired') { %> selected <% } %>>Expired</option>
+              <option value="dispute_progress" <% if (query.status === 'dispute_progress') { %> selected <% } %>>Dispute
+                in Progress</option>
+              <option value="disputed" <% if (query.status === 'disputed') { %> selected <% } %>>Disputed</option>
+            </select>
 
-                <option value="awaiting_shipment"
-                <% if (query.status === 'awaiting_shipment') { %>
-                  selected
-                <% } %>>Awaiting Shipment</option>
-
-                <option value="shipped" 
-                <% if (query.status === 'shipped') { %>
-                  selected
-                <% } %> >Shipped</option>
-
-                <option value="recieved"
-                <% if (query.status === 'recieved') { %>
-                  selected
-                <% } %> >Recieved</option>
-
-                <option value="finalized"
-                <% if (query.status === 'finalized') { %>
-                  selected
-                <% } %> >Finalized</option>
-                  
-                <option value="rejected" 
-                <% if (query.status === 'rejected') { %>
-                  selected
-                <% } %> >Rejected</option>
-
-                <option value="expired"
-                <% if (query.status === 'expired') { %>
-                  selected
-                <% } %> >Expired</option>
-
-                <option value="dispute_progress"
-                <% if (query.status === 'dispute_progress') { %>
-                  selected
-                <% } %> >Dispute in Progress</option>
-                
-                <option value="disputed"
-                <% if (query.status === 'disputed') { %>
-                  selected
-                <% } %> >Disputed</option>
-              </select>
             <% if (authuser.authorization === 'vendor') { %>
-              <select class="form-select me-4 mb-2 mb-md-0" name="clientsOrders" style="min-width: 240px;" required>
-
-                <option value="true" 
-                <% if (query.clientsOrders) { %>
-                  selected
-                <% } %> >Clients Orders</option>
-                
-                <option value="false"
-                <% if (!query.clientsOrders) { %>
-                  selected
-                <% } %> >Your Orders</option>
-
-              </select>
+            <select class="form-select me-4 mb-2 mb-md-0" name="clientsOrders" style="min-width: 240px;" required>
+              <option value="true" <% if (query.clientsOrders) { %> selected <% } %>>Clients Orders</option>
+              <option value="false" <% if (!query.clientsOrders) { %> selected <% } %>>Your Orders</option>
+            </select>
             <% } %>
 
             <button type="submit" class="btn btn-primary">Filter</button>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
+      </div>
 
-<% if (!orders.results.length) { %>
-  <div>
-    <% if (query.clientsOrders) { %>
-      <% if (query.status) { %>
+      <% if (!orders.results.length) { %>
+      <div>
+        <% if (query.clientsOrders) { %>
+        <% if (query.status) { %>
         <p>You dont have any Clients Order of this type</p>
-      <% } else { %> 
+        <% } else { %>
         <p>You dont have any Clients Order</p>
-      <% } %>
-    <% } else if (query.status) { %>
-      <p>You dont have any Order of this type</p>
-    <% } else { %> 
-      <p>You dont have any Order</p>
-    <% } %>
-
-  </div>
-<% } else { %>
-  <% for(let i = orders.results.length - 1; i > -1; i--) { %>
-    <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
+        <% } %>
+        <% } else if (query.status) { %>
+        <p>You dont have any Order of this type</p>
+        <% } else { %>
+        <p>You dont have any Order</p>
+        <% } %>
+      </div>
+      <% } else { %>
+      <% for(let i = orders.results.length - 1; i > -1; i--) { %>
+      <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
         <div class="row g-0">
           <% if(!query.clientsOrders) { %>
-            <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover ps-2">
-              <a href="<%=orders.results[i].link%>" class="position-absolute top-0 start-0 w-100 h-100" aria-label="Read more">
-  
+          <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover ps-2">
+            <a href="<%=orders.results[i].link%>" class="position-absolute top-0 start-0 w-100 h-100"
+              aria-label="Read more">
+
               <img src="<%=orders.results[i].product_img%>" style="min-width: 100%;max-height: 100%;" alt="Product Img">
             </a>
           </div>
           <div class="col-sm-8">
-          <% } else { %> 
+            <% } else { %>
             <div>
-          <% } %>
-  
-            <div class="card-body">
-              <div class="d-flex align-items-center mb-3">
-                <p class="mb-1">Status: <span><%- include('partials/Status-order', {status : orders.results[i].status}) %></span></p>
-              </div>
-              <h3 class="h4">
-                <a href="<%=orders.results[i].link%>">
-                  <%=orders.results[i].product_title.slice(0, 50)%>
-                  <% if (orders.results[i].product_title.length > 50) { %>
-                    ...
-                  <% } %>
-                </a>
-              </h3>
-  
-              <span>
-                <p class="mb-0">Total Price:</p>
-                <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
-                    <%= orders.results[i].total_price %> $
-                </p>
-            </span>
-  
-             <hr class="my-4">
-  
-              <div class="d-flex align-items-center flex-wrap order-card-btn-wrap">
-                <span class="me-5 mb-2">
-                  <p class="mb-0">Vendor:</p>
-                  <a href="/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1" class="d-flex align-items-center fw-bold text-decoration-none me-3">
-                    <%= orders.results[i].vendor%>
-                  </a>
-                </span>
-  
-            <span class="me-5 mb-2">
-                <p class="mb-0">Buyer:</p>
-                <a 
-                <% if (orders.results[i].privacy === 'default') { %>
-                    href="/profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1" 
-                <% } %>
-                class="d-flex align-items-center fw-bold text-decoration-none me-3">
-                  <%= orders.results[i].buyer%>
-                </a>
-            </span>
-  
-            <% if (orders.results[i].status === 'dispute_progress') { %>
-              <% if (orders.results[i].admin) { %>
-                <span class="me-5 mb-2">
-                  <p class="mb-0">Admin:</p>
-                  <p class="mb-0"><%=orders.result[i].admin%></p>
-              </span>
-              <% } else { %> 
-                <span class="me-5 mb-2">
-                  <p class="mb-0">Admin:</p>
-                  <p class="mb-0">Awaiting Admin...</p>
-              </span>
               <% } %>
-            <% } %>
-  
-            <% if (orders.results[i].status === 'disputed') { %>
-              <span class="me-5 mb-2">
-                <p class="mb-0">Winner:</p>
-                <% if (orders.results[i].dispute_winner === orders.results[i].vendor) { %>
-                  <p class="mb-0"><b><%=orders.results[i].vendor%></b></p>
-                <% } else { %>
-                  <p class="mb-0"><b><%=orders.results[i].buyer%></b></p>
-                <% } %>
-            </span>
-            <% } %>
-  
-            <% if (orders.results[i].Formated_Timers) { %>
-            <span class="me-5 mb-2">
-                <p class="mb-0">Time Left:</p>
-                <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
-                  <%= orders.results[i].Formated_Timers%>
-                </p>
-            </span>
-            <% } %>
-            
-            <% if (orders.results[i].deletelink) { %>
-              <span class="position-absolute top-0 zindex-2 me-3 mt-3" style="right: 10px;">
-                <form action="/delete-order/<%=orders.results[i].id%>?_method=DELETE" method="POST">
-                <button type="submit" class="btn btn-primary" style="padding: 10px">
-                    <i class="bx bx-trash"></i>
-                </button>
-              </form>
-                </span> 
-            <% } %>
-  
-  
-              </div>
-  
-              <% if(query.clientsOrders === 'true') { %>
-                <div class="d-flex align-items-center mt-3 justify-content-between flex-wrap">
+
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <p class="mb-1">Status:
+                    <span><%- include('partials/Status-order', {status : orders.results[i].status}) %></span></p>
+                </div>
+                <h3 class="h4">
+                  <a href="<%=orders.results[i].link%>">
+                    <%=orders.results[i].product_title.slice(0, 50)%>
+                    <% if (orders.results[i].product_title.length > 50) { %>
+                    ...
+                    <% } %>
+                  </a>
+                </h3>
+
+                <span>
+                  <p class="mb-0">Total Price:</p>
+                  <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                    <%= orders.results[i].total_price %> $
+                  </p>
+                </span>
+
+                <hr class="my-4">
+
+                <div class="d-flex align-items-center flex-wrap order-card-btn-wrap">
+                  <span class="me-5 mb-2">
+                    <p class="mb-0">Vendor:</p>
+                    <a href="/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1"
+                      class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                      <%= orders.results[i].vendor%>
+                    </a>
+                  </span>
+
+                  <span class="me-5 mb-2">
+                    <p class="mb-0">Buyer:</p>
+                    <a <% if (orders.results[i].privacy === 'default') { %>
+                      href="/profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1" <% } %>
+                      class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                      <%= orders.results[i].buyer%>
+                    </a>
+                  </span>
+
+                  <% if (orders.results[i].status === 'dispute_progress') { %>
+                  <% if (orders.results[i].admin) { %>
+                  <span class="me-5 mb-2">
+                    <p class="mb-0">Admin:</p>
+                    <p class="mb-0"><%=orders.result[i].admin%></p>
+                  </span>
+                  <% } else { %>
+                  <span class="me-5 mb-2">
+                    <p class="mb-0">Admin:</p>
+                    <p class="mb-0">Awaiting Admin...</p>
+                  </span>
+                  <% } %>
+                  <% } %>
+
+                  <% if (orders.results[i].status === 'disputed') { %>
+                  <span class="me-5 mb-2">
+                    <p class="mb-0">Winner:</p>
+                    <% if (orders.results[i].dispute_winner === orders.results[i].vendor) { %>
+                    <p class="mb-0"><b><%=orders.results[i].vendor%></b></p>
+                    <% } else { %>
+                    <p class="mb-0"><b><%=orders.results[i].buyer%></b></p>
+                    <% } %>
+                  </span>
+                  <% } %>
+
+                  <% if (orders.results[i].Formated_Timers) { %>
+                  <span class="me-5 mb-2">
+                    <p class="mb-0">Time Left:</p>
+                    <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
+                      <%= orders.results[i].Formated_Timers%>
+                    </p>
+                  </span>
+                  <% } %>
+
+                  <% if (orders.results[i].deletelink) { %>
+                  <span class="position-absolute top-0 zindex-2 me-3 mt-3" style="right: 10px;">
+                    <form action="/delete-order/<%=orders.results[i].id%>?_method=DELETE" method="POST">
+                      <button type="submit" class="btn btn-primary" style="padding: 10px">
+                        <i class="bx bx-trash"></i>
+                      </button>
+                    </form>
+                  </span>
+                  <% } %>
+
+
+                </div>
+
+                <% if(query.clientsOrders === 'true') { %>
+                <input id="buyer-detail-checkbox-<%=i%>" type="checkbox" hidden />
+                <label for="buyer-detail-checkbox-<%=i%>">See Buyer Details:
+                  <%- include ("../public/assets/img/icons/caret-down.svg") %>
+                </label>
+                <div class="buyer-detail-wrap d-flex align-items-center mt-2 justify-content-between flex-wrap">
                   <span class="">
                     <p class="mb-0">Buyer Info:</p>
                     <p class="mb-0">
                       <% if (orders.results[i].messages[0]) { %>
-                        <%=orders.results[i].messages[0].content%>
+                      <%=orders.results[i].messages[0].content%>
                       <% } else { %>
-                        This user as submit his info yet
+                      This user as submit his info yet
                       <% } %>
                     </p>
                   </span>
-  
+
                   <% if (orders.results[i].status === 'awaiting_shipment') { %>
-  
-                    <div class="d-flex button-group">
-                      <span class="my-2 me-2">
-                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&ordersPage=<%=query.ordersPage%>&status=<%=query.status%>" method="POST">
-                          <button class="btn btn-warning me-4" type="submit" name="status" value="shipped">I have shipped the Product</button>
+
+                  <div class="d-flex button-group">
+                    <span class="my-2 me-2">
+                      <form
+                        action="/update-order/<%=orders.results[i].id%>?fromOrders=true&ordersPage=<%=query.ordersPage%>&status=<%=query.status%>"
+                        method="POST">
+                        <button class="btn btn-warning me-4" type="submit" name="status" value="shipped">I have shipped
+                          the Product</button>
                       </form>
-                      </span>
-    
-                      <span class="my-2">
-                        <form action="/update-order/<%=orders.results[i].id%>?fromOrders=true&ordersPage=<%=query.ordersPage%>&status=<%=query.status%>" method="POST">
-                          <button class="btn btn-danger" type="submit" name="status" value="rejected">I want to Cancel this Order</button>
+                    </span>
+
+                    <span class="my-2">
+                      <form
+                        action="/update-order/<%=orders.results[i].id%>?fromOrders=true&ordersPage=<%=query.ordersPage%>&status=<%=query.status%>"
+                        method="POST">
+                        <button class="btn btn-danger" type="submit" name="status" value="rejected">I want to Cancel
+                          this Order</button>
                       </form>
-                      </span>
-                    </div>
+                    </span>
+                  </div>
                   <% } %>
-  
+
+                </div>
+                <% } %>
+
               </div>
-              <% } %>
-  
             </div>
           </div>
-        </div>
       </article>
-  <% } %>
-  <div class="mt-5">
-    <%- include('partials/Pagination', {nextPage: orders.nextPage, currentPage: parseInt(query.ordersPage), queryName: 'ordersPage'}) %>
-  </div>
-<% } %>
+      <% } %>
+      <div class="mt-5">
+        <%- include('partials/Pagination', {nextPage: orders.nextPage, currentPage: parseInt(query.ordersPage), queryName: 'ordersPage'}) %>
+      </div>
+      <% } %>
 
-  </section>
+    </section>
 
     <!-- Footer -->
     <%- include('partials/Statics/Footer') %>
-    </main>
+  </main>
 
 
-  </body>
+</body>
+
 </html>
-
