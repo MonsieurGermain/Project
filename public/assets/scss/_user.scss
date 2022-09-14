@@ -1293,7 +1293,7 @@ $width-docs-side-nav: 69%;
    @media (max-width: $max-width-bp) {
       form {
          button {
-            width: 100%!important;
+            width: 100% !important;
          }
       }
    }
@@ -1302,20 +1302,29 @@ $width-docs-side-nav: 69%;
 .container-fluid {
    .responsive-column {
       @media (max-width: 570px) {
-         flex-direction: column!important;
+         flex-direction: column !important;
          width: 100%;
+
          form {
             width: 100%;
-            margin: 0px 0px 5px 0px!important;
+            margin: 0px 0px 5px 0px !important;
+
             >button {
                width: 100%;
-               margin: 0px!important;
+               margin: 0px !important;
             }
          }
+
          label {
             width: 100%;
-            margin: 0px!important;
+            margin: 0px !important;
          }
+      }
+   }
+
+   @media (max-width: 400px) {
+      .omit-item {
+         display: none;
       }
    }
 }
@@ -1323,17 +1332,20 @@ $width-docs-side-nav: 69%;
 .user-card {
    .image-wrap {
       display: block;
+
       img {
          min-width: 150px;
          min-height: 150px;
          margin: 0 2rem;
       }
    }
+
    .btn {
       i {
          display: none
       }
    }
+
    @media (max-width: 680px) {
       .image-wrap {
          img {
@@ -1343,20 +1355,25 @@ $width-docs-side-nav: 69%;
             min-height: 140px;
          }
       }
+
       .btn {
          padding: 8px;
          border-radius: 50% !important;
+
          i {
             font-size: 30px;
             display: block;
          }
+
          span {
             display: none;
          }
       }
    }
+
    @media (max-width: 540px) {
       padding: 0 0.75rem;
+
       .image-wrap {
          img {
             width: 100px;
@@ -1366,22 +1383,31 @@ $width-docs-side-nav: 69%;
             margin: 0 1rem;
          }
       }
+
       .btn {
          padding: 6px;
          border-radius: 50% !important;
-         margin-right: 8px!important;
-         margin-bottom: 0px!important;
+         margin-right: 8px !important;
+         margin-bottom: 0px !important;
+
          i {
             font-size: 25px;
             display: block;
          }
+
          span {
             display: none;
          }
       }
+
+      .user-label {
+         display: none;
+      }
    }
+
    @media (max-width: 340px) {
       padding: 0 0.75rem;
+
       .image-wrap {
          img {
             width: 100px;
@@ -1391,17 +1417,43 @@ $width-docs-side-nav: 69%;
             margin: 0 0.75rem 0 0;
          }
       }
+
       .btn {
          padding: 6px;
          border-radius: 50% !important;
-         margin-right: 8px!important;
+         margin-right: 8px !important;
+
          i {
             font-size: 25px;
             display: block;
          }
+
          span {
             display: none;
          }
+      }
+   }
+}
+
+.dispute-card {
+   @media (max-width: 500px) {
+      .full-width {
+         width: 100%;
+
+         >form {
+            width: 100%;
+
+            >.btn {
+               width: 100%;
+            }
+         }
+      }
+   }
+
+   @media (max-width: 390px) {
+      .responsive-width {
+         margin-left: 0px !important;
+         margin-right: 0px !important;
       }
    }
 }

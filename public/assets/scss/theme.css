@@ -16837,6 +16837,11 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     margin: 0px !important;
   }
 }
+@media (max-width: 400px) {
+  .container-fluid .omit-item, .container-sm .omit-item, .container-md .omit-item, .container-lg .omit-item, .container-xl .omit-item, .container-xxl .omit-item {
+    display: none;
+  }
+}
 
 .user-card .image-wrap {
   display: block;
@@ -16892,6 +16897,9 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   .user-card .btn span {
     display: none;
   }
+  .user-card .user-label {
+    display: none;
+  }
 }
 @media (max-width: 340px) {
   .user-card {
@@ -16915,5 +16923,23 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   }
   .user-card .btn span {
     display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .dispute-card .full-width {
+    width: 100%;
+  }
+  .dispute-card .full-width > form {
+    width: 100%;
+  }
+  .dispute-card .full-width > form > .btn {
+    width: 100%;
+  }
+}
+@media (max-width: 390px) {
+  .dispute-card .responsive-width {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
   }
 }/*# sourceMappingURL=theme.css.map */

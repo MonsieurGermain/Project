@@ -70,36 +70,37 @@
                       </p>
                     </span>
 
-                    <hr class="my-4">
+                    <hr class="mt-2 mb-2">
 
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between">
+                      <div class="d-flex align-items-center py-2">
+                        <span>
+                          <p class="mb-0">Username:</p>
+                          <% if (feedbacks.results[i].username) { %>
+                          <a href="/profile/<%=feedbacks.results[i].username%>?productPage=1&reviewPage=1"
+                            class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
+                            <%= feedbacks.results[i].username %>
+                          </a>
+                          <% } else { %>
+                          <p class="mb-0">Not Included</p>
+                          <% } %>
+                        </span>
+  
+                        <span class="ms-4">
+                          <p class="mb-0">Email:</p>
+                          <% if (feedbacks.results[i].email) { %>
+                          <p class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
+                            <%= feedbacks.results[i].email %>
+                          </p>
+                          <% } else { %>
+                          <p class="mb-0">Not Included</p>
+                          <% } %>
+                        </span>
+                      </div>
 
-                      <span>
-                        <p class="mb-0">Username:</p>
-                        <% if (feedbacks.results[i].username) { %>
-                        <a href="/profile/<%=feedbacks.results[i].username%>?productPage=1&reviewPage=1"
-                          class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
-                          <%= feedbacks.results[i].username %>
-                        </a>
-                        <% } else { %>
-                        <p class="mb-0">Not Included</p>
-                        <% } %>
-                      </span>
-
-                      <span class="ms-4">
-                        <p class="mb-0">Email:</p>
-                        <% if (feedbacks.results[i].email) { %>
-                        <p class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
-                          <%= feedbacks.results[i].email %>
-                        </p>
-                        <% } else { %>
-                        <p class="mb-0">Not Included</p>
-                        <% } %>
-                      </span>
 
 
-
-                      <div class="ms-auto d-flex flex-column flex-sm-row">
+                      <div class="d-flex flex-column flex-sm-row py-2 responsive-column">
                         <form action="/archive-feedback/<%=feedbacks.results[i].id%>" method="POST">
                           <% if (!feedbacks.results[i].archived) { %>
                           <button type="submit" class="btn btn-success">Archive Feedback</button>

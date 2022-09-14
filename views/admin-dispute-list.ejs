@@ -43,14 +43,14 @@
 
 
               <% for(let i = 0; i < disputes.length; i++) { %>
-              <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">
+              <article class="dispute-card card card-hover border-0 shadow-sm overflow-hidden mt-4">
                 <div class="row g-0">
                   <div>
                     <div class="card-body">
-                      <div class="d-flex align-items-center mb-3">
-                        <p class="mb-1 me-5">Order id: <a
+                      <div class="d-flex flex-wrap align-items-center justify-content-between mb-2">
+                        <p class="mb-2 me-2">Order id: <a
                             href="/order-resume/<%=disputes[i].id%>"><%=disputes[i].id%></a></p>
-                        <p class="mb-1">Status: <span> <span class="ms-2 badge bg-danger">Dispute in
+                        <p class="mb-2">Status: <span> <span class="ms-2 badge bg-danger">Dispute in
                               Progress</span></span></p>
                       </div>
                       <h3 class="h4">
@@ -64,24 +64,24 @@
                         </p>
                       </span>
 
-                      <hr class="my-4">
+                      <hr class="mt-4 mb-2">
 
-                      <div class="d-flex align-items-center">
-                        <span>
+                      <div class="d-flex align-items-center justify-content-between flex-wrap">
+                        <span class="mt-2">
                           <p class="mb-0">Vendor:</p>
                           <a href="/profile/<%=disputes[i].vendor%>?productPage=1&reviewPage=1"
-                            class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                            class="d-flex align-items-center fw-bold text-decoration-none">
                             <%= disputes[i].vendor%>
                           </a>
                         </span>
-                        <span class="ms-5">
+                        <span class="mt-2 mx-3">
                           <p class="mb-0">Buyer:</p>
-                          <a class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                          <a class="d-flex align-items-center fw-bold text-decoration-none">
                             <%= disputes[i].buyer%>
                           </a>
                         </span>
 
-                        <span class="ms-5">
+                        <span class="mt-2 mx-3 responsive-width">
                           <p class="mb-0">Admin:</p>
                           <% if (disputes[i].admin) { %>
                           <p class="mb-0"><%=disputes[i].admin%></p>
@@ -92,11 +92,11 @@
 
 
                         <% if (query.adminDispute) { %>
-                        <span class="ms-auto">
+                        <span class="mt-2 full-width">
                           <a href="/order-resume/<%=disputes[i].id%>" class="btn btn-primary">See Disputes >></a>
                         </span>
                         <% } else { %>
-                        <span class="ms-auto">
+                        <span class="mt-2 full-width">
                           <form action="/disputes/<%=disputes[i].id%>" method="POST">
                             <button type="submit" class="btn btn-primary">Take Disputes >></button>
                           </form>
