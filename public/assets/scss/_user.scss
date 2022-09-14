@@ -734,18 +734,19 @@ $width-docs-side-nav: 69%;
 
 .documentation-view {
    .docs-con {
+      min-height: calc(100vh - $nav-bar-height-mobile);
+      transition: padding 0.3s;
+
       @media (min-width: $min-width-bp) {
-         padding-left: 21rem;
+         padding-left: 0rem;
       }
    }
 
    #componentsNav {
       position: relative;
-      width: $width-docs-side-nav;
+      width: 21rem;
 
-      @media (min-width: $min-width-bp) {
-         width: 21rem;
-      }
+      @media (min-width: $min-width-bp) {}
 
       background-color: $secondary-bg;
       margin-top: $nav-bar-height-mobile;
@@ -764,14 +765,15 @@ $width-docs-side-nav: 69%;
 
    .docs-aside-open-close {
       @media (min-width: $min-width-bp) {
-         display: none;
+         // display: none;
+         margin-top: 10px;
       }
 
       position: fixed;
       width: 40px;
       z-index: 2000;
       top: calc($nav-bar-height-mobile + 1rem);
-      left: calc($width-docs-side-nav - 40px);
+      left: calc(21rem - 40px);
       background-color: $primary;
       padding: 1px;
       border-top-left-radius: 4px;
@@ -779,10 +781,6 @@ $width-docs-side-nav: 69%;
       transition: transform 0.3s ease-in-out,
       border-radius 0.3s ease-in-out,
       left 0.3s ease-in-out;
-
-      @media (min-width: $min-width-bp) {
-         margin-top: calc($nav-bar-height-large + 1rem);
-      }
 
       svg {
          height: 35px;
@@ -808,15 +806,8 @@ $width-docs-side-nav: 69%;
       display: none;
    }
 
-   @media (min-width: $min-width-bp) {
-      footer {
-         width: calc(100% - 21rem);
-         margin-left: auto;
-      }
-   }
-
-   @media (max-width: $max-width-bp) {
-      #mobile-menu-toggle:checked~main .clickout-mobile-menu {
+   #mobile-menu-toggle:checked~main {
+      .clickout-mobile-menu {
          background-color: rgba(0, 0, 0, 0.25);
          display: initial;
          width: 100%;
@@ -826,23 +817,44 @@ $width-docs-side-nav: 69%;
          height: 100%;
       }
 
-      #mobile-menu-toggle:not(:checked) {
-         +.docs-aside-open-close {
-            left: 0px;
-            border-radius: 0 4px 4px 0;
-
-            svg {
-               transform: scaleX(-1);
-               position: relative;
-               left: 3px;
-            }
-         }
-
-         ~main #componentsNav {
-            transform: translateX(-100%);
+      @media (min-width: $min-width-bp) {
+         .docs-con {
+            padding-left: 21rem !important;
          }
       }
    }
+
+   .footer {
+      width: 100%;
+      transition: width 0.3s;
+      margin-left: auto;
+   }
+
+   #mobile-menu-toggle:checked~footer {
+      @media (min-width: $min-width-bp) {
+         width: calc(100% - 21rem);
+         margin-left: auto;
+      }
+   }
+
+   #mobile-menu-toggle:not(:checked) {
+      +.docs-aside-open-close {
+         left: 0px;
+         border-radius: 0 4px 4px 0;
+
+         svg {
+            transform: scaleX(-1);
+            position: relative;
+            left: 3px;
+         }
+      }
+
+      ~main #componentsNav {
+         transform: translateX(-100%);
+      }
+
+   }
+
 
    .docs-section {
       padding-top: 7rem;
@@ -856,9 +868,12 @@ $width-docs-side-nav: 69%;
       text-decoration: none;
       color: $white;
       font-weight: bold;
+      border: solid transparent !important;
+      border-width: 0px 10px 0px 0px !important;
 
       &:hover {
-         background-color: $primary;
+         border: solid $primary  !important;
+         border-width: 0px 10px 0px 0px !important;
       }
    }
 }
@@ -1223,6 +1238,7 @@ $width-docs-side-nav: 69%;
       border-radius: 30px 0px 0px 30px;
       background-image: linear-gradient(230deg, #401919, transparent);
       position: relative;
+
       &::after {
          content: " ";
          display: block;
@@ -1233,6 +1249,7 @@ $width-docs-side-nav: 69%;
          border-width: 5px 3px;
          border-color: transparent transparent #401218 #401218;
       }
+
       &::before {
          content: " ";
          display: block;
@@ -1241,8 +1258,9 @@ $width-docs-side-nav: 69%;
          right: -6px;
          border-style: solid;
          border-width: 5px 3px;
-         border-color:  #401218 transparent transparent #401218;
+         border-color: #401218 transparent transparent #401218;
       }
+
       >span {
          font-size: 42px;
          font-weight: 900;
@@ -1265,7 +1283,7 @@ $width-docs-side-nav: 69%;
 .order-resume-container {
    @media (max-width: $max-width-bp) {
       .position-sticky {
-         position: static!important;
+         position: static !important;
          position: -webkit-sticky !important;
       }
    }

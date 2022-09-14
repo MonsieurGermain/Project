@@ -16385,14 +16385,18 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   justify-content: flex-end;
 }
 
+.documentation-view .docs-con {
+  min-height: calc(100vh - 4rem);
+  transition: padding 0.3s;
+}
 @media (min-width: 768px) {
   .documentation-view .docs-con {
-    padding-left: 21rem;
+    padding-left: 0rem;
   }
 }
 .documentation-view #componentsNav {
   position: relative;
-  width: 69%;
+  width: 21rem;
   background-color: #212121;
   margin-top: 4rem;
   height: calc(100% - 4rem);
@@ -16400,11 +16404,6 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   z-index: 1045;
   box-shadow: 0 0.275rem 1.25rem rgba(180, 183, 201, 0.05), 0 0.25rem 0.5625rem rgba(180, 183, 201, 0.03);
   transition: transform 0.3s ease-in-out;
-}
-@media (min-width: 768px) {
-  .documentation-view #componentsNav {
-    width: 21rem;
-  }
 }
 @media (min-width: 768px) {
   .documentation-view #componentsNav {
@@ -16417,7 +16416,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   width: 40px;
   z-index: 2000;
   top: 5rem;
-  left: calc(69% - 40px);
+  left: calc(21rem - 40px);
   background-color: #800080;
   padding: 1px;
   border-top-left-radius: 4px;
@@ -16426,12 +16425,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 @media (min-width: 768px) {
   .documentation-view .docs-aside-open-close {
-    display: none;
-  }
-}
-@media (min-width: 768px) {
-  .documentation-view .docs-aside-open-close {
-    margin-top: 6rem;
+    margin-top: 10px;
   }
 }
 .documentation-view .docs-aside-open-close svg {
@@ -16455,34 +16449,42 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 .documentation-view .clickout-mobile-menu {
   display: none;
 }
+.documentation-view #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
+  background-color: rgba(0, 0, 0, 0.25);
+  display: initial;
+  width: 100%;
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  height: 100%;
+}
 @media (min-width: 768px) {
-  .documentation-view footer {
+  .documentation-view #mobile-menu-toggle:checked ~ main .docs-con {
+    padding-left: 21rem !important;
+  }
+}
+.documentation-view .footer {
+  width: 100%;
+  transition: width 0.3s;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .documentation-view #mobile-menu-toggle:checked ~ footer {
     width: calc(100% - 21rem);
     margin-left: auto;
   }
 }
-@media (max-width: 767px) {
-  .documentation-view #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
-    background-color: rgba(0, 0, 0, 0.25);
-    display: initial;
-    width: 100%;
-    position: fixed;
-    top: 4rem;
-    left: 0;
-    height: 100%;
-  }
-  .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
-    left: 0px;
-    border-radius: 0 4px 4px 0;
-  }
-  .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close svg {
-    transform: scaleX(-1);
-    position: relative;
-    left: 3px;
-  }
-  .documentation-view #mobile-menu-toggle:not(:checked) ~ main #componentsNav {
-    transform: translateX(-100%);
-  }
+.documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
+  left: 0px;
+  border-radius: 0 4px 4px 0;
+}
+.documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close svg {
+  transform: scaleX(-1);
+  position: relative;
+  left: 3px;
+}
+.documentation-view #mobile-menu-toggle:not(:checked) ~ main #componentsNav {
+  transform: translateX(-100%);
 }
 .documentation-view .docs-section {
   padding-top: 7rem;
@@ -16494,9 +16496,12 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   text-decoration: none;
   color: #fff;
   font-weight: bold;
+  border: solid transparent !important;
+  border-width: 0px 10px 0px 0px !important;
 }
 .documentation-view .docs-link-item:hover {
-  background-color: #800080;
+  border: solid #800080 !important;
+  border-width: 0px 10px 0px 0px !important;
 }
 
 .setting-view .form-check {
