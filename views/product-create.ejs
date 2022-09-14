@@ -51,7 +51,7 @@
           <!-- Title -->
           <div class="card pt-3 pb-4 px-4 mt-3 border-0">
             <label class="form-label" for="title-input">Product Title</label>
-            <input name="title" class="form-control" type="text" id="title-input" placeholder="Product Title" value="<%=product.title%>" minlength="5" maxlength="150" required>
+            <input name="title" class="form-control" type="text" id="title-input" placeholder="Product Title" value="<%=product.title%>" minlength="5" maxlength="250" required>
           
             <div class="d-sm-flex mt-3">
               <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">  
@@ -92,9 +92,9 @@
 
                       <% for(let i = 0; i < 5; i++) { %>
                         <li class="d-flex align-items-center mb-2">
-                          <input name="details" class="form-control" type="text" id="text-input" maxlength="100" placeholder="Important Details #<%=i + 1%>"
-                          <% if(product.details[i]) { %>
-                            value="<%=product.details[i]%>"
+                          <input name="aboutProduct" class="form-control" type="text" id="text-input" maxlength="200" placeholder="About Product #<%=i + 1%>"
+                          <% if(product.aboutProduct[i]) { %>
+                            value="<%=product.aboutProduct[i]%>"
                           <% } %> >
                         </li>
                       <% } %>
@@ -103,7 +103,7 @@
 
                     <div class="h2 d-flex align-items-center my-4">
                         <!-- Price -->
-                            <input class="form-control" type="number" id="number-input" name="price" placeholder="Price of Product" max="1000000" min="1" value="<%=product.price%>" required
+                            <input class="form-control" type="number" step=".01" id="number-input" name="price" placeholder="Price of Product" max="1000000" min="1" value="<%=product.price%>" decimal="2" required
                             <% if (product.salesPrice) { %>
                               style="pointer-events:none; opacity: 50%;"
                             <% } %> > 
@@ -159,6 +159,30 @@
             </div>
           </div>
         </div>
+
+        <div class="card pt-4 pb-2 px-4 mt-3 border-0">
+          <p class="mb-1">Product Details</p>
+
+          <% for(let i = 0; i < 5; i++) { %>
+            <label for="product-details-<%=i%>" class="form-label">Product Details #<%=i + 1%></label>
+            <input name="productDetails" class="form-control" type="text" id="product-details-<%=i%>" maxlength="250" placeholder="Product Details #<%=i + 1%>"
+            <% if (product.productDetails[i]) { %>
+              value="<%=product.productDetails[i].details%>"
+            <% } %>
+            >
+
+            <label for="details-description-<%=i%>" class="form-label mt-3">Product Details Description #<%=i + 1%></label>
+            <textarea class="form-control" name="productDetailsDescription" placeholder="Describe the above product details" id="details-description-<%=i%>" rows="2" maxlength="500"><% if (product.productDetails[i]) { %><%=product.productDetails[i].detailsDescription%><% } %></textarea>
+
+            <% if (i !== 4) { %>
+              <hr class="my-4 opacity-70" />
+            <% } %>
+          <% } %>
+
+          <div class="py-3"></div>
+        </div>
+
+
 
         <div class="card pt-4 pb-2 px-4 mt-3 border-0">
             <label for="description-textarea" class="form-label fs-lg">Product description</label>
@@ -306,7 +330,7 @@
             <p class="h5 mt-4">Start a Sales !</p>
 
             <label for="saleprice-input" class="form-label mb-1">Sales Price</label>
-            <input type="number" class="form-control" placeholder="Price on sales of the product" name="salesPrice"  id="saleprice-input" max="<%=product.price - 1%>"
+            <input type="number" step=".01" class="form-control" placeholder="Price on sales of the product" name="salesPrice"  id="saleprice-input" max="<%=product.price - 1%>"
             <% if (product.salesPrice) { %>
               value="<%=product.salesPrice%>"
               style="pointer-events:none; opacity: 50%;"

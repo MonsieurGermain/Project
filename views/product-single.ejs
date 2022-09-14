@@ -61,8 +61,7 @@
       </div>
     </section>
 
-    <!-- Sidebar (Course summary) -->
-    <!-- MAke it look better when no Details -->
+
     <section class="container">
       <div class="row">
 
@@ -72,14 +71,14 @@
             <div class="pt-5">
               <div class="card p-3">
                 <div class="card-body">
-                  <% if (product.details.length) { %>
+                  <% if (product.aboutProduct.length) { %>
                   <h5 class="mb-4">About this Product:</h5>
                   <ul class="list-unstyled">
                     <!-- Allow User to Choose SVG -->
-                    <% for(let i = 0; i < product.details.length; i++) { %>
+                    <% for(let i = 0; i < product.aboutProduct.length; i++) { %>
                     <li class="d-flex mb-2">
                       <i class='bx bx-list-check text-primary fs-xl mt-1'></i>
-                      <p class="fs-sm ms-2 my-0"><%=product.details[i]%></p>
+                      <p class="fs-sm ms-2 my-0"><%=product.aboutProduct[i]%></p>
                     </li>
                     <% } %>
                   </ul>
@@ -145,6 +144,18 @@
               </div>
             </div>
           </div>
+
+          <% if (product.productDetails.length) { %>
+            <div class="card px-3 px-md-4 py-4 border-0 my-4">
+              <h5 class="mb-4 mt-2">Product details :</h5>
+              <% for(let i = 0; i < product.productDetails.length; i++) { %>
+                <div class="d-flex" style="justify-content: space-between;">
+                  <p class=""><b><%=product.productDetails[i].details%></b></p>
+                  <p class="ms-5 me-3"><%=product.productDetails[i].detailsDescription%></p>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
 
           <div class="card px-3 px-md-4 py-4 border-0 my-4">
             <h5 class="mb-4 mt-2">Product description :</h5>

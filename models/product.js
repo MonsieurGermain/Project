@@ -109,7 +109,10 @@ const productSchema = new mongoose.Schema({
    selection_2: {
       type: selectionsSchema,
    },
-   details: {
+   productDetails: {
+      type: Array,
+   },
+   aboutProduct: {
       type: Array,
    },
    salesPrice: {

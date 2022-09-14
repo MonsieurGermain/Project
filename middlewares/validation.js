@@ -199,7 +199,7 @@ function Validate_Profile(req, res, next) {
 function Validate_Product(req, res, next) {
    try {
       // Title
-      req.body.title = ValidateText(req.body.title, 'Title', {minlength: 5, maxlength: 150});
+      req.body.title = ValidateText(req.body.title, 'Title', {minlength: 5, maxlength: 250});
 
       // Description
       req.body.description = ValidateText(req.body.description, 'Description', {minlength: 10, maxlength: 20000});
@@ -214,10 +214,23 @@ function Validate_Product(req, res, next) {
       if (!compareArray(List_Country, req.body.ship_from)) throw new Error('Selected Country Invalid');
 
       // Details
-      req.body.details = Filter_Empty(req.body.details);
-      for (let i = 0; i < req.body.details.length; i++) {
-         req.body.details[i] = ValidateText(req.body.details[i], 'Details #' + i, {minlength: 0, maxlength: 100, isRequired: false});
+      req.body.aboutProduct = Filter_Empty(req.body.aboutProduct);
+      for (let i = 0; i < req.body.aboutProduct.length; i++) {
+         req.body.aboutProduct[i] = ValidateText(req.body.aboutProduct[i], 'About Product #' + i, {minlength: 0, maxlength: 200, isRequired: false});
       }
+
+      
+      const productDetails =[]
+      for(let i = 0; i < req.body.productDetails.length; i++) {
+         req.body.productDetails[i] = ValidateText(req.body.productDetails[i], 'Product Details #' + i, {minlength: 0, maxlength: 250, isRequired: false});
+         req.body.productDetailsDescription[i] = ValidateText(req.body.productDetailsDescription[i], 'Product Details Description #' + i, {minlength: 0, maxlength: 500, isRequired: false});
+
+         if (req.body.productDetails[i] && req.body.productDetailsDescription[i]) productDetails.push({details : req.body.productDetails[i], detailsDescription: req.body.productDetailsDescription[i]}) 
+         else req.body.productDetails.splice(i, 1)
+      }
+
+      req.body.productDetails = productDetails
+
 
       // Custom Monero Address
       req.body.customMoneroAddress = req.body.customMoneroAddress ? isMoneroAddress(req.body.customMoneroAddress, 'Custom') : undefined

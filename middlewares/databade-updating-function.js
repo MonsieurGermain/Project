@@ -19,7 +19,6 @@ async function deleteExpiredMessage() {
          conversationWithOldMessages[i].save();
       }
    }
-   console.log('Delete Expired Message Runned');
 }
 autoDeleteExpiredMessage = setInterval(() => {
    deleteExpiredMessage();

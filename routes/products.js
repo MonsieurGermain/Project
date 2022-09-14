@@ -152,7 +152,8 @@ async (req, res) => {
          shipping_option,
          selection_1,
          selection_2,
-         details,
+         aboutProduct,
+         productDetails,
          salesPrice,
          salesDuration,
          stop_sales,
@@ -196,12 +197,13 @@ async (req, res) => {
       product.title = title;
       product.vendor = req.user.username;
       product.description = description;
+      product.productDetails = productDetails;
+      product.aboutProduct = aboutProduct;
       product.message = message;
       product.ship_from = ship_from;
       product.allow_hidden = allow_hidden;
       product.selection_1 = selection_1;
       product.selection_2 = selection_2;
-      product.details = details;
       product.shipping_option = shipping_option;
       product.qty_settings = qty_settings;
       product.customMoneroAddress = customMoneroAddress;
@@ -219,7 +221,6 @@ async (req, res) => {
       } else {        
          req.flash('success', success_message);
       }
-      console.log('here14')
       res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
 
    } catch (e) {
