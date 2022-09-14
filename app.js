@@ -79,9 +79,21 @@ app.use('/', SETTINGS);
 app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
 
+const fileUpload = require("express-fileupload");
+
+app.get('/test', (req, res) => {
+   res.render('test')
+});
+
+app.post('/test', fileUpload(), (req, res) => {
+   console.log(req.file)
+   res.redirect('/test');
+});
+
 app.all('*', (req, res) => {
    res.render('404page');
 });
+
 
 
 

@@ -66,7 +66,6 @@ const orderSchema = new mongoose.Schema({
    },
    orderMoneroAddress: { 
       type: String, 
-      required: true
    },
    let_review: {
       type: Boolean,

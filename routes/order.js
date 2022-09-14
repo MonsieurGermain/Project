@@ -5,7 +5,7 @@ const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const { Validate_OrderCustomization, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults, sanitizeHTML} = require('../middlewares/function');
 
 
 function validateData(value, acceptedValues) {
@@ -206,6 +206,8 @@ router.get('/submit-info/:id', Need_Authentification, sanitizeParams, async (req
 
       const product = await Product.findOne({slug: order.product_slug});
       const user = await User.findOne({username: order.vendor});
+
+      product.message = sanitizeHTML(product.message);
 
       res.render('submit-info', {order, product, vendor: user});
    } catch (e) {
