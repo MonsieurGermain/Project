@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const User = require('./user')
 const Order = require('./order');
 const Review = require('./review');
 const fs = require('fs');
@@ -45,16 +44,6 @@ const qty_settingsSchema = new mongoose.Schema({
       type: Number,
    },
 });
-
-// const accepted_cryptoSchema = new mongoose.Schema ({
-//     xmr : {
-//         type : Boolean,
-//         default : true,
-//     },
-//     btc : {
-//         type : Boolean,
-//     }
-// })
 
 const shipping_option = new mongoose.Schema({
    option_description: {
@@ -149,9 +138,6 @@ const productSchema = new mongoose.Schema({
    },
 });
 
-// productSchema.index({title:'text'})
-
-// Image Path
 productSchema.methods.UploadImg = function (filename, Old_Image) {
    if (Old_Image) deleteImage(`./public/${this.img_path}`); //
 
@@ -172,18 +158,26 @@ productSchema.methods.createSlug = function (title, vendor) {
    this.slug = Create_Slug(title, vendor);
 };
 
+
 productSchema.methods.changeSlug = async function (title, vendor) {
    const oldSlug = this.slug;
    const newSlug = Create_Slug(title, vendor);
 
+   // for(let i = 0; i < users.length; i++) {
+   //    const indexSavedProduct = users[i].saved_product.indexOf(oldSlug)
+   //    users[i].saved_product[indexSavedProduct] = newSlug
+
+   //    users[i].save()
+   // }
+
    const orders = await Order.find({product_slug: oldSlug});
    for (let i = 0; i < orders.length; i++) {
-      await orders[i].changeOrderProductSlug(newSlug);
+      orders[i].changeOrderProductSlug(newSlug);
    }
 
    const reviews = await Review.find({product_slug: oldSlug});
    for (let i = 0; i < reviews.length; i++) {
-      await reviews[i].changeReviewProductSlug(newSlug);
+      reviews[i].changeReviewProductSlug(newSlug);
    }
 
    this.slug = newSlug;
@@ -199,15 +193,11 @@ productSchema.methods.deleteProduct = async function () {
    // Product Img 
    deleteImage(`./public/${this.img_path}`);
 
-   // Saved Product
-   // const usersWithSAvedProdcut = await User.find({'saved_product': {$in : this.slug}})
+   // for(let i = 0; i < users.length; i++) {
+   //    const indexSavedProduct = users[i].saved_product.indexOf(oldSlug)
+   //    users[i].saved_product.splice(indexSavedProduct, 1)
 
-   // for(let i = 0; i < usersWithSAvedProdcut.length; i++) {
-   //    const indexOfProduct = usersWithSAvedProdcut[i].saved_product.map((elem) => elem).indexOf(this.slug)
-
-   //    usersWithSAvedProdcut[i].saved_product.splice(indexOfProduct, 1)
-
-   //    usersWithSAvedProdcut[i].save()
+   //    users[i].save()
    // }
 
    // Order

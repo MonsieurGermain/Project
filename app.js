@@ -48,11 +48,12 @@ global.siteSettings = {
    autoPromote: true,
 };
 
-const {autoDeleteExpiredMessage, Auto_Check_Recieved_Payment, Update_Order_ExpiredTimer, autoDelete_InactiveUser} = require('./middlewares/databade-updating-function');
-autoDeleteExpiredMessage;
-Auto_Check_Recieved_Payment;
+const {automaticly_EndSales, autoDelete_InactiveUser, Update_Order_ExpiredTimer, Auto_Check_Recieved_Payment, autoDeleteExpiredMessage} = require('./middlewares/databade-updating-function');
+automaticly_EndSales;
+autoDelete_InactiveUser; 
 Update_Order_ExpiredTimer;
-autoDelete_InactiveUser;
+Auto_Check_Recieved_Payment; 
+autoDeleteExpiredMessage;
 
 const HOME_ROUTER = require('./routes/home');
 const LOGIN_ROUTER = require('./routes/login');
@@ -81,6 +82,9 @@ app.use('/', DOCUMENTATION);
 app.all('*', (req, res) => {
    res.render('404page');
 });
+
+
+
 
 app.listen('3000', (req, res) => {
    console.log('Server running on port 3000');

@@ -3,7 +3,7 @@ const Product = require('./product');
 const Conversation = require('./conversation');
 const Review = require('./review');
 const Report = require('./report');
-const ContactUs = require('./contactus');
+const Contactus = require('./contactus');
 const StepVerification = require('./2step-verification');
 const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
 
@@ -194,7 +194,7 @@ userSchema.methods.deleteUser = async function () {
    }
 
    // Contact Us
-   const contactus = await ContactUs.find({username: this.username})
+   const contactus = await Contactus.find({username: this.username})
    for (let i = 0; i < contactus.length; i++) {
       contactus[i].deleteContactUs();
    }
