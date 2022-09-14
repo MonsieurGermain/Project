@@ -869,11 +869,11 @@ $width-docs-side-nav: 69%;
       color: $white;
       font-weight: bold;
       border: solid transparent !important;
-      border-width: 0px 10px 0px 0px !important;
+      border-width: 0px 5px 0px 0px !important;
 
       &:hover {
          border: solid $primary  !important;
-         border-width: 0px 10px 0px 0px !important;
+         border-width: 0px 5px 0px 0px !important;
       }
    }
 }

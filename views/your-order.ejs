@@ -178,8 +178,10 @@
 
                 <% if(query.clientsOrders === 'true') { %>
                 <input id="buyer-detail-checkbox-<%=i%>" type="checkbox" hidden />
-                <label class="w-100" for="buyer-detail-checkbox-<%=i%>">
-                  See Buyer Details:
+                <label class="w-100 d-flex align-items-center justify-content-between" for="buyer-detail-checkbox-<%=i%>">
+                  <span>
+                    See Buyer Details:
+                  </span>
                   <%- include ("../public/assets/img/icons/caret-down.svg") %>
                 </label>
                 <div class="buyer-detail-wrap d-flex align-items-center mt-2 justify-content-between flex-wrap">

@@ -16497,11 +16497,11 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   color: #fff;
   font-weight: bold;
   border: solid transparent !important;
-  border-width: 0px 10px 0px 0px !important;
+  border-width: 0px 5px 0px 0px !important;
 }
 .documentation-view .docs-link-item:hover {
   border: solid #800080 !important;
-  border-width: 0px 10px 0px 0px !important;
+  border-width: 0px 5px 0px 0px !important;
 }
 
 .setting-view .form-check {
