@@ -49,7 +49,6 @@ function validateShippingOption(shippingOptionDecription, shippingOptionPrice) {
       if (shippingOptionDecription[i]) {
          shippingOptionDecription[i] = ValidateText(shippingOptionDecription[i], `Shipping Option Description #${i + 1}`, {minlength: 0, maxlength: 200, isRequired: false});
 
-         console.log(shippingOptionPrice[i])
          shippingOptionPrice[i] = validateNumber(shippingOptionPrice[i], `Shipping Option Price #${i + 1}`, {min: 1, max: 1000, isRequired: false})
          if (!shippingOptionPrice[i]) shippingOptionPrice[i] = 0
 
@@ -243,15 +242,14 @@ function Validate_Product(req, res, next) {
       // Price
       req.body.price = validateNumber(req.body.price, 'Price')
 
-      if (req.product.originalPrice && req.product.originalPrice !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale');
+      if (req.product.salesPrice && req.product.price !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale');
 
       req.body.salesPrice = validateNumber(req.body.salesPrice, 'Sales Price', {min: 1, max: req.body.price - 1, isRequired: false})
 
-      req.body.salesDuration = validateNumber(req.body.salesDuration, 'Sales Duration', {min: 1, max: 30, isRequired: false})
-      if (req.body.salesDuration && !req.body.salesPrice) req.body.salesPrice = 1
+      req.body.salesDuration = req.body.salesDuration ? validateNumber(req.body.salesDuration, 'Sales Duration', {min: 1, max: 30, isRequired: false}) : 1
       
-      if (req.product.originalPrice) {
-         if (req.product.price !== req.body.salesPrice) throw new Error('You cant change the Price of your Sales while on Sales');
+      if (req.product.salesPrice) {
+         if (req.product.salesPrice !== req.body.salesPrice) throw new Error('You cant change the Price of your Sales while on Sales');
          if (req.product.salesDuration !== req.body.salesDuration) throw new Error('You cant change the Duration of your Sales while on Sales');
          req.body.stop_sales = req.body.stop_sales ? true : false;
       }

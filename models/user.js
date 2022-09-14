@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const Product = require('./product');
 const Conversation = require('./conversation');
 const Review = require('./review');
+const Report = require('./report');
+const ContactUs = require('./contactus');
+const StepVerification = require('./2step-verification');
 const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
 
 const reviewSchema = new mongoose.Schema({
@@ -148,6 +151,18 @@ userSchema.methods.Add_Remove_Saved_Product = function (id) {
    else this.saved_product.push(id); // Add
 };
 
+userSchema.methods.offlineAllUserProducts = async function () {
+   const userProducts = await Product.find({vendor: this.username});
+
+   for (let i = 0; i < userProducts.length; i++) {
+      if (!userProducts[i].customMoneroAddress) {
+         userProducts[i].status = 'offline';
+         userProducts[i].save();
+      }
+   }
+};
+
+
 userSchema.methods.deleteUser = async function () {
    deleteImage(`./public/${this.img_path}`);
 
@@ -160,28 +175,37 @@ userSchema.methods.deleteUser = async function () {
       conversations[i].deleteConversation();
    }
 
+   // Product
    const products = await Product.find({vendor: this.username});
    for (let i = 0; i < products.length; i++) {
-      await products[i].deleteProduct();
+      products[i].deleteProduct();
    }
 
+   // Review
    const review = await Review.find({sender: this.username});
    for (let i = 0; i < review.length; i++) {
-      await review[i].deleteReview();
+      review[i].deleteReview();
+   }
+
+   // Report
+   const reports = await Report.find({$or: [{reference_id: this.username}, {username: this.username}]})
+   for (let i = 0; i < reports.length; i++) {
+      reports[i].deleteReport();
+   }
+
+   // Contact Us
+   const contactus = await ContactUs.find({username: this.username})
+   for (let i = 0; i < contactus.length; i++) {
+      contactus[i].deleteContactUs();
+   }
+
+   // 2 Step Verification
+   const stepVerification = await StepVerification.find({username: this.username})
+   for (let i = 0; i < stepVerification.length; i++) {
+      stepVerification[i].deleteStepVerification();
    }
 
    await this.delete();
-};
-
-userSchema.methods.offlineAllUserProducts = async function () {
-   const userProducts = await Product.find({vendor: this.username});
-
-   for (let i = 0; i < userProducts.length; i++) {
-      if (!userProducts[i].customMoneroAddress) {
-         userProducts[i].status = 'offline';
-         userProducts[i].save();
-      }
-   }
 };
 
 

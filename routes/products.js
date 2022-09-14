@@ -160,6 +160,8 @@ async (req, res) => {
          customMoneroAddress,
       } = req.body;
 
+
+
       const {product} = req
 
       if (product.title !== title) {
@@ -170,13 +172,14 @@ async (req, res) => {
 
       // Title and Slug
       if (!product.title) product.createSlug(title, req.user.username); // Create Slug if Creating New Product
+
       if (product.title && product.title !== title) await product.changeSlug(title, product.vendor); // If Editing Product and Change Title, Change Slugs
 
       // Img Path
       if (!product.img_path && !req.file) throw new Error('You need to uploads an Image for your new Product'); // If Create New Prod and Submit No Img
       else if (!product.img_path) await product.UploadImg(req.file.filename); // If Create New Product, Upload Img
       else if (product.img_path && req.file) await product.UploadImg(req.file.filename, true); // If Edit Product and Send New Img, Del Old One & Upload Img
-
+  
       // price
       if (stop_sales) {
          product.endSales();
@@ -184,7 +187,7 @@ async (req, res) => {
          product.price = price;
       } else {
          if (!product.originalPrice && salesPrice) {
-            product.startSales(price, salesPrice, salesDuration);
+            product.startSales(salesPrice, salesDuration);
          } else {
             product.price = price;
          }
@@ -204,6 +207,7 @@ async (req, res) => {
       product.customMoneroAddress = customMoneroAddress;
       product.status = req.user.vendorMoneroAddress || product.customMoneroAddress ? status : 'offline';
 
+
       await product.save();
 
       let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
@@ -215,7 +219,7 @@ async (req, res) => {
       } else {        
          req.flash('success', success_message);
       }
-
+      console.log('here14')
       res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
 
    } catch (e) {

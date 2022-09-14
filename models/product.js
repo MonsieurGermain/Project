@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const User = require('./user')
 const Order = require('./order');
 const Review = require('./review');
 const fs = require('fs');
@@ -122,8 +123,7 @@ const productSchema = new mongoose.Schema({
    details: {
       type: Array,
    },
-   originalPrice: {
-      // Put Sales Related data in a new Schema salesSchema
+   salesPrice: {
       type: Number,
    },
    salesDuration: {
@@ -196,13 +196,27 @@ productSchema.methods.changeSlug = async function (title, vendor) {
 };
 
 productSchema.methods.deleteProduct = async function () {
+   // Product Img 
    deleteImage(`./public/${this.img_path}`);
 
+   // Saved Product
+   // const usersWithSAvedProdcut = await User.find({'saved_product': {$in : this.slug}})
+
+   // for(let i = 0; i < usersWithSAvedProdcut.length; i++) {
+   //    const indexOfProduct = usersWithSAvedProdcut[i].saved_product.map((elem) => elem).indexOf(this.slug)
+
+   //    usersWithSAvedProdcut[i].saved_product.splice(indexOfProduct, 1)
+
+   //    usersWithSAvedProdcut[i].save()
+   // }
+
+   // Order
    const orders = await Order.find({product_slug: this.slug});
    for (let i = 0; i < orders.length; i++) {
       await orders[i].deleteOrder();
    }
 
+   // Review
    const reviews = await Review.find({product_slug: this.slug});
    for (let i = 0; i < reviews.length; i++) {
       await reviews[i].deleteReview();
@@ -212,16 +226,13 @@ productSchema.methods.deleteProduct = async function () {
 };
 
 productSchema.methods.endSales = function () {
-   this.price = this.originalPrice;
-
-   this.originalPrice = undefined;
+   this.salesPrice = undefined;
    this.salesDuration = undefined;
    this.sales_end = undefined;
 };
 
-productSchema.methods.startSales = function (price, salesPrice, salesDuration) {
-   this.originalPrice = price;
-   this.price = salesPrice;
+productSchema.methods.startSales = function (salesPrice, salesDuration) {
+   this.salesPrice = salesPrice;
    this.salesDuration = salesDuration;
    this.sales_end = Date.now() + 86400000 * salesDuration;
 };

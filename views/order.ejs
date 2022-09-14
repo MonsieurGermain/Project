@@ -188,14 +188,14 @@
                   <p class="mb-2">Market Fee: <b>3%</b></p>
                   <hr class="my-2">
 
-                  <p class="mb-2">Base Price: <b><%=product.price%>$</b></p>
+                  <p class="mb-2">Base Price: <b><%=product.salesPrice ? product.salesPrice : product.price%>$</b></p>
                   <hr class="my-2">
 
                   <p class="mb-0 mt-4">Final Price: <b>
                       <% if (product.shipping_option.length || product.selection_1 || product.selection_2) { %>
-                      (<%=product.price%> + Added Price)
+                      (<%=product.salesPrice ? product.salesPrice : product.price%> + Added Price)
                       <% } else { %>
-                      <%=product.price%>
+                        <%=product.salesPrice ? product.salesPrice : product.price%>
                       <% } %>
                       × QTY + 3%</b></p>
                   <a href="/docs" class="fs-sm">Learn More</a>

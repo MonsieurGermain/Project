@@ -169,7 +169,7 @@ router.post('/create-order/:slug', Need_Authentification, sanitizeParams, Valida
          vendor: product.vendor,
          product_title: product.title,
          product_slug: product.slug,
-         base_price: product.price,
+         base_price: product.salesPrice ? product.salesPrice : product.price,
          total_price: product.price,
          qty: qty,
          shipping_option: shipping_option,
