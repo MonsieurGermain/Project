@@ -33,7 +33,7 @@
             <h2>Feedbacks :</h2>
           </div>
 
-          <div class="d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
+          <div class="filter-wrap d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
             <h1 class="me-3"></h1>
             <form action="/report-filter" method="POST">
               <div class="d-md-flex mb-3">
@@ -93,43 +93,44 @@
                         </a>
                       </span>
 
-                      <hr class="mt-2 mb-4">
+                      <hr class="mt-2 mb-2">
 
-                      <div class="d-flex align-items-center">
+                      <div class="d-flex flex-wrap align-items-center justify-content-between">
+                        <div class="d-flex align-items-center py-2">
+                          <span>
+                            <p class="mb-0">Reporter:</p>
+                            <% if (reports.results[i].username) { %>
+                            <a href="/profile/<%=reports.results[i].username%>?productPage=1&reviewPage=1"
+                              class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
+                              <%= reports.results[i].username %>
+                            </a>
+                            <% } else { %>
+                            <p class="mb-0">Not Included</p>
+                            <% } %>
+                          </span>
 
-                        <span>
-                          <p class="mb-0">Reporter:</p>
-                          <% if (reports.results[i].username) { %>
-                          <a href="/profile/<%=reports.results[i].username%>?productPage=1&reviewPage=1"
-                            class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
-                            <%= reports.results[i].username %>
-                          </a>
-                          <% } else { %>
-                          <p class="mb-0">Not Included</p>
-                          <% } %>
-                        </span>
-
-                        <span class="ms-4">
-                          <p class="mb-0">Type:</p>
-                          <p class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
-                            <%= reports.results[i].type %>
-                          </p>
-                        </span>
-
-
-                        <span class="ms-4">
-                          <p class="mb-0">Link:</p>
-                          <a <% if (reports.results[i].type === 'vendor') { %>
-                            href="/profile/<%=reports.results[i].reference_id%>?productPage=1&reviewPage=1"
-                            <% } else { %> href="/product/<%=reports.results[i].reference_id%>?reviewPage=1" <% } %>
-                            class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
-                            Investigate
-                          </a>
-                        </span>
+                          <span class="ms-4">
+                            <p class="mb-0">Type:</p>
+                            <p class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
+                              <%= reports.results[i].type %>
+                            </p>
+                          </span>
 
 
+                          <span class="ms-4">
+                            <p class="mb-0">Link:</p>
+                            <a <% if (reports.results[i].type === 'vendor') { %>
+                              href="/profile/<%=reports.results[i].reference_id%>?productPage=1&reviewPage=1"
+                              <% } else { %> href="/product/<%=reports.results[i].reference_id%>?reviewPage=1" <% } %>
+                              class="d-flex align-items-center fw-bold text-decoration-none me-3 mb-0">
+                              Investigate
+                            </a>
+                          </span>
+                        </div>
 
-                        <div class="ms-auto d-flex flex-column flex-sm-row">
+
+
+                        <div class="d-flex flex-column flex-sm-row py-2 responsive-column">
                           <form action="/archive-report/<%=reports.results[i].id%>" method="POST">
                             <% if (!reports.results[i].archived) { %>
                             <button type="submit" class="btn btn-success">Archive Reports</button>

@@ -16811,4 +16811,86 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     position: static !important;
     position: -webkit-sticky !important;
   }
+}
+
+@media (max-width: 767px) {
+  .filter-wrap form button {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 570px) {
+  .container-fluid .responsive-column, .container-sm .responsive-column, .container-md .responsive-column, .container-lg .responsive-column, .container-xl .responsive-column, .container-xxl .responsive-column {
+    flex-direction: column !important;
+    width: 100%;
+  }
+  .container-fluid .responsive-column form, .container-sm .responsive-column form, .container-md .responsive-column form, .container-lg .responsive-column form, .container-xl .responsive-column form, .container-xxl .responsive-column form {
+    width: 100%;
+    margin: 0px 0px 5px 0px !important;
+  }
+  .container-fluid .responsive-column form > button, .container-sm .responsive-column form > button, .container-md .responsive-column form > button, .container-lg .responsive-column form > button, .container-xl .responsive-column form > button, .container-xxl .responsive-column form > button {
+    width: 100%;
+    margin: 0px !important;
+  }
+  .container-fluid .responsive-column label, .container-sm .responsive-column label, .container-md .responsive-column label, .container-lg .responsive-column label, .container-xl .responsive-column label, .container-xxl .responsive-column label {
+    width: 100%;
+    margin: 0px !important;
+  }
+}
+
+.user-card .image-wrap {
+  display: block;
+}
+.user-card .image-wrap img {
+  min-width: 150px;
+  min-height: 150px;
+  margin: 0 2rem;
+}
+.user-card .btn svg {
+  display: none;
+}
+@media (max-width: 680px) {
+  .user-card .image-wrap img {
+    width: 140px;
+    height: 140px;
+    min-width: 140px;
+    min-height: 140px;
+  }
+  .user-card .btn {
+    padding: 8px;
+    border-radius: 50% !important;
+  }
+  .user-card .btn svg {
+    width: 30px;
+    height: 30px;
+    display: block;
+  }
+  .user-card .btn span {
+    display: none;
+  }
+}
+@media (max-width: 540px) {
+  .user-card {
+    padding: 0 0.75rem;
+  }
+  .user-card .image-wrap img {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+    margin: 0 0.75rem 0 0;
+  }
+  .user-card .btn {
+    padding: 6px;
+    border-radius: 50% !important;
+    margin-right: 8px !important;
+  }
+  .user-card .btn svg {
+    width: 25px;
+    height: 25px;
+    display: block;
+  }
+  .user-card .btn span {
+    display: none;
+  }
 }/*# sourceMappingURL=theme.css.map */
