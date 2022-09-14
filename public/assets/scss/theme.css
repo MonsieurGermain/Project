@@ -16846,7 +16846,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   min-height: 150px;
   margin: 0 2rem;
 }
-.user-card .btn svg {
+.user-card .btn i {
   display: none;
 }
 @media (max-width: 680px) {
@@ -16860,9 +16860,8 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     padding: 8px;
     border-radius: 50% !important;
   }
-  .user-card .btn svg {
-    width: 30px;
-    height: 30px;
+  .user-card .btn i {
+    font-size: 30px;
     display: block;
   }
   .user-card .btn span {
@@ -16878,6 +16877,31 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     height: 100px;
     min-width: 100px;
     min-height: 100px;
+    margin: 0 1rem;
+  }
+  .user-card .btn {
+    padding: 6px;
+    border-radius: 50% !important;
+    margin-right: 8px !important;
+    margin-bottom: 0px !important;
+  }
+  .user-card .btn i {
+    font-size: 25px;
+    display: block;
+  }
+  .user-card .btn span {
+    display: none;
+  }
+}
+@media (max-width: 340px) {
+  .user-card {
+    padding: 0 0.75rem;
+  }
+  .user-card .image-wrap img {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
     margin: 0 0.75rem 0 0;
   }
   .user-card .btn {
@@ -16885,9 +16909,8 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     border-radius: 50% !important;
     margin-right: 8px !important;
   }
-  .user-card .btn svg {
-    width: 25px;
-    height: 25px;
+  .user-card .btn i {
+    font-size: 25px;
     display: block;
   }
   .user-card .btn span {

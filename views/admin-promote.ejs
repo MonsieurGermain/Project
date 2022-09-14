@@ -48,18 +48,18 @@
                   <a href="/profile/<%=usersResult[i].username%>?productPage=1&reviewPage=1"
                     class="btn btn-primary me-sm-4 mb-3 mb-sm-0">
                     <span>See Profile</span>
-                    <%- include('../public/assets/img/icons/move-left.svg')%>
+                    <i class='bx bx-show' ></i>
                   </a>
                   <form action="/promote-user/<%=usersResult[i].username%>" method="POST">
                     <button type="submit" class="btn btn-success me-sm-4 mb-3 mb-sm-0">
                       <span>Promote</span>
-                      <%- include('../public/assets/img/icons/move-left.svg')%>
+                      <i class='bx bx-upvote' ></i>
                     </button>
                   </form>
                   <form action="/promote-user/<%=usersResult[i].username%>?decline=true" method="POST">
                     <button type="submit" class="btn btn-danger me-sm-4 mb-3 mb-sm-0">
                       <span>Refuse</span>
-                      <%- include('../public/assets/img/icons/move-left.svg')%>
+                      <i class='bx bx-redo' ></i>
                     </button>
                   </form>
                 </div>
