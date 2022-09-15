@@ -1,5 +1,12 @@
 <h1>Node.js File Uploader</h1>
-<form id="uploadForm" action="/test" method="POST">
-    <input type="file" id="myFiles" accept="image/*" multiple />
-    <button>Submit</button>
+<form id="uploadForm" action="/test" method="POST" enctype="multipart/form-data">
+    <input type="file" id="myFiles" name="image" accept="image/*" />
+    <input type="file" id="myFiles" name="image" accept="image/*" multiple />
+    <button type="submit">Submit</button>
 </form>
+
+<%=query.pathname%>
+
+<% if (query.pathname) { %>
+    <img src="<%=query.pathname%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162" height="162" alt="not found">
+<% } %>

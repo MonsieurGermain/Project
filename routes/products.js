@@ -3,9 +3,50 @@ const router = express.Router();
 const Product = require('../models/product');
 const Review = require('../models/review');
 const User = require('../models/user');
+const fileUpload = require("express-fileupload");
+const { ImageUploadsValidation, uploadsFiles, deleteImage } = require('../middlewares/filesUploads')
 const {Need_Authentification, isVendor} = require('../middlewares/authentication');
 const {Validate_Product, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
-const {uploadProductImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
+const {sanitizeHTML, paginatedResults} = require('../middlewares/function');
+
+
+function uploadsMainProductImage(imgPaths, mainProductImage) {
+   if (!imgPaths.length && !mainProductImage) throw new Error('You need to uploads an Image for your new Product'); // If Create New Product and Submit No Img
+   if (!imgPaths.length && mainProductImage) return uploadsFiles(mainProductImage, 'product', true)
+   if (imgPaths.length && mainProductImage) return uploadsFiles(mainProductImage, `./uploads${imgPaths[0]}`, false)
+   
+   return imgPaths[0]
+}
+
+function deleteAdditionnalImages(imgPaths, indexOfImageToDelete){
+   if (!indexOfImageToDelete) return imgPaths
+
+   for(let i = 0; i < 2; i++) {
+      deleteImage(`./uploads${imgPaths[indexOfImageToDelete[i]]}`);
+      imgPaths[indexOfImageToDelete[i]] = undefined
+   }
+
+   return imgPaths.filter((element) => element)
+}
+
+
+function uploadsAdditionnalImages(imgPaths, secondaryProductImages) {
+   if (!secondaryProductImages) return imgPaths
+
+   for(let i = 1; i < imgPaths.length; i++) {
+      deleteImage(`./uploads${imgPaths[i]}`);
+      imgPaths[i] = undefined
+   }
+
+   imgPaths = imgPaths.filter((element) => element)
+
+   for(let i = 0; i < secondaryProductImages.length; i++) {
+      imgPaths.push(uploadsFiles([secondaryProductImages[i]], 'product', true))
+   }
+
+   return imgPaths
+}
+
 
 const Fuse = require('fuse.js');
 // Create Fuzzy Product Collecion
@@ -126,7 +167,9 @@ router.get('/create-product', Need_Authentification, isVendor, sanitizeQuerys,
 );
 
 //POST
-router.post('/create-product', Need_Authentification, sanitizeQuerys, uploadProductImg.single('productImage'), 
+router.post('/create-product', Need_Authentification, sanitizeQuerys, 
+fileUpload({ createParentPath: true }),
+ImageUploadsValidation({errorUrl: '/create-product'}),
 async(req,res, next) => {
    try { 
       const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
@@ -142,6 +185,9 @@ Validate_Product,
 async (req, res) => {
    try {
       const {
+         productImage,
+         additionnalProductImage,
+         deleteAdditionnalImg,
          title,
          description,
          message,
@@ -161,26 +207,15 @@ async (req, res) => {
          customMoneroAddress,
       } = req.body;
 
-
-
       const {product} = req
+
+      let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
 
       if (product.title !== title) {
          const isProductTitleTaken = await Product.findOne({title: title, vendor: req.user.username})
          if (isProductTitleTaken) throw new Error('You cant have the same title for multiple products')
       }
 
-
-      // Title and Slug
-      if (!product.title) product.createSlug(title, req.user.username); // Create Slug if Creating New Product
-
-      if (product.title && product.title !== title) await product.changeSlug(title, product.vendor); // If Editing Product and Change Title, Change Slugs
-
-      // Img Path
-      if (!product.img_path && !req.file) throw new Error('You need to uploads an Image for your new Product'); // If Create New Prod and Submit No Img
-      else if (!product.img_path) await product.UploadImg(req.file.filename); // If Create New Product, Upload Img
-      else if (product.img_path && req.file) await product.UploadImg(req.file.filename, true); // If Edit Product and Send New Img, Del Old One & Upload Img
-  
       // price
       if (stop_sales) {
          product.endSales();
@@ -193,6 +228,20 @@ async (req, res) => {
             product.price = price;
          }
       }
+
+      // Title and Slug
+      if (!product.title) product.createSlug(title, req.user.username); // Create Slug if Creating New Product
+      if (product.title && product.title !== title) await product.changeSlug(title, product.vendor); // If Editing Product and Change Title, Change Slugs
+
+
+      // Img Path
+      product.img_path[0] = uploadsMainProductImage(product.img_path, productImage)
+
+      // Delete Additionnal Product Img
+      product.img_path = deleteAdditionnalImages(product.img_path, deleteAdditionnalImg)
+
+      // Add new Additionnal Product Img
+      product.img_path = uploadsAdditionnalImages(product.img_path, additionnalProductImage)
 
       product.title = title;
       product.vendor = req.user.username;
@@ -212,7 +261,6 @@ async (req, res) => {
 
       await product.save();
 
-      let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
 
       if (product.status === 'offline' && status === 'online') {
          req.flash('warning', 'You need to add a Monero Address to your account or a custom Monero address to the Product in order to put it online');
@@ -224,10 +272,7 @@ async (req, res) => {
       res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
 
    } catch (e) {
-      console.log(e);
-      if (req.file) {
-         deleteImage(req.file.path);
-      }
+      console.log(e)
       req.flash('error', e.message)
       res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
    }

@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const User = require('../models/user');
 const StepVerification = require('../models/2step-verification');
-const fs = require('fs');
+const {copyFile} = require('fs');
+const { generateRandomName } = require('../middlewares/filesUploads')
 const {Should_Not_Be_Authenticated} = require('../middlewares/authentication');
 const {Validate_Login, Validate_Register, Validate_Code} = require('../middlewares/validation');
 const {generateRandomString, RandomList_ofWords} = require('../middlewares/function');
@@ -52,14 +53,15 @@ function generateAccountPassword(passwordType, typedPassword) {
 }
 
 
-function createProfilePicture(username) {
-   const img_path = `/uploads/user-img/${username}.png`;
+function createProfilePicture(name) {
+   const randomImgName = generateRandomName(name, 17)
+   const imgPath = `./uploads/userImg/${randomImgName}`
 
-   fs.copyFile('./public/default/default-profile-pic.png', `./public${img_path}`, (err) => {
+   copyFile('./public/default/default-profile-pic.png', imgPath, (err) => {
       if (err) throw err;
    });
 
-   return img_path;
+   return `/userImg/${randomImgName}`;
 }
 async function create2StepVerification(username, stepVerificationSettings) {
    await StepVerification.deleteMany({ username: username });
@@ -167,7 +169,7 @@ router.post('/register', Should_Not_Be_Authenticated, Validate_Register, async (
       const user = new User({
          username,
          password: bcrypt.hashSync(password, 11),
-         img_path: createProfilePicture(username),
+         img_path: createProfilePicture('default-profile-pic.png'),
       });
 
       await user.save();

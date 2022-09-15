@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const User = require('./user');
-const slugify = require('slugify');
 const {format} = require('date-fns');
 const {formatUsernameWithSettings} = require('../middlewares/function');
 
@@ -149,13 +148,6 @@ conversationSchema.methods.updateNewPgp = async function (username, newPgp) {
       this.sender1_Pgp = newPgp;
     } 
    else this.sender2_Pgp = newPgp;
-
-   this.save();
-};
-
-conversationSchema.methods.updateNewImgPath = async function (username, newImgPath) {
-   if (username === this.sender_1) this.sender1_Img = newImgPath;
-   else this.sender2_Img = newImgPath;
 
    this.save();
 };

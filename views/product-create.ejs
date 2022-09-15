@@ -124,16 +124,42 @@
             <div class="card py-3 px-5 mt-3 border-0">
             <!-- Make File Input look better -->
             <div class="">
-                <label for="file-input" class="form-label">Product Image</label>
-                <% if (product.img_path){ %>
-                    <p class="opacity-70 fs-sm mb-1">To keep the current Image, leave this field empty</p>
+                <label for="file-input" class="form-label">Main Product Image</label>
+                <% if (product.img_path[0]){ %>
+                    <p class="opacity-70 fs-sm mb-1">To keep the current main Image, leave this field empty</p>
                 <% } %>
-                <input class="form-control" type="file" id="file-input" name="productImage" 
-                <% if (!product.img_path){ %>
+                <input class="form-control" type="file" id="file-input" name="productImage" accept="image/*"
+                <% if (!product.img_path.length){ %>
                     required
                 <% } %>>
               </div>
             </div>
+
+            <div class="card py-3 px-5 mt-3 border-0">
+              <!-- Make File Input look better -->
+              <div class="">
+                  <label for="file-input" class="form-label">Additionnal Product Image</label>
+                  <p class="opacity-70 fs-sm mb-1">Here you can add a maximun off 2 other Image to your Product</p>
+                  <% if (product.img_path[1]) { %>
+                    <p class="opacity-70 text-danger fs-sm mb-1">Adding new Files here will overwrite the previous Additionnal Product Image</p>
+                  <% } %>
+                  <input class="form-control" type="file" id="file-input" name="additionnalProductImage" accept="image/*" multiple>
+                </div>
+              </div>
+
+            <% if (product.img_path.length > 1) { %>
+              <div class="card py-3 px-5 mt-3 border-0">
+                <% for(let i = 1; i < product.img_path.length; i++) { %>
+                  <div class="d-flex align-items-center">
+                  <img src="<%=product.img_path[i]%>" class="card-img-top mt-3" style="object-fit:cover; max-width: 150px; max-height: 75px;" alt="Product Image">
+                
+                  <input class="form-check-input ms-5" type="checkbox" id="delete-img-<%=i%>" name="deleteAdditionnalImg" value="<%=i%>">
+                  <label class="form-check-label text-danger ms-2" for="delete-img-<%=i%>">Delete This Additionnal Img</label>
+
+                </div>
+                <% } %>
+              </div>
+            <% } %>
 
 
           <!-- Author -->

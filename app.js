@@ -20,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/uploads'));
+
 app.use(
    session({
       secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
@@ -79,23 +81,9 @@ app.use('/', SETTINGS);
 app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
 
-const fileUpload = require("express-fileupload");
-
-app.get('/test', (req, res) => {
-   res.render('test')
-});
-
-app.post('/test', fileUpload(), (req, res) => {
-   console.log(req.file)
-   res.redirect('/test');
-});
-
 app.all('*', (req, res) => {
    res.render('404page');
 });
-
-
-
 
 
 app.listen('3000', (req, res) => {

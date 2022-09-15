@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const Order = require('./order');
 const Review = require('./review');
-const fs = require('fs');
-const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
+const {deleteImage} = require('../middlewares/filesUploads');
 
 const reviewSchema = new mongoose.Schema({
    number_review: {
@@ -63,7 +62,7 @@ const productSchema = new mongoose.Schema({
       required: true,
    },
    img_path: {
-      type: String,
+      type: Array,
       required: true,
    },
    title: {
@@ -141,16 +140,6 @@ const productSchema = new mongoose.Schema({
    },
 });
 
-productSchema.methods.UploadImg = function (filename, Old_Image) {
-   if (Old_Image) deleteImage(`./public/${this.img_path}`); //
-
-   const newImg_path = `/uploads/product-img/${this.slug}${isolate_mimetype(filename, '.')}`;
-
-   renameImage(`./public/uploads/product-img/${filename}`, `./public/${newImg_path}`);
-
-   this.img_path = newImg_path;
-};
-
 // Function
 function Create_Slug(title, vendor) {
    return slugify(title, {lower: true, strict: true}) + '-' + vendor;
@@ -184,17 +173,12 @@ productSchema.methods.changeSlug = async function (title, vendor) {
    }
 
    this.slug = newSlug;
-
-   const newImage_path = `/uploads/product-img/${this.slug}${isolate_mimetype(this.img_path, '.')}`;
-
-   renameImage(`./public/${this.img_path}`, `./public/${newImage_path}`);
-
    this.img_path = newImage_path;
 };
 
 productSchema.methods.deleteProduct = async function () {
    // Product Img 
-   deleteImage(`./public/${this.img_path}`);
+   deleteImage(`./uploads/${this.img_path}`);
 
    // for(let i = 0; i < users.length; i++) {
    //    const indexSavedProduct = users[i].saved_product.indexOf(oldSlug)

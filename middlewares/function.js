@@ -1,8 +1,5 @@
-const multer = require('multer');
-const path = require('path');
 const  randomWords = require('random-words');
 const HtmlFilter = require('html-filter');
-const {unlink, rename} = require('fs');
 
 
 function RandomList_ofWords(number) {
@@ -34,7 +31,7 @@ function generateRandomString(length, allowedCharacters) {
 }
 
 // Html Sanitizer Function
-function Text_To_Tags(string, symbol, startTag, endTag) {
+function stringToTags(string, symbol, startTag, endTag) {
    let splitedString = string.split(symbol);
 
    if (splitedString.length <= 1) return string; // Return If Nothing To format
@@ -61,11 +58,11 @@ function sanitizeHTML(string) {
    string = filter.filter(string);
 
    string = string.split('\n').join('<br>');
-   string = Text_To_Tags(string, '**', '<b>', '</b>');
-   string = Text_To_Tags(string, '*B', '<h3>', '</h3>');
-   string = Text_To_Tags(string, '*M', '<h5>', '</h5>');
-   string = Text_To_Tags(string, '*S', '<h6>', '</h6>');
-   string = Text_To_Tags(string, '*', ' <em>', '</em>');
+   string = stringToTags(string, '**', '<b>', '</b>');
+   string = stringToTags(string, '*B', '<h3>', '</h3>');
+   string = stringToTags(string, '*M', '<h5>', '</h5>');
+   string = stringToTags(string, '*S', '<h6>', '</h6>');
+   string = stringToTags(string, '*', ' <em>', '</em>');
 
    return string;
 };
@@ -106,64 +103,6 @@ async function paginatedResults(model, query = {}, {page = 1, limit = 12}, pagin
    }
 };
 
-// Check File Type
-function checkFileType(file, cb) {
-   // Allowed ext
-   const filetypes = /jpeg|jpg|png/;
-   // Check ext
-   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-   // Check mime
-   const mimetype = filetypes.test(file.mimetype);
-
-   if (mimetype && extname) {
-      return cb(null, true);
-   } else {
-      cb('Error: Images Only!');
-   }
-}
-
-uploadProductImg = multer({
-   storage: multer.diskStorage({
-      destination: './public/uploads/product-img',
-      filename: function (req, file, cb) {
-         cb(null, generateRandomString(25, 'letterAndnumber') + path.extname(file.originalname));
-      },
-   }),
-   limits: {fileSize: 5000000},
-   fileFilter: function (req, file, cb) {
-      checkFileType(file, cb);
-   },
-});
-
-uploadUserImg = multer({
-   storage: multer.diskStorage({
-      destination: './public/uploads/user-img',
-      filename: function (req, file, cb) {
-         cb(null, generateRandomString(25, 'letterAndnumber') + path.extname(file.originalname));
-      },
-   }),
-   limits: {fileSize: 5000000},
-   fileFilter: function (req, file, cb) {
-      checkFileType(file, cb);
-   },
-});
-
-function deleteImage(path) {
-   unlink(path, (err) => {
-      if (err) console.log('Img needing deletion doesnt exist');
-   });
-};
-
-function renameImage(oldName, newName) {
-   rename(oldName, newName, (err) => {
-      if (err) throw err;
-   });
-};
-
-function isolate_mimetype(string, symbol) {
-   const mimetype = string.split(symbol);
-   return `.${mimetype[mimetype.length - 1]}`;
-};
 
 function formatUsernameWithSettings(sender, setting) {
    if (setting === 'semi-hidden') return sender[0] + '*****' + sender[sender.length - 1];
@@ -178,10 +117,6 @@ function compareArray(array, value) {
    return;
 };
 
-function IsNot_Number(value) {
-   if (isNaN(parseFloat(value))) return true;
-   return;
-};
 
 function isEmail(email) {
    if (!email || typeof(email) !== 'string') return undefined
@@ -194,6 +129,7 @@ function isPgpKeys(pgpKeys) {
    
    return true
 }
+
 function isMoneroAddress(address, addressType) {
    if (!address || typeof(address) !== 'string') throw new Error(`Invalid ${addressType} Monero Address`)
    
@@ -204,4 +140,4 @@ function isMoneroAddress(address, addressType) {
    return address
 }
 
-module.exports = {generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, IsNot_Number, compareArray, formatUsernameWithSettings, isolate_mimetype, renameImage,deleteImage, uploadUserImg, uploadProductImg, paginatedResults, sanitizeHTML}
+module.exports = {generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, compareArray, formatUsernameWithSettings, paginatedResults, sanitizeHTML}

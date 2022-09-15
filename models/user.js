@@ -5,7 +5,8 @@ const Review = require('./review');
 const Report = require('./report');
 const Contactus = require('./contactus');
 const StepVerification = require('./2step-verification');
-const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
+const {deleteImage} = require('../middlewares/filesUploads');
+
 
 const reviewSchema = new mongoose.Schema({
    number_review: {
@@ -132,15 +133,6 @@ const userSchema = new mongoose.Schema({
 });
 
 
-userSchema.methods.UploadImg = function (file) {
-   if (this.img_path) deleteImage(`./public/${this.img_path}`);
-   const newImg_path = `/uploads/user-img/${this.username}${isolate_mimetype(file.mimetype, '/')}`;
-
-   renameImage(`./public/uploads/user-img/${file.filename}`, `./public/${newImg_path}`);
-
-   this.img_path = newImg_path;
-};
-
 userSchema.methods.updateInactiveDate = function () {
    this.expire_at = Date.now() + this.settings.userExpiring * 86400000;
 };
@@ -164,7 +156,7 @@ userSchema.methods.offlineAllUserProducts = async function () {
 
 
 userSchema.methods.deleteUser = async function () {
-   deleteImage(`./public/${this.img_path}`);
+   deleteImage(`./uploads${this.img_path}`);
 
    // Delete Conversations
    const conversations = await Conversation.find({

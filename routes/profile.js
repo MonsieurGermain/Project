@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const Conversation = require('../models/conversation');
 const Product = require('../models/product');
 const Review = require('../models/review');
 const {copyFile} = require('fs');
+const fileUpload = require("express-fileupload");
+const { ImageUploadsValidation, uploadsFiles, deleteImage } = require('../middlewares/filesUploads')
 const {Need_Authentification} = require('../middlewares/authentication');
-const {Validate_Profile, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
-const {uploadUserImg, deleteImage, sanitizeHTML, paginatedResults} = require('../middlewares/function');
+const {Validate_Profile, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
+const {sanitizeHTML, paginatedResults} = require('../middlewares/function');
 
 // Route
 router.get('/profile/:username', sanitizeParamsQuerys, async (req, res) => {
@@ -75,23 +76,16 @@ router.get('/edit-profile', Need_Authentification, sanitizeQuerys, async (req, r
    }
 });
 
-async function updateConversationImg_Path(username, newImgPath) {
-   const conversations = await Conversation.findAllUserConversations(username);
 
-   for (let i = 0; i < conversations.length; i++) {
-      conversations[i].updateNewImgPath(username, newImgPath);
-   }
-}
-
-router.put('/edit-profile', Need_Authentification, uploadUserImg.single('profileImg'), Validate_Profile, async (req, res) => {
+router.put('/edit-profile', Need_Authentification, 
+fileUpload({ createParentPath: true }),
+ImageUploadsValidation({max: 1, errorUrl: '/edit-profile'}),
+Validate_Profile, async (req, res) => {
    try {
       const {user} = req;
-      const {job, description, achievement, languages} = req.body;
+      const {profileImg, job, description, achievement, languages} = req.body;
 
-      if (req.file) {
-         user.UploadImg(req.file);
-         updateConversationImg_Path(user.username, user.img_path);
-      }
+      if (profileImg) user.img_path = uploadsFiles(profileImg, `./uploads${user.img_path}`, false)
 
       user.job = job;
       user.description = description;
@@ -107,15 +101,13 @@ router.put('/edit-profile', Need_Authentification, uploadUserImg.single('profile
    }
 }); 
 
+
+
 router.get('/reset-profile-picture', Need_Authentification, async (req, res) => {
    try {
       const {user} = req
 
-      deleteImage(`./public/${user.img_path}`);
-
-      user.img_path = `/uploads/user-img/${user.username}.png`;
-
-      copyFile('./public/default/default-profile-pic.png', `./public${user.img_path}`, (err) => {
+      copyFile('./public/default/default-profile-pic.png', `./uploads/${user.img_path}`, (err) => {
          if (err) throw err;
       });
 
