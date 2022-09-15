@@ -16287,7 +16287,17 @@ input[id=contact-checkbox]:not(:checked) + * {
 }
 
 input[id^=report-resolve-]:not(:checked) + * {
-  display: none;
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
+input[id^=more-report-resolve-]:checked ~ .dropdown-content {
+  display: flex !important;
+}
+
+input[id^=more-report-resolve-]:checked ~ .dropdown-symbol svg {
+  transform: rotate(180deg);
 }
 
 .advanced-settings > input[type=radio] {
@@ -16942,4 +16952,12 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     margin-left: 0px !important;
     margin-right: 0px !important;
   }
+}
+
+.resolve-report-popup .dropdown-content {
+  display: none !important;
+}
+.resolve-report-popup .dropdown-symbol svg {
+  transition: all 0.3s;
+  transform: rotate(0deg);
 }/*# sourceMappingURL=theme.css.map */
