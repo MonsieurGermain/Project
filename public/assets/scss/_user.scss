@@ -1553,16 +1553,19 @@ aside {
 
    .product-secondary-images {
       >label {
-         aspect-ratio: 4 / 3;
-         max-width: 150px;
-         min-width: 150px;
-         margin: 5px;
+         margin-right: 5px;
          position: relative;
+
+         &:last-child {
+            margin-right: 0px;
+         }
+
          img {
-            width: 100%;
-            height: 100%;
+            max-width: 150px;
+            aspect-ratio: 4 / 3;
             border-radius: 8px;
          }
+
          &>.delete {
             position: absolute;
             left: 0px;
@@ -1576,17 +1579,45 @@ aside {
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
+
             >i {
                font-size: 32px;
             }
          }
+
          &:hover .delete {
             opacity: 1;
          }
       }
    }
+
    [id^='delete-img-']:checked+label .delete {
       opacity: 1;
+   }
+
+   .product-control-wrap {
+      @media (max-width: 500px) {
+         width: 100%;
+
+         button {
+            width: 100%;
+            margin-right: 0px !important;
+            margin-left: 0px !important;
+         }
+
+         >div {
+            width: 100%;
+            margin-left: 0px !important;
+
+            form {
+               width: 100%;
+
+               .form-check {
+                  margin-bottom: 0.75rem;
+               }
+            }
+         }
+      }
    }
 }
 
@@ -1620,6 +1651,10 @@ aside {
             transition: all 0.3s;
             margin-right: 10px;
 
+            &:last-child {
+               margin-right: 0px;
+            }
+
             &:hover {
                border-color: $primary;
             }
@@ -1647,8 +1682,10 @@ aside {
    .product-description-content {
       @media (max-width: 500px) {
          flex-direction: column;
+
          p {
-            width: 100%!important;
+            width: 100% !important;
+
             &:last-child {
                padding-left: 10px;
             }
@@ -1663,6 +1700,7 @@ aside {
       transition: height 0.3s;
       overflow: hidden;
    }
+
    #choose-password:checked~.choose-password-content {
       height: 5.25rem;
    }

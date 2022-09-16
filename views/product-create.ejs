@@ -68,12 +68,11 @@
     <!-- MAke it look better when no Details -->
     <section class="container create-product-container">
       <div class="row">
-        <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-5">
-          <div style="margin-top: -96px;"></div>
-          <div class="position-sticky top-0 pt-5">
-            <div class="pt-5 mt-md-3">
+        <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mt-3">
+          <div class="position-sticky" style="top: calc(5rem + 20px) !important;">
+            <div class="">
               <div class="card shadow-sm p-sm-3">
-                <div class="card-body pb-0">
+                <div class="card-body pb-0 px-0">
                   <h5 class="mb-4">About this Product:</h5>
 
                   <ul class="list-unstyled">
@@ -135,7 +134,7 @@
 
           <% if (product.img_path.length > 1) { %>
           <div class="card py-4 px-4 mt-3 border-0">
-            <div class="d-flex align-items-center flex-wrap product-secondary-images">
+            <div class="d-flex product-secondary-images">
               <% for(let i = 1; i < product.img_path.length; i++) { %>
               <input id="delete-img-<%=i%>" class="form-check-input ms-5" type="checkbox" name="deleteAdditionnalImg"
                 value="<%=i%>" hidden />
@@ -439,8 +438,8 @@
             </div>
           </div>
 
-          <div class="d-flex">
-            <button type="submit" class="btn btn-primary mb-4 mt-4">
+          <div class="d-flex flex-wrap my-2 product-control-wrap">
+            <button type="submit" class="btn btn-primary my-2">
               <% if (product.title) { %>
               Edit Product
               <% } else { %>
@@ -450,9 +449,9 @@
             </form>
 
             <% if (product.title) { %>
-            <div class="ms-auto mb-4 mt-4">
+            <div class="ms-auto my-2">
               <form action="/delete-product/<%=product.slug%>?_method=DELETE" method="POST">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-wrap">
                   <span class="form-check">
                     <input class="form-check-input" type="checkbox" id="confirm" required>
                     <label class="form-check-label" for="confirm">I want to Delete This Product</label>

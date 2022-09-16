@@ -17014,15 +17014,15 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   transform: rotate(180deg);
 }
 .create-product-container .product-secondary-images > label {
-  aspect-ratio: 4/3;
-  max-width: 150px;
-  min-width: 150px;
-  margin: 5px;
+  margin-right: 5px;
   position: relative;
 }
+.create-product-container .product-secondary-images > label:last-child {
+  margin-right: 0px;
+}
 .create-product-container .product-secondary-images > label img {
-  width: 100%;
-  height: 100%;
+  max-width: 150px;
+  aspect-ratio: 4/3;
   border-radius: 8px;
 }
 .create-product-container .product-secondary-images > label > .delete {
@@ -17047,6 +17047,26 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .create-product-container [id^=delete-img-]:checked + label .delete {
   opacity: 1;
+}
+@media (max-width: 500px) {
+  .create-product-container .product-control-wrap {
+    width: 100%;
+  }
+  .create-product-container .product-control-wrap button {
+    width: 100%;
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+  }
+  .create-product-container .product-control-wrap > div {
+    width: 100%;
+    margin-left: 0px !important;
+  }
+  .create-product-container .product-control-wrap > div form {
+    width: 100%;
+  }
+  .create-product-container .product-control-wrap > div form .form-check {
+    margin-bottom: 0.75rem;
+  }
 }
 
 .product-single-container .product-image-wrap img {
@@ -17073,6 +17093,9 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   border-width: 0px 0px 5px 0px;
   transition: all 0.3s;
   margin-right: 10px;
+}
+.product-single-container .product-image-wrap .image-list label:last-child {
+  margin-right: 0px;
 }
 .product-single-container .product-image-wrap .image-list label:hover {
   border-color: #800080;
