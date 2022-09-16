@@ -1556,7 +1556,7 @@ aside {
          aspect-ratio: 4 / 3;
          max-width: 150px;
          min-width: 150px;
-         margin-right: 10px;
+         margin: 5px;
          position: relative;
          img {
             width: 100%;
@@ -1640,6 +1640,18 @@ aside {
       @for $i from 0 through 5 {
          [id^='product-radio-#{$i}']:checked~.image-list label[for='product-radio-#{$i}'] {
             border-color: $primary;
+         }
+      }
+   }
+
+   .product-description-content {
+      @media (max-width: 500px) {
+         flex-direction: column;
+         p {
+            width: 100%!important;
+            &:last-child {
+               padding-left: 10px;
+            }
          }
       }
    }

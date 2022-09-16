@@ -173,9 +173,9 @@
           <div class="card px-3 px-md-4 py-4 border-0 my-4">
             <h5 class="mb-4 mt-2">Product details :</h5>
             <% for(let i = 0; i < product.productDetails.length; i++) { %>
-            <div class="d-flex" style="justify-content: space-between;">
-              <p class=""><b><%=product.productDetails[i].details%></b></p>
-              <p class="ms-5 me-3"><%=product.productDetails[i].detailsDescription%></p>
+            <div class="d-flex justify-content-between product-description-content">
+              <p class="" style="width: 40%;"><b><%=product.productDetails[i].details%></b></p>
+              <p class="" style="width: calc(60% - 10px);"><%=product.productDetails[i].detailsDescription%></p>
             </div>
             <% } %>
           </div>

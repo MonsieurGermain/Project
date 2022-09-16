@@ -17017,7 +17017,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   aspect-ratio: 4/3;
   max-width: 150px;
   min-width: 150px;
-  margin-right: 10px;
+  margin: 5px;
   position: relative;
 }
 .create-product-container .product-secondary-images > label img {
@@ -17116,4 +17116,15 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .product-single-container .product-image-wrap [id^=product-radio-5]:checked ~ .image-list label[for=product-radio-5] {
   border-color: #800080;
+}
+@media (max-width: 500px) {
+  .product-single-container .product-description-content {
+    flex-direction: column;
+  }
+  .product-single-container .product-description-content p {
+    width: 100% !important;
+  }
+  .product-single-container .product-description-content p:last-child {
+    padding-left: 10px;
+  }
 }/*# sourceMappingURL=theme.css.map */
