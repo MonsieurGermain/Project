@@ -39,15 +39,19 @@
 
         <!-- Blog list + Sidebar -->
         <div class="row">
-          <p class="mt-0 mb-2">Dont Forget to Encrypt your Information for a maximun privacy !</p>
           <div class="col-md-8 pb-5 mb-lg-2 mb-lg-4" style="border: none;">
-            <div class="card card-body px-3 px-md-4 border-0">
-            <% if (product.message) { %>
-                <p class="mb-0"><b>Vendor Message:</b></p>
-                <p class="mt-0 mb-2"><%=product.message%></p>
-            <% } %>
 
+            <% if (product.message) { %>
+            <div class="card card-body px-3 px-md-4 border-0 mb-3">
+              <h6 class="mb-3 mt-2">Vendor Message :</h6>
+              
+              <p class="fs-sm mb-1"><%-product.message%></p>
+        </div>
+        <% } %>
+
+            <div class="card card-body px-3 px-md-4 border-0">
             <form action="/submit-info/<%=order.id%>" method="POST">
+              <p class="fs-sm opacity-70 mt-0 mb-2">Dont Forget to Encrypt your Information for a maximun privacy !</p>
             <textarea name="content" class="form-control" id="textarea-input" rows="10" placeholder="Provide your Information" minlength="2" maxlength="3000" required></textarea>
 
           <div class="d-flex align-items-center mt-3 responsive-column">

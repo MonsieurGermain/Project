@@ -1,5 +1,4 @@
-const Product = require('../models/product');
-const {compareArray, isMoneroAddress, deleteImage, isEmail, isPgpKeys} = require('./function');
+const {compareArray, isMoneroAddress, isEmail, isPgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -49,7 +48,6 @@ function validateShippingOption(shippingOptionDecription, shippingOptionPrice) {
       if (shippingOptionDecription[i]) {
          shippingOptionDecription[i] = ValidateText(shippingOptionDecription[i], `Shipping Option Description #${i + 1}`, {minlength: 0, maxlength: 200, isRequired: false});
 
-         console.log(shippingOptionPrice[i])
          shippingOptionPrice[i] = validateNumber(shippingOptionPrice[i], `Shipping Option Price #${i + 1}`, {min: 1, max: 1000, isRequired: false})
          if (!shippingOptionPrice[i]) shippingOptionPrice[i] = 0
 
@@ -136,7 +134,8 @@ function Validate_Conversation(req, res, next) {
 
       req.body.timestamps = req.body.timestamps ? true : undefined;
 
-      if (!compareArray(['noPgp', 'ownPgp', 'otherPgp'], req.body.pgpSettings)) throw new Error('Invalid Pgp Settings');
+      console.log(req.body.pgpSettings)
+      if (!compareArray([undefined, 'noPgp', 'ownPgp', 'otherPgp'], req.body.pgpSettings)) throw new Error('Invalid Pgp Settings');
 
       if (req.body.otherPgpKeys) {
          if (!isPgpKeys(req.body.otherPgpKeys)) throw new Error('The other Pgp Keys you provided is Invalid');
@@ -173,25 +172,28 @@ function Validate_Reviews(req, res, next) {
 
 function Validate_Profile(req, res, next) {
    try {
+
       req.body.job = ValidateText(req.body.job, 'Job', {minlength: 0, maxlength: 100, isRequired: false});
 
       req.body.description = ValidateText(req.body.description, 'Description', {minlength: 0, maxlength: 3000, isRequired: false});
 
-      req.body.achievement = Filter_Empty(req.body.achievement);
-      for (let i = 0; i < req.body.achievement.length; i++) {
-         req.body.achievement[i] = ValidateText(req.body.achievement[i], 'Achievement #' + i, {minlength: 0, maxlength: 50, isRequired: false});
-      }
+      if (req.body.achievement) {
+         req.body.achievement = Filter_Empty(req.body.achievement);
+         for (let i = 0; i < req.body.achievement.length; i++) {
+            req.body.achievement[i] = ValidateText(req.body.achievement[i], 'Achievement #' + i, {minlength: 0, maxlength: 50, isRequired: false});
+         }
+      } else req.body.achievement = undefined
 
-      req.body.languages = Filter_Empty(req.body.languages);
-      for (let i = 0; i < req.body.languages.length; i++) {
-         req.body.languages[i] = ValidateText(req.body.languages[i], 'Languages #' + i, {minlength: 0, maxlength: 50, isRequired: false});
-      }
+      if (req.body.languages) {
+         req.body.languages = Filter_Empty(req.body.languages);
+         for (let i = 0; i < req.body.languages.length; i++) {
+            req.body.languages[i] = ValidateText(req.body.languages[i], 'Languages #' + i, {minlength: 0, maxlength: 50, isRequired: false});
+         }
+      } else req.body.languages = undefined
+
 
       next();
    } catch (e) {
-      if (req.file) {
-         deleteImage(req.file.path);
-      }
       req.flash('error', e.message);
       res.redirect('/edit-profile?productPage=1&reviewPage=1');
    }
@@ -200,7 +202,7 @@ function Validate_Profile(req, res, next) {
 function Validate_Product(req, res, next) {
    try {
       // Title
-      req.body.title = ValidateText(req.body.title, 'Title', {minlength: 5, maxlength: 150});
+      req.body.title = ValidateText(req.body.title, 'Title', {minlength: 5, maxlength: 250});
 
       // Description
       req.body.description = ValidateText(req.body.description, 'Description', {minlength: 10, maxlength: 20000});
@@ -215,10 +217,25 @@ function Validate_Product(req, res, next) {
       if (!compareArray(List_Country, req.body.ship_from)) throw new Error('Selected Country Invalid');
 
       // Details
-      req.body.details = Filter_Empty(req.body.details);
-      for (let i = 0; i < req.body.details.length; i++) {
-         req.body.details[i] = ValidateText(req.body.details[i], 'Details #' + i, {minlength: 0, maxlength: 100, isRequired: false});
+      if (req.body.aboutProduct) {
+         req.body.aboutProduct = Filter_Empty(req.body.aboutProduct);
+         for (let i = 0; i < req.body.aboutProduct.length; i++) {
+            req.body.aboutProduct[i] = ValidateText(req.body.aboutProduct[i], 'About Product #' + i, {minlength: 0, maxlength: 200, isRequired: false});
+         }
+      } else req.body.aboutProduct = undefined
+
+
+      const productDetails =[]
+      for(let i = 0; i < req.body.productDetails.length; i++) {
+         req.body.productDetails[i] = ValidateText(req.body.productDetails[i], 'Product Details #' + i, {minlength: 0, maxlength: 250, isRequired: false});
+         req.body.productDetailsDescription[i] = ValidateText(req.body.productDetailsDescription[i], 'Product Details Description #' + i, {minlength: 0, maxlength: 500, isRequired: false});
+
+         if (req.body.productDetails[i] && req.body.productDetailsDescription[i]) productDetails.push({details : req.body.productDetails[i], detailsDescription: req.body.productDetailsDescription[i]}) 
+         else req.body.productDetails.splice(i, 1)
       }
+
+      req.body.productDetails = productDetails
+
 
       // Custom Monero Address
       req.body.customMoneroAddress = req.body.customMoneroAddress ? isMoneroAddress(req.body.customMoneroAddress, 'Custom') : undefined
@@ -243,18 +260,32 @@ function Validate_Product(req, res, next) {
       // Price
       req.body.price = validateNumber(req.body.price, 'Price')
 
-      if (req.product.originalPrice && req.product.originalPrice !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale');
+      if (req.product.salesPrice && req.product.price !== req.body.price) throw new Error('You cant change the Price of your Product while it is still on sale');
 
       req.body.salesPrice = validateNumber(req.body.salesPrice, 'Sales Price', {min: 1, max: req.body.price - 1, isRequired: false})
 
-      req.body.salesDuration = validateNumber(req.body.salesDuration, 'Sales Duration', {min: 1, max: 30, isRequired: false})
-      if (req.body.salesDuration && !req.body.salesPrice) req.body.salesPrice = 1
+      req.body.salesDuration = req.body.salesDuration ? validateNumber(req.body.salesDuration, 'Sales Duration', {min: 1, max: 30, isRequired: false}) : 1
       
-      if (req.product.originalPrice) {
-         if (req.product.price !== req.body.salesPrice) throw new Error('You cant change the Price of your Sales while on Sales');
+      if (req.product.salesPrice) {
+         if (req.product.salesPrice !== req.body.salesPrice) throw new Error('You cant change the Price of your Sales while on Sales');
          if (req.product.salesDuration !== req.body.salesDuration) throw new Error('You cant change the Duration of your Sales while on Sales');
          req.body.stop_sales = req.body.stop_sales ? true : false;
       }
+
+
+      if (req.body.deleteAdditionnalImg) {
+
+         if(typeof(req.body.deleteAdditionnalImg) === 'string') {
+            if (req.body.deleteAdditionnalImg !== '1' && req.body.deleteAdditionnalImg !== '2') throw new Error('Invalid Image to Delete')
+            req.body.deleteAdditionnalImg = [req.body.deleteAdditionnalImg]
+         } else {
+            if (req.body.deleteAdditionnalImg[0] !== '1' && req.body.deleteAdditionnalImg[0] !== '2') throw new Error('Invalid Image to Delete')
+            if (req.body.deleteAdditionnalImg[1] !== '1' && req.body.deleteAdditionnalImg[1] !== '2') throw new Error('Invalid Image to Delete')
+   
+         }
+
+      } else req.body.deleteAdditionnalImg = undefined
+      
 
       // Status
       if (!compareArray(['online', 'offline'], req.body.status)) throw new Error(`Invalid Status Value`);
@@ -263,10 +294,7 @@ function Validate_Product(req, res, next) {
    } catch (e) {
       console.log(e)
       let url = `${req.url}`;
-
-      if (req.file) {
-         deleteImage(req.file.path);
-      }
+      
       req.flash('error', e.message);
       res.redirect(url);
    }
@@ -421,9 +449,6 @@ throw new Error('Invalid Selected Selection')
 
 async function Validate_OrderCustomization(req, res, next) {
    try {
-
-      req.product = await Product.findOne({slug: req.params.slug, status: 'online'}).orFail(new Error('Invalid Slug Params'));
-
       if (req.user.username === req.product.vendor) throw new Error('You cant Buy Your Own Product');
 
       if (req.product.available_qty == 0) throw new Error('This Product is Sold Out');
@@ -508,4 +533,4 @@ function sanitizeParamsQuerys(req, res, next) {
    }
 }
 
-module.exports = {sanitizeQuerys, sanitizeParams, sanitizeParamsQuerys, Validate_OrderCustomization, validateReports, validateResolveReport, validateContactUs, Validate_Code, Validate_SearchInput, Validate_AutoDel_Settings, Validate_Change_Password, Validate_Product, Validate_Profile, Validate_Reviews, Validate_Message, Validate_Conversation, Validate_Register, Validate_Login}
+module.exports = {isObject, sanitizeQuerys, sanitizeParams, sanitizeParamsQuerys, Validate_OrderCustomization, validateReports, validateResolveReport, validateContactUs, Validate_Code, Validate_SearchInput, Validate_AutoDel_Settings, Validate_Change_Password, Validate_Product, Validate_Profile, Validate_Reviews, Validate_Message, Validate_Conversation, Validate_Register, Validate_Login}

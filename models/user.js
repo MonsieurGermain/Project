@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 const Product = require('./product');
 const Conversation = require('./conversation');
 const Review = require('./review');
-const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
+const Report = require('./report');
+const Contactus = require('./contactus');
+const StepVerification = require('./2step-verification');
+const {deleteImage} = require('../middlewares/filesUploads');
+
 
 const reviewSchema = new mongoose.Schema({
    number_review: {
@@ -129,15 +133,6 @@ const userSchema = new mongoose.Schema({
 });
 
 
-userSchema.methods.UploadImg = function (file) {
-   if (this.img_path) deleteImage(`./public/${this.img_path}`);
-   const newImg_path = `/uploads/user-img/${this.username}${isolate_mimetype(file.mimetype, '/')}`;
-
-   renameImage(`./public/uploads/user-img/${file.filename}`, `./public/${newImg_path}`);
-
-   this.img_path = newImg_path;
-};
-
 userSchema.methods.updateInactiveDate = function () {
    this.expire_at = Date.now() + this.settings.userExpiring * 86400000;
 };
@@ -146,31 +141,6 @@ userSchema.methods.Add_Remove_Saved_Product = function (id) {
    if (this.saved_product.includes(id)) this.saved_product = this.saved_product.filter((element) => element !== id);
    // Remove
    else this.saved_product.push(id); // Add
-};
-
-userSchema.methods.deleteUser = async function () {
-   deleteImage(`./public/${this.img_path}`);
-
-   // Delete Conversations
-   const conversations = await Conversation.find({
-      $or: [{sender_1: this.username}, {sender_2: this.username}],
-   });
-
-   for (let i = 0; i < conversations.length; i++) {
-      conversations[i].deleteConversation();
-   }
-
-   const products = await Product.find({vendor: this.username});
-   for (let i = 0; i < products.length; i++) {
-      await products[i].deleteProduct();
-   }
-
-   const review = await Review.find({sender: this.username});
-   for (let i = 0; i < review.length; i++) {
-      await review[i].deleteReview();
-   }
-
-   await this.delete();
 };
 
 userSchema.methods.offlineAllUserProducts = async function () {
@@ -182,6 +152,52 @@ userSchema.methods.offlineAllUserProducts = async function () {
          userProducts[i].save();
       }
    }
+};
+
+
+userSchema.methods.deleteUser = async function () {
+   deleteImage(`./uploads${this.img_path}`);
+
+   // Delete Conversations
+   const conversations = await Conversation.find({
+      $or: [{sender_1: this.username}, {sender_2: this.username}],
+   });
+
+   for (let i = 0; i < conversations.length; i++) {
+      conversations[i].deleteConversation();
+   }
+
+   // Product
+   const products = await Product.find({vendor: this.username});
+   for (let i = 0; i < products.length; i++) {
+      products[i].deleteProduct();
+   }
+
+   // Review
+   const review = await Review.find({sender: this.username});
+   for (let i = 0; i < review.length; i++) {
+      review[i].deleteReview();
+   }
+
+   // Report
+   const reports = await Report.find({$or: [{reference_id: this.username}, {username: this.username}]})
+   for (let i = 0; i < reports.length; i++) {
+      reports[i].deleteReport();
+   }
+
+   // Contact Us
+   const contactus = await Contactus.find({username: this.username})
+   for (let i = 0; i < contactus.length; i++) {
+      contactus[i].deleteContactUs();
+   }
+
+   // 2 Step Verification
+   const stepVerification = await StepVerification.find({username: this.username})
+   for (let i = 0; i < stepVerification.length; i++) {
+      stepVerification[i].deleteStepVerification();
+   }
+
+   await this.delete();
 };
 
 

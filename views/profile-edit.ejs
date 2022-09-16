@@ -22,10 +22,10 @@
                   </ol>
                 </nav>
                 
-                <% if (query.errmsg) { %>
+                <% if (error.length) { %>
                   <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-                    <%- include('partials/Flash-message', {error_message: query.errmsg, type: 'error'}) %>
-                  </div>
+                  <%- include('partials/Flash-message', {message: error, type: 'error'}) %>
+                </div>   
                 <% } %>
       
       
@@ -40,13 +40,14 @@
             <form action="/edit-profile?_method=PUT" enctype="multipart/form-data" method="POST">
 
             <div class="card card-body shadow-sm border-0 text-center">
+
                 <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162" alt="<%=vendor.username%>">
 
                 <label for="file-input" class="form-label">Profile Picture</label>
                 <p class="form-label fs-xs opacity-60">If you want to keep the current profile picture, leave this field Empty</p>
                 <p class="form-label fs-xs opacity-60">For Maximun Privacy we suggest you to keep the default picture</p>
 
-                <input class="form-control" type="file" id="file-input" name="profileImg">
+                <input class="form-control" type="file" accept="image/*" id="file-input" name="profileImg" multiple>
 
                 <div class="d-flex align-items mt-1">
                   <p class="form-label fs-xs opacity-60 me-auto">I want to Reset my profile picture</p>
@@ -57,14 +58,8 @@
                 <input class="form-control mt-3 mb-3" id="inline-form-input" type="text" name="job" placeholder="Specialization/Jobs" value="<%=vendor.job%>" maxlength="100">
 
                 <!-- Send Message Form  -->
-                <input type="checkbox" class="d-none" id="contact-checkbox">
-                <label for='contact-checkbox' class="btn btn-primary">
-                  Contact me
-                </label>
+                <p class="btn btn-primary">Contact me</p>
 
-                <label for="report-vendor-<%=vendor.username%>" class="btn btn-icon btn-light bg-white border-white btn-sm rounded-circle position-absolute top-0 end-0 zindex-2 me-4 mt-3">      
-                  <i class="bx bx-flag"></i>
-               </label>
               </div>
 
               <div class="card card-body shadow-sm border-0 mt-4">

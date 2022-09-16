@@ -53,7 +53,7 @@
                     </form>
                   <% } %>
 
-                  <img src="<%=products[i].img_path %>" class="card-img-top" style="max-height: 15rem; object-fit: cover;" alt="Image">
+                  <img src="<%=products[i].img_path[0]%>" class="card-img-top" style="max-height: 15rem; object-fit: cover;" alt="Image">
                 </div>
                 <div class="card-body pb-3">
                   <h3 class="h5 mb-2">
@@ -66,14 +66,14 @@
                   </h3>
                   <p class="fs-sm mb-2">Vendor : <a href="/profile/<%=products[i].vendor%>?productPage=1&reviewPage=1"><%=products[i].vendor%></a></p>
                   <!-- Convert Currency  -->
-                  <% if (products[i].onsales) { %>
-                    <p class="text-muted mb-0"><span class="fs-lg fw-semibold text-danger me-2">$<%=products[i].price%></span><del>$<%=products[i].old_price%></del></p>
-                  <% } %>
                   <div class="d-flex">
-                    <p class="fs-lg fw-semibold text-primary mb-0">$<%=products[i].price%></p>
-                    <% if (products[i].originalPrice) { %>
-                      <del class="fs-md fw-semibold text-primary mb-0 text-muted opacity-70 ms-2"><%=products[i].originalPrice%>$</del>
-                    <% }%>
+                    <% if (products[i].salesPrice) { %>
+                      <p class="fs-lg fw-semibold text-primary mb-0"><%=products[i].salesPrice%>$</p>
+                      <del class="fs-md fw-semibold text-primary mb-0 text-muted opacity-70 ms-2"><%=products[i].price%>$</del>
+                    <% } else { %> 
+                      <p class="fs-lg fw-semibold text-primary mb-0"><%=products[i].price%>$</p>
+                    <% } %>
+
                   </div>
 
 

@@ -61,8 +61,7 @@
       </div>
     </section>
 
-    <!-- Sidebar (Course summary) -->
-    <!-- MAke it look better when no Details -->
+
     <section class="container">
       <div class="row">
 
@@ -72,24 +71,26 @@
             <div class="pt-5">
               <div class="card p-3">
                 <div class="card-body">
-                  <% if (product.details.length) { %>
+                  <% if (product.aboutProduct.length) { %>
                   <h5 class="mb-4">About this Product:</h5>
                   <div class="list-unstyled">
                     <!-- Allow User to Choose SVG -->
-                    <% for(let i = 0; i < product.details.length; i++) { %>
+                    <% for(let i = 0; i < product.aboutProduct.length; i++) { %>
                     <li class="d-flex mb-2">
                       <i class='bx bx-list-check text-primary fs-xl mt-1'></i>
-                      <p class="fs-sm ms-2 my-0"><%=product.details[i]%></p>
+                      <p class="fs-sm ms-2 my-0"><%=product.aboutProduct[i]%></p>
                     </li>
                     <% } %>
                   </div>
                   <% } %>
                   <div class="d-flex align-items-end mb-0">
                     <p class="h5 mb-0 mt-2">Price:</p>
-                    <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.price%>$</p>
-                    <% if (product.originalPrice) { %>
-                    <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.originalPrice%>$</del>
-                    <% }%>
+                    <% if (product.salesPrice) { %>
+                      <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.salesPrice%>$</p>
+                      <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.price%>$</del>
+                    <% } else { %> 
+                      <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.price%>$</p>
+                    <% } %>
                   </div>
 
                   <div class="d-sm-flex mt-1">
@@ -116,7 +117,11 @@
 
         <!-- Content -->
         <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
-          <img src="<%=product.img_path%>" class="card-img-top" style="object-fit:cover;" alt="Product Image">
+          <img src="<%=product.img_path[0]%>" class="card-img-top" style="object-fit:cover;" alt="Product Image">
+
+            <% for(let i = 1; i < product.img_path.length; i++) { %>
+              <img src="<%=product.img_path[i]%>" class="card-img-top mt-3" style="object-fit:cover; max-width: 150px; max-height: 75px;" alt="Product Image">
+            <% } %>
 
           <!-- Vendor -->
           <div class="card py-3 px-3 px-md-4 mt-3 border-0">
@@ -143,6 +148,18 @@
               </div>
             </div>
           </div>
+
+          <% if (product.productDetails.length) { %>
+            <div class="card px-3 px-md-4 py-4 border-0 my-4">
+              <h5 class="mb-4 mt-2">Product details :</h5>
+              <% for(let i = 0; i < product.productDetails.length; i++) { %>
+                <div class="d-flex" style="justify-content: space-between;">
+                  <p class=""><b><%=product.productDetails[i].details%></b></p>
+                  <p class="ms-5 me-3"><%=product.productDetails[i].detailsDescription%></p>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
 
           <div class="card px-3 px-md-4 py-4 border-0 my-4">
             <h5 class="mb-4 mt-2">Product description :</h5>
@@ -226,8 +243,6 @@
             </div>
           </div>
           <% } %>
-
-          <%- include('partials/Vendor-card', {vendor : vendor}) %>
 
           <hr class="my-2 mt-5">
           <!-- Review Section -->

@@ -1,6 +1,4 @@
 const mongoose = require('mongoose');
-const Product = require('../models/product');
-const User = require('../models/user');
 
 const reportSchema = new mongoose.Schema({
    reference_id: {

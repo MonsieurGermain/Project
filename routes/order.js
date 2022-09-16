@@ -5,7 +5,7 @@ const Order = require('../models/order');
 const User = require('../models/user');
 const {Need_Authentification} = require('../middlewares/authentication');
 const { Validate_OrderCustomization, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
-const {formatUsernameWithSettings, paginatedResults} = require('../middlewares/function');
+const {formatUsernameWithSettings, paginatedResults, sanitizeHTML} = require('../middlewares/function');
 
 
 function validateData(value, acceptedValues) {
@@ -76,7 +76,7 @@ function Format_Timer(timer) {
 
 async function getProductImg(slug) {
    const product = await Product.findOne({slug: slug});
-   return product.img_path;
+   return product.img_path[0];
 }
 
 function Create_Order_Link(status, id, isBuyer) {
@@ -121,7 +121,7 @@ async function formatOrder(order, isBuyer) {
    order.link = Create_Order_Link(order.status, order.id, isBuyer);
 
    order.deletelink = addDeleteLink(order, isBuyer);
-
+   
    order.product_img = await getProductImg(order.product_slug);
 
    return order;
@@ -156,7 +156,17 @@ async function getVendorMoneroAddress(vendorUsername) {
    else throw new Error('Invalid Vendor')
 }
 
-router.post('/create-order/:slug', Need_Authentification, sanitizeParams, Validate_OrderCustomization, async (req, res) => {
+router.post('/create-order/:slug', Need_Authentification, sanitizeParams, 
+async (req,res, next) => {
+   try { 
+      req.product = await Product.findOne({slug: req.params.slug, status: 'online'}).orFail(new Error('Invalid Slug Params'));
+
+      next()
+   } catch (e) {
+      res.redirect('/404')
+   }
+},
+Validate_OrderCustomization, async (req, res) => {
    try {
       const {product} = req;
       let {qty, shipping_option, selection_1, selection_2, type} = req.body;
@@ -169,7 +179,7 @@ router.post('/create-order/:slug', Need_Authentification, sanitizeParams, Valida
          vendor: product.vendor,
          product_title: product.title,
          product_slug: product.slug,
-         base_price: product.price,
+         base_price: product.salesPrice ? product.salesPrice : product.price,
          total_price: product.price,
          qty: qty,
          shipping_option: shipping_option,
@@ -206,6 +216,8 @@ router.get('/submit-info/:id', Need_Authentification, sanitizeParams, async (req
 
       const product = await Product.findOne({slug: order.product_slug});
       const user = await User.findOne({username: order.vendor});
+
+      if (product.message) product.message = sanitizeHTML(product.message);
 
       res.render('submit-info', {order, product, vendor: user});
    } catch (e) {
@@ -399,8 +411,6 @@ router.delete('/delete-order/:id', Need_Authentification, sanitizeParams, async 
       const {user} = req,
             {id} = req.params,
             {ordersPage, status, clientsOrders, fromOrders} = req.query
-
-            console.log(req.query)
  
       const order = await Order.findById(id)
 

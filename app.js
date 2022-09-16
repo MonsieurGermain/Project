@@ -20,6 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
 app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/uploads'));
+
 app.use(
    session({
       secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
@@ -48,11 +50,12 @@ global.siteSettings = {
    autoPromote: true,
 };
 
-const {autoDeleteExpiredMessage, Auto_Check_Recieved_Payment, Update_Order_ExpiredTimer, autoDelete_InactiveUser} = require('./middlewares/databade-updating-function');
-autoDeleteExpiredMessage;
-Auto_Check_Recieved_Payment;
+const {automaticly_EndSales, autoDelete_InactiveUser, Update_Order_ExpiredTimer, Auto_Check_Recieved_Payment, autoDeleteExpiredMessage} = require('./middlewares/databade-updating-function');
+automaticly_EndSales;
+autoDelete_InactiveUser; 
 Update_Order_ExpiredTimer;
-autoDelete_InactiveUser;
+Auto_Check_Recieved_Payment; 
+autoDeleteExpiredMessage;
 
 const HOME_ROUTER = require('./routes/home');
 const LOGIN_ROUTER = require('./routes/login');

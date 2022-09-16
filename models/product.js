@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 const slugify = require('slugify');
 const Order = require('./order');
 const Review = require('./review');
-const fs = require('fs');
-const {deleteImage, renameImage, isolate_mimetype} = require('../middlewares/function');
+const {deleteImage} = require('../middlewares/filesUploads');
 
 const reviewSchema = new mongoose.Schema({
    number_review: {
@@ -45,16 +44,6 @@ const qty_settingsSchema = new mongoose.Schema({
    },
 });
 
-// const accepted_cryptoSchema = new mongoose.Schema ({
-//     xmr : {
-//         type : Boolean,
-//         default : true,
-//     },
-//     btc : {
-//         type : Boolean,
-//     }
-// })
-
 const shipping_option = new mongoose.Schema({
    option_description: {
       type: String,
@@ -73,7 +62,7 @@ const productSchema = new mongoose.Schema({
       required: true,
    },
    img_path: {
-      type: String,
+      type: Array,
       required: true,
    },
    title: {
@@ -119,11 +108,13 @@ const productSchema = new mongoose.Schema({
    selection_2: {
       type: selectionsSchema,
    },
-   details: {
+   productDetails: {
       type: Array,
    },
-   originalPrice: {
-      // Put Sales Related data in a new Schema salesSchema
+   aboutProduct: {
+      type: Array,
+   },
+   salesPrice: {
       type: Number,
    },
    salesDuration: {
@@ -149,19 +140,6 @@ const productSchema = new mongoose.Schema({
    },
 });
 
-// productSchema.index({title:'text'})
-
-// Image Path
-productSchema.methods.UploadImg = function (filename, Old_Image) {
-   if (Old_Image) deleteImage(`./public/${this.img_path}`); //
-
-   const newImg_path = `/uploads/product-img/${this.slug}${isolate_mimetype(filename, '.')}`;
-
-   renameImage(`./public/uploads/product-img/${filename}`, `./public/${newImg_path}`);
-
-   this.img_path = newImg_path;
-};
-
 // Function
 function Create_Slug(title, vendor) {
    return slugify(title, {lower: true, strict: true}) + '-' + vendor;
@@ -172,37 +150,50 @@ productSchema.methods.createSlug = function (title, vendor) {
    this.slug = Create_Slug(title, vendor);
 };
 
+
 productSchema.methods.changeSlug = async function (title, vendor) {
    const oldSlug = this.slug;
    const newSlug = Create_Slug(title, vendor);
 
+   // for(let i = 0; i < users.length; i++) {
+   //    const indexSavedProduct = users[i].saved_product.indexOf(oldSlug)
+   //    users[i].saved_product[indexSavedProduct] = newSlug
+
+   //    users[i].save()
+   // }
+
    const orders = await Order.find({product_slug: oldSlug});
    for (let i = 0; i < orders.length; i++) {
-      await orders[i].changeOrderProductSlug(newSlug);
+      orders[i].changeOrderProductSlug(newSlug);
    }
 
    const reviews = await Review.find({product_slug: oldSlug});
    for (let i = 0; i < reviews.length; i++) {
-      await reviews[i].changeReviewProductSlug(newSlug);
+      reviews[i].changeReviewProductSlug(newSlug);
    }
 
    this.slug = newSlug;
-
-   const newImage_path = `/uploads/product-img/${this.slug}${isolate_mimetype(this.img_path, '.')}`;
-
-   renameImage(`./public/${this.img_path}`, `./public/${newImage_path}`);
-
    this.img_path = newImage_path;
 };
 
 productSchema.methods.deleteProduct = async function () {
-   deleteImage(`./public/${this.img_path}`);
+   // Product Img 
+   deleteImage(`./uploads/${this.img_path}`);
 
+   // for(let i = 0; i < users.length; i++) {
+   //    const indexSavedProduct = users[i].saved_product.indexOf(oldSlug)
+   //    users[i].saved_product.splice(indexSavedProduct, 1)
+
+   //    users[i].save()
+   // }
+
+   // Order
    const orders = await Order.find({product_slug: this.slug});
    for (let i = 0; i < orders.length; i++) {
       await orders[i].deleteOrder();
    }
 
+   // Review
    const reviews = await Review.find({product_slug: this.slug});
    for (let i = 0; i < reviews.length; i++) {
       await reviews[i].deleteReview();
@@ -212,16 +203,13 @@ productSchema.methods.deleteProduct = async function () {
 };
 
 productSchema.methods.endSales = function () {
-   this.price = this.originalPrice;
-
-   this.originalPrice = undefined;
+   this.salesPrice = undefined;
    this.salesDuration = undefined;
    this.sales_end = undefined;
 };
 
-productSchema.methods.startSales = function (price, salesPrice, salesDuration) {
-   this.originalPrice = price;
-   this.price = salesPrice;
+productSchema.methods.startSales = function (salesPrice, salesDuration) {
+   this.salesPrice = salesPrice;
    this.salesDuration = salesDuration;
    this.sales_end = Date.now() + 86400000 * salesDuration;
 };
