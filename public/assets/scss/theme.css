@@ -16238,11 +16238,13 @@ img-comparison-slider:focus {
   padding-right: 85px;
   min-height: 40px;
 }
-.messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
+.messages-view .messages-container .chat .card-footer input,
+.messages-view .messages-container .chat .card-footer textarea {
   background-color: #191919;
 }
 @media (min-width: 768px) {
-  .messages-view .messages-container .chat .card-footer input, .messages-view .messages-container .chat .card-footer textarea {
+  .messages-view .messages-container .chat .card-footer input,
+.messages-view .messages-container .chat .card-footer textarea {
     background-color: #191919;
   }
 }
@@ -16285,7 +16287,17 @@ input[id=contact-checkbox]:not(:checked) + * {
 }
 
 input[id^=report-resolve-]:not(:checked) + * {
-  display: none;
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
+input[id^=more-report-resolve-]:checked ~ .dropdown-content {
+  display: flex !important;
+}
+
+input[id^=more-report-resolve-]:checked ~ .dropdown-symbol svg {
+  transform: rotate(180deg);
 }
 
 .advanced-settings > input[type=radio] {
@@ -16383,14 +16395,18 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   justify-content: flex-end;
 }
 
+.documentation-view .docs-con {
+  min-height: calc(100vh - 4rem);
+  transition: padding 0.3s;
+}
 @media (min-width: 768px) {
   .documentation-view .docs-con {
-    padding-left: 21rem;
+    padding-left: 0rem;
   }
 }
 .documentation-view #componentsNav {
   position: relative;
-  width: 69%;
+  width: 21rem;
   background-color: #212121;
   margin-top: 4rem;
   height: calc(100% - 4rem);
@@ -16398,11 +16414,6 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   z-index: 1045;
   box-shadow: 0 0.275rem 1.25rem rgba(180, 183, 201, 0.05), 0 0.25rem 0.5625rem rgba(180, 183, 201, 0.03);
   transition: transform 0.3s ease-in-out;
-}
-@media (min-width: 768px) {
-  .documentation-view #componentsNav {
-    width: 21rem;
-  }
 }
 @media (min-width: 768px) {
   .documentation-view #componentsNav {
@@ -16415,7 +16426,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   width: 40px;
   z-index: 2000;
   top: 5rem;
-  left: calc(69% - 40px);
+  left: calc(21rem - 40px);
   background-color: #800080;
   padding: 1px;
   border-top-left-radius: 4px;
@@ -16424,12 +16435,7 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 @media (min-width: 768px) {
   .documentation-view .docs-aside-open-close {
-    display: none;
-  }
-}
-@media (min-width: 768px) {
-  .documentation-view .docs-aside-open-close {
-    margin-top: 6rem;
+    margin-top: 10px;
   }
 }
 .documentation-view .docs-aside-open-close svg {
@@ -16453,34 +16459,42 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 .documentation-view .clickout-mobile-menu {
   display: none;
 }
+.documentation-view #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
+  background-color: rgba(0, 0, 0, 0.25);
+  display: initial;
+  width: 100%;
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  height: 100%;
+}
 @media (min-width: 768px) {
-  .documentation-view footer {
+  .documentation-view #mobile-menu-toggle:checked ~ main .docs-con {
+    padding-left: 21rem !important;
+  }
+}
+.documentation-view .footer {
+  width: 100%;
+  transition: width 0.3s;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .documentation-view #mobile-menu-toggle:checked ~ footer {
     width: calc(100% - 21rem);
     margin-left: auto;
   }
 }
-@media (max-width: 767px) {
-  .documentation-view #mobile-menu-toggle:checked ~ main .clickout-mobile-menu {
-    background-color: rgba(0, 0, 0, 0.25);
-    display: initial;
-    width: 100%;
-    position: fixed;
-    top: 4rem;
-    left: 0;
-    height: 100%;
-  }
-  .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
-    left: 0px;
-    border-radius: 0 4px 4px 0;
-  }
-  .documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close svg {
-    transform: scaleX(-1);
-    position: relative;
-    left: 3px;
-  }
-  .documentation-view #mobile-menu-toggle:not(:checked) ~ main #componentsNav {
-    transform: translateX(-100%);
-  }
+.documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close {
+  left: 0px;
+  border-radius: 0 4px 4px 0;
+}
+.documentation-view #mobile-menu-toggle:not(:checked) + .docs-aside-open-close svg {
+  transform: scaleX(-1);
+  position: relative;
+  left: 3px;
+}
+.documentation-view #mobile-menu-toggle:not(:checked) ~ main #componentsNav {
+  transform: translateX(-100%);
 }
 .documentation-view .docs-section {
   padding-top: 7rem;
@@ -16492,9 +16506,12 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   text-decoration: none;
   color: #fff;
   font-weight: bold;
+  border: solid transparent !important;
+  border-width: 0px 5px 0px 0px !important;
 }
 .documentation-view .docs-link-item:hover {
-  background-color: #800080;
+  border: solid #800080 !important;
+  border-width: 0px 5px 0px 0px !important;
 }
 
 .setting-view .form-check {
@@ -16685,6 +16702,9 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   }
 }
 
+.your-order-container {
+  min-height: calc(100vh - 400px);
+}
 .your-order-container .order-card-btn-wrap > *:last-child {
   margin-right: 0px !important;
 }
@@ -16714,6 +16734,22 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
     width: 100%;
   }
 }
+.your-order-container .buyer-detail-wrap {
+  display: none !important;
+  opacity: 0 !important;
+  transition: all 0.3s;
+}
+.your-order-container [for^=buyer-detail-check] > svg {
+  transform: rotate(0deg);
+  transition: all 0.5s;
+}
+.your-order-container [id^=buyer-detail-checkbox]:checked ~ .buyer-detail-wrap {
+  display: flex !important;
+  opacity: 1 !important;
+}
+.your-order-container [id^=buyer-detail-checkbox]:checked ~ label > svg {
+  transform: rotate(180deg);
+}
 
 @media (max-width: 400px) {
   .submit-info-container .responsive-column {
@@ -16735,4 +16771,193 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   .contactus-container .responsive-element > button {
     margin-top: 10px !important;
   }
+}
+
+.list-card .list-number {
+  background-color: #800080;
+  width: 80px;
+  height: 80px;
+  border-radius: 30px 0px 0px 30px;
+  background-image: linear-gradient(230deg, #401919, transparent);
+  position: relative;
+}
+.list-card .list-number::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  right: -6px;
+  border-style: solid;
+  border-width: 5px 3px;
+  border-color: transparent transparent #401218 #401218;
+}
+.list-card .list-number::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  right: -6px;
+  border-style: solid;
+  border-width: 5px 3px;
+  border-color: #401218 transparent transparent #401218;
+}
+.list-card .list-number > span {
+  font-size: 42px;
+  font-weight: 900;
+}
+.list-card .list-content {
+  background-color: rgba(52, 52, 58, 0.3215686275);
+  border-radius: 0px 500px 500px 0px;
+  z-index: 2;
+  box-shadow: 2px 2px 10px 0px rgba(255, 0, 177, 0.1607843137);
+  margin: 10px 0px;
+}
+.list-card .list-content > span {
+  font-size: 24px;
+}
+
+@media (max-width: 767px) {
+  .order-resume-container .position-sticky {
+    position: static !important;
+    position: -webkit-sticky !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .filter-wrap form button {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 570px) {
+  .container-fluid .responsive-column, .container-sm .responsive-column, .container-md .responsive-column, .container-lg .responsive-column, .container-xl .responsive-column, .container-xxl .responsive-column {
+    flex-direction: column !important;
+    width: 100%;
+  }
+  .container-fluid .responsive-column form, .container-sm .responsive-column form, .container-md .responsive-column form, .container-lg .responsive-column form, .container-xl .responsive-column form, .container-xxl .responsive-column form {
+    width: 100%;
+    margin: 0px 0px 5px 0px !important;
+  }
+  .container-fluid .responsive-column form > button, .container-sm .responsive-column form > button, .container-md .responsive-column form > button, .container-lg .responsive-column form > button, .container-xl .responsive-column form > button, .container-xxl .responsive-column form > button {
+    width: 100%;
+    margin: 0px !important;
+  }
+  .container-fluid .responsive-column label, .container-sm .responsive-column label, .container-md .responsive-column label, .container-lg .responsive-column label, .container-xl .responsive-column label, .container-xxl .responsive-column label {
+    width: 100%;
+    margin: 0px !important;
+  }
+}
+@media (max-width: 400px) {
+  .container-fluid .omit-item, .container-sm .omit-item, .container-md .omit-item, .container-lg .omit-item, .container-xl .omit-item, .container-xxl .omit-item {
+    display: none;
+  }
+}
+
+.user-card .image-wrap {
+  display: block;
+}
+.user-card .image-wrap img {
+  min-width: 150px;
+  min-height: 150px;
+  margin: 0 2rem;
+}
+.user-card .btn i {
+  display: none;
+}
+@media (max-width: 680px) {
+  .user-card .image-wrap img {
+    width: 140px;
+    height: 140px;
+    min-width: 140px;
+    min-height: 140px;
+  }
+  .user-card .btn {
+    padding: 8px;
+    border-radius: 50% !important;
+  }
+  .user-card .btn i {
+    font-size: 30px;
+    display: block;
+  }
+  .user-card .btn span {
+    display: none;
+  }
+}
+@media (max-width: 540px) {
+  .user-card {
+    padding: 0 0.75rem;
+  }
+  .user-card .image-wrap img {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+    margin: 0 1rem;
+  }
+  .user-card .btn {
+    padding: 6px;
+    border-radius: 50% !important;
+    margin-right: 8px !important;
+    margin-bottom: 0px !important;
+  }
+  .user-card .btn i {
+    font-size: 25px;
+    display: block;
+  }
+  .user-card .btn span {
+    display: none;
+  }
+  .user-card .user-label {
+    display: none;
+  }
+}
+@media (max-width: 340px) {
+  .user-card {
+    padding: 0 0.75rem;
+  }
+  .user-card .image-wrap img {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+    margin: 0 0.75rem 0 0;
+  }
+  .user-card .btn {
+    padding: 6px;
+    border-radius: 50% !important;
+    margin-right: 8px !important;
+  }
+  .user-card .btn i {
+    font-size: 25px;
+    display: block;
+  }
+  .user-card .btn span {
+    display: none;
+  }
+}
+
+@media (max-width: 500px) {
+  .dispute-card .full-width {
+    width: 100%;
+  }
+  .dispute-card .full-width > form {
+    width: 100%;
+  }
+  .dispute-card .full-width > form > .btn {
+    width: 100%;
+  }
+}
+@media (max-width: 390px) {
+  .dispute-card .responsive-width {
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+  }
+}
+
+.resolve-report-popup .dropdown-content {
+  display: none !important;
+}
+.resolve-report-popup .dropdown-symbol svg {
+  transition: all 0.3s;
+  transform: rotate(0deg);
 }/*# sourceMappingURL=theme.css.map */

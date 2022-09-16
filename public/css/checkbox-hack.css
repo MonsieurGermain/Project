@@ -11,20 +11,51 @@
 .quantity-settings,
 .settings-container,
 .contact-div {
-    display: none;
+  overflow: hidden;
+  height: 0px !important;
+  transition: height 0.3s;
 }
 
-#quantity-settings-checkbox:checked ~ .quantity-settings,
-#settings-checkbox:checked ~ .settings-container,
-#contact-checkbox:checked ~ .contact-div { 
-    display: contents;
+#quantity-settings-checkbox:checked~.quantity-settings {
+  height: 12rem !important;
 }
 
-.dispute-settling-container { 
+#quantity-settings-checkbox~label>svg {
+  transform: rotate(0deg);
+  transition: all 0.3s;
+}
+
+#quantity-settings-checkbox:checked~label>svg {
+  transform: rotate(180deg);
+}
+
+#settings-checkbox:checked~.settings-container {
+  height: 12.5rem !important;
+}
+
+#settings-checkbox:checked~.settings-container.title-height {
+  height: 27rem !important;
+}
+
+#settings-checkbox:checked~.settings-container.full-height {
+  height: 29.5rem !important;
+}
+
+#settings-checkbox~label>svg {
+  transform: rotate(0deg);
+  transition: all 0.3s;
+}
+
+#settings-checkbox:checked~label>svg {
+  transform: rotate(180deg);
+}
+
+
+.dispute-settling-container {
   display: none;
 }
 
-#settling-disputes:checked ~ .dispute-settling-container {
+#settling-disputes:checked~.dispute-settling-container {
   display: contents;
 }
 
@@ -34,12 +65,12 @@
   display: none;
 }
 
-#admin-dipsutes-container-check:checked ~ .admin-disputes-container,
-#dipsutes-container-check:checked ~ .disputes-container {
+#admin-dipsutes-container-check:checked~.admin-disputes-container,
+#dipsutes-container-check:checked~.disputes-container {
   display: contents;
 }
- 
-#admin-dipsutes-container-check:checked ~ label[for='admin-dipsutes-container-check'],
-#dipsutes-container-check:checked ~ label[for='dipsutes-container-check'] {
+
+#admin-dipsutes-container-check:checked~label[for='admin-dipsutes-container-check'],
+#dipsutes-container-check:checked~label[for='dipsutes-container-check'] {
   border-bottom: 5px solid purple;
 }

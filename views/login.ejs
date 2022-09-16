@@ -9,7 +9,8 @@
       <!-- Center Everything -->
       <section class="position-relative h-100 pt-5 pb-4">
 
-        <div class="container d-flex flex-wrap justify-content-center justify-content-xl-start align-content-center h-100 pt-5">
+        <div class="container d-flex flex-wrap justify-content-center align-content-center h-100 pt-5">
+          <!-- justify-content-xl-start -->
 
 
           <div class="w-100 align-self-end pt-1 pt-md-4 pb-4" style="max-width: 526px;">
@@ -23,8 +24,8 @@
             <% if (success.length) { %>
               <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
             <% } %>
-            <h1 class="text-center text-xl-start">Welcome Back</h1>
-            <p class="text-center text-xl-start pb-3 mb-3">Don’t have an account yet? <a href="/register">Register here.</a></p>
+            <h1 class="text-center">Welcome Back</h1>
+            <p class="text-center pb-3 mb-3">Don’t have an account yet? <a href="/register">Register here.</a></p>
             <form action='/login' method="POST" class="needs-validation mb-2">
               <div class="position-relative mb-4">
                 <label for="username" class="form-label fs-base">Username</label>
@@ -45,7 +46,7 @@
         </div>
         
         <!-- Background -->
-        <div class="position-absolute top-0 end-0 w-50 h-100 bg-position-center bg-repeat-0 bg-size-cover d-none d-xl-block" style="background-image: url(assets/img/account/signin-bg.jpg);"></div>
+        <!-- <div class="position-absolute top-0 end-0 w-50 h-100 bg-position-center bg-repeat-0 bg-size-cover d-none d-xl-block" style="background-image: url(assets/img/account/signin-bg.jpg);"></div> -->
       </section>
     </main>
 
