@@ -17012,4 +17012,73 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .create-product-container [id^=product-selection-]:checked ~ label svg {
   transform: rotate(180deg);
+}
+
+.product-single-container .product-image-wrap img {
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+.product-single-container .product-image-wrap .product-show-image-wrap {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  position: relative;
+}
+.product-single-container .product-image-wrap .product-show-image-wrap img {
+  transition: all 0.5s;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 0%;
+  height: 100%;
+  display: block;
+}
+.product-single-container .product-image-wrap .image-list label {
+  border-style: solid;
+  border-color: transparent;
+  border-width: 0px 0px 5px 0px;
+  transition: all 0.3s;
+  margin-right: 10px;
+}
+.product-single-container .product-image-wrap .image-list label:hover {
+  border-color: #800080;
+}
+.product-single-container .product-image-wrap .image-list label img {
+  max-width: 120px;
+  aspect-ratio: 4/3;
+}
+.product-single-container .product-image-wrap #product-radio-0:checked ~ .product-show-image-wrap .product-image-0 {
+  width: 100% !important;
+}
+.product-single-container .product-image-wrap #product-radio-1:checked ~ .product-show-image-wrap .product-image-1 {
+  width: 100% !important;
+}
+.product-single-container .product-image-wrap #product-radio-2:checked ~ .product-show-image-wrap .product-image-2 {
+  width: 100% !important;
+}
+.product-single-container .product-image-wrap #product-radio-3:checked ~ .product-show-image-wrap .product-image-3 {
+  width: 100% !important;
+}
+.product-single-container .product-image-wrap #product-radio-4:checked ~ .product-show-image-wrap .product-image-4 {
+  width: 100% !important;
+}
+.product-single-container .product-image-wrap #product-radio-5:checked ~ .product-show-image-wrap .product-image-5 {
+  width: 100% !important;
+}
+.product-single-container .product-image-wrap [id^=product-radio-0]:checked ~ .image-list label[for=product-radio-0] {
+  border-color: #800080;
+}
+.product-single-container .product-image-wrap [id^=product-radio-1]:checked ~ .image-list label[for=product-radio-1] {
+  border-color: #800080;
+}
+.product-single-container .product-image-wrap [id^=product-radio-2]:checked ~ .image-list label[for=product-radio-2] {
+  border-color: #800080;
+}
+.product-single-container .product-image-wrap [id^=product-radio-3]:checked ~ .image-list label[for=product-radio-3] {
+  border-color: #800080;
+}
+.product-single-container .product-image-wrap [id^=product-radio-4]:checked ~ .image-list label[for=product-radio-4] {
+  border-color: #800080;
+}
+.product-single-container .product-image-wrap [id^=product-radio-5]:checked ~ .image-list label[for=product-radio-5] {
+  border-color: #800080;
 }/*# sourceMappingURL=theme.css.map */

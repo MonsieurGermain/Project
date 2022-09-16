@@ -62,7 +62,7 @@
     </section>
 
 
-    <section class="container">
+    <section class="container product-single-container">
       <div class="row">
 
         <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-4">
@@ -86,10 +86,10 @@
                   <div class="d-flex align-items-end mb-0">
                     <p class="h5 mb-0 mt-2">Price:</p>
                     <% if (product.salesPrice) { %>
-                      <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.salesPrice%>$</p>
-                      <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.price%>$</del>
-                    <% } else { %> 
-                      <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.price%>$</p>
+                    <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.salesPrice%>$</p>
+                    <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.price%>$</del>
+                    <% } else { %>
+                    <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.price%>$</p>
                     <% } %>
                   </div>
 
@@ -117,11 +117,31 @@
 
         <!-- Content -->
         <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
-          <img src="<%=product.img_path[0]%>" class="card-img-top" style="object-fit:cover;" alt="Product Image">
-
+          <div class="product-image-wrap">
+            <input id="product-radio-0" name="product-image" type="radio" checked hidden />
             <% for(let i = 1; i < product.img_path.length; i++) { %>
-              <img src="<%=product.img_path[i]%>" class="card-img-top mt-3" style="object-fit:cover; max-width: 150px; max-height: 75px;" alt="Product Image">
+            <input id="product-radio-<%=i%>" name="product-image" type="radio" hidden />
             <% } %>
+
+            <div class="product-show-image-wrap">
+              <img src="<%=product.img_path[0]%>" class="card-img-top product-image-0" alt="Product Image" />
+              
+              <% for(let i = 1; i < product.img_path.length; i++) { %>
+                <img src="<%=product.img_path[i]%>" class="card-img-top product-image-<%=i%>" alt="Product Image" />
+              <% } %>
+            </div>
+
+            <div class="image-list d-flex flex-wrap">
+              <label for="product-radio-0">
+                <img src="<%=product.img_path[0]%>" class="card-img-top mt-3" alt="Product Image">
+              </label>
+              <% for(let i = 1; i < product.img_path.length; i++) { %>
+              <label for="product-radio-<%=i%>">
+                <img src="<%=product.img_path[i]%>" class="card-img-top mt-3" alt="Product Image">
+              </label>
+              <% } %>
+            </div>
+          </div>
 
           <!-- Vendor -->
           <div class="card py-3 px-3 px-md-4 mt-3 border-0">
@@ -150,15 +170,15 @@
           </div>
 
           <% if (product.productDetails.length) { %>
-            <div class="card px-3 px-md-4 py-4 border-0 my-4">
-              <h5 class="mb-4 mt-2">Product details :</h5>
-              <% for(let i = 0; i < product.productDetails.length; i++) { %>
-                <div class="d-flex" style="justify-content: space-between;">
-                  <p class=""><b><%=product.productDetails[i].details%></b></p>
-                  <p class="ms-5 me-3"><%=product.productDetails[i].detailsDescription%></p>
-                </div>
-              <% } %>
+          <div class="card px-3 px-md-4 py-4 border-0 my-4">
+            <h5 class="mb-4 mt-2">Product details :</h5>
+            <% for(let i = 0; i < product.productDetails.length; i++) { %>
+            <div class="d-flex" style="justify-content: space-between;">
+              <p class=""><b><%=product.productDetails[i].details%></b></p>
+              <p class="ms-5 me-3"><%=product.productDetails[i].detailsDescription%></p>
             </div>
+            <% } %>
+          </div>
           <% } %>
 
           <div class="card px-3 px-md-4 py-4 border-0 my-4">
@@ -174,16 +194,16 @@
               <% for(let i = 0; i < product.shipping_option.length; i++) { %>
               <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
-                <%=product.shipping_option[i].option_description%> 
+                <%=product.shipping_option[i].option_description%>
                 <span class="ms-2"><b>
-                  <% if (product.shipping_option[i].option_price > 0) { %>
+                    <% if (product.shipping_option[i].option_price > 0) { %>
                     + <%=product.shipping_option[i].option_price%>$
-                  <% } else if (product.shipping_option[i].option_price < 0) { %>
+                    <% } else if (product.shipping_option[i].option_price < 0) { %>
                     <%=product.shipping_option[i].option_price%>$
-                  <% } else { %> 
+                    <% } else { %>
                     0$
-                  <% } %>
-                </b> 
+                    <% } %>
+                  </b>
                 </span>
               </div>
               <% } %>
@@ -191,7 +211,7 @@
           </div>
           <% } %>
 
-          
+
 
           <% if (product.selection_1) { %>
           <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
@@ -203,14 +223,14 @@
                 <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
                 <%=product.selection_1.selection_choices[i].choice_name%>
                 <span class="ms-2"><b>
-                  <% if (product.selection_1.selection_choices[i].choice_price > 0) { %>
+                    <% if (product.selection_1.selection_choices[i].choice_price > 0) { %>
                     + <%=product.selection_1.selection_choices[i].choice_price%>$
-                  <% } else if (product.selection_1.selection_choices[i].choice_price < 0) { %>
+                    <% } else if (product.selection_1.selection_choices[i].choice_price < 0) { %>
                     <%=product.selection_1.selection_choices[i].choice_price%>$
-                  <% } else { %> 
+                    <% } else { %>
                     0$
-                  <% } %>
-                </b> 
+                    <% } %>
+                  </b>
                 </span>
               </div>
               <% } %>
@@ -227,14 +247,14 @@
                 <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
                 <%=product.selection_2.selection_choices[i].choice_name%>
                 <span class="ms-2"><b>
-                  <% if (product.selection_2.selection_choices[i].choice_price > 0) { %>
+                    <% if (product.selection_2.selection_choices[i].choice_price > 0) { %>
                     + <%=product.selection_2.selection_choices[i].choice_price%>$
-                  <% } else if (product.selection_2.selection_choices[i].choice_price < 0) { %>
+                    <% } else if (product.selection_2.selection_choices[i].choice_price < 0) { %>
                     <%=product.selection_2.selection_choices[i].choice_price%>$
-                  <% } else { %> 
+                    <% } else { %>
                     0$
-                  <% } %>
-                </b> 
+                    <% } %>
+                  </b>
                 </span>
 
               </div>

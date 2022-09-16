@@ -1524,7 +1524,7 @@ aside {
    #product-detail-checkbox:checked~label {
       svg {
          transform: rotate(180deg);
-      }   
+      }
    }
 
    #product-detail-checkbox:checked~div {
@@ -1544,9 +1544,63 @@ aside {
    [id^="product-selection-"]:checked~div {
       height: 22.75rem;
    }
+
    [id^="product-selection-"]:checked~label {
       svg {
          transform: rotate(180deg);
+      }
+   }
+}
+
+.product-single-container {
+   .product-image-wrap {
+      img {
+         object-fit: cover;
+      }
+
+      .product-show-image-wrap {
+         aspect-ratio: 4 / 3;
+         overflow: hidden;
+         position: relative;
+         img {
+            transition: all 0.5s;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 0%;
+            height: 100%;
+            display: block;
+         }
+      }
+
+      .image-list {
+         label {
+            border-style: solid;
+            border-color: transparent;
+            border-width: 0px 0px 5px 0px;
+            transition: all 0.3s;
+            margin-right: 10px;
+            &:hover {
+               border-color: $primary;
+            }
+   
+            img {
+               max-width: 120px;
+               aspect-ratio: 4 / 3;
+            }
+         }
+      }
+
+      @for $i from 0 through 5 {
+         #product-radio-#{$i}:checked~.product-show-image-wrap .product-image-#{$i} {
+            width: 100%!important;
+         }
+      }
+
+      @for $i from 0 through 5 {
+         [id^='product-radio-#{$i}']:checked~.image-list label[for='product-radio-#{$i}'] {
+            border-color: $primary;
+         }
       }
    }
 }
