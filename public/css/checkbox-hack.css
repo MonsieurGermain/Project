@@ -30,15 +30,15 @@
 }
 
 #settings-checkbox:checked~.settings-container {
-  height: 12.5rem !important;
+  height: 23rem !important;
 }
 
 #settings-checkbox:checked~.settings-container.title-height {
-  height: 27rem !important;
+  height: 37.5rem !important;
 }
 
 #settings-checkbox:checked~.settings-container.full-height {
-  height: 29.5rem !important;
+  height: 40.25rem !important;
 }
 
 #settings-checkbox~label>svg {

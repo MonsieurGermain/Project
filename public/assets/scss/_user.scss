@@ -34,6 +34,10 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
    border: transparent !important;
 }
 
+svg {
+   transition: all 0.3s;
+}
+
 .small-rc {
    width: 2.5rem;
    height: 2.5rem;
@@ -1203,7 +1207,7 @@ $width-docs-side-nav: 69%;
       }
    }
 
-   [id^="buyer-detail-checkbox"]:hover ~ label[for^="buyer-detail-checkbox"] {
+   [id^="buyer-detail-checkbox"]:hover~label[for^="buyer-detail-checkbox"] {
       transition: 0.3s;
       background: rgba($input-border-color, 0.3);
    }
@@ -1213,7 +1217,7 @@ $width-docs-side-nav: 69%;
       opacity: 1 !important;
    }
 
-   [id^="buyer-detail-checkbox"]:checked ~ label[for^="buyer-detail-checkbox"] {
+   [id^="buyer-detail-checkbox"]:checked~label[for^="buyer-detail-checkbox"] {
       transition: 0.5s;
       background: rgba($input-border-color, 0.50);
    }
@@ -1306,7 +1310,7 @@ $width-docs-side-nav: 69%;
    }
 }
 
-aside { 
+aside {
    @media (max-width: $max-width-bp) {
       .position-sticky {
          position: static !important;
@@ -1495,8 +1499,9 @@ aside {
 
 .resolve-report-popup {
    .dropdown-content {
-      display: none!important;
+      display: none !important;
    }
+
    .dropdown-symbol {
       svg {
          transition: all 0.3s;
@@ -1506,5 +1511,42 @@ aside {
 }
 
 .danger-settings {
-   outline: 0.5px solid rgba($danger, 0.5) !important; 
+   outline: 0.5px solid rgba($danger, 0.5) !important;
+}
+
+.create-product-container {
+   .dropdown-content {
+      height: 0px;
+      transition: height 0.3s;
+      overflow: hidden;
+   }
+
+   #product-detail-checkbox:checked~label {
+      svg {
+         transform: rotate(180deg);
+      }   
+   }
+
+   #product-detail-checkbox:checked~div {
+      height: 74.25rem;
+   }
+
+   #shipping-option-checkbox:checked~label {
+      svg {
+         transform: rotate(180deg);
+      }
+   }
+
+   #shipping-option-checkbox:checked~div {
+      height: 19rem;
+   }
+
+   [id^="product-selection-"]:checked~div {
+      height: 22.75rem;
+   }
+   [id^="product-selection-"]:checked~label {
+      svg {
+         transform: rotate(180deg);
+      }
+   }
 }

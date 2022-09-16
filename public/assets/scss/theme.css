@@ -15771,6 +15771,10 @@ img-comparison-slider:focus {
   border: transparent !important;
 }
 
+svg {
+  transition: all 0.3s;
+}
+
 .small-rc {
   width: 2.5rem;
   height: 2.5rem;
@@ -16984,4 +16988,28 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 
 .danger-settings {
   outline: 0.5px solid rgba(239, 68, 68, 0.5) !important;
+}
+
+.create-product-container .dropdown-content {
+  height: 0px;
+  transition: height 0.3s;
+  overflow: hidden;
+}
+.create-product-container #product-detail-checkbox:checked ~ label svg {
+  transform: rotate(180deg);
+}
+.create-product-container #product-detail-checkbox:checked ~ div {
+  height: 74.25rem;
+}
+.create-product-container #shipping-option-checkbox:checked ~ label svg {
+  transform: rotate(180deg);
+}
+.create-product-container #shipping-option-checkbox:checked ~ div {
+  height: 19rem;
+}
+.create-product-container [id^=product-selection-]:checked ~ div {
+  height: 22.75rem;
+}
+.create-product-container [id^=product-selection-]:checked ~ label svg {
+  transform: rotate(180deg);
 }/*# sourceMappingURL=theme.css.map */
