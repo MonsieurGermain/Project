@@ -1,8 +1,8 @@
-<article class="card border-0 px-3 px-md-4 pt-3 pb-1">
+<article class="card border-0 px-3 px-md-4 py-2">
     <div class="row g-0">
         <div class="col-sm-5 position-relative bg-position-center bg-repeat-0 bg-size-cover rounded-3 overflow-hidden">
             <a href="/product/<%=product.slug%>?reviewPage=1" class="position-absolute top-0 start-0 w-100 h-100">
-                <img src="<%=product.img_path%>" style="object-fit: contain;" alt="Product Img">
+                <img src="<%=product.img_path[0]%>" class="card-img-top" style="height: 100%; object-fit: cover;" alt="Image">
             </a>
         </div>
         <div class="col-sm-7">
@@ -24,14 +24,14 @@
                 </p>
                 <div class="d-flex text-muted flex-wrap">
                     <div class="d-flex me-3">
-                        <p class="fs-sm mb-2">Vendor : <a
+                        <p class="fs-sm m-0">Vendor : <a
                                 href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1"><%=product.vendor%></a>
                         </p>
                     </div>
                     <div class="d-flex me-3 align-items-center">
-                        <%- include('./Rating', {rating: product.review.average_note}) %>
+                        <%- include('../Rating', {rating: product.review.average_note}) %>
                         <span class="opacity-70">
-                            <%- include('./Number-Reviews', {number_reviews: product.review.number_review}) %>
+                            <%- include('../Number-Reviews', {number_reviews: product.review.number_review}) %>
                         </span>
                     </div>
                 </div>

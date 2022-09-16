@@ -16215,6 +16215,7 @@ img-comparison-slider:focus {
   background-color: #fff;
 }
 .messages-view .messages-container .chat .chat-body .messages-main .message-text .delete-message-button.b-edit:hover {
+  outline: #fff;
   background-color: #212121 !important;
 }
 .messages-view .messages-container .chat .chat-body .messages-main .message-text .delete-message-button.b-edit:hover > i {
@@ -16316,6 +16317,16 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   display: none;
 }
 
+.text-content {
+  word-break: break-all;
+  max-height: 300px;
+  border-radius: 4px;
+  border: 1px solid rgba(25, 25, 25, 0.8);
+  box-shadow: 0 1px 6px rgba(25, 25, 25, 0.8);
+  overflow-y: auto;
+  text-align: left;
+}
+
 .popup-dialog {
   background-color: rgba(25, 25, 25, 0.8);
   position: fixed;
@@ -16384,12 +16395,6 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   width: 100%;
   height: 100%;
   z-index: -1;
-}
-.popup-dialog.pgp-keys-popup .text-content {
-  word-break: break-all;
-  max-height: 200px;
-  overflow-y: auto;
-  text-align: left;
 }
 .popup-dialog.pgp-keys-popup .buttons {
   justify-content: flex-end;
@@ -16743,9 +16748,17 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   transform: rotate(0deg);
   transition: all 0.5s;
 }
+.your-order-container [id^=buyer-detail-checkbox]:hover ~ label[for^=buyer-detail-checkbox] {
+  transition: 0.3s;
+  background: rgba(77, 77, 77, 0.3);
+}
 .your-order-container [id^=buyer-detail-checkbox]:checked ~ .buyer-detail-wrap {
   display: flex !important;
   opacity: 1 !important;
+}
+.your-order-container [id^=buyer-detail-checkbox]:checked ~ label[for^=buyer-detail-checkbox] {
+  transition: 0.5s;
+  background: rgba(77, 77, 77, 0.5);
 }
 .your-order-container [id^=buyer-detail-checkbox]:checked ~ label > svg {
   transform: rotate(180deg);
@@ -16814,6 +16827,13 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 }
 .list-card .list-content > span {
   font-size: 24px;
+}
+
+@media (max-width: 767px) {
+  aside .position-sticky {
+    position: static !important;
+    position: -webkit-sticky !important;
+  }
 }
 
 @media (max-width: 767px) {
@@ -16960,4 +16980,8 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
 .resolve-report-popup .dropdown-symbol svg {
   transition: all 0.3s;
   transform: rotate(0deg);
+}
+
+.danger-settings {
+  outline: 0.5px solid rgba(239, 68, 68, 0.5) !important;
 }/*# sourceMappingURL=theme.css.map */

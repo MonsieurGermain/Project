@@ -6,8 +6,8 @@ const Product = require('../models/product');
 const Conversation = require('../models/conversation');
 const bcrypt = require('bcrypt');
 const {Validate_Change_Password, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
-const {paginatedResults, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress} = require('../middlewares/function');
-
+const {paginatedResults, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress, generateRandomString} = require('../middlewares/function');
+ 
 
 function validateData(value, acceptedValues) {
    for (let i = 0; i < acceptedValues.length; i++) {

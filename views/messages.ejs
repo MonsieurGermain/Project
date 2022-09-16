@@ -72,7 +72,9 @@
               </div>
             </div>
             <div class="chat">
-              <%- include('partials/Show-messages', {action: "/messages/" + selected_conversation.id + "#bottom"}) %>
+              <% if (selected_conversation) { %>
+                <%- include('partials/Show-messages', {action: "/messages/" + selected_conversation.id + "#bottom"}) %>
+              <% } %>
             </div>
           </div>
         </div>

@@ -181,13 +181,13 @@ Validate_OrderCustomization, async (req, res) => {
          product_slug: product.slug,
          base_price: product.salesPrice ? product.salesPrice : product.price,
          total_price: product.price,
-         qty: qty,
-         shipping_option: shipping_option,
-         selection_1: selection_1,
-         selection_2: selection_2,
          status: 'awaiting_info',
          timer: Date.now() + 30 * 60 * 1000, // 30min
          privacy: type,
+         qty: qty,
+         selection_1,
+         selection_2,
+         shipping_option,
       });
 
       order.orderMoneroAddress = product.customMoneroAddress ? product.customMoneroAddress : await getVendorMoneroAddress(product.vendor)
@@ -196,9 +196,11 @@ Validate_OrderCustomization, async (req, res) => {
          order.base_price,
          order.qty,
          order.shipping_option ? order.shipping_option.option_price : 0,
-         order.selection_1 ? order.selection_1.selected_choice.choice_price : 0,
-         order.selection_2 ? order.selection_2.selected_choice.choice_price : 0
+         order.selection_1?.selected_choice.choice_price ? order.selection_1.selected_choice.choice_price : 0,
+         order.selection_2?.selected_choice.choice_price ? order.selection_2.selected_choice.choice_price : 0
       );
+
+      if (order.total_price < 1) throw new Error('Each orders need to cost at least 1$')  
 
       await product.save();
       await order.save();
@@ -206,7 +208,8 @@ Validate_OrderCustomization, async (req, res) => {
       res.redirect(`/submit-info/${order.id}`);
    } catch (e) {
       console.log(e);
-      res.redirect('/404');
+      req.flash('error', e.message)
+      res.redirect(`/order/${req.product.slug}`);
    }
 });
 
@@ -326,8 +329,6 @@ function verifyOrderUpdate(status, buyer, vendor, username) {
    }
 }
 
-
-
 function constructOrdersQuery(query, username) {
    const mongooseQuery = {};
 
@@ -338,6 +339,14 @@ function constructOrdersQuery(query, username) {
    else mongooseQuery.buyer = username;
 
    return mongooseQuery;
+}
+
+function sanitizeHtmlOfFirstMessage(orders) {
+   console.log(orders)
+   for(let i = 0; i < orders.length; i++) {
+      if (orders[i].messages[0]) orders[i].messages[0].content = sanitizeHTML(orders[i].messages[0].content);
+   }
+   return orders
 }
 
 router.get('/orders', Need_Authentification, sanitizeQuerys,
@@ -351,6 +360,8 @@ router.get('/orders', Need_Authentification, sanitizeQuerys,
          let orders = await paginatedResults(Order, query, {page: req.query.ordersPage, limit: 24});
 
          orders.results = await arrayFormat_Order(orders.results, query.vendor ? false : true);
+
+         orders.results = sanitizeHtmlOfFirstMessage(orders.results);
 
          res.render('your-order', {orders});
       } catch (e) {

@@ -529,6 +529,7 @@ $max-width-bp: calc(map.get($grid-breakpoints, 'md') - 1px);
                         background-color: #fff;
 
                         &:hover {
+                           outline: #fff;
                            background-color: #212121 !important;
 
                            >i {
@@ -646,6 +647,16 @@ input[id='otherpgp']:not(:checked)~.otherPgpTextarea {
    display: none;
 }
 
+.text-content {
+   word-break: break-all;
+   max-height: 300px;
+   border-radius: 4px;
+   border: 1px solid rgba($body-bg, 0.8);
+   box-shadow: 0 1px 6px rgba($body-bg, 0.8);
+   overflow-y: auto;
+   text-align: left;
+}
+
 .popup-dialog {
    background-color: rgba($body-bg, 0.8);
    position: fixed;
@@ -729,13 +740,6 @@ input[id='otherpgp']:not(:checked)~.otherPgpTextarea {
    }
 
    &.pgp-keys-popup {
-      .text-content {
-         word-break: break-all;
-         max-height: 200px;
-         overflow-y: auto;
-         text-align: left;
-      }
-
       .buttons {
          justify-content: flex-end;
       }
@@ -1199,9 +1203,19 @@ $width-docs-side-nav: 69%;
       }
    }
 
+   [id^="buyer-detail-checkbox"]:hover ~ label[for^="buyer-detail-checkbox"] {
+      transition: 0.3s;
+      background: rgba($input-border-color, 0.3);
+   }
+
    [id^="buyer-detail-checkbox"]:checked~.buyer-detail-wrap {
       display: flex !important;
       opacity: 1 !important;
+   }
+
+   [id^="buyer-detail-checkbox"]:checked ~ label[for^="buyer-detail-checkbox"] {
+      transition: 0.5s;
+      background: rgba($input-border-color, 0.50);
    }
 
    [id^="buyer-detail-checkbox"]:checked~label {
@@ -1288,6 +1302,15 @@ $width-docs-side-nav: 69%;
 
       >span {
          font-size: 24px
+      }
+   }
+}
+
+aside { 
+   @media (max-width: $max-width-bp) {
+      .position-sticky {
+         position: static !important;
+         position: -webkit-sticky !important;
       }
    }
 }
@@ -1480,4 +1503,8 @@ $width-docs-side-nav: 69%;
          transform: rotate(0deg);
       }
    }
+}
+
+.danger-settings {
+   outline: 0.5px solid rgba($danger, 0.5) !important; 
 }

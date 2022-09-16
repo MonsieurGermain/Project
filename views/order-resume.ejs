@@ -66,7 +66,7 @@
         <!-- Content -->
         <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
 
-          <%- include('partials/Product-card', {product: product}) %>
+          <%- include('partials/Display_Data/Product-card', {product: product}) %>
 
           <hr class="my-4">
 
@@ -160,74 +160,77 @@
 
 
             <!-- CHAT -->
-            <p class="h5 ">Order Chat</p>
-            <div class="w-100 mt-2" style="max-height: 712px; height: 400px;">
-              <div class="card h-100">
-
-                <!-- Messages -->
-                <div class="card-body swiper scrollbar-hover w-100 p-3 pb-0" style="overflow-y: auto;">
-                  <div class="swiper-slide h-auto">
-
-                    <% for(let i = 0; i < order.messages.length ; i++) {%>
-
-                    <% if (order.messages[i].sender === order.admin) { %>
-                    <div class="d-flex align-items-center justify-content-center mb-1">
-                      <!--Put message in middle-->
-                      <div class="ps-2 ms-1" style="max-width: 348px;">
-                        <div class="bg-warning card p-3 mb-1"
-                          style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                          <%= order.messages[i].content %></div>
+            <% if (order.status !== 'awaiting_info') { %>
+              <p class="h5 ">Order Chat</p>
+              <div class="w-100 mt-2" style="max-height: 712px; height: 400px;">
+                <div class="card h-100">
+  
+                  <!-- Messages -->
+                  <div class="card-body swiper scrollbar-hover w-100 p-3 pb-0" style="overflow-y: auto;">
+                    <div class="swiper-slide h-auto">
+  
+                      <% for(let i = 0; i < order.messages.length ; i++) {%>
+  
+                      <% if (order.messages[i].sender === order.admin) { %>
+                      <div class="d-flex align-items-center justify-content-center mb-1">
+                        <!--Put message in middle-->
+                        <div class="ps-2 ms-1" style="max-width: 348px;">
+                          <div class="bg-warning card p-3 mb-1"
+                            style="border-top-right-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <%= order.messages[i].content %></div>
+                        </div>
                       </div>
-                    </div>
-                    <% } else if (order.messages[i].sender === order.vendor) { %>
-                    <% if (authuser.username === order.vendor) { %>
-                    <div class="d-flex align-items-end justify-content-end mb-1">
-                      <div class="pe-2 me-1" style="max-width: 348px;">
-                        <div class="bg-primary text-light p-3 mb-1"
-                          style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                          <%= order.messages[i].content %></div>
+                      <% } else if (order.messages[i].sender === order.vendor) { %>
+                      <% if (authuser.username === order.vendor) { %>
+                      <div class="d-flex align-items-end justify-content-end mb-1">
+                        <div class="pe-2 me-1" style="max-width: 348px;">
+                          <div class="bg-primary text-light p-3 mb-1"
+                            style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <%= order.messages[i].content %></div>
+                        </div>
                       </div>
-                    </div>
-                    <% } else { %>
-                    <div class="d-flex align-items-start mb-1">
-                      <div class="ps-2 ms-1" style="max-width: 348px;">
-                        <div class="card p-3 mb-1"
-                          style="background-color: #18171785;border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                          <%= order.messages[i].content %></div>
+                      <% } else { %>
+                      <div class="d-flex align-items-start mb-1">
+                        <div class="ps-2 ms-1" style="max-width: 348px;">
+                          <div class="card p-3 mb-1"
+                            style="background-color: #18171785;border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <%= order.messages[i].content %></div>
+                        </div>
                       </div>
-                    </div>
-                    <% } %>
-                    <% } else { %>
-                    <% if (authuser.username === order.admin) { %>
-                    <div class="d-flex align-items-end justify-content-end mb-1">
-                      <div class="pe-2 me-1" style="max-width: 348px;">
-                        <div class="bg-primary text-light p-3 mb-1"
-                          style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                          <%= order.messages[i].content %></div>
+                      <% } %>
+                      <% } else { %>
+                      <% if (authuser.username === order.admin) { %>
+                      <div class="d-flex align-items-end justify-content-end mb-1">
+                        <div class="pe-2 me-1" style="max-width: 348px;">
+                          <div class="bg-primary text-light p-3 mb-1"
+                            style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <%= order.messages[i].content %></div>
+                        </div>
                       </div>
-                    </div>
-                    <% } else if (authuser.username === order.vendor) { %>
-                    <div class="d-flex align-items-start mb-1">
-                      <div class="ps-2 ms-1" style="max-width: 348px;">
-                        <div class="card p-3 mb-1"
-                          style="background-color: #18171785;border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                          <%= order.messages[i].content %></div>
+                      <% } else if (authuser.username === order.vendor) { %>
+                      <div class="d-flex align-items-start mb-1">
+                        <div class="ps-2 ms-1" style="max-width: 348px;">
+                          <div class="card p-3 mb-1"
+                            style="background-color: #18171785;border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <%= order.messages[i].content %></div>
+                        </div>
                       </div>
-                    </div>
-                    <% } else { %>
-                    <div class="d-flex align-items-end justify-content-end mb-1">
-                      <div class="pe-2 me-1" style="max-width: 348px;">
-                        <div class="bg-primary text-light p-3 mb-1"
-                          style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
-                          <%= order.messages[i].content %></div>
+                      <% } else { %>
+                      <div class="d-flex align-items-end justify-content-end mb-1">
+                        <div class="pe-2 me-1" style="max-width: 348px;">
+                          <div class="bg-primary text-light p-3 mb-1"
+                            style="border-top-left-radius: .5rem; border-bottom-right-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <%= order.messages[i].content %></div>
+                        </div>
                       </div>
+                      <% } %>
+                      <% } %>
+                      <% } %>
+  
                     </div>
-                    <% } %>
-                    <% } %>
-                    <% } %>
-
                   </div>
-                </div>
+            <% } %>
+
 
 
                 <!-- Footer (Send message form) -->

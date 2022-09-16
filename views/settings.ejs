@@ -154,7 +154,7 @@
                         <form action="/confirm-email" method="POST">
                           <input type="text" name="confirmation_code" placeholder="Enter Your Verification Code Here" class="form-control form-control-lg mb-2" maxlength="6" minlength="6">
                           <div class="w-100 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary mb-5">Submit Code</button>
+                            <button type="submit" class="btn btn-primary mt-3 mb-5">Submit Code</button>
                           </div>
                         </form>
                     <% } %>
@@ -201,7 +201,7 @@
                         <h2 class="h5 mb-3">Verify Pgp Keys</h2>
                         <form action="/verify-pgp" method="POST" class="d-flex flex-column align-items-end">
                           <input type="text" name="pgp_verification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
-                          <button type="submit" class="btn btn-primary mb-5">Verify Pgp</button>
+                          <button type="submit" class="btn btn-primary mt-3 mb-5">Verify Pgp</button>
                         </form>
                       <% } %>
                     </div>
@@ -222,7 +222,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="row pb-2">
+                      <div class="row">
                         <div class="col-sm-6 mb-4">
                           <label for="np" class="form-label fs-base">New password</label>
                           <div class="password-toggle">
@@ -236,7 +236,7 @@
                           </div>
                         </div>
                       </div>
-                      <div class="d-flex mb-3 justify-content-end">
+                      <div class="d-flex mb-3 justify-content-end mt-3">
                         <button type="submit" class="btn btn-primary">Change Password</button>
                       </div>
                     </form>
@@ -289,7 +289,7 @@
   
                   
                 <!-- Delete account -->
-                <div class="card p-5 mt-4">
+                <div class="card card-body p-5 mt-4 danger-settings">
                 <h2 class="h5">Delete account</h2>
                 <p>This action is irreversible and will result in the lost of <b>ALL</b> data of your profile except the reviews that you have posted</p>
                 <form action="/delete-user?_method=DELETE" method="POST">
@@ -375,7 +375,7 @@
                       </div>
 
                         <div class="d-flex mt-4 mb-2 responsive-column">
-                          <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+                          <button type="submit" class="btn btn-primary ms-auto">Save</button>
                           </form>
 
                           <form action="/reset-privacy?type=conversation" method="POST" class="padding-left-10">
@@ -424,8 +424,8 @@
                               >≈ 1 months (30days)</option> 
                           </select>
 
-                      <div class="d-flex mb-2 responsive-column">
-                      <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+                      <div class="d-flex mb-2 mt-4 responsive-column">
+                      <button type="submit" class="btn btn-primary ms-auto">Save</button>
                       </form>
 
                       <form action="/reset-privacy?type=order" method="POST" class="padding-left-10">
@@ -468,8 +468,8 @@
                             <% } %>
                             >1 years</option> 
                         </select>
-                    <div class="d-flex mb-2 responsive-column">
-                      <button type="submit" class="btn btn-primary ms-auto">Save Changes</button>
+                    <div class="d-flex mb-2 mt-4 responsive-column">
+                      <button type="submit" class="btn btn-primary ms-auto">Save</button>
                       </form>
 
                       <form action="/reset-privacy?type=account" method="POST" class="padding-left-10">
@@ -493,14 +493,14 @@
                             <label class="form-check-label" for="confirm-vendorMoneroAddress">I have double check my address</label>
                           </div>
                           <% if (authuser.vendorMoneroAddress) { %>
-                            <button type="submit" class="btn btn-primary ms-auto">Change</button>
+                            <button type="submit" class="btn btn-primary mt-3 ms-auto">Change</button>
                           <% } else { %>
-                            <button type="submit" class="btn btn-primary ms-auto">Add</button>
+                            <button type="submit" class="btn btn-primary mt-3 ms-auto">Add</button>
                           <% } %>
                         </form>
                         <% if (authuser.vendorMoneroAddress) { %>
                           <form action="/delete-address?addressType=personal" method="POST" class="padding-left-10">
-                            <button type="submit" class="btn btn-danger w-100">Delete</button>
+                            <button type="submit" class="btn btn-danger mt-3 w-100">Delete</button>
                           </form>
                         <% } %>
                         </div> 
@@ -519,14 +519,14 @@
                             <label class="form-check-label" for="confirm-xmrRefundAddress">I have double check my address</label>
                           </div>
                         <% if (!authuser.xmrRefundAddress) { %>
-                          <button type="submit" class="btn btn-primary ms-auto">Change</button>
+                          <button type="submit" class="btn btn-primary mt-2 ms-auto">Change</button>
                         <% } else { %>
-                          <button type="submit" class="btn btn-primary ms-auto">Add</button>
+                          <button type="submit" class="btn btn-primary mt-2 ms-auto">Add</button>
                           <% } %>
                       </form>
                         <% if (authuser.xmrRefundAddress) { %>
                           <form action="/delete-address?addressType=refund" method="POST" class="padding-left-10">
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger mt-2">Delete</button>
                           </form>
                         <% } %>
                       </div>

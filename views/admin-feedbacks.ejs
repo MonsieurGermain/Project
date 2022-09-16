@@ -25,7 +25,7 @@
 
 
           <div>
-            <h2>Feedbacks :</h2>
+            <h4>Feedbacks :</h4>
           </div>
 
           <div class="filter-wrap d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
@@ -76,8 +76,8 @@
           </div>
 
           <% if (!feedbacks.results.length) { %>
-          <h4 class="my-3">No feedback</h3>
-            <% } %>
+            <h6 class="mt-5" style="text-align: center">No Feedbacks, for now...</h6>
+          <% } %>
 
             <% for(let i = 0; i < feedbacks.results.length; i++) { %>
             <article class="card card-hover border-0 shadow-sm overflow-hidden mt-4">

@@ -171,6 +171,7 @@
               </div>
             </div>
           </div>
+          </div>
 
         <div class="card pt-4 pb-2 px-4 mt-3 border-0">
           <p class="mb-1">Product Details</p>
@@ -231,7 +232,7 @@
               <input name="describe_ship" class="form-control" id="inline-form-input" type="text" maxlength="200"
                 placeholder="Describe Shipping Option #<%=i + 1%>" <% if(product.shipping_option[i]) { %>
                 value="<%=product.shipping_option[i].option_description%>%>" <% } %>>
-              <input name="price_ship" class="form-control ms-3" id="inline-form-input" type="number" maxlength="1000"
+              <input name="price_ship" class="form-control ms-3" id="inline-form-input" type="number" max="1000" min="0"
                 placeholder="Additionnal Price #<%=i + 1%>" <% if(product.shipping_option[i]) { %>
                 value="<%=product.shipping_option[i].option_price%>%>" <% } %>>
             </div>
@@ -261,7 +262,7 @@
                   placeholder="Choice Name #<%=i + 1%>"
                   <% if(product.selection_1 && product.selection_1.selection_choices[i]) { %>
                   value="<%=product.selection_1.selection_choices[i].choice_name%>" <% } %>>
-                <input name="se_1_price" class="form-control ms-3" type="number" maxlength="1000"
+                <input name="se_1_price" class="form-control ms-3" type="number" max="1000" min="-1000"
                   placeholder="Additionnal Price #<%=i + 1%>"
                   <% if(product.selection_1 && product.selection_1.selection_choices[i]) { %>
                   value="<%=product.selection_1.selection_choices[i].choice_price%>" <% } %>>
@@ -275,7 +276,7 @@
             <div>
               <h3 class="h5">Selection #2</h3>
               <div class="mb-2">
-                <input name="selection_2_name" class="form-control" type="text" id="text-input" maxlength="100"
+                <input name="selection_2_name" class="form-control" type="text" id="text-input" maxlength="100" 
                   placeholder="Name of the Selection #2" <% if(product.selection_2) { %>
                   value="<%=product.selection_2.selection_name%>" <% } %>>
               </div>
@@ -287,7 +288,7 @@
                   placeholder="Choice Name #<%=i + 1%>"
                   <% if(product.selection_2 && product.selection_2.selection_choices[i]) { %>
                   value="<%=product.selection_2.selection_choices[i].choice_name%>" <% } %>>
-                <input name="se_2_price" class="form-control ms-3" type="number" maxlength="1000"
+                <input name="se_2_price" class="form-control ms-3" type="number" max="1000" min="-1000"
                   placeholder="Additionnal Price #<%=i + 1%>"
                   <% if(product.selection_2 && product.selection_2.selection_choices[i]) { %>
                   value="<%=product.selection_2.selection_choices[i].choice_price%>" <% } %>>
@@ -329,21 +330,24 @@
             <h3 class="h4 ">Product Settings</h3>
             <div>
 
-              <input class="form-check-input" type="checkbox" id="settings-checkbox" <% if (product.originalPrice) { %>
+              <input class="form-check-input" type="checkbox" id="settings-checkbox" <% if (product.salesPrice) { %>
                 checked <% }%> hidden>
               <label class="form-check-label ms-2" for="settings-checkbox">Change Settings
                 <%- include ("../public/assets/img/icons/caret-down.svg") %>
               </label>
 
-              <div class="settings-container <%= product.title?(product.originalPrice?'full-height':'title-height'):'' %>">
+              <div class="settings-container <%= product.title?(product.salesPrice?'full-height':'title-height'):'' %>">
                 <% if (product.title) { %>
                 <div>
                   <p class="h5 mt-4">Start a Sales !</p>
 
                   <label for="saleprice-input" class="form-label mb-1">Sales Price</label>
-                  <input type="number" class="form-control" placeholder="Price on sales of the product"
-                    name="salesPrice" id="saleprice-input" <% if (product.originalPrice) { %> value="<%=product.price%>"
-                    style="pointer-events:none; opacity: 50%;" <% } else { %> max="<%=product.price - 1%>" <% } %>>
+                  <input type="number" class="form-control" placeholder="Price on sales of the product" step=".01"
+                    name="salesPrice" id="saleprice-input" 
+                    <% if (product.salesPrice) { %> 
+                    value="<%=product.salesPrice%>"
+                    style="pointer-events:none; opacity: 50%;" <% } else { %> max="<%=product.price - 1%>" 
+                    <% } %>>
 
                   <label for="saletime-input" class="form-label mb-1 mt-4">Duration of the sales</label>
                   <input type="number" class="form-control" placeholder="How much days will your Sales Last ?" max="30"
@@ -420,8 +424,6 @@
           </div>
 
 
-
-          <%- include('partials/Vendor-card', {vendor : authuser}) %>
 
           <!-- Review Section -->
           <h2 class="h3 mb-4 mt-4">Reviews :</h2>

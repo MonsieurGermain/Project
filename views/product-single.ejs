@@ -12,7 +12,7 @@
     <%- include('partials/Statics/Navbar') %>
 
     <!-- Hero -->
-    <section class="pt-2 pt-lg-3 pb-lg-4">
+    <section class="pt-2 mb-4">
       <div class="container">
 
         <!-- Breadcrumb -->
@@ -65,7 +65,7 @@
     <section class="container">
       <div class="row">
 
-        <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-5">
+        <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mb-4">
           <div style="margin-top: -96px;"></div>
           <div class="position-sticky top-0 pt-5">
             <div class="pt-5">
@@ -174,22 +174,24 @@
               <% for(let i = 0; i < product.shipping_option.length; i++) { %>
               <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bxs-plane-alt text-primary fs-xl me-2"></i>
-                <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
+                <%=product.shipping_option[i].option_description%> 
+                <span class="ms-2"><b>
+                  <% if (product.shipping_option[i].option_price > 0) { %>
+                    + <%=product.shipping_option[i].option_price%>$
+                  <% } else if (product.shipping_option[i].option_price < 0) { %>
+                    <%=product.shipping_option[i].option_price%>$
+                  <% } else { %> 
+                    0$
+                  <% } %>
+                </b> 
+                </span>
               </div>
-              <!-- <div class="list-card d-flex my-2">
-                <div class="list-number d-flex align-items-center justify-content-around ps-2">
-                  <span class="d-flex align-items-center"><i class="bx bxs-plane-alt"></i></span>
-                </div>
-                <div class="list-content d-flex align-items-center justify-content-around px-3 w-100">
-                  <span>
-                    <%=product.shipping_option[i].option_description%> : + <%=product.shipping_option[i].option_price%>$
-                  </span>
-                </div>
-              </div> -->
               <% } %>
             </div>
           </div>
           <% } %>
+
+          
 
           <% if (product.selection_1) { %>
           <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
@@ -199,20 +201,18 @@
               <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
               <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
-                <%=product.selection_1.selection_choices[i].choice_name%> : +
-                <%=product.selection_1.selection_choices[i].choice_price%>
+                <%=product.selection_1.selection_choices[i].choice_name%>
+                <span class="ms-2"><b>
+                  <% if (product.selection_1.selection_choices[i].choice_price > 0) { %>
+                    + <%=product.selection_1.selection_choices[i].choice_price%>$
+                  <% } else if (product.selection_1.selection_choices[i].choice_price < 0) { %>
+                    <%=product.selection_1.selection_choices[i].choice_price%>$
+                  <% } else { %> 
+                    0$
+                  <% } %>
+                </b> 
+                </span>
               </div>
-              <!-- <div class="list-card d-flex my-2">
-                <div class="list-number d-flex align-items-center justify-content-around ps-2">
-                  <span class="d-flex align-items-center"><i class="bx bx-spreadsheet"></i></span>
-                </div>
-                <div class="list-content d-flex align-items-center justify-content-around px-3 w-100">
-                  <span>
-                    <%=product.selection_1.selection_choices[i].choice_name%> : +
-                    <%=product.selection_1.selection_choices[i].choice_price%>
-                  </span>
-                </div>
-              </div> -->
               <% } %>
             </div>
           </div>
@@ -225,8 +225,18 @@
               <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
               <div class="d-flex align-items-center mb-2" style="width: calc(50% - 5px);">
                 <i class="bx bx-spreadsheet text-primary fs-xl me-2 mt-1"></i>
-                <%=product.selection_2.selection_choices[i].choice_name%> : +
-                <%=product.selection_2.selection_choices[i].choice_price%>
+                <%=product.selection_2.selection_choices[i].choice_name%>
+                <span class="ms-2"><b>
+                  <% if (product.selection_2.selection_choices[i].choice_price > 0) { %>
+                    + <%=product.selection_2.selection_choices[i].choice_price%>$
+                  <% } else if (product.selection_2.selection_choices[i].choice_price < 0) { %>
+                    <%=product.selection_2.selection_choices[i].choice_price%>$
+                  <% } else { %> 
+                    0$
+                  <% } %>
+                </b> 
+                </span>
+
               </div>
               <!-- <div class="list-card d-flex my-2">
                 <div class="list-number d-flex align-items-center justify-content-around ps-2">

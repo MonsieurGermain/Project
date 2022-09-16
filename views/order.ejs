@@ -53,9 +53,9 @@
 
         <!-- Blog list + Sidebar -->
         <div class="row">
-          <div class="col-xl-8 col-lg-8 col-md-7 order-md-1">
+          <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-4">
 
-            <%- include('partials/Product-card', {product: product}) %>
+            <%- include('partials/Display_Data/Product-card', {product: product}) %>
 
             <hr class="my-3">
 
@@ -66,7 +66,12 @@
               <select name='shipping_option' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.shipping_option.length; i++) { %>
                 <option value="<%=product.shipping_option[i].option_description%>">
-                  <%=product.shipping_option[i].option_description%> - <%=product.shipping_option[i].option_price%>$
+                  <%=product.shipping_option[i].option_description%> 
+                  <% if (!product.shipping_option[i].option_price) { %>
+                    0$
+                  <% } else { %>
+                    <%=product.shipping_option[i].option_price%>$
+                  <% } %>
                 </option>
                 <% } %>
               </select>
@@ -80,8 +85,13 @@
               <select name='selection_1' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
                 <option value="<%=product.selection_1.selection_choices[i].choice_name%>">
-                  <%=product.selection_1.selection_choices[i].choice_name%> -
-                  <%=product.selection_1.selection_choices[i].choice_price%>$</option>
+                  <%=product.selection_1.selection_choices[i].choice_name%>
+                  <% if (!product.selection_1.selection_choices[i].choice_price) { %>
+                    0$
+                  <% } else { %>
+                    <%=product.selection_1.selection_choices[i].choice_price%>$
+                  <% } %>
+                  </option>
                 <% } %>
               </select>
             </div>
@@ -94,8 +104,13 @@
               <select name='selection_2' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
                 <option value="<%=product.selection_2.selection_choices[i].choice_name%>">
-                  <%=product.selection_2.selection_choices[i].choice_name%> -
-                  <%=product.selection_2.selection_choices[i].choice_price%>$</option>
+                  <%=product.selection_2.selection_choices[i].choice_name%> 
+                  <% if (!product.selection_2.selection_choices[i].choice_price) { %>
+                    0$
+                  <% } else { %>
+                    <%=product.selection_2.selection_choices[i].choice_price%>$
+                  <% } %>
+                </option>
                 <% } %>
               </select>
             </div>
@@ -104,11 +119,15 @@
           </div>
 
 
-          <aside class="col-lg-4 col-md-5 order-md-2 position-sticky">
 
-            <div class="position-sticky top-0">
+
+          <aside class="col-lg-4 col-md-5 order-md-2 mb-3">
+            <div style="margin-top: -96px;"></div>
+            <div class="position-sticky top-0 pt-5">
+              <div class="pt-5">
               <div class="card shadow-sm border-0">
                 <div class="card-body px-3 px-md-4 py-4">
+                  
                   <p class="mb-2">Privacy Settings</p>
                   <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
                   <label class='form-check-label mb-2' for="default">Default <span class="opacity-70">(Not
@@ -164,6 +183,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary rounded-pill shadow-primary">Make Order</button>
               </div>
+            </div>
             </div>
           </aside>
         </div>

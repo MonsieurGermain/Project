@@ -56,7 +56,7 @@
               <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162"
                 height="162" alt="<%=vendor.username%>">
               <h5 class="fw-medium fs-lg mb-1"><%=vendor.username%></h5>
-              <p class="fs-sm mb-2"><%=vendor.job%></p>
+              <p class="fs-sm opacity-80 mb-2"><%=vendor.job%></p>
 
               <% if(authuser && vendor.username === authuser.username) { %>
               <a href='/edit-profile?productPage=1&reviewPage=1' class=" mb-2">Edit my Profile</a>

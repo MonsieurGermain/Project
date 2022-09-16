@@ -65,7 +65,7 @@ function makeSelectionChoice(selectionOption, selectionPrice, selectionNum) {
       if (selectionOption[i]) {
          selectionOption[i] = ValidateText(selectionOption[i], `Selection ${selectionNum} Option Description #${i + 1}`, {minlength: 0, maxlength: 200, isRequired: false});
 
-         selectionPrice[i] = validateNumber(selectionPrice[i], `Selection ${selectionNum} Option Price #${i + 1}`, {min: 1, max: 1000, isRequired: false})
+         selectionPrice[i] = validateNumber(selectionPrice[i], `Selection ${selectionNum} Option Price #${i + 1}`, {min: -1000, max: 1000, isRequired: false})
          if (!selectionPrice[i]) selectionPrice[i] = 0
 
          selectionChoices[i] = {choice_name: selectionOption[i], choice_price: selectionPrice[i]};

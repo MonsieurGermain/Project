@@ -30,7 +30,7 @@
 
 
           <div>
-            <h2>Feedbacks :</h2>
+            <h4>Reports:</h4>
           </div>
 
           <div class="filter-wrap d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
@@ -88,11 +88,11 @@
           </div>
 
           <% if (!reports.results.length) { %>
-          <h4 class="my-3">No Report !!</h3>
-            <h4 class="my-3">Yall are so good !!</h3>
-              <% } %>
+            <h6 class="mt-5" style="text-align: center">No Reports for the moments</h6>
+            <h6 class="mt-4" style="text-align: center">Yall are so good !!</h6>
+          <% } %>
 
-              <% for(let i = 0; i < reports.results.length; i++) { %>
+          <% for(let i = 0; i < reports.results.length; i++) { %>
 
               <input id="report-resolve-<%=i%>" type="checkbox" hidden></input>
               <!-- when checked css shows next element -->

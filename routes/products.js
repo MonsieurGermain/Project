@@ -265,7 +265,7 @@ async (req, res) => {
       if (product.status === 'offline' && status === 'online') {
          req.flash('warning', 'You need to add a Monero Address to your account or a custom Monero address to the Product in order to put it online');
       } else if (status === 'offline') {
-         req.flash('warning', `${success_message} and Offline`);
+         req.flash('warning', `${success_message}, but still Offline`);
       } else {        
          req.flash('success', success_message);
       }

@@ -28,23 +28,25 @@
                 </div>   
                 <% } %>
 
-          <% if (query.adminDispute) { %>
-          <div>
-            <h2>Take on new Disputes :</h2>
-          </div>
-          <% if (!disputes.results..length) { %>
-          <h4 class="my-3">You dont have any Disputes Taken</h3>
-            <a href="/disputes?disputesPage=1" class="my-3">Go take somes...</a>
+
+            <% if (query.adminDispute) { %>
+              <div>
+                <h4>Your Disputes:</h4>
+              </div> 
+              <% if (!disputes.results.length) { %>
+                <h6 class="mt-5" style="text-align: center">You dont have any Disputes Taken</h6>
+                <p class="mt-4 text-primary" style="text-align: center"><a href="/disputes?disputesPage=1" class="my-3">Go take somes...</a></p>
+              <% } %> 
+            <% } else { %> 
+              <div>
+                <h4>Available Disputes:</h4>
+              </div> 
+              <% if (!disputes.results.length) { %>
+                <h6 class="mt-5" style="text-align: center">No dispute Needing resolving</h6>
+                <h6 class="mt-4" style="text-align: center">Keep it up !</h6>
+              <% } %> 
             <% } %>
-            <% } else { %>
-            <div>
-              <h2>Your Disputes :</h2>
-            </div>
-            <% if (!disputes.results.length) { %>
-            <h4 class="my-3">No dispute Needing resolving !</h3>
-              <h5 class="my-3">Keep it up !</h5>
-              <% } %>
-              <% } %>
+
 
 
               <% for(let i = 0; i < disputes.results.length; i++) { %>

@@ -173,7 +173,6 @@ productSchema.methods.changeSlug = async function (title, vendor) {
    }
 
    this.slug = newSlug;
-   this.img_path = newImage_path;
 };
 
 productSchema.methods.deleteProduct = async function () {

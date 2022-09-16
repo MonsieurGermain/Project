@@ -60,7 +60,6 @@ router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validate
    },
    async (req, res, next) => { 
        try {
-         console.log(req.query)
          if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
 
          switch (req.query.type) {
