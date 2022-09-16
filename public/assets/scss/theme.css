@@ -17127,4 +17127,13 @@ input[id=otherpgp]:not(:checked) ~ .otherPgpTextarea {
   .product-single-container .product-description-content p:last-child {
     padding-left: 10px;
   }
+}
+
+.generate-account-container .choose-password-content {
+  height: 0px;
+  transition: height 0.3s;
+  overflow: hidden;
+}
+.generate-account-container #choose-password:checked ~ .choose-password-content {
+  height: 5.25rem;
 }/*# sourceMappingURL=theme.css.map */

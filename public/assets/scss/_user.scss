@@ -1656,3 +1656,14 @@ aside {
       }
    }
 }
+
+.generate-account-container {
+   .choose-password-content {
+      height: 0px;
+      transition: height 0.3s;
+      overflow: hidden;
+   }
+   #choose-password:checked~.choose-password-content {
+      height: 5.25rem;
+   }
+}
