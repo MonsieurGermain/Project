@@ -135,18 +135,18 @@
 
           <% if (product.img_path.length > 1) { %>
           <div class="card py-4 px-4 mt-3 border-0">
-            <% for(let i = 1; i < product.img_path.length; i++) { %>
-            <div class="d-flex align-items-center">
-              <img src="<%=product.img_path[i]%>" class="card-img-top mt-3"
-                style="object-fit:cover; max-width: 150px; max-height: 75px;" alt="Product Image">
-
-              <input class="form-check-input ms-5" type="checkbox" id="delete-img-<%=i%>" name="deleteAdditionnalImg"
-                value="<%=i%>">
-              <label class="form-check-label text-danger ms-2" for="delete-img-<%=i%>">Delete This Additionnal
-                Img</label>
-
+            <div class="d-flex align-items-center flex-wrap product-secondary-images">
+              <% for(let i = 1; i < product.img_path.length; i++) { %>
+              <input id="delete-img-<%=i%>" class="form-check-input ms-5" type="checkbox" name="deleteAdditionnalImg"
+                value="<%=i%>" hidden />
+              <label for="delete-img-<%=i%>" class="delete-image-wrap">
+                <img src="<%=product.img_path[i]%>" class="card-img-top" alt="Product Image">
+                <div class="delete">
+                  <i class='bx bx-trash'></i>
+                </div>
+              </label>
+              <% } %>
             </div>
-            <% } %>
           </div>
           <% } %>
 
