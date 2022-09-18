@@ -176,13 +176,14 @@
           </div>
 
           <div class="card py-4 px-4 mt-3 border-0">
+
+            <input id="product-detail-checkbox" type="checkbox" hidden />
             <label for="product-detail-checkbox"
               class="h5 mb-0 d-flex align-items-center justify-content-between"><span>
                 Product Details
               </span>
               <%- include("../public/assets/img/icons/caret-down.svg")%>
             </label>
-            <input id="product-detail-checkbox" type="checkbox" hidden />
 
             <div class="dropdown-content">
               <% for(let i = 0; i < 5; i++) { %>
