@@ -174,7 +174,7 @@ router.post('/resolve-report/:id', Need_Authentification, sanitizeParamsQuerys,/
       try {
          const report = await Report.findById(req.params.id).orFail(new Error())
 
-         const {message, ban, banReason} = req.body; // Why Message ?
+         const {message, banReason} = req.body; // Why Message ?
 
          const {user, product} = await getResolveReportDocuments(report.type, report.reference_id);
 
@@ -191,8 +191,7 @@ router.post('/resolve-report/:id', Need_Authentification, sanitizeParamsQuerys,/
          else user.save();
 
          let flashMessage = 'The Vendor as been given a warning';
-         if (ban) {
-            report.ban_requested = true;
+         if (banReason) {
             report.ban_explanation = banReason;
             flashMessage = 'A request to ban this vendor as been made';
             await report.save();
@@ -217,7 +216,7 @@ router.get('/ban-user', Need_Authentification, sanitizeQuerys,// isAdmin,
          if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
 
          const query = constructQuery(req.query);
-         query.ban_requested = {$exists: true};
+         query.ban_explanation = {$exists: true};
 
          const reports = await paginatedResults(Report, query, {page: req.query.reportsPage, limit: 24});
 

@@ -134,7 +134,6 @@ function Validate_Conversation(req, res, next) {
 
       req.body.timestamps = req.body.timestamps ? true : undefined;
 
-      console.log(req.body.pgpSettings)
       if (!compareArray([undefined, 'noPgp', 'ownPgp', 'otherPgp'], req.body.pgpSettings)) throw new Error('Invalid Pgp Settings');
 
       if (req.body.otherPgpKeys) {
@@ -180,14 +179,14 @@ function Validate_Profile(req, res, next) {
       if (req.body.achievement) {
          req.body.achievement = Filter_Empty(req.body.achievement);
          for (let i = 0; i < req.body.achievement.length; i++) {
-            req.body.achievement[i] = ValidateText(req.body.achievement[i], 'Achievement #' + i, {minlength: 0, maxlength: 50, isRequired: false});
+            req.body.achievement[i] = ValidateText(req.body.achievement[i], 'Achievement #' + i + 1, {minlength: 0, maxlength: 50, isRequired: false});
          }
       } else req.body.achievement = undefined
 
       if (req.body.languages) {
          req.body.languages = Filter_Empty(req.body.languages);
          for (let i = 0; i < req.body.languages.length; i++) {
-            req.body.languages[i] = ValidateText(req.body.languages[i], 'Languages #' + i, {minlength: 0, maxlength: 50, isRequired: false});
+            req.body.languages[i] = ValidateText(req.body.languages[i], 'Languages #' + i + 1, {minlength: 0, maxlength: 50, isRequired: false});
          }
       } else req.body.languages = undefined
 
@@ -220,14 +219,14 @@ function Validate_Product(req, res, next) {
       if (req.body.aboutProduct) {
          req.body.aboutProduct = Filter_Empty(req.body.aboutProduct);
          for (let i = 0; i < req.body.aboutProduct.length; i++) {
-            req.body.aboutProduct[i] = ValidateText(req.body.aboutProduct[i], 'About Product #' + i, {minlength: 0, maxlength: 200, isRequired: false});
+            req.body.aboutProduct[i] = ValidateText(req.body.aboutProduct[i], 'About Product #' + i + 1, {minlength: 0, maxlength: 175, isRequired: false});
          }
       } else req.body.aboutProduct = undefined
 
 
       const productDetails =[]
       for(let i = 0; i < req.body.productDetails.length; i++) {
-         req.body.productDetails[i] = ValidateText(req.body.productDetails[i], 'Product Details #' + i, {minlength: 0, maxlength: 250, isRequired: false});
+         req.body.productDetails[i] = ValidateText(req.body.productDetails[i], 'Product Details #' + i + 1, {minlength: 0, maxlength: 250, isRequired: false});
          req.body.productDetailsDescription[i] = ValidateText(req.body.productDetailsDescription[i], 'Product Details Description #' + i, {minlength: 0, maxlength: 500, isRequired: false});
 
          if (req.body.productDetails[i] && req.body.productDetailsDescription[i]) productDetails.push({details : req.body.productDetails[i], detailsDescription: req.body.productDetailsDescription[i]}) 
@@ -389,12 +388,10 @@ function validateResolveReport(req, res, next) {
    try {
       req.body.message = ValidateText(req.body.message, 'Message to the vendor', {minlength: 10, maxlength: 3000});
 
-      if (!req.body.ban) {
-         req.body.ban = undefined;
-         req.body.banReason = undefined;
-      } else {
-         req.body.ban = true;
+      if (req.body.banReason) {
          req.body.banReason = ValidateText(req.body.banReason, 'Reason of Banning', {minlength: 10, maxlength: 3000});
+      } else {
+         req.body.banReason = undefined
       }
 
       next();

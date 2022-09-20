@@ -11,34 +11,14 @@ const {Validate_Login, Validate_Register, Validate_Code} = require('../middlewar
 const {generateRandomString, RandomList_ofWords} = require('../middlewares/function');
 
 
-function generateWordsUsername() {
-   let result = '';
-
-   while(!result.length) {
-      for(let i = 0; i < 4; i++) {
-         result += ` ${RandomList_ofWords(1)}`
-      }
-      if (result.length > 25) result = '';
-   }
-
-   return result.trim();
-}
-function generateNumberUsername() {
+function generateAccountUsername() {
    let result = '';
    for(let i = 0; i < 4; i++) {
-      result += ` ${generateRandomString(4)}`
+      result += ` ${generateRandomString(4, 'letterAndnumber')}`
    }
    return result.trim();
 }
-function generateAccountUsername(usernameType) {
-   switch(usernameType) {
-      case 'words':
-         return generateWordsUsername()
-      case 'characters':
-         return generateNumberUsername()
-   }
-   throw new Error('Invalid Type of Username')
-}
+
 function generateAccountPassword(passwordType, typedPassword) {
    switch(passwordType) {
       case 'generate-password':
@@ -194,13 +174,14 @@ router.get('/generate-account', Should_Not_Be_Authenticated, async (req, res) =>
 })
 router.post('/generate-account', Should_Not_Be_Authenticated, async (req, res) => {
    try {
-      let {usernameSettings, passwordSettings, password} = req.body
+      let {passwordSettings, password} = req.body
 
       const user = new User({})
 
-      user.username = generateAccountUsername(usernameSettings)
+      user.username = generateAccountUsername()
 
       const isUsernameTaken = await User.findOne({username: user.username})
+      
       if (isUsernameTaken) throw new Error('This Username is Already Taken')
       
       let userPassword = generateAccountPassword(passwordSettings, password)
@@ -214,6 +195,7 @@ router.post('/generate-account', Should_Not_Be_Authenticated, async (req, res) =
       req.flash('success', `
       <p class="mb-0">Account Username: <b>${user.username}</b></p>
       <p class="mb-0">Password: <b>${userPassword}</b></p>
+      <p class="fs-xs mb-0"> <b>Save this somewhere safe</b></p>
       `);
       res.redirect('/login');
    } catch (e) {

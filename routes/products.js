@@ -7,7 +7,7 @@ const fileUpload = require("express-fileupload");
 const { ImageUploadsValidation, uploadsFiles, deleteImage } = require('../middlewares/filesUploads')
 const {Need_Authentification, isVendor} = require('../middlewares/authentication');
 const {Validate_Product, sanitizeParams, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
-const {sanitizeHTML, paginatedResults} = require('../middlewares/function');
+const {sanitizeHTML, paginatedResults, timerEndOfSales} = require('../middlewares/function');
 
 
 function uploadsMainProductImage(imgPaths, mainProductImage) {
@@ -103,7 +103,9 @@ router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
       const vendor = await User.findOne({username: product.vendor});
 
       const paginatedReviews = await paginatedResults(Review, {product_slug: product.slug}, {page: req.query.reviewPage});
-
+      
+      if (product.sales_end) product.timerEndSales = timerEndOfSales(product.sales_end)
+      
       product.description = sanitizeHTML(product.description);
 
       res.render('product-single', {product, vendor, paginatedReviews});

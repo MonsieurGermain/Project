@@ -1,7 +1,7 @@
 <div class="chat-body">
     <input id="delete-convo-input" type="checkbox" hidden></input>
     <% if  (selected_conversation) { %>
-    <%- include('./Popup/Delete-popup', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this conversation?", confirm_text: "Yes", cancel_text: "No"}) %>
+    <%- include('./Popup/Delete-popup', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selected_conversation.id + "?_method=DELETE", method: "POST", text: "conversation", confirm_text: "Delete", cancel_text: "Cancel"}) %>
     <% if  (selected_conversation.sender2_Pgp) { %>
     <input id="user-pgp-keys" type="checkbox" hidden></input>
     <%- include('Popup/PgpKeys-popup', {checkboxInputId:"user-pgp-keys", text: selected_conversation.sender2_Pgp, cancel_text: "No"}) %>
@@ -10,7 +10,7 @@
     <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
     <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
     <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-    <%- include('./Popup/Delete-popup', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "Are you sure you wish to delete this message?", confirm_text: "Yes", cancel_text: "No"}) %>
+    <%- include('./Popup/Delete-popup', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "message", confirm_text: "Delete", cancel_text: "Cancel"}) %>
 
     <input id="edit-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
     <%- include('Popup/EditMessage-popup', {checkboxInputId:"edit-message-input-"+ i, action : "/edit-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id, currentMessage: selected_conversation.messages[i].message}) %>
@@ -59,11 +59,11 @@
         <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
         <% if (selected_conversation.settings.timestamps && (i === 0 || (selected_conversation.messages[i].timestamps.getTime() - selected_conversation.messages[i-1].timestamps.getTime()) > 600000)) { %>
         <div class="timestamp">
-            <div class="timestamp-left"></div>
+            <div class="timestamp-left opacity-35"></div>
             <div class="timestamp-time">
                 <%=selected_conversation.messages[i].timestamps.getDate() + "/" + (selected_conversation.messages[i].timestamps.getMonth()+1) + "/" + selected_conversation.messages[i].timestamps.getFullYear() + ", " + selected_conversation.messages[i].timestamps.toLocaleTimeString([],{ hour12: false, hour:'2-digit', minute: "2-digit" }) %>
             </div>
-            <div class="timestamp-right"></div>
+            <div class="timestamp-right opacity-35"></div>
         </div>
         <% } %>
 
@@ -79,16 +79,20 @@
                             border-bottom-left-radius: 0.5rem;
                         ">
                         <span><%= selected_conversation.messages[i].message %></span>
-                        <label for="delete-message-input-<%=i%>" class="delete-message-button btn btn-outline-danger">
+                        <label for="delete-message-input-<%=i%>" class="delete-message-button btn">
 
                             <i class="bx bx-trash-alt"></i>
 
                         </label>
-                        <label for="edit-message-input-<%=i%>" class="delete-message-button b-edit btn me-4">
+                        
+                        <% if (selected_conversation.editButton.includes(i)) { %>
+                            <label for="edit-message-input-<%=i%>" class="delete-message-button b-edit btn me-4">
 
-                            <i class='bx bxs-edit' style="color: black;"></i>
+                                <i class='bx bxs-edit' style="color:black;"></i>
+    
+                            </label>
+                        <% } %>
 
-                        </label>
                     </div>
 
                     <% if (i + 1 === selected_conversation.messages.length && selected_conversation.messages[i].messageView){ %>

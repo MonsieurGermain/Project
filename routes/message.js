@@ -147,10 +147,27 @@ function createRedirectLink(conversation, username) {
    return undefined
 }
 
+
+function addEditButton(conversation, username) {
+   const whoIsUser = conversation.sender_1 === username ? formatUsernameWithSettings(conversation.sender_1, conversation.settings.type): conversation.sender_2 
+   
+   const addButtonIndex = []
+
+   for(let i = 0; i < conversation.messages.length; i++){
+      if (conversation.messages[i].sender === whoIsUser) {
+         addButtonIndex.push(i)
+
+         if (addButtonIndex.length > 5) addButtonIndex.splice(0, 1)
+      }
+   }
+   return addButtonIndex
+}
+
 async function getSelectedConversationPosition(userConversations, selectedConversationId, username) {
    const position = getIndexSelectedConversation(userConversations, selectedConversationId)
 
    if (userConversations[position]) {
+      userConversations[position].editButton = addEditButton(userConversations[position], username)
       userConversations[position].link = createRedirectLink(userConversations[position], username);
       if (userConversations[position].settings.type === 'default') await userConversations[position].sawMessages(username);
    }

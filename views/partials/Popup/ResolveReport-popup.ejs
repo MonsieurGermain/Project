@@ -1,6 +1,6 @@
 <!--designed to work with css input popup technique - no js -->
-<div class="popup-dialog resolve-report-popup style="max-width:none;">
-  <div class="rounded px-4 py-4 my-4">
+<div class="popup-dialog resolve-report-popup" style="max-width:none;">
+  <div class="rounded px-4 py-4 my-4" style="min-width: 40rem">
     <form class="row justify-content-center py-lg-3 py-xl-4" action="<%=action%>" method="<%=method%>">
       <div class="col-12">
         <h2 class="h1 pb-lg-1 mb-4">Resolve Report</h2>
@@ -12,30 +12,18 @@
           </div>
           <div class="col-12 mb-2 d-flex align-items-center">
             <input class="form-check-input" type="checkbox" id="confirm-<%=checkboxInputId%>" style="min-width: 1rem;" required>
-            <label class="form-check-label ms-2" for="confirm-<%=checkboxInputId%>">I confirm that all the Information
-              here are correct and that I am sure of my decision</label>
+            <label class="form-check-label ms-2" for="confirm-<%=checkboxInputId%>">I confirm that I am sure of my decision</label>
           </div>
         </div>
         <input type="checkbox" id="more-<%=checkboxInputId%>" hidden />
         <label class="dropdown-symbol d-flex align-items-center justify-content-between my-2" for="more-<%=checkboxInputId%>">
-          <p class="mb-0">More</p>
+          <p class="fs-lg mb-0 fw-bold" style="cursor: pointer;">Request to ban to user</p>
           <%- include("../../../public/assets/img/icons/caret-down.svg") %>
         </label>
         <div class="row dropdown-content">
           <div class="col-12 mb-4">
-            <div class="d-flex align-items-center mb-4">
-              <input class="form-check-input" type="checkbox" name="ban" id="instant-ban-<%=checkboxInputId%>" style="min-width: 1rem;" />
-              <label class="form-check-label ms-2" for="instant-ban-<%=checkboxInputId%>">
-                <% if (report.type === 'vendor') { %>
-                Request an Immediate Ban of this User
-                <% } else { %>
-                Request an Immediate Ban of the Vendor of this Product
-                <% } %>
-                <span class="fs-sm opacity-70">*For extreme Case</span></label>
-            </div>
 
-            <label for="ban-reason-<%=checkboxInputId%>" class="form-label fs-base">Summerize why you think he deserve
-              to be ban <span class="fs-sm opacity-70">*Only requried if the above checkox is checked</span></label>
+            <label for="ban-reason-<%=checkboxInputId%>" class="form-label fs-sm">Why is he desrving a ban</label>
             <textarea id="ban-reason-<%=checkboxInputId%>" name="banReason" class="form-control form-control-lg"
               rows="4" minlength="10" maxlength="3000" placeholder="I want to ban him because...."></textarea>
 

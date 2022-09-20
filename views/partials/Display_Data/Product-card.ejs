@@ -7,8 +7,8 @@
         </div>
         <div class="col-sm-7">
             <div class="card-body px-0 ps-sm-4 py-2">
-                <a href="#" class="badge fs-sm text-white bg-info shadow-info text-decoration-none mb-3">Category</a>
-                <h3 class="h4">
+
+                <h3 class="h4 mb-2">
                     <a href="/product/<%=product.slug%>?reviewPage=1">
                         <%=product.title.slice(0, 50)%>
                         <% if (product.title.length > 50) { %>
@@ -16,7 +16,10 @@
                         <% } %>
                     </a>
                 </h3>
-                <p class="mb-4">
+                <p class="text-primary mt-0 mb-2">
+                    <b><%=product.price%>$</b>
+                </p>
+                <p class="fs-sm mb-3">
                     <%=product.description.slice(0, 75)%>
                     <% if (product.description.length > 75) { %>
                     ...

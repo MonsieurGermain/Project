@@ -59,17 +59,19 @@
 
       <% if (!orders.results.length) { %>
       <div>
+        <h6 class="mt-5" style="text-align: center">
         <% if (query.clientsOrders) { %>
         <% if (query.status) { %>
-        <p>You dont have any Clients Order of this type</p>
+        You dont have any Clients Order of this type
         <% } else { %>
-        <p>You dont have any Clients Order</p>
+          You dont have any Clients Order
         <% } %>
         <% } else if (query.status) { %>
-        <p>You dont have any Order of this type</p>
+          You dont have any Order of this type
         <% } else { %>
-        <p>You dont have any Order</p>
+          You dont have any Order
         <% } %>
+      </h6>
       </div>
       <% } else { %>
       <% for(let i = orders.results.length - 1; i > -1; i--) { %>

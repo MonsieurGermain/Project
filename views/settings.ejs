@@ -120,7 +120,19 @@
                         <h2 class="h5 mb-3">Add Email Address</h2>
                       <% } %>
                     <form action="/add-email" method="POST">
-                      <input type="text" name="email" placeholder="Email Address" class="form-control form-control-lg mb-2" value="<%=authuser.email%>" required>
+
+                      <div class="position-relative">
+                        <input type="text" name="email" placeholder="Email Address" class="form-control form-control-lg mb-2" value="<%=authuser.email%>" required>
+                        <% if (user.email_verification_code) { %>
+                          <span class="badge bg-orange shadow-orange top-right">Not Verified</span>
+                        <% } else if (user.email) { %>
+                          <span class="badge bg-success shadow-success top-right">Verified</span>
+                        <% } %>
+
+                      </div>
+
+              
+                      
                       <div class="d-flex align-items-center mt-3 mb-5 justify-content-end flex-wrap">
                         <% if (authuser.email) { %>
                           <div class="d-flex form-check align-items-center w-100 mb-4">
@@ -138,12 +150,14 @@
                           </form>
                         <% } %>
                     </div>
+
+
                     <% if (authuser.email_verification_code) { %>
                       <hr class="mb-5">
-                      <h2 class="h5 mb-3">Confirmation Code</h2>
+                      <h2 class="h5 mb-2">Confirmation Code</h2>
  
                       <form action="/resend-email-verification" method="POST">
-                        <p class="mb-2 fs-sm">Havent Recieve any Confirmation Code ? <button 
+                        <p class="mb-2 fs-xs opacity-90">Havent Recieve any Confirmation Code ? <button 
                           style="
                             color: #800080;
                             text-decoration: underline;
@@ -171,11 +185,22 @@
                       <h2 class="h5 mb-3">Add Pgp Keys</h2>
                     <% } %>
                     <form action="/add-pgp" method="POST">
-                      <% if (authuser.verifiedPgpKeys) { %>
-                        <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" style="min-height:none;" required><%=authuser.verifiedPgpKeys%></textarea>
-                      <% } else { %>
-                        <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" style="min-height:none;" required><%=authuser.pgp_keys%></textarea>
-                      <% } %>
+                      
+                      <div class="position-relative">
+                        <% if (authuser.verifiedPgpKeys) { %>
+                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4 overflow-container" required><%=authuser.verifiedPgpKeys%></textarea>
+                          <span class="badge bg-success shadow-success top-right">Verified</span>
+                        <% } else if (authuser.pgp_keys) { %>
+                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4 overflow-container" required><%=authuser.pgp_keys%></textarea>
+                          <span class="badge bg-orange shadow-orange top-right">Not Verified</span>
+                        <% } else { %>
+                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" required></textarea>
+                          <span class="badge bg-danger shadow-danger top-right">No Pgp Keys</span>
+                        <% } %>
+                      </div>
+
+
+
                       <div class="d-flex align-items-center mt-3 mb-5 justify-content-end flex-wrap">
                         <% if (authuser.pgp_keys || authuser.verifiedPgpKeys) { %>
                           <div class="d-flex form-check align-items-center w-100 mb-4">
@@ -196,9 +221,14 @@
 
                       <% if (authuser.pgp_keys_verification_words_encrypted) { %>
                         <hr class="mb-5">
-                        <h2 class="h5 mb-3">Decrypt this Code with your own pgp and enter the result to verify your pgp keys</h2> 
-                        <p><%=authuser.pgp_keys_verification_words_encrypted%></p>
-                        <h2 class="h5 mb-3">Verify Pgp Keys</h2>
+
+                        <h2 class="h5 mb-2">Verify your Pgp Key</h2> 
+                        <p class="mb-2 fs-xs opacity-90">Decrypt this text with the key that you've submit us</p>
+                        
+                        <textarea placeholder="Encrypted Sentece Container" class="form-control form-control-lg mb-4 overflow-container" required><%=authuser.pgp_keys_verification_words_encrypted%></textarea>
+
+                        <h2 class="h5 mb-2">Decrypted Text</h2>
+                        <p class="mb-2 fs-xs opacity-90">Paste and submit the decrypted text here to verify your pgp key</p>
                         <form action="/verify-pgp" method="POST" class="d-flex flex-column align-items-end">
                           <input type="text" name="pgp_verification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
                           <button type="submit" class="btn btn-primary mt-3 mb-5">Verify Pgp</button>
@@ -484,9 +514,16 @@
                       <div class="card px-5 pt-5 mt-4">
                       <h2 class="h5 mb-2">Account Monero Address</h2>
                       <form action="/add-xmr-address" method="POST">
-                        <p class="fs-sm opacity-70 mb-1">After a <b>successfull</b> transaction, our system will send you your money to this address</p>
-                        <p class="fs-sm opacity-70 mb-1">You are obligated to have a Monero Address on your account if you want to start selling product</p>
-                        <input type="text" name="vendorMoneroAddress" placeholder="Monero Address" class="form-control form-control-lg mb-2" value="<%=authuser.vendorMoneroAddress%>" required>
+                        <p class="fs-xs opacity-70 mb-1">After a <b>successfull</b> transaction, our system will send you your money to this address, unless you've given your product a Custom Monero Address</p>
+                        <p class="fs-xs opacity-70 mb-1">To post a product online, your are obligated to have a Monero address or to give the product a Custom Address</p>
+                       
+                        <div class="position-relative">
+                          <input type="text" name="vendorMoneroAddress" placeholder="Monero Address" class="form-control form-control-lg mb-2" value="<%=authuser.vendorMoneroAddress%>" required>
+                          <% if (!authuser.vendorMoneroAddress) { %>
+                            <span class="badge bg-danger shadow-danger top-right">No Monero Address</span>
+                          <% } %>
+                        </div>
+
                         <div class="d-flex align-items-center mt-3 mb-5 justify-content-end flex-wrap">
                           <div class="d-flex form-check align-items-center w-100 mb-4">
                             <input class="form-check-input" type="checkbox" id="confirm-vendorMoneroAddress" required>
@@ -510,8 +547,8 @@
                     <div class="card px-5 pt-5 mt-4">
                       <h2 class="h5 mb-2">Refund Monero Address</h2>
                       <form action="/add-xmr-refund-address" method="POST">
-                        <p class="fs-sm opacity-70 mb-1">After an <b>failed</b> transaction, our system will send your refund to this address</p>
-                        <p class="fs-sm opacity-70 mb-1">If you dont have ane refund address, our system will send your refund back to the address where it came from</p>
+                        <p class="fs-xs opacity-70 mb-1">After an <b>failed</b> transaction, our system will send you back your money to this address</p>
+                        <p class="fs-xs opacity-70 mb-1">If you dont have any refund address, our system will send you your money back to the address where it came from</p>
                         <input type="text" name="xmrRefundAddress" placeholder="Refund Monero Address" class="form-control form-control-lg mb-2" value="<%=authuser.xmrRefundAddress%>" required>
                         <div class="d-flex align-items-center mt-3 mb-5 justify-content-end flex-wrap">
                           <div class="d-flex form-check align-items-center w-100 mb-4">

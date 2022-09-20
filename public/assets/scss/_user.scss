@@ -103,14 +103,45 @@ svg {
    overflow: hidden;
 }
 
+.top-right { 
+   position: absolute;
+   top: -10px;
+   right: 0;
+}
+
 .text-orange {
    color: rgb(202, 125, 37) !important;
+}
+
+.bg-orange {
+   background-color: rgb(202, 125, 37) !important;
+}
+
+.shadow-orange {
+   box-shadow: 0 0.5rem 1.125rem -0.5rem rgb(202, 125, 37) !important;
+}
+
+.text-monero { 
+   color: #ff6600 ;
+}
+
+.overflow-container { 
+   height: 10rem;
+}
+
+.lg-form-control-heigth { 
+   min-height: calc(1.8em + 2rem + 2px);
+}
+
+.card-deep-shadow { 
+   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2) !important;
 }
 
 .min-heigth-45 {
    min-height: 40rem;
    max-height: 40rem;
 }
+
 
 .messages-view {
    overflow: hidden;
@@ -522,15 +553,18 @@ svg {
                      border-radius: 50rem;
                      padding: 2px;
                      background-color: #dd5858;
+                     border-color: #d82121;
                      color: $white;
 
                      &:hover {
-                        background-color: $danger;
+                        background-color: #d82121;
                      }
 
                      &.b-edit {
                         outline: #212121;
-                        background-color: #fff;
+                        border: none;
+                        background-color: #fff !important;
+                        transition: all 0.75s;
 
                         &:hover {
                            outline: #fff;
@@ -634,22 +668,6 @@ input[id^='more-report-resolve-']:checked~.dropdown-symbol {
    }
 }
 
-// Send Message Checkbox Hack
-.advanced-settings>input[type='radio'] {
-   margin-right: 0 0.5rem 0.25rem 0;
-}
-
-input[id='advanced-settings']:not(:checked)~.advanced-settings {
-   height: 0px;
-}
-
-input[id='advanced-settings']:checked+*>svg {
-   transform: rotate(180deg);
-}
-
-input[id='otherpgp']:not(:checked)~.otherPgpTextarea {
-   display: none;
-}
 
 .text-content {
    word-break: break-all;
@@ -720,17 +738,6 @@ input[id='otherpgp']:not(:checked)~.otherPgpTextarea {
                margin-top: 10px !important;
             }
          }
-      }
-
-      .advanced-settings {
-         height: calc(3 * 1.875rem + 66px + 0.5rem);
-         transition: height 0.5s;
-         overflow: hidden;
-      }
-
-      [for="advanced-settings"]+ {
-         transition: all 0.3s;
-         transform: rotate(0deg);
       }
    }
 
@@ -1542,16 +1549,6 @@ aside {
       height: 19rem;
    }
 
-   [id^="product-selection-"]:checked~div {
-      height: 22.75rem;
-   }
-
-   [id^="product-selection-"]:checked~label {
-      svg {
-         transform: rotate(180deg);
-      }
-   }
-
    .product-secondary-images {
       >label {
          margin-right: 5px;
@@ -1706,3 +1703,42 @@ aside {
       height: 5.25rem;
    }
 }
+
+.advanced-settings {
+   height: 0px;
+   transition: height 0.5s;
+   overflow: hidden;
+}
+
+#advanced-settings:checked ~ .advanced-settings{ 
+      height: calc(3 * 3.5rem);
+}
+
+label[for="advanced-settings"]+ {
+   transition: all 0.3s;
+   transform: rotate(0deg);
+}
+
+.advanced-settings>input[type='radio'] {
+   margin-right: 0 0.5rem 0.25rem 0;
+}
+
+input[id='advanced-settings']:not(:checked)~.advanced-settings {
+   height: 0px;
+}
+
+input[id='advanced-settings']:checked+*>svg {
+   transform: rotate(180deg);
+}
+
+#otherPgpTextarea {
+   transition: 0.3s;
+   pointer-events:none;
+   opacity: 30%;
+}
+
+#otherpgp:checked ~ #otherPgpTextarea { 
+   pointer-events: visible;
+   opacity: 100%;
+}
+

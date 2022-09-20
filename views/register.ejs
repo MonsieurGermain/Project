@@ -1,19 +1,20 @@
 <%- include('partials/Statics/Head', {page: "- " + 'Register'}) %>
 
 <body>
-    <main class="page-wrapper">
+  <main class="page-wrapper d-grid" style="place-content: center;">
       <%- include('partials/Statics/Navbar') %>
-      <!-- Page content -->
+      
       <section class="position-relative h-100 pt-5 pb-4">
+        
+        <% if (error.length) { %>
+          <%- include('partials/Flash-message', {message: error, type: 'error'}) %> 
+        <% } %>
 
-         <!-- Sign up form -->
-         <div class="container d-flex flex-wrap justify-content-center align-content-center h-100 pt-5">
-           <div class="w-100 align-self-end pt-1 pt-md-4 pb-4" style="max-width: 526px;">
-            <% if (error.length) { %>
-              <%- include('partials/Flash-message', {message: error, type: 'error'}) %> 
-            <% } %>
+
+         <div class="container d-flex flex-wrap justify-content-center align-content-center h-100">
+           <div class="w-100 card card-deep-shadow align-self-end p-5" style="max-width: 526px;">
+            
              <h1 class="text-center">Create Account</h1>
-             <!--  text-xl-start -->
              <p class="text-center pb-3 mb-3">Already have an account? <a href="/login">Sign in here.</a></p>
              <form class="needs-validation" action="/register" method="POST">
                <div class="row">
@@ -41,13 +42,10 @@
                </div>
                <button type="submit" class="btn btn-primary shadow-primary btn-lg w-100">Register</button>
              </form>
-             <hr class="my-4">
            </div>
          </div>
          
-         <!-- Background -->
-         <!-- <div class="position-absolute top-0 end-0 w-50 h-100 bg-position-center bg-repeat-0 bg-size-cover d-none d-xl-block" style="background-image: url(assets/img/account/signin-bg.jpg);"></div> -->
-       </section>
+     </section>
      </main>
 
   </body>

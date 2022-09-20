@@ -342,7 +342,6 @@ function constructOrdersQuery(query, username) {
 }
 
 function sanitizeHtmlOfFirstMessage(orders) {
-   console.log(orders)
    for(let i = 0; i < orders.length; i++) {
       if (orders[i].messages[0]) orders[i].messages[0].content = sanitizeHTML(orders[i].messages[0].content);
    }

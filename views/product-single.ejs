@@ -83,8 +83,16 @@
                     <% } %>
                   </div>
                   <% } %>
+
+                  <% if (product.timerEndSales) { %>
+                    <div class="d-flex align-items-end mb-0">
+                      <p class="text-danger opacity-90 fs-sm mb-0 mt-2 ">Sales end in: <span class="ms-1"><%=product.timerEndSales%></span></p>
+                    </div>
+                  <% } %>
+
+                  
                   <div class="d-flex align-items-end mb-0">
-                    <p class="h5 mb-0 mt-2">Price:</p>
+                    <p class="h5 mb-0">Price:</p>
                     <% if (product.salesPrice) { %>
                     <p class="h4 text-primary mb-0 mt-2 ms-3"><%=product.salesPrice%>$</p>
                     <del class="h5 text-muted mb-0 mt-2 ms-3 opacity-70"><%=product.price%>$</del>
@@ -131,16 +139,20 @@
               <% } %>
             </div>
 
-            <div class="image-list d-flex">
-              <label for="product-radio-0">
-                <img src="<%=product.img_path[0]%>" class="card-img-top mt-3" alt="Product Image">
-              </label>
-              <% for(let i = 1; i < product.img_path.length; i++) { %>
-              <label for="product-radio-<%=i%>">
-                <img src="<%=product.img_path[i]%>" class="card-img-top mt-3" alt="Product Image">
-              </label>
-              <% } %>
-            </div>
+            <% if (product.img_path.length > 1) { %>
+              <div class="image-list d-flex">
+                <label for="product-radio-0">
+                  <img src="<%=product.img_path[0]%>" class="card-img-top mt-3" alt="Product Image">
+                </label>
+                <% for(let i = 1; i < product.img_path.length; i++) { %>
+                <label for="product-radio-<%=i%>">
+                  <img src="<%=product.img_path[i]%>" class="card-img-top mt-3" alt="Product Image">
+                </label>
+                <% } %>
+              </div>
+            <% } %>
+
+
           </div>
 
           <!-- Vendor -->

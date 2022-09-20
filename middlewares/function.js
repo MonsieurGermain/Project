@@ -140,4 +140,26 @@ function isMoneroAddress(address, addressType) {
    return address
 }
 
-module.exports = {generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, compareArray, formatUsernameWithSettings, paginatedResults, sanitizeHTML}
+
+function timerEndOfSales(salesTimer) {
+   if (salesTimer > Date.now() + 604800000) return undefined
+
+   let timeLeft = salesTimer - Date.now()
+
+   let daysLeft = Math.floor(timeLeft / 86400000)
+
+   timeLeft -= daysLeft * 86400000
+
+   let hoursLeft = Math.floor(timeLeft / 3600000)
+
+   if (daysLeft < 1) daysLeft = ''
+   else daysLeft = `${daysLeft}days`
+
+   if (!daysLeft && !hoursLeft) hoursLeft = 'less then 1hours'
+   else if (daysLeft && !hoursLeft) hoursLeft = ''
+   else hoursLeft = ` ${hoursLeft}hours`
+
+   return `${daysLeft}${hoursLeft}`
+}
+
+module.exports = {timerEndOfSales, generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, compareArray, formatUsernameWithSettings, paginatedResults, sanitizeHTML}

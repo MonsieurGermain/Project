@@ -125,21 +125,21 @@
             <div style="margin-top: -96px;"></div>
             <div class="position-sticky top-0 pt-5">
               <div class="pt-5">
-              <div class="card shadow-sm border-0">
+              <div class="card shadow-sm border-0 pb-3">
                 <div class="card-body px-3 px-md-4 py-4">
                   
                   <p class="mb-2">Privacy Settings</p>
                   <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
-                  <label class='form-check-label mb-2' for="default">Default <span class="opacity-70">(Not
+                  <label class='form-check-label ms-1 mb-1' for="default">Default <span class="opacity-70">(Not
                       Recommended)</span></label><br>
 
                   <input class='form-check-input' type="radio" name="type" id="semi-hidden" value="semi-hidden" required
                     checked>
-                  <label class='form-check-label mb-2' for="semi-hidden">Semi-Hidden</label><br>
+                  <label class='form-check-label ms-1 mb-1' for="semi-hidden">Semi-Hidden</label><br>
 
                   <% if (product.allow_hidden) { %>
                   <input class='form-check-input' type="radio" name="type" id="Hidden" value="hidden" required>
-                  <label class='form-check-label mb-2' for="Hidden">Hidden</label><br>
+                  <label class='form-check-label ms-1 mb-1' for="Hidden">Hidden</label><br>
                   <% } %>
 
                   <hr class="my-2">
@@ -152,36 +152,47 @@
                     <div class="d-flex">
                       <% if (product.qty_settings?.max_order) { %>
                       <input class="form-control" type="number" id="number-input" max="product.qty_settings?.max_order"
-                        placeholder="Maximun: <%=product.qty_settings?.max_order%>" name="qty">
+                        placeholder="Max: <%=product.qty_settings?.max_order%>" name="qty">
                       <% } else if (product.qty_settings?.available_qty) { %>
                       <input class="form-control" type="number" id="number-input"
                         max="product.qty_settings?.available_qty"
-                        placeholder="Max Per Order: <%=product.qty_settings?.available_qty%>" name="qty">
-                      <p class="fs-xs opacity-70 ms-2 mt-1 mb-0">Max per Order:
-                        <b><%=product.qty_settings?.available_qty%></b></p>
+                        placeholder="Max: <%=product.qty_settings?.available_qty%>" name="qty">
                       <% } else { %>
-                      <input class="form-control" type="number" id="number-input" value="1" name="qty">
+                      <input class="form-control" type="number" id="number-input" placeholder="Max: 1000" max="1000" name="qty">
                       <% } %>
                     </div>
                   </div>
 
-                  <p class="mb-2">Market Fee: <b>3%</b></p>
+                  <div class="d-flex align-items-center">
+                    <p class="fs-sm mb-0">Market Fee: </p>
+                    <p class="ms-2 mb-0"><b>3%</b></p>
+                  </div>
+
                   <hr class="my-2">
 
-                  <p class="mb-2">Base Price: <b><%=product.salesPrice ? product.salesPrice : product.price%>$</b></p>
+                  <div class="d-flex align-items-center">
+                    <p class="fs-sm mb-0">Base Price:</p>
+                    <p class="ms-2 mb-0"><b><%=product.salesPrice ? product.salesPrice : product.price%>$</b></p>
+                  </div>
+
                   <hr class="my-2">
 
-                  <p class="mb-0 mt-4">Final Price: <b>
+                  <div class="d-flex align-items-center">
+                    <p class="fs-sm mb-0">Final Price:</p>
+                    <p class="ms-2 mb-0"> <b>
                       <% if (product.shipping_option.length || product.selection_1 || product.selection_2) { %>
-                      (<%=product.salesPrice ? product.salesPrice : product.price%> + Added Price)
-                      <% } else { %>
-                        <%=product.salesPrice ? product.salesPrice : product.price%>
-                      <% } %>
-                      × QTY + 3%</b></p>
-                  <a href="/docs" class="fs-sm">Learn More</a>
+                        (<%=product.salesPrice ? product.salesPrice : product.price%> + Added Price)
+                        <% } else { %>
+                          <%=product.salesPrice ? product.salesPrice : product.price%>
+                        <% } %>
+                        × QTY + 3%
+                    </b></p>
+                  </div>
 
+                  <a href="/docs" class="fs-sm">Learn More</a>
                 </div>
-                <button type="submit" class="btn btn-primary rounded-pill shadow-primary">Make Order</button>
+                
+                <button type="submit" class="btn btn-primary rounded-pill shadow-primary mx-3">Make Order</button>
               </div>
             </div>
             </div>

@@ -79,7 +79,7 @@
 
                     <% for(let i = 0; i < 5; i++) { %>
                     <li class="d-flex align-items-center mb-2">
-                      <input name="aboutProduct" class="form-control" type="text" id="text-input" maxlength="200"
+                      <input name="aboutProduct" class="form-control" type="text" id="text-input" maxlength="175"
                         placeholder="About Product #<%=i + 1%>" <% if(product.aboutProduct[i]) { %>
                         value="<%=product.aboutProduct[i]%>" <% } %>>
                     </li>
@@ -226,7 +226,7 @@
 
           <div class="card pt-4 pb-3 px-4 mt-3 border-0">
             <label for="message-textarea" class="form-label mb-0">Message</label>
-            <p class="fs-sm opacity-70 mb-1">This message will be displayed when the buyer will provide his information
+            <p class="fs-xs opacity-70 mb-1">This message will be displayed when the buyer will provide his information
             </p>
             <textarea name="message" class="form-control" type="text" id="message-textarea"
               placeholder="Write your Message..." value="<%=product.message%>"
@@ -258,18 +258,12 @@
           </div>
 
           <div class="card py-5 px-4 mt-3 border-0">
-            <input id="product-selection-checkbox" type="checkbox" hidden />
-            <label for="product-selection-checkbox"
-              class="h5 mb-3 d-flex align-items-center justify-content-between"><span>
-                Product Selection(s)
-              </span>
-              <!-- <%- include("../public/assets/img/icons/caret-down.svg")%> -->
-            </label>
+            <h5 class="mb-0">Product Selection(s)</h5>
             <div>
-              <p class="fs-sm opacity-70 mb-1">Here you can add a Selection to your Product and attribute a price to
+              <p class="fs-xs opacity-70 mb-1">Here you can add a Selection to your Product and attribute a price to
                 each
                 choice</p>
-              <p class="fs-sm opacity-70 mb-3">Ex: I sell T-shirt here a can add a selection of color that my buyer can
+              <p class="fs-xs opacity-70 mb-4">Ex: I sell T-shirt here a can add a selection of color that my buyer can
                 choose from, I could also add additionnal cost in function of what color they take</p>
 
               <!-- Selection #1 -->
@@ -343,14 +337,19 @@
 
           <!-- Quantity Settings -->
           <div class="card pt-4 pb-4 px-4 mt-3 border-0">
-            <h3 class="h4">Quantity Settings</h3>
+            
 
-            <div>
+
               <input class="form-check-input" type="checkbox" id="quantity-settings-checkbox"
                 <% if (product.qty_settings?.available_qty || product.qty_settings?.max_order) { %> checked <% } %>
                 hidden>
-              <label class="form-check-label ms-2" for="quantity-settings-checkbox">I have a limited stocks
-                <%- include ("../public/assets/img/icons/caret-down.svg") %>
+
+                <label for="quantity-settings-checkbox"
+                class="h5 mb-0 d-flex align-items-center justify-content-between">
+                <span>
+                  Quantity Settings
+                </span>
+                <%- include("../public/assets/img/icons/caret-down.svg")%>
               </label>
               <br>
               <div class="quantity-settings">
@@ -364,24 +363,29 @@
                   max="1000" type="number" id="maxqty-input" <% if (product.qty_settings) { %>
                   value='<%=product.qty_settings.max_order%>' <% } %>>
               </div>
-            </div>
+
           </div>
 
 
           <div class="card pt-4 pb-4 px-4 mt-3 border-0">
-            <h3 class="h4 ">Product Settings</h3>
-            <div>
 
               <input class="form-check-input" type="checkbox" id="settings-checkbox" <% if (product.salesPrice) { %>
                 checked <% }%> hidden>
-              <label class="form-check-label" for="settings-checkbox">Change Settings
-                <%- include ("../public/assets/img/icons/caret-down.svg") %>
+
+                <label for="settings-checkbox"
+                class="h5 mb-0 d-flex align-items-center justify-content-between">
+                <span>
+                  Settings
+                </span>
+                <%- include("../public/assets/img/icons/caret-down.svg")%>
               </label>
 
               <div class="settings-container <%= product.title?(product.salesPrice?'full-height':'title-height'):'' %>">
+                <hr class="my-4">
+                
                 <% if (product.title) { %>
                 <div>
-                  <p class="h5 mt-4">Start a Sales !</p>
+                  <p class="h6 mt-4">Start a Sales !</p>
 
                   <label for="saleprice-input" class="form-label mb-1">Sales Price</label>
                   <input type="number" class="form-control" placeholder="Price on sales of the product" step=".01"
@@ -402,9 +406,10 @@
                   </div>
                   <% } %>
                 </div>
+                <hr class="my-4">
                 <% } %>
 
-                <hr class="my-3">
+
 
                 <label for="status-input" class="form-label">Status of your Product</label>
                 <select class="form-select me-4 mb-2 mb-md-0" id="status-input" name="status" style="min-width: 240px;"
@@ -413,7 +418,7 @@
                   <option value="offline" <% if (product.status === 'offline') { %> selected <% } %>>Offline</option>
                 </select>
 
-                <hr class="my-3">
+                <hr class="my-4">
 
                 <div>
                   <p class="h6 mb-2 mt-1">Privacy Settings :</p>
@@ -423,7 +428,7 @@
                     <% if (product.allow_hidden) { %> checked <% } %>>
                 </div>
 
-                <hr class="my-3">
+                <hr class="my-4">
 
                 <div>
                   <p class="h6 my-1">Custom Monero Address :</p>
@@ -436,7 +441,6 @@
                 </div>
 
               </div>
-            </div>
           </div>
 
           <div class="d-flex flex-wrap my-2 product-control-wrap">
