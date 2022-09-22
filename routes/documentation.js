@@ -19,9 +19,9 @@ router.post('/contactus', validateContactUs, async (req,res) => {
 
         const contactUs = new Contactus ({
             username : username && req.user.username ? req.user.username : undefined,
-            email : email,
-            message : message,
-            reason : reason
+            email,
+            message,
+            reason
         })
 
         contactUs.save()

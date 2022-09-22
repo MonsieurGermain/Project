@@ -110,13 +110,6 @@ function formatUsernameWithSettings(sender, setting) {
    return sender;
 };
 
-function compareArray(array, value) {
-   for (let i = 0; i < array.length; i++) {
-      if (array[i] === value) return true;
-   }
-   return;
-};
-
 
 function isEmail(email) {
    if (!email || typeof(email) !== 'string') return undefined
@@ -125,9 +118,10 @@ function isEmail(email) {
 
 function isPgpKeys(pgpKeys) { 
    if (!pgpKeys || typeof(pgpKeys) !== 'string') return undefined
+   pgpKeys = pgpKeys.trim()
    if (pgpKeys.length > 10000 || pgpKeys.length < 1) return undefined
    
-   return true
+   return pgpKeys
 }
 
 function isMoneroAddress(address, addressType) {
@@ -142,15 +136,15 @@ function isMoneroAddress(address, addressType) {
 
 
 function timerEndOfSales(salesTimer) {
-   if (salesTimer > Date.now() + 604800000) return undefined
+   if (!salesTimer || salesTimer > Date.now() + 604800000) return undefined
 
    let timeLeft = salesTimer - Date.now()
 
-   let daysLeft = Math.floor(timeLeft / 86400000)
+   let daysLeft = Math.floor(timeLeft / 86400000) // day
 
    timeLeft -= daysLeft * 86400000
 
-   let hoursLeft = Math.floor(timeLeft / 3600000)
+   let hoursLeft = Math.floor(timeLeft / 3600000) // hour
 
    if (daysLeft < 1) daysLeft = ''
    else daysLeft = `${daysLeft}days`
@@ -162,4 +156,4 @@ function timerEndOfSales(salesTimer) {
    return `${daysLeft}${hoursLeft}`
 }
 
-module.exports = {timerEndOfSales, generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, compareArray, formatUsernameWithSettings, paginatedResults, sanitizeHTML}
+module.exports = {timerEndOfSales, generateRandomString, RandomList_ofWords, isMoneroAddress, isPgpKeys, isEmail, formatUsernameWithSettings, paginatedResults, sanitizeHTML}

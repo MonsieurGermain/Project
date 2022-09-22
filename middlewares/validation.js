@@ -1,4 +1,4 @@
-const {compareArray, isMoneroAddress, isEmail, isPgpKeys} = require('./function');
+const {isMoneroAddress, isEmail, isPgpKeys} = require('./function');
 
 // Vars
 const Banned_Username = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -109,7 +109,7 @@ function Validate_Register(req, res, next) {
    try {
       // Username
       req.body.username = ValidateText(req.body.username, 'Username', {minlength: 1, maxlength: 25});
-      if (compareArray(Banned_Username, req.body.username.toLowerCase())) throw new Error(`You cannot use this Username`);
+      if (Banned_Username.includes(req.body.username.toLowerCase())) throw new Error(`You cannot use this Username`);
 
       // Password
       req.body.password = ValidateText(req.body.password, 'Password', {minlength: 8, maxlength: 200});
@@ -130,14 +130,15 @@ function Validate_Conversation(req, res, next) {
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 2, maxlength: 1000});
 
       // Conversation Type
-      if (!compareArray(Conversation_Type, req.body.type)) throw new Error('Invalid Conversation Type');
+      if (!Conversation_Type.includes(req.body.type)) throw new Error('Invalid Conversation Type');
 
       req.body.timestamps = req.body.timestamps ? true : undefined;
 
-      if (!compareArray([undefined, 'noPgp', 'ownPgp', 'otherPgp'], req.body.pgpSettings)) throw new Error('Invalid Pgp Settings');
+      if (![undefined, 'noPgp', 'ownPgp', 'otherPgp'].includes(req.body.pgpSettings)) throw new Error('Invalid Pgp Settings');
 
       if (req.body.otherPgpKeys) {
-         if (!isPgpKeys(req.body.otherPgpKeys)) throw new Error('The other Pgp Keys you provided is Invalid');
+         req.body.otherPgpKeys = isPgpKeys(req.body.otherPgpKeys)
+         if (!req.body.otherPgpKeys) throw new Error('The other Pgp Keys you provided is Invalid');
       }
 
       next();
@@ -159,9 +160,9 @@ function Validate_Reviews(req, res, next) {
    try {
       req.body.review = ValidateText(req.body.review, 'Review', {minlength: 5, maxlength: 5000});
 
-      if (!compareArray(Rating_Possible, req.body.note)) throw new Error();
+      if (!Rating_Possible.includes(req.body.note)) throw new Error();
 
-      if (!compareArray(Conversation_Type, req.body.type)) throw new Error();
+      if (!Conversation_Type.includes(req.body.type)) throw new Error();
 
       next();
    } catch (e) {
@@ -213,7 +214,7 @@ function Validate_Product(req, res, next) {
       req.body.allow_hidden = req.body.allow_hidden ? true : undefined;
 
       // Ship From
-      if (!compareArray(List_Country, req.body.ship_from)) throw new Error('Selected Country Invalid');
+      if (!List_Country.includes(req.body.ship_from)) throw new Error('Selected Country Invalid');
 
       // Details
       if (req.body.aboutProduct) {
@@ -287,7 +288,7 @@ function Validate_Product(req, res, next) {
       
 
       // Status
-      if (!compareArray(['online', 'offline'], req.body.status)) throw new Error(`Invalid Status Value`);
+      if (!['online', 'offline'].includes(req.body.status)) throw new Error(`Invalid Status Value`);
 
       next();
    } catch (e) {
@@ -320,9 +321,9 @@ function Validate_Change_Password(req, res, next) {
 
 function Validate_AutoDel_Settings(req, res, next) {
    try {
-      if (!compareArray(List_Message_AutoDel, req.body.messages)) throw new Error('The Selected Auto Delete Message Settings is Invalid');
-      if (!compareArray(List_Information_AutoDel, req.body.informations)) throw new Error('The Selected Auto Delete Information Settings is Invalid');
-      if (!compareArray(List_UserDel, req.body.userDel)) throw new Error('The User Auto Delete Settings is Invalid');
+      if (!List_Message_AutoDel.includes(req.body.messages)) throw new Error('The Selected Auto Delete Message Settings is Invalid');
+      if (!List_Information_AutoDel.includes(req.body.informations)) throw new Error('The Selected Auto Delete Information Settings is Invalid');
+      if (!List_UserDel.includes(req.body.userDel)) throw new Error('The User Auto Delete Settings is Invalid');
 
       if (req.body.messages === 'never') req.body.messages = undefined;
       if (req.body.informations === 'never') req.body.informations = undefined;
@@ -342,7 +343,7 @@ function Validate_SearchInput(req, res, next) {
       req.body.search = ValidateText(req.body.search, 'Search', {minlength: 0, maxlength: 500, isRequired: false});
 
       //Category
-      if (compareArray(category, req.body.category)) throw new Error('Selected Category Invalid');
+      if (!category.includes(req.body.category)) throw new Error('Selected Category Invalid');
 
       next();
    } catch (e) {
@@ -369,7 +370,7 @@ function validateContactUs(req, res, next) {
    try {
       req.body.username = req.body.username ? req.user.username : undefined
 
-      if (!compareArray(['feedback', 'bug', 'help', 'other'], req.body.reason)) throw new Error('Invalid Reason');
+      if (!['feedback', 'bug', 'help', 'other'].includes(req.body.reason)) throw new Error('Invalid Reason');
 
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 10, maxlength: 3000});
 
@@ -406,7 +407,7 @@ function validateReports(req, res, next) {
    try {
       req.body.username = req.body.username ? req.user.username : undefined
 
-      if (!compareArray(['scam', 'blackmail', 'information', 'other'], req.body.reason)) throw new Error('Invalid Reason');
+      if (!['scam', 'blackmail', 'information', 'other'].includes(req.body.reason)) throw new Error('Invalid Reason');
 
       req.body.message = ValidateText(req.body.message, 'Message', {minlength: 10, maxlength: 3000});
 
@@ -481,7 +482,7 @@ function isObject(value) {
 function sanitizeInput(value) {
    if (!value) throw new Error()
    if (typeof(value) !== 'string') throw new Error()
-   if (value.length > 200) throw new Error()
+   if (value.length > 250) throw new Error()
    return
 }
 
@@ -498,7 +499,7 @@ function sanitizeObject(object) {
 
 function sanitizeQuerys(req, res, next) {
    try { 
-      if (req.query) sanitizeObject(req.query)
+      if (req.query)sanitizeObject(req.query)
 
       next()
    } catch (e) {
@@ -520,8 +521,8 @@ function sanitizeParams(req, res, next) {
 
 function sanitizeParamsQuerys(req, res, next) {
    try { 
-      if (req.query)sanitizeObject(req.query)
-      if (req.params)sanitizeObject(req.params)
+      sanitizeObject(req.query)
+      sanitizeObject(req.params)
 
       next()
    } catch (e) {

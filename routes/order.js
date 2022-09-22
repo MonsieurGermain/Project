@@ -8,15 +8,7 @@ const { Validate_OrderCustomization, sanitizeParams, sanitizeQuerys, sanitizePar
 const {formatUsernameWithSettings, paginatedResults, sanitizeHTML} = require('../middlewares/function');
 
 
-function validateData(value, acceptedValues) {
-   for (let i = 0; i < acceptedValues.length; i++) {
-      if (acceptedValues[i] === value) return true;
-   }
-   return;
-}
-
 function calculateOrderPrice(base_price, qty, ship_opt_price, selection_1_price, selection_2_price) {
-
    let price = (((base_price + selection_1_price + selection_2_price) * qty)  + ship_opt_price);
 
    price += price * 0.03
@@ -52,7 +44,7 @@ async function HandleOrderRequest(request, order, user_settings) {
 }
 
 // Better Name ?
-function Get_Int_In_Number(number, Timer, Time_Left, Time_Amount) {
+function getDaysHoursEtc(number, Timer, Time_Left, Time_Amount) {
    let value = Timer / number;
    value = value.toString();
    value = value.slice(0, value.indexOf('.') + 0);
@@ -66,10 +58,10 @@ function Format_Timer(timer) {
    let Time_Left = '';
    let Timer = timer - Date.now();
 
-   [Timer, Time_Left] = Get_Int_In_Number(86400000, Timer, Time_Left, 'Days');
-   [Timer, Time_Left] = Get_Int_In_Number(3600000, Timer, Time_Left, 'Hours');
-   [Timer, Time_Left] = Get_Int_In_Number(60000, Timer, Time_Left, 'Mins');
-   [Timer, Time_Left] = Get_Int_In_Number(1000, Timer, Time_Left, 'Secs');
+   [Timer, Time_Left] = getDaysHoursEtc(86400000, Timer, Time_Left, 'Days');
+   [Timer, Time_Left] = getDaysHoursEtc(3600000, Timer, Time_Left, 'Hours');
+   [Timer, Time_Left] = getDaysHoursEtc(60000, Timer, Time_Left, 'Mins');
+   [Timer, Time_Left] = getDaysHoursEtc(1000, Timer, Time_Left, 'Secs');
 
    return Time_Left;
 }
@@ -81,12 +73,8 @@ async function getProductImg(slug) {
 
 function Create_Order_Link(status, id, isBuyer) {
    if (isBuyer) {
-      switch (status) {
-         case 'awaiting_info':
-            return `/submit-info/${id}`;
-         case 'awaiting_payment':
-            return `/pay/${id}`;
-      }
+      if (status === 'awaiting_info') return `/submit-info/${id}`;
+      if (status === 'awaiting_payment') return `/pay/${id}`;
    }
    return `/order-resume/${id}`;
 }
@@ -95,20 +83,18 @@ function addDeleteLink(order, isBuyer) {
    switch (order.status) {
       case 'rejected':
          if (isBuyer) return true;
-         else return;
+         return;
       case 'finalized':
          return true;
       case 'expired':
          return true;
       case 'awaiting_info':
          if (isBuyer) return true;
-         else return;
+         return;
       case 'disputed':
          if (isBuyer && order.dispute_winner === order.buyer) return true;
          if (!isBuyer && order.dispute_winner === order.vendor) return true;
          if (!order.timer) return true;
-         else return;
-      default:
          return;
    }
    return;
@@ -240,7 +226,7 @@ router.post('/submit-info/:id', Need_Authentification, sanitizeParams, async (re
 
       order.messages.push({
          sender: user.username === order.buyer ? formatUsernameWithSettings(user.username, order.privacy) : user.username,
-         content: content
+         content
       });
 
       order.status = 'awaiting_payment';
@@ -308,25 +294,18 @@ function verifyOrderUpdate(status, buyer, vendor, username) {
    switch (status) {
       case 'shipped':
          if (username === vendor) return
-         else throw new Error('No access');
       case 'recieved':
          if (username === buyer) return
-         else throw new Error('No access');
       case 'finished':
          if (username === buyer) return
-         else throw new Error('No access');
       case 'rejected':
          if (username === vendor) return
-         else throw new Error('No access');
       case 'not_recieved':
          if (username === buyer) return
-         else throw new Error('No access');
       case 'dispute':
          if (username === buyer || username === vendor) return
-         else throw new Error('No access');
-      default:
-         throw new Error('Update Value Invalid');
    }
+   throw new Error('No access');
 }
 
 function constructOrdersQuery(query, username) {
@@ -351,8 +330,8 @@ function sanitizeHtmlOfFirstMessage(orders) {
 router.get('/orders', Need_Authentification, sanitizeQuerys,
    async (req, res) => {
       try {
-         if (!validateData(req.body.status, [undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid type to report')
-         if (!validateData(req.body.clientsOrders, [undefined, 'true'])) throw new Error('Invalid type to report')
+         if (![undefined, 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'].includes(req.body.status)) throw new Error('Invalid type to report')
+         if (![undefined, 'true'].includes(req.body.clientsOrders)) throw new Error('Invalid type to report')
 
          const query = constructOrdersQuery(req.query, req.user.username);
 
@@ -373,17 +352,12 @@ router.get('/orders', Need_Authentification, sanitizeQuerys,
 router.post('/filter-orders', Need_Authentification, sanitizeQuerys,
    async (req, res) => {
       try {
-         if (!validateData(req.body.status, ['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'])) throw new Error('Invalid status to filter')
-         if (!validateData(req.body.clientsOrders, [undefined, 'true', 'false'])) throw new Error('Invalid type to filter')
+         if (!['all', 'awaiting_info', 'awaiting_payment', 'awaiting_shipment', 'shipped', 'recieved', 'finalized', 'rejected', 'expired', 'dispute_progress', 'disputed'].includes(req.body.status)) throw new Error('Invalid status to filter')
+         if (![undefined, 'true', 'false'].includes(req.body.clientsOrders)) throw new Error('Invalid type to filter')
 
          const {status, clientsOrders} = req.body;
 
-         let query = '?ordersPage=1';
-
-         if (status !== 'all') query += `&status=${status}`;
-         if (clientsOrders === 'true') query += `&clientsOrders=true`;
-
-         res.redirect(`/orders${query}`);
+         res.redirect(`/orders?ordersPage=1${status !== 'all' ? `&status=${status}` : ''}${clientsOrders === 'true' ? `&clientsOrders=true` : ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -404,11 +378,7 @@ router.post('/update-order/:id', Need_Authentification, sanitizeParamsQuerys, as
 
       await order.save();
 
-      let redirect_url;
-      if (fromOrders) redirect_url = `/orders?ordersPage=${ordersPage ? ordersPage : '1'}${status ? `&status=${status}` : ''}${clientsOrders ? `&clientsOrders=true` : ''}`
-      else redirect_url = `/order-resume/${req.params.id}`;
-
-      res.redirect(redirect_url);
+      res.redirect(fromOrders ? `/orders?ordersPage=${ordersPage ? ordersPage : '1'}${status ? `&status=${status}` : ''}${clientsOrders ? `&clientsOrders=true` : ''}` : `/order-resume/${req.params.id}`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -429,11 +399,7 @@ router.delete('/delete-order/:id', Need_Authentification, sanitizeParams, async 
 
       await order.deleteOrder();
 
-      let redirect_url
-      if (fromOrders) redirect_url = `/orders?ordersPage=${ordersPage ? ordersPage : '1'}${status ? `&status=${status}` : ''}${clientsOrders ? `&clientsOrders=true` : ''}`
-      else redirect_url = `/orders?ordersPage=1`;
-
-      res.redirect(redirect_url);
+      res.redirect(fromOrders ? `/orders?ordersPage=${ordersPage ? ordersPage : '1'}${status ? `&status=${status}` : ''}${clientsOrders ? `&clientsOrders=true` : ''}` : `/orders?ordersPage=1`);
    } catch (e) {
       console.log(e);
       res.redirect('/404');

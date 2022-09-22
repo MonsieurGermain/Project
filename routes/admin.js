@@ -40,14 +40,6 @@ function constructQuery(query) {
    return mongooseQuery;
 }
 
-function validateData(value, acceptedValues) {
-   for (let i = 0; i < acceptedValues.length; i++) {
-      if (acceptedValues[i] === value) return true;
-   }
-   return;
-}
-
-
 router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validateReports,
    async (req, res, next) => {
       try { 
@@ -58,20 +50,11 @@ router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validate
          res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
       }
    },
-   async (req, res, next) => { 
+   async (req, res) => { 
        try {
-         if (!validateData(req.query.type, ['vendor', 'product'])) throw new Error('Invalid type to report')
+         if (!['vendor', 'product'].includes(req.query.type)) throw new Error('Invalid type to report')
 
-         switch (req.query.type) {
-            case 'vendor':
-               await User.findOne({username: req.params.id}).orFail(new Error());
-               break;
-            case 'product':
-               await Product.findOne({slug: req.params.id}).orFail(new Error());
-               break;
-            default:
-               throw new Error()
-         }
+         req.query.type === 'vendor' ? await User.findOne({username: req.params.id}).orFail(new Error()) : await Product.findOne({slug: req.params.id}).orFail(new Error()); // Check if the Object that is being reported Exists
 
          const {type, url} = req.query;
          const {id} = req.params;
@@ -100,11 +83,10 @@ router.post('/report/:id', Need_Authentification, sanitizeParamsQuerys, validate
 router.get('/reports', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
-         if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
-         if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid type to report')
+         if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) throw new Error('Invalid type to report')
+         if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid type to report')
 
          const query = constructQuery(req.query);
-
          query.ban_requested = {$exists: false};
 
          const reports = await paginatedResults(Report, query, {page: req.query.reportsPage, limit: 24});
@@ -121,15 +103,10 @@ router.post('/report-filter', Need_Authentification, sanitizeQuerys,// isAdmin,
       try {
          const {reason, archived} = req.body;
 
-         if (!validateData(reason, ['all', 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
-         if (!validateData(archived, ['all', 'true', 'false'])) throw new Error('Invalid type to report')
+         if (!['all', 'scam', 'blackmail', 'information', 'other'].includes(reason)) throw new Error('Invalid type to report')
+         if (!['all', 'true', 'false'].includes(archived)) throw new Error('Invalid type to report')
 
-         let query = '?reportsPage=1';
-
-         if (reason !== 'all') query += `&reason=${reason}`;
-         if (archived !== 'all') query += `&archived=${archived}`;
-
-         res.redirect(`/reports${query}`);
+         res.redirect(`/reports?reportsPage=1${reason !== 'all' ? `&reason=${reason}` : ''}${archived !== 'all' ? `&archived=${archived}` : ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -156,7 +133,7 @@ router.post('/archive-report/:id', Need_Authentification, sanitizeParamsQuerys,/
 router.post('/dismiss-report/:id', Need_Authentification, sanitizeParamsQuerys,// isAdmin,
    async (req, res) => {
       try {
-         const report = await Report.findById(req.params.id).orFail(new Error())
+         const report = await Report.findById(req.params.id).orFail(new Error());
 
          await report.deleteReport();
 
@@ -185,12 +162,13 @@ router.post('/resolve-report/:id', Need_Authentification, sanitizeParamsQuerys,/
 
          user.warning++;
          
-         if (user.warning > 5) {
+         if (user.warning >= 5) {
             user.deleteUser();
          } 
          else user.save();
 
          let flashMessage = 'The Vendor as been given a warning';
+         
          if (banReason) {
             report.ban_explanation = banReason;
             flashMessage = 'A request to ban this vendor as been made';
@@ -213,7 +191,7 @@ router.post('/resolve-report/:id', Need_Authentification, sanitizeParamsQuerys,/
 router.get('/ban-user', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
-         if (!validateData(req.query.reason, [undefined, 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
+         if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) throw new Error('Invalid type to report')
 
          const query = constructQuery(req.query);
          query.ban_explanation = {$exists: true};
@@ -230,15 +208,11 @@ router.get('/ban-user', Need_Authentification, sanitizeQuerys,// isAdmin,
 router.post('/ban-user-filter', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
-         const {reason, archived} = req.body;
+         const {reason} = req.body;
 
-         if (!validateData(reason, ['all', 'scam', 'blackmail', 'information', 'other'])) throw new Error('Invalid type to report')
+         if (!['all', 'scam', 'blackmail', 'information', 'other'].includes(reason)) throw new Error('Invalid type to report')
 
-         let query = '?reportsPage=1';
-
-         if (reason !== 'all') query += `&reason=${reason}`;
-
-         res.redirect(`/ban-user${query}`);
+         res.redirect(`/ban-user?reportsPage=1${query}${reason !== 'all' ? `&reason=${reason}` : ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -301,7 +275,6 @@ router.get('/disputes', Need_Authentification, sanitizeQuerys,//isAdmin,
 router.post('/disputes/:id', Need_Authentification, sanitizeParams,//isAdmin,
    async (req, res) => {
       try {
-
          const order = await Order.findById(req.params.id).orFail(new Error())
 
          order.admin = req.user.username;
@@ -318,18 +291,14 @@ router.post('/disputes/:id', Need_Authentification, sanitizeParams,//isAdmin,
 router.post('/settle-dispute/:id', Need_Authentification, sanitizeParams,// isAdmin,
    async (req, res) => {
       try {
-         const order = await Order.findById(req.params.id).orFail(new Error())
+
+         const {id} = req.params
+         const {winner} = req.body
+
+         const order = await Order.findById(id).orFail(new Error())
 
          if (order.admin !== req.user.username) throw new Error('Cant Access');
-
-         let winner;
-         switch(req.body.winner) {
-            case order.vendor:
-               winner = order.vendor;
-            break
-            default : 
-            winner = order.buyer;
-         }
+         if ([order.vendor, order.buyer].includes(winner)) throw new Error('Invalid Dispute Winner')
 
          order.status = 'disputed';
          order.timer = Date.now() + 172800000;
@@ -350,8 +319,8 @@ router.post('/settle-dispute/:id', Need_Authentification, sanitizeParams,// isAd
 router.get('/feedback', Need_Authentification, sanitizeQuerys,// isAdmin,
    async (req, res) => {
       try {
-         if (!validateData(req.query.reason, [undefined, 'feedback', 'bug', 'help', 'other'])) throw new Error('Invalid Reason to feedback')
-         if (!validateData(req.query.archived, [undefined, 'true', 'false'])) throw new Error('Invalid Archived Feedback')
+         if (![undefined, 'feedback', 'bug', 'help', 'other'].includes(req.query.reason)) throw new Error('Invalid Reason to feedback')
+         if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid Archived Feedback')
 
          const feedbacks = await paginatedResults(Contactus, constructQuery(req.query), {page: req.query.feedbackPage, limit: 24});
 
@@ -367,16 +336,10 @@ router.post('/feedback-filter', Need_Authentification, sanitizeQuerys,// isAdmin
       try {
          const {reason, archived} = req.body;
 
-         if (!validateData(reason, ['all', 'feedback', 'bug', 'help', 'other'])) throw new Error('Invalid Reason to feedback')
-         if (!validateData(archived, ['all', 'true', 'false'])) throw new Error('Invalid Archived Feedback')
+         if (!['all', 'feedback', 'bug', 'help', 'other'].includes(reason)) throw new Error('Invalid Reason to feedback')
+         if (!['all', 'true', 'false'].includes(archived)) throw new Error('Invalid Archived Feedback')
 
-
-         let query = '?feedbackPage=1';
-
-         if (reason !== 'all') query += `&reason=${reason}`;
-         if (archived !== 'all') query += `&archived=${archived}`;
-
-         res.redirect(`/feedback${query}`);
+         res.redirect(`/feedback?feedbackPage=1${reason !== 'all' ? `&reason=${reason}` : ''}${archived !== 'all' ? `&archived=${archived}` : ''}`);
       } catch (e) {
          console.log(e);
          res.redirect('/404');
@@ -432,7 +395,7 @@ router.post('/promote-user/:username', Need_Authentification, sanitizeParamsQuer
          const user = await User.findOne({username: req.params.username}).orFail(new Error())
 
          user.awaiting_promotion = undefined;
-         if (!req.query.decline) user.authorization = 'vendor';
+         user.authorization = req.query.decline ?  'buyer' : 'vendor';
 
          await user.save();
 

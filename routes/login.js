@@ -10,6 +10,13 @@ const {Should_Not_Be_Authenticated} = require('../middlewares/authentication');
 const {Validate_Login, Validate_Register, Validate_Code} = require('../middlewares/validation');
 const {generateRandomString, RandomList_ofWords} = require('../middlewares/function');
 
+function generated_AccountDetails_FlashMessage(username, password) {
+   return `
+   <p class="mb-0">Account Username: <b>${username}</b></p>
+   <p class="mb-0">Password: <b>${password}</b></p>
+   <p class="fs-xs mb-0"> <b>Save this somewhere safe</b></p>
+   `
+}
 
 function generateAccountUsername() {
    let result = '';
@@ -22,7 +29,7 @@ function generateAccountUsername() {
 function generateAccountPassword(passwordType, typedPassword) {
    switch(passwordType) {
       case 'generate-password':
-         return generateRandomString(20)
+         return generateRandomString(24)
       case 'choose-password':
          if (!typedPassword || typeof(typedPassword) !== 'string') throw new Error('The Password fields is Required')
          typedPassword = typedPassword.trim()
@@ -35,28 +42,28 @@ function generateAccountPassword(passwordType, typedPassword) {
 
 function createProfilePicture(name) {
    const randomImgName = generateRandomName(name, 17)
-   const imgPath = `./uploads/userImg/${randomImgName}`
+   const imgPath = `/userImg/${randomImgName}`
 
-   copyFile('./public/default/default-profile-pic.png', imgPath, (err) => {
+   copyFile('./public/default/default-profile-pic.png', `./uploads${imgPath}`, (err) => {
       if (err) throw err;
    });
 
-   return `/userImg/${randomImgName}`;
+   return imgPath;
 }
-async function create2StepVerification(username, stepVerificationSettings) {
-   await StepVerification.deleteMany({ username: username });
 
-   const stepVerification = new StepVerification({});
-   stepVerification.username = username;
-   stepVerification.type = stepVerificationSettings;
-   stepVerification.code = stepVerificationSettings === 'email' ? generateRandomString(9, 'number') : RandomList_ofWords(12);
-   stepVerification.encrypted_code = stepVerificationSettings === 'email' ? undefined : stepVerification.code;
+async function create2StepVerification(username, type) {
+   StepVerification.deleteMany({ username: username });
 
-   const redirectUrl = stepVerificationSettings === 'email' ? `/2fa?type=${stepVerificationSettings}` : `/2fa?type=${stepVerificationSettings}&encrypted=${stepVerification.encrypted_code}`
+   const stepVerification = new StepVerification({
+      username, 
+      type, 
+      code : type === 'email' ? generateRandomString(9, 'number') : RandomList_ofWords(12),
+      encrypted_code : type === 'email' ? undefined : stepVerification.code,
+   });
 
    await stepVerification.save();
 
-   return redirectUrl;
+   return `/2fa?type=${type}${type === 'email' ? '' : `&encrypted=${stepVerification.encrypted_code}`}`;
 }
 
 router.get('/login', Should_Not_Be_Authenticated, (req, res) => {
@@ -73,13 +80,11 @@ router.post('/login', Should_Not_Be_Authenticated, Validate_Login,
          if (!user) throw new Error('Username or Password Invalid')
          if (!bcrypt.compareSync(password, user.password)) throw new Error('Username or Password Invalid');
 
-         if (user.settings.userExpiring) user.updateInactiveDate();
+         user.settings.userExpiring ? user.updateInactiveDate() : undefined;
          user.save();
 
-         if (user.settings.step_verification) {
-            const redirectUrl = await create2StepVerification(user.username, user.settings.step_verification);
-            res.redirect(redirectUrl);
-         } else {
+         if (user.settings.step_verification) res.redirect(await create2StepVerification(user.username, user.settings.step_verification));
+         else {
             req.user_toAuth = user;
             next();
          }
@@ -88,12 +93,11 @@ router.post('/login', Should_Not_Be_Authenticated, Validate_Login,
          req.flash('error', e.message);
          res.redirect('/login');
       }
-   }, passport.authenticate('local', {
-      failureRedirect: '/login',
-      failureFlash: true,
-   }), (req, res) => {
-      if (req.user.authorization === 'admin') res.redirect('/disputes?disputesPage=1');
-      else res.redirect('/');
+   }, 
+   passport.authenticate('local', {failureRedirect: '/login', failureFlash: true,}), 
+   (req, res) => {
+      if (req.user.authorization !== 'admin') res.redirect('/');
+      else res.redirect('/disputes?disputesPage=1');;
    }
 );
 
@@ -121,15 +125,11 @@ router.post('/2fa', Should_Not_Be_Authenticated, Validate_Code,
 
          next();
       } catch (e) {
-         const query = req.query.encrypted ? `type=${req.query.type}&encrypted=${req.query.encrypted}` : `type=${req.query.type}`;
-
          req.flash('error', e.message);
-         res.redirect(`/2fa?${query}`);
+         res.redirect(`/2fa?type=${req.query.type}${req.query.encrypted ? `&encrypted=${req.query.encrypted}` : ``}`);
       }
-   }, passport.authenticate('local', {
-      failureRedirect: `/login`,
-      failureFlash: true,
-   }), (req, res) => {
+   }, passport.authenticate('local', { failureRedirect: `/login`, failureFlash: true,}), 
+   (req, res) => {
       if (req.user.authorization === 'admin') res.redirect('/disputes?disputesPage=1');
       else res.redirect('/');
    }
@@ -143,8 +143,7 @@ router.post('/register', Should_Not_Be_Authenticated, Validate_Register, async (
    try {
       let {username, password} = req.body;
 
-      const isUsernameTaken = await User.findOne({username: username})
-      if (isUsernameTaken) throw new Error('This Username is Already Taken')
+      if (await User.findOne({username: username})) throw new Error('This Username is Already Taken')
 
       const user = new User({
          username,
@@ -176,27 +175,22 @@ router.post('/generate-account', Should_Not_Be_Authenticated, async (req, res) =
    try {
       let {passwordSettings, password} = req.body
 
-      const user = new User({})
+      const username = generateAccountUsername()
 
-      user.username = generateAccountUsername()
+      if (await User.findOne({username: username})) throw new Error('This Username is Already Taken')
 
-      const isUsernameTaken = await User.findOne({username: user.username})
-      
-      if (isUsernameTaken) throw new Error('This Username is Already Taken')
-      
-      let userPassword = generateAccountPassword(passwordSettings, password)
-      user.password = bcrypt.hashSync(userPassword , 11),
+      const userPassword = generateAccountPassword(passwordSettings, password)
 
-      user.img_path = createProfilePicture(user.username),
-      user.settings.userExpiring = 14
+      const user = new User({
+         username: generateAccountUsername(),
+         password: bcrypt.hashSync(userPassword , 11),
+         img_path: createProfilePicture(username),
+         settings: {userExpiring: 14, messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false}
+      })
 
       await user.save()      
 
-      req.flash('success', `
-      <p class="mb-0">Account Username: <b>${user.username}</b></p>
-      <p class="mb-0">Password: <b>${userPassword}</b></p>
-      <p class="fs-xs mb-0"> <b>Save this somewhere safe</b></p>
-      `);
+      req.flash('success', generated_AccountDetails_FlashMessage(user.username, userPassword));
       res.redirect('/login');
    } catch (e) {
       console.log(e)
@@ -205,10 +199,9 @@ router.post('/generate-account', Should_Not_Be_Authenticated, async (req, res) =
    }
 })
 
-// Redirect to /
 router.get('/logout', (req, res) => {
    req.logOut();
-   res.redirect('/login');
+   res.redirect('/');
 });
 
 module.exports = router;

@@ -17015,6 +17015,13 @@ input[id^=more-report-resolve-]:checked ~ .dropdown-symbol svg {
 .create-product-container #shipping-option-checkbox:checked ~ div {
   height: 19rem;
 }
+.create-product-container [id^=product-selection-]:checked ~ div {
+  height: 22.75rem;
+  margin-top: 2rem;
+}
+.create-product-container [id^=product-selection-]:checked ~ label svg {
+  transform: rotate(180deg);
+}
 .create-product-container .product-secondary-images > label {
   margin-right: 5px;
   position: relative;

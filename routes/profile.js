@@ -5,7 +5,7 @@ const Product = require('../models/product');
 const Review = require('../models/review');
 const {copyFile} = require('fs');
 const fileUpload = require("express-fileupload");
-const { ImageUploadsValidation, uploadsFiles, deleteImage } = require('../middlewares/filesUploads')
+const { ImageUploadsValidation, uploadsFiles } = require('../middlewares/filesUploads')
 const {Need_Authentification} = require('../middlewares/authentication');
 const {Validate_Profile, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
 const {sanitizeHTML, paginatedResults} = require('../middlewares/function');
@@ -16,8 +16,9 @@ router.get('/profile/:username', sanitizeParamsQuerys, async (req, res) => {
       const vendor = await User.findOne({username: req.params.username}).orFail('This User doesnt Exist')
       vendor.description = sanitizeHTML(vendor.description);
 
-      const productQuery = req.user && req.params.username === req.user.username ? {vendor: vendor.username} : {vendor: vendor.username, status: 'online'};
+      const productQuery = req.params.username === req.user.username ? {vendor: vendor.username} : {vendor: vendor.username, status: 'online'};
       const paginatedProducts = await paginatedResults(Product, productQuery, {page: req.query.productPage});
+
       const paginatedReviews = await paginatedResults(Review, {vendor: vendor.username}, {page: req.query.reviewPage});
 
       res.render('profile', {vendor, paginatedProducts, paginatedReviews});
@@ -91,6 +92,7 @@ Validate_Profile, async (req, res) => {
       user.description = description;
       user.achievement = achievement;
       user.languages = languages;
+      
       await user.save();
 
       req.flash('success', 'Profile Successfully Edited');

@@ -77,6 +77,7 @@ router.get('/products', sanitizeQuerys, async (req, res) => {
 
       if (search) {
          const productFused = fusedProduct.search(search);
+         console.log(productFused)
          productsFuzzy = productFused.map(({item}) => item);
       }
       paginatedProducts = await paginatedResults(Product, {status: 'online'}, {page: productPage, limit: 24}, productsFuzzy);
@@ -89,8 +90,7 @@ router.get('/products', sanitizeQuerys, async (req, res) => {
 });
 
 router.post('/search-products', async (req, res) => {
-   const {search} = req.body
-   if (search.length > 100) search = search.split(0, 100)
+   if (req.body.search.length > 100) req.body.search = req.body.search.slice(0, 100)
    res.redirect(`/products?search=${req.body.search}&productPage=1`);
 });
 
@@ -104,9 +104,8 @@ router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
 
       const paginatedReviews = await paginatedResults(Review, {product_slug: product.slug}, {page: req.query.reviewPage});
       
-      if (product.sales_end) product.timerEndSales = timerEndOfSales(product.sales_end)
-      
       product.description = sanitizeHTML(product.description);
+      product.timerEndSales = timerEndOfSales(product.sales_end)
 
       res.render('product-single', {product, vendor, paginatedReviews});
    } catch (e) {
@@ -119,7 +118,6 @@ router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
 router.get('/create-product', Need_Authentification, isVendor, sanitizeQuerys,
    async (req, res) => {
       try { 
-
          const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username)
 
          const reviews = [
@@ -214,8 +212,7 @@ async (req, res) => {
       let success_message = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
 
       if (product.title !== title) {
-         const isProductTitleTaken = await Product.findOne({title: title, vendor: req.user.username})
-         if (isProductTitleTaken) throw new Error('You cant have the same title for multiple products')
+         if (await Product.findOne({title: title, vendor: req.user.username})) throw new Error('You cant have the same title for multiple products')
       }
 
       // price
@@ -263,16 +260,14 @@ async (req, res) => {
 
       await product.save();
 
-
-      if (product.status === 'offline' && status === 'online') {
-         req.flash('warning', 'You need to add a Monero Address to your account or a custom Monero address to the Product in order to put it online');
-      } else if (status === 'offline') {
-         req.flash('warning', `${success_message}, but still Offline`);
-      } else {        
-         req.flash('success', success_message);
+      if (product.status === 'offline') {
+         if (status === 'online') req.flash('warning', 'You need to add a Monero Address to your account or a custom Monero address to the Product in order to put it online');
+         else req.flash('warning', `${success_message}, but still Offline`);
+      } else { 
+         req.flash('success', `${success_message}`);
       }
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
 
+      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
    } catch (e) {
       console.log(e)
       req.flash('error', e.message)

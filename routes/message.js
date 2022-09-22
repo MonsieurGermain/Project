@@ -25,47 +25,40 @@ router.post('/send-message/:username', Need_Authentification, sanitizeParams,
       try {
          const {user} = req;
          const {username} = req.params;
-         const {type, timestamps, message, pgpSettings, otherPgpKeys, includePgp} = req.body;
+         const {type, timestamps, message, pgpSettings, otherPgpKeys} = req.body;
 
-         let foundConversation = await Conversation.isConversationExisting(user.username, username, type);
+         let conversation = await Conversation.isConversationExisting(user.username, username, type);
 
 
-         if (!foundConversation) {
-            foundConversation = new Conversation();
-
-            foundConversation.settings = {
-               type: type ? type : 'default',
-               timestamps: timestamps ? true : undefined,
-            };
-            foundConversation.sender_1 = user.username;
-            foundConversation.sender_2 = username;
-            
-            foundConversation.includePgp = includePgp
-
-            foundConversation.sender1_Img = type === 'default' ? user.img_path : '/default/default-profile-pic.png';
+         if (!conversation) {
+            conversation = new Conversation({
+               sender_1: user.username,
+               sender_2: username,
+               sender1_Img: type === 'default' ? user.img_path : '/default/default-profile-pic.png',
+               settings: { 
+                  type: type ? type : 'default',
+                  timestamps: timestamps ? true : undefined,
+                  includePgp : pgpSettings ? true : undefined,
+               }
+            });
 
             switch (pgpSettings) {
                case 'ownPgp':
-                  foundConversation.sender1_Pgp = req.user.verifiedPgpKeys;
+                  conversation.sender1_Pgp = req.user.verifiedPgpKeys;
                   break;
                case 'otherPgp':
-                  foundConversation.sender1_Pgp = otherPgpKeys;
+                  conversation.sender1_Pgp = otherPgpKeys;
                   break;
-               default:
-                  req.body.pgpKeys = undefined;
-                  req.body.includePgp = false;
             }
 
-            [foundConversation.sender2_Img, foundConversation.sender2_Pgp] = await getOtherUserData(username);
+            [conversation.sender2_Img, conversation.sender2_Pgp] = await getOtherUserData(username);
          }
 
-         foundConversation.Add_New_Message(message, user.username, user.settings);
+         conversation.Add_New_Message(message, user.username, user.settings);
 
-         await foundConversation.save();
+         await conversation.save();
 
-         let redirect_url = '/messages#bottom';
-         if (foundConversation) redirect_url = `/messages?id=${foundConversation.id}#bottom`;
-         res.redirect(redirect_url);
+         res.redirect( `/messages?id=${conversation.id}#bottom`);
       } catch (e) {
          console.log(e)
          res.redirect('/404');
@@ -101,7 +94,7 @@ router.post('/search-messages', Need_Authentification, async (req, res) => {
    }
 });
 
-function placeAuthUserAtSender_1(conversation, username) {
+function putAuthUserAtSender_1(conversation, username) {
    originalSender_1 = formatUsernameWithSettings(conversation.sender_1, conversation.settings.type);
 
    if (username === conversation.sender_2) {
@@ -125,7 +118,7 @@ function placeAuthUserAtSender_1(conversation, username) {
 
 async function formatConversations(conversations, username) {
    for (let i = 0; i < conversations.length; i++) {
-      conversations[i] = placeAuthUserAtSender_1(conversations[i], username); // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
+      conversations[i] = putAuthUserAtSender_1(conversations[i], username); // Hide Username of Sender_1 and Set Current User to Sender 1 aferward
    }
 
    return conversations;
@@ -163,7 +156,7 @@ function addEditButton(conversation, username) {
    return addButtonIndex
 }
 
-async function getSelectedConversationPosition(userConversations, selectedConversationId, username) {
+async function getSelectedConversationIndex(userConversations, selectedConversationId, username) {
    const position = getIndexSelectedConversation(userConversations, selectedConversationId)
 
    if (userConversations[position]) {
@@ -195,20 +188,20 @@ function filterConversationBySearch(userConversations, userUsername, searchQuery
 router.get('/messages', Need_Authentification, sanitizeQuerys, async (req, res) => {
    try {
       let {username} = req.user;
-      let id = req.query.id ? req.query.id : undefined;
-      let search = req.query.searchQuery ? req.query.searchQuery : undefined;
+          id = req.query.id ? req.query.id : undefined,
+          search = req.query.searchQuery ? req.query.searchQuery : undefined;
 
       let conversations = await Conversation.findAllUserConversations(username);
 
       if (search) conversations = filterConversationBySearch(conversations, username, search); // Optimize that
 
-      [conversations, selectedConversationPosition] = await getSelectedConversationPosition(conversations, id, username);
+      [conversations, selectedConversationIndex] = await getSelectedConversationIndex(conversations, id, username);
 
       conversations = await formatConversations(conversations, username);
 
       res.render('messages', {
          conversations: conversations,
-         selected_conversation: conversations[selectedConversationPosition],
+         selected_conversation: conversations[selectedConversationIndex],
       });
    } catch (e) {
       res.redirect('/404');
@@ -245,6 +238,11 @@ router.delete('/delete-conversation/:id', Need_Authentification, sanitizeParams,
    }
 });
 
+async function getSender1_deleteEmptyConversation(username) {
+   const otherUser = await User.findOne({username: username});
+   return otherUser.settings.deleteEmptyConversation
+}
+
 // Make Prettier ?
 router.delete('/delete-message/:id/:message_id', Need_Authentification, sanitizeParams,
    async (req, res) => {
@@ -257,25 +255,15 @@ router.delete('/delete-message/:id/:message_id', Need_Authentification, sanitize
 
          conversation.deleteMessageWithId(message_id);
 
-         let redirect_url;
-
-
          if (!conversation.messages.length) {
-            redirect_url = '/messages#bottom';
+            let deleteEmptyConversation = conversation.sender_1 === user.username ? user.settings.deleteEmptyConversation : await getSender1_deleteEmptyConversation(conversation.sender_1)
 
-            if (conversation.sender_1 === user.username && user.settings.deleteEmptyConversation) await conversation.deleteConversation();
-            else if (conversation.sender_1 === user.username) await conversation.save();
-            else { 
-               const sender1Settings = await User.findOne({username: conversation.sender_1}, {"settings.deleteEmptyConversation": 1});
-               if (sender1Settings.settings.deleteEmptyConversation) await conversation.deleteConversation();
-               else await conversation.save();
-            }
-         } else {
-            redirect_url = `/messages?id=${conversation.id}#bottom`;
-            await conversation.save();
-         }
+            if (deleteEmptyConversation) await conversation.deleteConversation();
+            else await conversation.save();
 
-         res.redirect(redirect_url);
+         } else await conversation.save();
+
+         res.redirect(conversation ? `/messages?id=${conversation.id}#bottom` : '/messages#bottom');
       } catch (e) {
          res.redirect('/404');
       }

@@ -1549,6 +1549,18 @@ aside {
       height: 19rem;
    }
 
+
+   [id^="product-selection-"]:checked~div {
+      height: 22.75rem;
+      margin-top: 2rem;
+   }
+
+   [id^="product-selection-"]:checked~label {
+      svg {
+         transform: rotate(180deg);
+      }
+   }
+
    .product-secondary-images {
       >label {
          margin-right: 5px;

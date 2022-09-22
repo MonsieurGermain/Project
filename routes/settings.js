@@ -1,26 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const {Need_Authentification} = require('../middlewares/authentication');
+const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Product = require('../models/product');
 const Conversation = require('../models/conversation');
-const bcrypt = require('bcrypt');
+const {Need_Authentification} = require('../middlewares/authentication');
 const {Validate_Change_Password, sanitizeQuerys, sanitizeParamsQuerys} = require('../middlewares/validation');
 const {paginatedResults, RandomList_ofWords, isEmail, isPgpKeys, isMoneroAddress, generateRandomString} = require('../middlewares/function');
- 
-
-function validateData(value, acceptedValues) {
-   for (let i = 0; i < acceptedValues.length; i++) {
-      if (acceptedValues[i] === value) return true;
-   }
-   return;
-}
 
 
 router.get('/settings', Need_Authentification, sanitizeQuerys,
    async (req, res) => {
       try {
-         if (!validateData(req.query.section, [undefined, 'security', 'privacy', 'payment', 'saved'])) throw new Error('Invalid Section Query');
+         if (![undefined, 'security', 'privacy', 'payment', 'saved'].includes(req.query.section)) throw new Error('Invalid Section Query');
 
          const {user} = req;
 
@@ -109,21 +101,19 @@ async function updateConversationPgp(username, newPgp) {
       conversations[i].updateNewPgp(username, newPgp);
    }
 }
+
 router.post('/add-pgp', Need_Authentification, async (req, res) => {
    try {
       const {user} = req;
-      const {pgp} = req.body;
+      const pgp = isPgpKeys(req.body.pgp);
+      if (!pgp) throw new Error('Invalid Pgp Keys');
 
-      if (!isPgpKeys(pgp)) throw new Error('Invalid Pgp Keys');
-
-      user.pgp_keys = pgp;
+      user.pgp_keys = pgp.trim();
       user.verifiedPgpKeys = undefined;
       user.pgp_keys_verification_words = RandomList_ofWords(12);
       user.pgp_keys_verification_words_encrypted = user.pgp_keys_verification_words; // Encrypt It with user pgp
 
       await user.save();
-
-      console.log(user.pgp_keys_verification_words)
 
       req.flash('success', 'A new Pgp Keys as Been added, you just need Verify it');
       res.redirect(`/settings?section=security`);
@@ -141,6 +131,8 @@ router.post('/delete-pgp', Need_Authentification, async (req, res) => {
       user.pgp_keys_verification_words = undefined;
       user.pgp_keys_verification_words_encrypted = undefined;
       user.settings.step_verification = 'pgp' ? undefined : user.settings.step_verification;
+
+      await updateConversationPgp(user.username, undefined);
 
       await user.save();
 
@@ -334,9 +326,9 @@ router.post('/conversation-settings', Need_Authentification, async (req, res) =>
       const {user} = req;
       const {autoDeleteConversation, deleteEmptyConversation, recordSeeingMessage} = req.body;
 
-      if (!validateData(autoDeleteConversation, ['never', '1', '3', '7', '30'])) throw new Error('Invalid Value');
-      if (!validateData(deleteEmptyConversation, ['true', 'false'])) throw new Error('Invalid Value');
-      if (!validateData(recordSeeingMessage, ['true', 'false'])) throw new Error('Invalid Value');
+      if (!['never', '1', '3', '7', '30'].includes(autoDeleteConversation)) throw new Error('Invalid Value');
+      if (!['true', 'false'].includes(deleteEmptyConversation)) throw new Error('Invalid Value');
+      if (!['true', 'false'].includes(recordSeeingMessage)) throw new Error('Invalid Value');
 
       user.settings.messageExpiring = autoDeleteConversation !== 'never' ? autoDeleteConversation : undefined;
       user.settings.deleteEmptyConversation = deleteEmptyConversation === 'true' ? true : false;
@@ -355,7 +347,7 @@ router.post('/order-settings', Need_Authentification, async (req, res) => {
       const {user} = req;
       const {autoDeleteProvidedInfo} = req.body;
 
-      if (!validateData(autoDeleteProvidedInfo, ['never', '-1', '1', '3', '7', '30'])) throw new Error('Invalid Value');
+      if (!['never', '-1', '1', '3', '7', '30'].includes(autoDeleteProvidedInfo)) throw new Error('Invalid Value');
 
       user.settings.privateInfoExpiring = autoDeleteProvidedInfo !== 'never' ? autoDeleteProvidedInfo : undefined;
 
@@ -372,7 +364,7 @@ router.post('/account-settings', Need_Authentification, async (req, res) => {
       const {user} = req;
       const {autoDeleteAccount} = req.body;
 
-      if (!validateData(autoDeleteAccount, ['never', '7', '14', '30', '365'])) throw new Error('Invalid Value');
+      if (!['never', '7', '14', '30', '365'].includes(autoDeleteAccount)) throw new Error('Invalid Value');
 
       user.settings.userExpiring = autoDeleteAccount !== 'never' ? autoDeleteAccount : undefined;
       user.expire_at = user.settings.userExpiring ?  user.settings.userExpiring * 86400000 + Date.now() : undefined;
@@ -390,18 +382,21 @@ router.post('/reset-privacy', Need_Authentification, sanitizeQuerys, async (req,
       const {user} = req;
       const {type} = req.query;
 
-      if (!validateData(type, ['conversation', 'order', 'account'])) throw new Error('Invalid Value');
+      if (!['conversation', 'order', 'account'].includes(type)) throw new Error('Invalid Value');
 
-      if (type === 'conversation') {
-         user.settings.messageExpiring = 7;
-         user.settings.deleteEmptyConversation = true;
-         user.settings.recordSeeingMessage = false;
+      switch(type) {
+         case 'conversation':
+            user.settings.messageExpiring = 7;
+            user.settings.deleteEmptyConversation = true;
+            user.settings.recordSeeingMessage = false;
+         break
+         case 'conversation':
+            user.settings.userExpiring = undefined; // ?
+            user.expire_at = undefined;
+         break
+         default : 
+            user.settings.privateInfoExpiring = 7;
       }
-      if (type === 'account') {
-         user.settings.userExpiring = undefined; // ?
-         user.expire_at = undefined;
-      }
-      if (type === 'order') user.settings.privateInfoExpiring = 7;
 
       await user.save();
 
@@ -414,10 +409,7 @@ router.post('/reset-privacy', Need_Authentification, sanitizeQuerys, async (req,
 
 router.post('/saved_product/:slug', Need_Authentification, sanitizeParamsQuerys, async (req, res) => {
    try {
-      let {url, productPage} = req.query
-
-      if (!url) url = '/';
-      if (typeof(url) !== 'string') throw new Error('Invalid Query Url');
+      let {url} = req.query
 
       await Product.findOne({slug: req.params.slug}).orFail(new Error('Invalid Product Slug'))
 
@@ -426,12 +418,12 @@ router.post('/saved_product/:slug', Need_Authentification, sanitizeParamsQuerys,
       user.Add_Remove_Saved_Product(req.params.slug);
 
       await user.save();
-      if (productPage) res.redirect(`/settings?section=saved&productPage=${productPage}`);
-      else res.redirect(`${url}`);
+
+      res.redirect(url ? `${url}` : '/settings?section=saved&productPage=1');
    } catch (e) {
       console.log(e);
       res.redirect('/404');
    }
-}); // ? Tf are those redirect I need to find another way
+});
 
 module.exports = router;

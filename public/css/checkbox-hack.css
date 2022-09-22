@@ -1,3 +1,7 @@
+label { 
+  cursor: pointer;
+}
+
 .label-input input {
   display: none;
 }
@@ -34,11 +38,11 @@
 }
 
 #settings-checkbox:checked~.settings-container.title-height {
-  height: 37.5rem !important;
+  height: 42.5rem !important;
 }
 
 #settings-checkbox:checked~.settings-container.full-height {
-  height: 42.25rem !important;
+  height: 45.25rem !important;
 }
 
 #settings-checkbox~label>svg {

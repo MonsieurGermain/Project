@@ -17,7 +17,12 @@
                     </a>
                 </h3>
                 <p class="text-primary mt-0 mb-2">
-                    <b><%=product.price%>$</b>
+                    <% if (product.salesPrice) { %>
+                        <b><%=product.salesPrice%>$</b>
+                        <del class="fs-sm text-muted mb-0 mt-2 ms-1 opacity-70"><b><%=product.price%>$</b></del>
+                    <% } else { %>
+                        <b><%=product.price%>$</b>
+                    <% } %>
                 </p>
                 <p class="fs-sm mb-3">
                     <%=product.description.slice(0, 75)%>

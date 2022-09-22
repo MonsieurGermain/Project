@@ -72,13 +72,13 @@
             <!-- Own message -->
             <div
                 class="message-entry message-entry--own <%- (i + 1 === selected_conversation.messages.length && selected_conversation.messages[i].messageView)?'pb-4':'ee' %>">
-                <div class="position-relative">
+                <div class="position-relative py-2 px-3">
                     <div class="message-text" style="
                             border-top-left-radius: 0.5rem;
                             border-bottom-right-radius: 0.5rem;
                             border-bottom-left-radius: 0.5rem;
                         ">
-                        <span><%= selected_conversation.messages[i].message %></span>
+                        <span><%= selected_conversation.messages[i].message%></span>
                         <label for="delete-message-input-<%=i%>" class="delete-message-button btn">
 
                             <i class="bx bx-trash-alt"></i>
@@ -113,12 +113,11 @@
             <div
                 class="message-entry <%- (i + 1 === selected_conversation.messages.length && selected_conversation.messages[i].messageView)?'pb-4':'ee' %>">
                 <% if (i === 0 || i > 0 && selected_conversation.messages[i - 1].sender !== selected_conversation.messages[i].sender) { %>
-                <img src="<%=selected_conversation.sender2_Img%>" class="smedium-rc rounded-circle" width="40"
-                    alt="<%=selected_conversation.sender_2%>" />
-                <div class="ms-2 position-relative">
-                    <% } else { %>
-                    <div style="margin-left: 3.5rem;">
-                        <% } %>
+                <img src="<%=selected_conversation.sender2_Img%>" class="smedium-rc rounded-circle" width="40" alt="<%=selected_conversation.sender_2%>"/>
+                <div class="position-relative d-flex align-items-center py-2 px-3 ms-2">
+                <% } else { %> 
+                    <div class="position-relative py-2 px-3" style="margin-left: 3.5rem;">
+                <% } %>
                         <div>
                             <div>
                                 <div class="message-text" style="

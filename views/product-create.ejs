@@ -257,7 +257,7 @@
             </div>
           </div>
 
-          <div class="card py-5 px-4 mt-3 border-0">
+          <div class="card py-4 px-4 mt-3 border-0">
             <h5 class="mb-0">Product Selection(s)</h5>
             <div>
               <p class="fs-xs opacity-70 mb-1">Here you can add a Selection to your Product and attribute a price to
@@ -276,7 +276,7 @@
                   <%- include("../public/assets/img/icons/caret-down.svg")%>
                 </label>
                 <div class="dropdown-content">
-                  <div class="mt-3 mb-2">
+                  <div class="mb-2">
                     <input name="selection_1_name" class="form-control" type="text" id="text-input" maxlength="100"
                       placeholder="Name of the Selection #1. Ex: Color" <% if(product.selection_1) { %>
                       value="<%=product.selection_1.selection_name%>" <% } %>>
@@ -310,7 +310,7 @@
                   <%- include("../public/assets/img/icons/caret-down.svg")%>
                 </label>
                 <div class="dropdown-content">
-                  <div class="mt-3 mb-2">
+                  <div class="mb-2">
                     <input name="selection_2_name" class="form-control" type="text" id="text-input" maxlength="100"
                       placeholder="Name of the Selection #2" <% if(product.selection_2) { %>
                       value="<%=product.selection_2.selection_name%>" <% } %>>
@@ -387,23 +387,30 @@
                 <div>
                   <p class="h6 mt-4">Start a Sales !</p>
 
-                  <label for="saleprice-input" class="form-label mb-1">Sales Price</label>
-                  <input type="number" class="form-control" placeholder="Price on sales of the product" step=".01"
-                    name="salesPrice" id="saleprice-input" <% if (product.salesPrice) { %>
-                    value="<%=product.salesPrice%>" style="pointer-events:none; opacity: 50%;" <% } else { %>
-                    max="<%=product.price - 1%>" <% } %>>
+                  <% if (product.salesPrice) { %>
 
-                  <label for="saletime-input" class="form-label mb-1 mt-4">Duration of the sales</label>
-                  <input type="number" class="form-control" placeholder="How much days will your Sales Last ?" max="30"
-                    name="salesDuration" id="saletime-input" <% if (product.salesDuration) { %>
-                    value="<%=product.salesDuration%>" style="pointer-events:none; opacity: 50%;" <% } %>>
+                    <label for="" class="form-label mb-1">Sales Price</label>
+                    <input type="number" class="form-control" placeholder="Price on sales of the product" step=".01"
+                      name="salesPrice" id="saleprice-input" value="<%=product.salesPrice%>" style="pointer-events:none; opacity: 50%;" max="<%=product.price - 1%>" >
+  
+                    <label for="" class="form-label mb-1 mt-4">Duration of the sales</label>
+                    <input type="number" class="form-control" placeholder="How many days will your Sales Last ?" max="30"
+                      name="salesDuration" id="saletime-input" value="<%=product.salesDuration%>" style="pointer-events:none; opacity: 50%;">
 
-                  <% if (product.originalPrice) { %>
-                  <div class="mt-3">
-                    <input class="form-check-input" name="stop_sales" type="checkbox" id="stop_sales">
-                    <label type="submit" for="stop_sales" class="form-check-label text-danger ms-2">I want to stop this
-                      Sales</label>
-                  </div>
+                    <div class="mt-3">
+                      <input class="form-check-input" name="stop_sales" type="checkbox" id="stop_sales">
+                      <label type="submit" for="stop_sales" class="form-check-label text-danger ms-2">I want to stop this
+                        Sales</label>
+                    </div>
+
+                  <% } else { %> 
+                    <label for="saleprice-input" class="form-label mb-1">Sales Price</label>
+                    <input type="number" class="form-control" placeholder="Price on sales of the product" step=".01"
+                      name="salesPrice" id="saleprice-input" max="<%=product.price - 1%>" >
+  
+                    <label for="saletime-input" class="form-label mb-1 mt-4">Duration of the sales</label>
+                    <input type="number" class="form-control" placeholder="How many days will your Sales Last ?" max="30"
+                      name="salesDuration" id="saletime-input">
                   <% } %>
                 </div>
                 <hr class="my-4">
