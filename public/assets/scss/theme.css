@@ -15874,6 +15874,10 @@ svg {
   max-height: 40rem;
 }
 
+.deep-shadow {
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
 .messages-view {
   overflow: hidden;
   height: calc(100% - 4rem);

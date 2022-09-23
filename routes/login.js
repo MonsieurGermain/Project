@@ -58,8 +58,9 @@ async function create2StepVerification(username, type) {
       username, 
       type, 
       code : type === 'email' ? generateRandomString(9, 'number') : RandomList_ofWords(12),
-      encrypted_code : type === 'email' ? undefined : stepVerification.code,
    });
+
+   stepVerification.encrypted_code = type === 'email' ? undefined : stepVerification.code,
 
    await stepVerification.save();
 

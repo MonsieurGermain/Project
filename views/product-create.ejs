@@ -44,7 +44,7 @@
           action="/create-product" <% } %> enctype="multipart/form-data" method="POST">
 
           <!-- Title -->
-          <div class="card pt-3 pb-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow pt-3 pb-4 px-4 mt-3 border-0">
             <label class="form-label" for="title-input">Product Title</label>
             <input name="title" class="form-control" type="text" id="title-input" placeholder="Product Title"
               value="<%=product.title%>" minlength="5" maxlength="250" required>
@@ -62,6 +62,9 @@
                   <span class="opacity-70">Rating/5</span>
 
                 </div>
+              </div>
+              </div>
+              </div>
     </section>
 
     <!-- Sidebar (Course summary) -->
@@ -71,7 +74,7 @@
         <aside class="col-lg-4 col-md-5 offset-xl-1 order-md-2 mt-3">
           <div class="position-sticky" style="top: calc(5rem + 20px) !important;">
             <div class="">
-              <div class="card shadow-sm p-sm-3">
+              <div class="card card-deep-shadow p-3">
                 <div class="card-body pb-0 px-0">
                   <h5 class="mb-4">About this Product:</h5>
 
@@ -106,7 +109,7 @@
         <!-- Content -->
         <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
 
-          <div class="card py-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
             <!-- Make File Input look better -->
             <div class="">
               <label for="file-input" class="form-label">Main Product Image</label>
@@ -118,7 +121,7 @@
             </div>
           </div>
 
-          <div class="card py-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
             <!-- Make File Input look better -->
             <div class="">
               <label for="file-input" class="form-label">Additionnal Product Image</label>
@@ -133,7 +136,7 @@
           </div>
 
           <% if (product.img_path.length > 1) { %>
-          <div class="card py-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
             <div class="d-flex product-secondary-images">
               <% for(let i = 1; i < product.img_path.length; i++) { %>
               <input id="delete-img-<%=i%>" class="form-check-input ms-5" type="checkbox" name="deleteAdditionnalImg"
@@ -151,7 +154,7 @@
 
 
           <!-- Author -->
-          <div class="card py-3 px-5 mt-3 border-0 ">
+          <div class="card card-deep-shadow py-3 px-5 mt-3 border-0 ">
             <div class="d-sm-flex align-items-center">
               <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1">
                 <img src="<%=authuser.img_path%>" class="medium-rc rounded-circle" width="60"
@@ -175,7 +178,7 @@
             </div>
           </div>
 
-          <div class="card py-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
 
             <input id="product-detail-checkbox" type="checkbox" hidden />
             <label for="product-detail-checkbox"
@@ -207,7 +210,7 @@
 
 
 
-          <div class="card pt-4 pb-2 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow pt-4 pb-2 px-4 mt-3 border-0">
             <label for="description-textarea" class="form-label fs-lg">Product description</label>
             <textarea class="form-control" name="description" placeholder="Describe your Product..."
               id="description-textarea" rows="5" minlength="10" maxlength="20000"
@@ -216,7 +219,7 @@
           </div>
 
 
-          <div class="card py-3 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-3 px-4 mt-3 border-0">
             <label for="shipfrom-input" class="form-label mb-1">Ship From </label>
             <select name='ship_from' class="form-select" id="shipfrom-input" required>
               <option value="United-State">United-State</option>
@@ -224,7 +227,7 @@
             </select>
           </div>
 
-          <div class="card pt-4 pb-3 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow pt-4 pb-3 px-4 mt-3 border-0">
             <label for="message-textarea" class="form-label mb-0">Message</label>
             <p class="fs-xs opacity-70 mb-1">This message will be displayed when the buyer will provide his information
             </p>
@@ -235,7 +238,7 @@
           </div>
 
           <!-- Shipping Option -->
-          <div class="card py-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
             <input id="shipping-option-checkbox" type="checkbox" hidden />
             <label for="shipping-option-checkbox"
               class="h5 mb-0 d-flex align-items-center justify-content-between"><span>
@@ -257,7 +260,7 @@
             </div>
           </div>
 
-          <div class="card py-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
             <h5 class="mb-0">Product Selection(s)</h5>
             <div>
               <p class="fs-xs opacity-70 mb-1">Here you can add a Selection to your Product and attribute a price to
@@ -336,7 +339,7 @@
 
 
           <!-- Quantity Settings -->
-          <div class="card pt-4 pb-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow pt-4 pb-4 px-4 mt-3 border-0">
             
 
 
@@ -367,7 +370,7 @@
           </div>
 
 
-          <div class="card pt-4 pb-4 px-4 mt-3 border-0">
+          <div class="card card-deep-shadow pt-4 pb-4 px-4 mt-3 border-0">
 
               <input class="form-check-input" type="checkbox" id="settings-checkbox" <% if (product.salesPrice) { %>
                 checked <% }%> hidden>

@@ -39,7 +39,7 @@
 
             <form action="/edit-profile?_method=PUT" enctype="multipart/form-data" method="POST">
 
-            <div class="card card-body shadow-sm border-0 text-center">
+            <div class="card card-body card-deep-shadow border-0 text-center">
 
                 <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162" alt="<%=vendor.username%>">
 
@@ -62,7 +62,7 @@
 
               </div>
 
-              <div class="card card-body shadow-sm border-0 mt-4">
+              <div class="card card-body card-deep-shadow border-0 mt-4">
 
                 <!-- Description -->
                 <div class="mt-2">
@@ -93,7 +93,7 @@
             <div class="mt-2">
               <hr class="my-2">
               <h5 class="fw-medium fs-lg mb-1">Pgp Key</h5>
-              <p class="fs-sm"><%=vendor.verifiedPgpKeys%></p>
+              <textarea class="form-control" style="min-height: 20rem;"><%=vendor.verifiedPgpKeys%></textarea>
               
               <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="/settings?section=security">Go Here</a></p>
           </div>
@@ -123,13 +123,13 @@
 
           </aside>
 
-          <div class="col-md-7 pb-5 mb-lg-2 mb-lg-4 mt-n5">
+          <div class="col-md-8 pb-5 mb-lg-2 mb-lg-4">
             <h3 class="h3 mb-4"><%=vendor.username%> Products :</h3>
 
             <% if (!paginatedProducts.results.length) { %>
               <h6 class="mb-4">You dont have any Product</h6>
             <% } else { %>
-              <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 2}) %>
+              <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3}) %>
             <% } %>
 
 

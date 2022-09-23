@@ -41,14 +41,14 @@
           <div class="col-md-8 pb-5 mb-lg-2 mb-lg-4" style="border: none;">
 
             <% if (product.message) { %>
-            <div class="card card-body px-3 px-md-4 border-0 mb-3">
+            <div class="card card-body card-deep-shadow px-3 px-md-4 mb-3">
               <h6 class="mb-3 mt-2">Vendor Message :</h6>
               
               <p class="fs-sm mb-1"><%-product.message%></p>
         </div>
         <% } %>
 
-            <div class="card card-body px-3 px-md-4 border-0">
+            <div class="card card-body card-deep-shadow px-3 px-md-4">
             <form action="/submit-info/<%=order.id%>" method="POST">
               <p class="fs-sm opacity-70 mt-0 mb-2">Dont Forget to Encrypt your Information for a maximun privacy !</p>
             <textarea name="content" class="form-control" id="textarea-input" rows="10" placeholder="Provide your Information" minlength="2" maxlength="3000" required></textarea>
@@ -68,7 +68,7 @@
 
           <aside class="col-lg-4 col-md-4 pb-5 position-sticky">
                 <div class="position-sticky" style="top: 95px;">
-                      <div class="card px-4 py-3 text-center" style="border: none;">
+                      <div class="card card-deep-shadow  px-4 py-3 text-center" style="border: none;">
                         
                        
                         <p class="mt-3"><b>Vendor Public Pgp Key:</b></p>
@@ -82,6 +82,7 @@
                                 <%=vendor.verifiedPgpKeys%>
                              </textarea>
                             <% } %>
+                      </div>
                       </div>
           </aside>
 

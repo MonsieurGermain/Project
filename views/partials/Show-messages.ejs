@@ -27,12 +27,13 @@
             </label>
         </div>
         <div class="chat-user">
-            <img src="<%=selected_conversation.sender2_Img%>" class="smedium-rc rounded-circle" width="40"
-                alt="<%=selected_conversation.sender_2%>" />
+            <a href="<%=selected_conversation.link%>" class="mb-0 mx-0">
+                <img src="<%=selected_conversation.sender2_Img%>" class="medium-rc rounded-circle" width="40">
+            </a>
             <div class="name-and-type">
                 <a href="<%=selected_conversation.link%>" class="mb-0 mx-0"><%=selected_conversation.sender_2 %></a>
                 <div>
-                    <p class="opacity-70 m-0"><span>Type of Conversaction:
+                    <p class="fs-sm opacity-70 m-0"><span>Type of Conversaction:
                         </span><%=selected_conversation.settings.type%></p>
                 </div>
             </div>

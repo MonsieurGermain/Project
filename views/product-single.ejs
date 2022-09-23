@@ -69,7 +69,7 @@
           <div style="margin-top: -96px;"></div>
           <div class="position-sticky top-0 pt-5">
             <div class="pt-5">
-              <div class="card p-3">
+              <div class="card card-deep-shadow p-3">
                 <div class="card-body">
                   <% if (product.aboutProduct.length) { %>
                   <h5 class="mb-4">About this Product:</h5>
@@ -125,13 +125,14 @@
 
         <!-- Content -->
         <div class="col-xl-7 col-lg-8 col-md-7 order-md-1 mb-5">
+
           <div class="product-image-wrap">
             <input id="product-radio-0" name="product-image" type="radio" checked hidden />
             <% for(let i = 1; i < product.img_path.length; i++) { %>
             <input id="product-radio-<%=i%>" name="product-image" type="radio" hidden />
             <% } %>
 
-            <div class="product-show-image-wrap">
+            <div class="product-show-image-wrap card-deep-shadow">
               <img src="<%=product.img_path[0]%>" class="card-img-top product-image-0" alt="Product Image" />
               
               <% for(let i = 1; i < product.img_path.length; i++) { %>
@@ -156,7 +157,7 @@
           </div>
 
           <!-- Vendor -->
-          <div class="card py-3 px-3 px-md-4 mt-3 border-0">
+          <div class="card card-deep-shadow py-3 px-3 px-md-4 mt-3">
             <div class="d-flex align-items-center flex-wrap">
 
               <a href="/profile/<%=product.vendor%>?productPage=1&reviewPage=1">
@@ -182,7 +183,7 @@
           </div>
 
           <% if (product.productDetails.length) { %>
-          <div class="card px-3 px-md-4 py-4 border-0 my-4">
+          <div class="card card-deep-shadow px-3 px-md-4 py-4 border-0 my-4">
             <h5 class="mb-4 mt-2">Product details :</h5>
             <% for(let i = 0; i < product.productDetails.length; i++) { %>
             <div class="d-flex justify-content-between product-description-content">
@@ -193,13 +194,13 @@
           </div>
           <% } %>
 
-          <div class="card px-3 px-md-4 py-4 border-0 my-4">
+          <div class="card card-deep-shadow px-3 px-md-4 py-4 my-4">
             <h5 class="mb-4 mt-2">Product description :</h5>
             <p class="pb-1 mb-1"><%-product.description%></p>
           </div>
 
           <% if (product.shipping_option.length) { %>
-          <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
+          <div class="card card-deep-shadow pb-2 pt-4 px-3 px-md-4 mt-3">
             <h3 class="h5 mt-2 mb-3">Available Shipping Option</h3>
             <div class="list-unstyled mb-4 d-flex flex-wrap justify-content-between">
               <!-- Find Better Svg -->
@@ -226,7 +227,7 @@
 
 
           <% if (product.selection_1) { %>
-          <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
+          <div class="card card-deep-shadow pb-2 pt-4 px-3 px-md-4 mt-3">
             <h3 class="h5 mt-2 mb-3"><%=product.selection_1.selection_name%></h3>
             <div class="list-unstyled mb-4 d-flex flex-wrap justify-content-between">
               <!-- Find Better Svg -->
@@ -251,7 +252,7 @@
           <% } %>
 
           <% if (product.selection_2) { %>
-          <div class="card pb-2 pt-4 px-3 px-md-4 mt-3 border-0">
+          <div class="card card-deep-shadow pb-2 pt-4 px-3 px-md-4 mt-3">
             <h3 class="h5 mt-2 mb-3"><%=product.selection_2.selection_name%></h3>
             <div class="list-unstyled mb-4 d-flex flex-wrap justify-content-between">
               <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>

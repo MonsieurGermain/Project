@@ -61,7 +61,7 @@
 
 
             <% if (product.shipping_option.length) { %>
-            <div class="card px-3 px-md-4 py-4 my-3 border-0">
+            <div class="card card-deep-shadow px-3 px-md-4 py-4 my-3">
               <h3 class="h5 mb-2">Shipping Option</h3>
               <select name='shipping_option' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.shipping_option.length; i++) { %>
@@ -80,7 +80,7 @@
 
 
             <% if (product.selection_1) { %>
-            <div class="card px-3 px-md-4 py-4 my-3 border-0">
+            <div class="card card-deep-shadow px-3 px-md-4 py-4 my-3">
               <h3 class="h5 mb-2">Select the <%=product.selection_1.selection_name%></h3>
               <select name='selection_1' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
@@ -99,7 +99,7 @@
 
 
             <% if (product.selection_2) { %>
-            <div class="card px-3 px-md-4 py-4 border-0">
+            <div class="card card-deep-shadow px-3 px-md-4 py-4">
               <h3 class="h5 mb-2">Select the <%=product.selection_2.selection_name%></h3>
               <select name='selection_2' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
@@ -125,7 +125,7 @@
             <div style="margin-top: -96px;"></div>
             <div class="position-sticky top-0 pt-5">
               <div class="pt-5">
-              <div class="card shadow-sm border-0 pb-3">
+              <div class="card card-deep-shadow border-0 pb-3">
                 <div class="card-body px-3 px-md-4 py-4">
                   
                   <p class="mb-2">Privacy Settings</p>

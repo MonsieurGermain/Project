@@ -34,7 +34,7 @@
           <div style="margin-top: -96px;"></div>
           <div class="position-sticky top-0 pt-5">
             <div class="pt-5">
-              <div class="card p-3 text-center">
+              <div class="card p-3 text-center card-deep-shadow">
                 <%- include('partials/Update-order') %>
 
                 <div class="mt-4 text-start">
@@ -72,7 +72,7 @@
 
 
           <%if (order.status === 'finalized' || order.status === 'recieved') {%>
-          <div class="card px-4 py-4">
+          <div class="card card-deep-shadow px-4 py-4">
             <%if (!order.let_review && authuser.username !== order.vendor) {%>
             <div class="hide-send-message-input">
 
@@ -129,7 +129,7 @@
 
 
 
-            <div class="card px-4 py-4">
+            <div class="card card-deep-shadow px-4 py-4">
               <p class="h5">Order Information</p>
 
               <p>Price: <b><%=order.base_price%></b></p>
@@ -163,7 +163,7 @@
             <% if (order.status !== 'awaiting_info') { %>
               <p class="h5 ">Order Chat</p>
               <div class="w-100 mt-2" style="max-height: 712px; height: 400px;">
-                <div class="card h-100">
+                <div class="card card-deep-shadow h-100">
   
                   <!-- Messages -->
                   <div class="card-body swiper scrollbar-hover w-100 p-3 pb-0" style="overflow-y: auto;">
