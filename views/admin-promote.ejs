@@ -40,7 +40,7 @@
           <% } else { %>
           <% const usersResult = users.results %>
           <% for(let i = usersResult.length - 1; i > -1; i--) { %>
-          <div class="user-card card card-body d-flex flex-row align-items-center card-hover mt-2">
+          <div class="user-card card card-body card-deep-shadow d-flex flex-row align-items-center card-hover mt-2">
             <a href="/profile/<%=usersResult[i].username%>?productPage=1&reviewPage=1" class="image-wrap d-flex align-items-center justify-content-around">
               <img src="<%=usersResult[i].img_path%>" class="d-block big-rc rounded-circle"
                 alt="<%=usersResult[i].username%>">

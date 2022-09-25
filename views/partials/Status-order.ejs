@@ -1,11 +1,11 @@
 <% switch(status) { 
-    case 'awaiting_info' : %> 
+    case 'awaitingInformation' : %> 
     <span class="ms-2 badge bg-primary">Awaiting Information</span>
     <%break 
-    case 'awaiting_payment': %> 
+    case 'awaitingPayment': %> 
     <span class="ms-2 badge bg-info">Awainting Payment</span>
     <%break 
-    case 'awaiting_shipment': %> 
+    case 'awaitingShipping': %> 
     <span class="ms-2 badge bg-warning">Awaiting Shipment</span>
     <%break 
     case 'shipped': %> 
@@ -23,7 +23,7 @@
     case 'expired': %> 
     <span class="ms-2 badge bg-black text-white">Expired</span>
     <%break 
-    case 'dispute_progress': %> 
+    case 'disputeInProgress': %> 
     <span class="ms-2 badge bg-danger">Dispute in Progress</span>
     <%break
     case 'disputed': %> 

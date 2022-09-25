@@ -74,13 +74,11 @@
                         <p class="mt-3"><b>Vendor Public Pgp Key:</b></p>
                         <hr class="mb-3">
 
-                            <% if (!vendor.verifiedPgpKeys) { %>
+                            <% if (!vendorPgpKeys) { %>
                                 <h6>This Vendor Doesnt have a Pgp Keys</h6>
                             <% } else { %>
   
-                              <textarea class="form-control my-3 p-2" style="min-height: 20rem;">
-                                <%=vendor.verifiedPgpKeys%>
-                             </textarea>
+                              <textarea class="form-control my-3 p-2" style="min-height: 20rem;"><%-vendorPgpKeys%></textarea>
                             <% } %>
                       </div>
                       </div>

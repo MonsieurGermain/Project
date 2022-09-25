@@ -1,8 +1,9 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
 
-router.get('/404', async (req,res) => {
-    res.render('404page')
-})
+const router = express.Router();
 
-module.exports = router
+router.get('/404', async (req, res) => {
+  res.render('404page');
+});
+
+module.exports = router;

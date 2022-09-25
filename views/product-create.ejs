@@ -180,7 +180,11 @@
 
           <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
 
-            <input id="product-detail-checkbox" type="checkbox" hidden />
+            <input id="product-detail-checkbox" type="checkbox" hidden 
+            <% if (product.productDetails.length) { %>
+              checked
+            <% } %>
+            />
             <label for="product-detail-checkbox"
               class="h5 mb-0 d-flex align-items-center justify-content-between"><span>
                 Product Details
@@ -221,7 +225,7 @@
 
           <div class="card card-deep-shadow py-3 px-4 mt-3 border-0">
             <label for="shipfrom-input" class="form-label mb-1">Ship From </label>
-            <select name='ship_from' class="form-select" id="shipfrom-input" required>
+            <select name='shipFrom' class="form-select" id="shipfrom-input" required>
               <option value="United-State">United-State</option>
               <option value="Canada">Canada</option>
             </select>
@@ -239,7 +243,11 @@
 
           <!-- Shipping Option -->
           <div class="card card-deep-shadow py-4 px-4 mt-3 border-0">
-            <input id="shipping-option-checkbox" type="checkbox" hidden />
+            <input id="shipping-option-checkbox" type="checkbox" hidden 
+            <% if (product.shipping_option.length) { %>
+              checked
+            <% } %>
+            />
             <label for="shipping-option-checkbox"
               class="h5 mb-0 d-flex align-items-center justify-content-between"><span>
                 Shipping Options
@@ -271,7 +279,11 @@
 
               <!-- Selection #1 -->
               <div>
-                <input id="product-selection-1-checkbox" type="checkbox" hidden />
+                <input id="product-selection-1-checkbox" type="checkbox" hidden 
+                <% if (product.selection_1?.selection_name.length) { %>
+                  checked
+                <% } %>
+                />
                 <label for="product-selection-1-checkbox"
                   class="h5 mb-0 d-flex align-items-center justify-content-between"><span>
                     Selection #1
@@ -305,7 +317,11 @@
 
               <!-- Selection #2 -->
               <div>
-                <input id="product-selection-2-checkbox" type="checkbox" hidden />
+                <input id="product-selection-2-checkbox" type="checkbox" hidden 
+                <% if (product.selection_2?.selection_name.length) { %>
+                  checked
+                <% } %>
+                />
                 <label for="product-selection-2-checkbox"
                   class="h5 mb-0 d-flex align-items-center justify-content-between"><span>
                     Selection #2
@@ -357,7 +373,7 @@
               <br>
               <div class="quantity-settings">
                 <label for="qty-input" class="form-label mb-1 mt-4">Available Quantity</label>
-                <input class="form-control" name="available_qty" placeholder="How much do you have in Stock ?"
+                <input class="form-control" name="qtySettings" placeholder="How much do you have in Stock ?"
                   max="1000" type="number" id="qty-input" <% if (product.qty_settings) { %>
                   value='<%=product.qty_settings.available_qty%>' <% } %>>
 
@@ -401,8 +417,8 @@
                       name="salesDuration" id="saletime-input" value="<%=product.salesDuration%>" style="pointer-events:none; opacity: 50%;">
 
                     <div class="mt-3">
-                      <input class="form-check-input" name="stop_sales" type="checkbox" id="stop_sales">
-                      <label type="submit" for="stop_sales" class="form-check-label text-danger ms-2">I want to stop this
+                      <input class="form-check-input" name="stopSales" type="checkbox" id="stopSales">
+                      <label type="submit" for="stopSales" class="form-check-label text-danger ms-2">I want to stop this
                         Sales</label>
                     </div>
 
@@ -434,7 +450,7 @@
                   <p class="h6 mb-2 mt-1">Privacy Settings :</p>
                   <label class="form-check-label me-2" for="privacy-hidden">Allow the buyer to hide their username from
                     me</label>
-                  <input name="allow_hidden" class="form-check-input" type="checkbox" id="privacy-hidden"
+                  <input name="allowHidden" class="form-check-input" type="checkbox" id="privacy-hidden"
                     <% if (product.allow_hidden) { %> checked <% } %>>
                 </div>
 

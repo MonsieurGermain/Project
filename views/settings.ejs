@@ -188,10 +188,10 @@
                       
                       <div class="position-relative">
                         <% if (authuser.verifiedPgpKeys) { %>
-                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4 overflow-container" required><%=authuser.verifiedPgpKeys%></textarea>
+                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4 overflow-container" required><%-authuser.verifiedPgpKeys%></textarea>
                           <span class="badge bg-success shadow-success top-right">Verified</span>
                         <% } else if (authuser.pgp_keys) { %>
-                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4 overflow-container" required><%=authuser.pgp_keys%></textarea>
+                          <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4 overflow-container" required><%-authuser.pgp_keys%></textarea>
                           <span class="badge bg-orange shadow-orange top-right">Not Verified</span>
                         <% } else { %>
                           <textarea rows="1" name="pgp" placeholder="Pgp Keys" class="form-control form-control-lg mb-4" required></textarea>
@@ -230,7 +230,7 @@
                         <h2 class="h5 mb-2">Decrypted Text</h2>
                         <p class="mb-2 fs-xs opacity-90">Paste and submit the decrypted text here to verify your pgp key</p>
                         <form action="/verify-pgp" method="POST" class="d-flex flex-column align-items-end">
-                          <input type="text" name="pgp_verification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
+                          <input type="text" name="pgpVerification" placeholder="Decrypted Sentence" class="form-control form-control-lg mb-2" required>
                           <button type="submit" class="btn btn-primary mt-3 mb-5">Verify Pgp</button>
                         </form>
                       <% } %>
@@ -420,7 +420,7 @@
                         <p class="fs-sm opacity-70">Here you can decide how you want us to handle your Provided Information upon the completion of an order</p>
                        
                         <form action="/order-settings" method="POST">
-                          <label for="select-input" class="form-label">Delete my Provided Information after : </label>
+                          <label for="select-input" class="form-label">Delete my Private Information after : </label>
                           <select name="autoDeleteProvidedInfo" class="form-select mb-4" id="select-input">
                             <option value="never"
                               <% if (!authuser.settings.privateInfoExpiring) { %>

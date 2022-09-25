@@ -7,7 +7,6 @@
 
   <!-- Page wrapper for sticky footer -->
   <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
-  <form action="/create-order/<%=product.slug%>" method="POST">
     <main class="page-wrapper">
 
       <%- include('partials/Statics/Navbar') %>
@@ -46,6 +45,7 @@
 
 
         <!-- Page title + Layout switcher -->
+        <form action="/create-order/<%=product.slug%>" method="POST">
         <div class="d-flex align-items-center justify-content-between mb-4 pb-1 pb-md-3">
           <h2 class="mb-0">Customize Your Order</h2>
         </div>
@@ -63,7 +63,7 @@
             <% if (product.shipping_option.length) { %>
             <div class="card card-deep-shadow px-3 px-md-4 py-4 my-3">
               <h3 class="h5 mb-2">Shipping Option</h3>
-              <select name='shipping_option' class="form-select" id="select-input">
+              <select name='shippingOption' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.shipping_option.length; i++) { %>
                 <option value="<%=product.shipping_option[i].option_description%>">
                   <%=product.shipping_option[i].option_description%> 
@@ -82,7 +82,7 @@
             <% if (product.selection_1) { %>
             <div class="card card-deep-shadow px-3 px-md-4 py-4 my-3">
               <h3 class="h5 mb-2">Select the <%=product.selection_1.selection_name%></h3>
-              <select name='selection_1' class="form-select" id="select-input">
+              <select name='selection1' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.selection_1.selection_choices.length; i++) { %>
                 <option value="<%=product.selection_1.selection_choices[i].choice_name%>">
                   <%=product.selection_1.selection_choices[i].choice_name%>
@@ -101,7 +101,7 @@
             <% if (product.selection_2) { %>
             <div class="card card-deep-shadow px-3 px-md-4 py-4">
               <h3 class="h5 mb-2">Select the <%=product.selection_2.selection_name%></h3>
-              <select name='selection_2' class="form-select" id="select-input">
+              <select name='selection2' class="form-select" id="select-input">
                 <% for(let i = 0; i < product.selection_2.selection_choices.length; i++) { %>
                 <option value="<%=product.selection_2.selection_choices[i].choice_name%>">
                   <%=product.selection_2.selection_choices[i].choice_name%> 
@@ -129,16 +129,16 @@
                 <div class="card-body px-3 px-md-4 py-4">
                   
                   <p class="mb-2">Privacy Settings</p>
-                  <input class='form-check-input' type="radio" name="type" id="default" value="default" required>
+                  <input class='form-check-input' type="radio" name="privacyType" id="default" value="default" required>
                   <label class='form-check-label ms-1 mb-1' for="default">Default <span class="opacity-70">(Not
                       Recommended)</span></label><br>
 
-                  <input class='form-check-input' type="radio" name="type" id="semi-hidden" value="semi-hidden" required
+                  <input class='form-check-input' type="radio" name="privacyType" id="semi-hidden" value="semi-hidden" required
                     checked>
                   <label class='form-check-label ms-1 mb-1' for="semi-hidden">Semi-Hidden</label><br>
 
                   <% if (product.allow_hidden) { %>
-                  <input class='form-check-input' type="radio" name="type" id="Hidden" value="hidden" required>
+                  <input class='form-check-input' type="radio" name="privacyType" id="Hidden" value="hidden" required>
                   <label class='form-check-label ms-1 mb-1' for="Hidden">Hidden</label><br>
                   <% } %>
 
@@ -152,13 +152,13 @@
                     <div class="d-flex">
                       <% if (product.qty_settings?.max_order) { %>
                       <input class="form-control" type="number" id="number-input" max="product.qty_settings?.max_order"
-                        placeholder="Max: <%=product.qty_settings?.max_order%>" name="qty">
+                        placeholder="Max: <%=product.qty_settings?.max_order%>" name="quantity">
                       <% } else if (product.qty_settings?.available_qty) { %>
                       <input class="form-control" type="number" id="number-input"
                         max="product.qty_settings?.available_qty"
-                        placeholder="Max: <%=product.qty_settings?.available_qty%>" name="qty">
+                        placeholder="Max: <%=product.qty_settings?.available_qty%>" name="quantity">
                       <% } else { %>
-                      <input class="form-control" type="number" id="number-input" placeholder="Max: 1000" max="1000" name="qty">
+                      <input class="form-control" type="number" id="number-input" placeholder="Max: 1000" max="1000" name="quantity">
                       <% } %>
                     </div>
                   </div>

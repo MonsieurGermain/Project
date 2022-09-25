@@ -14,10 +14,28 @@ label {
 
 .quantity-settings,
 .settings-container,
-.contact-div {
+.contact-div,
+.buyer-info-container {
   overflow: hidden;
   height: 0px !important;
   transition: height 0.3s;
+}
+
+.order-advanced-settings {
+  display:none;
+}
+
+#order-advanced-settings:checked ~ .order-advanced-settings {
+  display:contents;
+}
+
+#buyer-info-checkbox:checked ~ .buyer-info-container { 
+  height: 12rem !important;
+}
+
+#buyer-info-checkbox:checked~label>svg,
+#order-advanced-settings:checked~label>svg {
+  transform: rotate(180deg);
 }
 
 #quantity-settings-checkbox:checked~.quantity-settings {

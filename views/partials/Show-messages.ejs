@@ -8,13 +8,6 @@
     <% } %>
 
     <% for(let i = 0; i < selected_conversation.messages.length ; i++) {%>
-    <% if (selected_conversation.messages[i].sender === selected_conversation.sender_1) { %>
-    <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-    <%- include('./Popup/Delete-popup', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "message", confirm_text: "Delete", cancel_text: "Cancel"}) %>
-
-    <input id="edit-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-    <%- include('Popup/EditMessage-popup', {checkboxInputId:"edit-message-input-"+ i, action : "/edit-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id, currentMessage: selected_conversation.messages[i].message}) %>
-    <%}%>
     <% } %>
     <% } %>
     <% if (selected_conversation) { %>
@@ -80,6 +73,15 @@
                             border-bottom-left-radius: 0.5rem;
                         ">
                         <span><%= selected_conversation.messages[i].message%></span>
+
+
+                        <input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+                        <%- include('./Popup/Delete-popup', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id + "?_method=DELETE", method: "POST", text: "message", confirm_text: "Delete", cancel_text: "Cancel"}) %>
+                    
+                        <input id="edit-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+                        <%- include('Popup/EditMessage-popup', {checkboxInputId:"edit-message-input-"+ i, action : "/edit-message/" +  selected_conversation.id + "/" + selected_conversation.messages[i].id, currentMessage: selected_conversation.messages[i].message}) %>
+
+                        
                         <label for="delete-message-input-<%=i%>" class="delete-message-button btn">
 
                             <i class="bx bx-trash-alt"></i>

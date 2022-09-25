@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const ejs = require('ejs');
 const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
@@ -11,24 +10,24 @@ const app = express();
 require('./middlewares/passport')(passport);
 
 mongoose.connect('mongodb://localhost:27017/project', {
-   useNewUrlParser: true,
-   useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 app.set('view engine', 'ejs');
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/uploads'));
+app.use(express.static(`${__dirname}/public`));
+app.use(express.static(`${__dirname}/uploads`));
 
 app.use(
-   session({
-      secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
-      resave: true,
-      saveUninitialized: true,
-      cookie: {maxAge: 5400000}, // 1.5 hours
-   })
+  session({
+    secret: process.env.SESSION_SECRET ? process.env.SESSION_SECRET : 'secret',
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 5400000 }, // 1.5 hours
+  }),
 );
 // FLASH MIDDLEWARE
 app.use(flash());
@@ -36,26 +35,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-   res.locals.authuser = req.user;
-   res.locals.query = req.query;
-   const splitedUrl = req.url.split('?');
-   res.locals.url = splitedUrl;
-   res.locals.success = req.flash('success');
-   res.locals.warning = req.flash('warning');
-   res.locals.error = req.flash('error');
-   next();
+  res.locals.authuser = req.user;
+  res.locals.query = req.query;
+  const splitedUrl = req.url.split('?');
+  res.locals.url = splitedUrl;
+  res.locals.success = req.flash('success');
+  res.locals.warning = req.flash('warning');
+  res.locals.error = req.flash('error');
+  next();
 });
 
 global.siteSettings = {
-   autoPromote: true,
+  autoPromote: true,
 };
 
-const {automaticly_EndSales, autoDelete_InactiveUser, Update_Order_ExpiredTimer, Auto_Check_Recieved_Payment, autoDeleteExpiredMessage} = require('./middlewares/databade-updating-function');
-automaticly_EndSales;
-autoDelete_InactiveUser; 
-Update_Order_ExpiredTimer;
-Auto_Check_Recieved_Payment; 
-autoDeleteExpiredMessage;
+const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
+
+allDatabaseScanningFunction();
 
 const HOME_ROUTER = require('./routes/home');
 const LOGIN_ROUTER = require('./routes/login');
@@ -82,10 +78,9 @@ app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
 
 app.all('*', (req, res) => {
-   res.render('404page');
+  res.render('404page');
 });
 
-
-app.listen('3000', (req, res) => {
-   console.log('Server running on port 3000');
+app.listen('3000', () => {
+  console.log('Server running on port 3000');
 });

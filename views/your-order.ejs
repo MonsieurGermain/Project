@@ -29,18 +29,18 @@
           <div class="d-md-flex mb-3 filter-wrap">
             <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
               <option value="all" <% if (!query.status) { %> selected <% } %>>All status</option>
-              <option value="awaiting_info" <% if (query.status === 'awaiting_info') { %> selected <% } %>>Awaiting
+              <option value="awaitingInformation" <% if (query.status === 'awaitingInformation') { %> selected <% } %>>Awaiting
                 Information</option>
-              <option value="awaiting_payment" <% if (query.status === 'awaiting_payment') { %> selected <% } %>>
+              <option value="awaitingPayment" <% if (query.status === 'awaitingPayment') { %> selected <% } %>>
                 Awaiting Payment</option>
-              <option value="awaiting_shipment" <% if (query.status === 'awaiting_shipment') { %> selected <% } %>>
+              <option value="awaitingShipping" <% if (query.status === 'awaitingShipping') { %> selected <% } %>>
                 Awaiting Shipment</option>
               <option value="shipped" <% if (query.status === 'shipped') { %> selected <% } %>>Shipped</option>
               <option value="recieved" <% if (query.status === 'recieved') { %> selected <% } %>>Recieved</option>
               <option value="finalized" <% if (query.status === 'finalized') { %> selected <% } %>>Finalized</option>
               <option value="rejected" <% if (query.status === 'rejected') { %> selected <% } %>>Rejected</option>
               <option value="expired" <% if (query.status === 'expired') { %> selected <% } %>>Expired</option>
-              <option value="dispute_progress" <% if (query.status === 'dispute_progress') { %> selected <% } %>>Dispute
+              <option value="disputeInProgress" <% if (query.status === 'disputeInProgress') { %> selected <% } %>>Dispute
                 in Progress</option>
               <option value="disputed" <% if (query.status === 'disputed') { %> selected <% } %>>Disputed</option>
             </select>
@@ -75,6 +75,12 @@
       </div>
       <% } else { %>
       <% for(let i = orders.results.length - 1; i > -1; i--) { %>
+
+        <% if (orders.results[i].canDelete){ %>
+          <input id="delete-order-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+          <%- include('partials/Popup/Delete-order', {checkboxInputId:"delete-order-"+ i, action : "/update-order/" + orders.results[i].id}) %>  
+        <% } %>
+
       <article class="card card-hover border-0 card-deep-shadow overflow-hidden mt-4 
       <% if (!query.clientsOrders) { %>
         p-3
@@ -83,10 +89,10 @@
         <div class="row g-0">
           <% if(!query.clientsOrders) { %>
           <div class="col-sm-4 position-relative bg-position-center bg-repeat-0 bg-size-cover ps-2">
-            <a href="<%=orders.results[i].link%>" class="position-absolute top-0 start-0 w-100 h-100"
+            <a href="<%=orders.results[i].redirectLink%>" class="position-absolute top-0 start-0 w-100 h-100"
               aria-label="Read more">
 
-              <img src="<%=orders.results[i].product_img%>" class="card-img-top" style="height: 100%; object-fit: cover;" alt="Image">
+              <img src="<%=orders.results[i].product.img_path[0]%>" class="card-img-top" style="height: 100%; object-fit: cover;" alt="Image">
             </a>
           </div>
           <div class="col-sm-8">
@@ -97,12 +103,12 @@
               <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                   <p class="mb-1">Status:
-                    <span><%- include('partials/Status-order', {status : orders.results[i].status}) %></span></p>
+                    <span><%- include('partials/Status-order', {status : orders.results[i].orderStatus}) %></span></p>
                 </div>
                 <h3 class="h4">
-                  <a href="<%=orders.results[i].link%>">
-                    <%=orders.results[i].product_title.slice(0, 50)%>
-                    <% if (orders.results[i].product_title.length > 50) { %>
+                  <a href="<%=orders.results[i].redirectLink%>">
+                    <%=orders.results[i].product.title.slice(0, 50)%>
+                    <% if (orders.results[i].product.title.length > 50) { %>
                     ...
                     <% } %>
                   </a>
@@ -111,7 +117,7 @@
                 <span>
                   <p class="mb-0">Total Price:</p>
                   <p class="d-flex align-items-center fw-bold text-decoration-none me-3">
-                    <%= orders.results[i].total_price %> $
+                    <%= orders.results[i].orderDetails.totalPrice %> $
                   </p>
                 </span>
 
@@ -128,61 +134,62 @@
 
                   <span class="me-5 mb-2">
                     <p class="mb-0">Buyer:</p>
-                    <a <% if (orders.results[i].privacy === 'default') { %>
-                      href="/profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1" <% } %>
-                      class="d-flex align-items-center fw-bold text-decoration-none me-3">
+                    <a class="d-flex align-items-center fw-bold text-decoration-none me-3" href="
+                    <% if (orders.results[i].settings.privacyType === 'default') { %>
+                      /profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1
+                    <% } %>">
                       <%= orders.results[i].buyer%>
                     </a>
                   </span>
 
-                  <% if (orders.results[i].status === 'dispute_progress') { %>
-                  <% if (orders.results[i].admin) { %>
+                  <% if (orders.results[i].orderStatus === 'disputeInProgress') { %>
                   <span class="me-5 mb-2">
                     <p class="mb-0">Admin:</p>
-                    <p class="mb-0"><%=orders.results[i].admin%></p>
+                    <p class="mb-0"><%= orders.results[i].disputesSettings?.disputeAdmin ? orders.results[i].disputesSettings.disputeAdmin : 'Awaiting Admin...'%></p>
                   </span>
-                  <% } else { %>
+
                   <span class="me-5 mb-2">
-                    <p class="mb-0">Admin:</p>
-                    <p class="mb-0">Awaiting Admin...</p>
+                    <p class="mb-0">Reason of Dispute:</p>
+                    <p class="mb-0 fw-bold"><%= orders.results[i].disputesSettings?.disputeReason%></p>
                   </span>
-                  <% } %>
                   <% } %>
 
-                  <% if (orders.results[i].status === 'disputed') { %>
+                  <% if (orders.results[i].orderStatus === 'disputed') { %>
                   <span class="me-5 mb-2">
                     <p class="mb-0">Winner:</p>
-                    <% if (orders.results[i].dispute_winner === orders.results[i].vendor) { %>
-                    <p class="mb-0"><b><%=orders.results[i].vendor%></b></p>
-                    <% } else { %>
-                    <p class="mb-0"><b><%=orders.results[i].buyer%></b></p>
-                    <% } %>
+                    <% if (orders.results[i].disputesSettings.disputeWinner === orders.results[i].vendor || orders.results[i].disputesSettings.disputeWinner === 'Both') { %>
+                      <p class="mb-0"><b><%=orders.results[i].disputesSettings.disputeWinner%></b></p>
+                    <% } else { %> 
+                      <p class="mb-0"><b><%=orders.results[i].buyer%></b></p>
+                    <% }%>
+
                   </span>
                   <% } %>
 
-                  <% if (orders.results[i].Formated_Timers) { %>
+
+                  <% if (orders.results[i].formatedTimer) { %>
                   <span class="me-5 mb-2">
                     <p class="mb-0">Time Left:</p>
                     <p class="mb-0 d-flex align-items-center fw-bold text-decoration-none me-3">
-                      <%= orders.results[i].Formated_Timers%>
+                      <%= orders.results[i].formatedTimer%>
                     </p>
                   </span>
                   <% } %>
 
-                  <% if (orders.results[i].deletelink) { %>
-                  <span class="position-absolute top-0 zindex-2 me-3 mt-3" style="right: 10px;">
-                    <form action="/delete-order/<%=orders.results[i].id%>?<%=url[1]%>&fromOrders=true&_method=DELETE" method="POST">
-                      <button type="submit" class="btn btn-primary" style="padding: 10px">
+                  <% if (orders.results[i].canDelete) { %>
+                    
+                    <span class="position-absolute top-0 zindex-2 me-3 mt-3" style="right: 10px;">
+                      <label for="delete-order-<%=i%>" class="btn btn-primary p-2">
                         <i class="bx bx-trash"></i>
-                      </button>
-                    </form>
-                  </span>
+                    </label>
+                    </span>
+
                   <% } %>
 
 
                 </div>
 
-                <% if(query.clientsOrders === 'true') { %>
+                <% if(query.clientsOrders === 'true' && orders.results[i].buyerInformation) { %>
                 <input id="buyer-detail-checkbox-<%=i%>" type="checkbox" hidden />
                 <label class="w-100 d-flex align-items-center justify-content-between fs-lg fw-bold mt-3 px-2 py-1" style="cursor: pointer; border-radius: 4px;" for="buyer-detail-checkbox-<%=i%>">
                   <span>
@@ -190,34 +197,29 @@
                   </span>
                   <%- include ("../public/assets/img/icons/caret-down.svg") %>
                 </label>
-                <div class="buyer-detail-wrap d-flex align-items-center mt-2 justify-content-between flex-wrap px-2">
+                <div class="buyer-detail-wrap d-flex align-items-center mt-3 justify-content-between flex-wrap px-2">
                   <span class="mt-2">
                     <p class="mb-0">Buyer Info:</p>
                     <p class="fs-sm mb-0">
-                      <% if (orders.results[i].messages[0]) { %>
-                      <%-orders.results[i].messages[0].content%>
-                      <% } else { %>
-                      This user as submit his info yet
-                      <% } %>
+                      <%-orders.results[i].buyerInformation%>
                     </p>
                   </span>
 
-                  <% if (orders.results[i].status === 'awaiting_shipment') { %>
+                  <% if (orders.results[i].orderStatus === 'awaitingShipping') { %>
 
-                  <div class="d-flex button-group ms-auto mt-3">
-                    <span class="my-2 me-2">
+                  <div class="d-flex align-items-center button-group ms-auto mt-3">
+
+                    <a href="/order-resume/<%=orders.results[i].id%>" class="fs-sm me-3">I want to cancel this Order</a>
+
+                    <div class="my-2 me-2">
                       <form action="/update-order/<%=orders.results[i].id%>?<%=url[1]%>&fromOrders=true" method="POST">
-                        <button class="btn btn-warning me-4" type="submit" name="status" value="shipped">I have shipped
+                        <button class="btn btn-warning me-3" type="submit" name="status" value="next">I have shipped
                           the Product</button>
                       </form>
-                    </span>
+                    </div>
 
-                    <span class="my-2">
-                      <form action="/update-order/<%=orders.results[i].id%>?<%=url[1]%>&fromOrders=true" method="POST">
-                        <button class="btn btn-danger" type="submit" name="status" value="rejected">I want to Cancel
-                          this Order</button>
-                      </form>
-                    </span>
+                  </form>
+
                   </div>
                   <% } %>
 

@@ -600,8 +600,6 @@ svg {
                padding: 10px;
             }
 
-            .edit-content {}
-
             textarea {
                padding-right: 85px;
                min-height: 40px;
@@ -624,8 +622,17 @@ svg {
    }
 }
 
+
+#dispute-order:not(:checked) ~ .dispute-popup,
+#reject-order:not(:checked) ~ .reject-popup,
+input[id^='delete-order-']:not(:checked)+* {
+   background-color: rgba(25, 25, 25, 0);
+   visibility: hidden;
+   opacity: 0;
+}
+
 input[id^='delete-message-input-']:not(:checked)+*,
-input#delete-convo-input:not(:checked)+*:not(.no-convo-yet),
+input#delete-convo-input:not(:checked)+*:not(.dipsute-popup),
 input[id^='edit-message-input-']:not(:checked)+* {
    background-color: rgba(25, 25, 25, 0);
    visibility: hidden;
@@ -1507,6 +1514,8 @@ aside {
       }
    }
 }
+
+
 
 .resolve-report-popup {
    .dropdown-content {

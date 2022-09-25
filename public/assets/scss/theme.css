@@ -15821,9 +15821,13 @@ svg {
 .medium-rc {
   width: 3.5rem;
   height: 3.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 .big-rc {
+  width: 8rem;
+  height: 8rem;
   width: 8rem;
   height: 8rem;
 }
@@ -15872,10 +15876,6 @@ svg {
 .min-heigth-45 {
   min-height: 40rem;
   max-height: 40rem;
-}
-
-.deep-shadow {
-  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2) !important;
 }
 
 .messages-view {
@@ -16296,8 +16296,16 @@ svg {
   }
 }
 
+#dispute-order:not(:checked) ~ .dispute-popup,
+#reject-order:not(:checked) ~ .reject-popup,
+input[id^=delete-order-]:not(:checked) + * {
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
 input[id^=delete-message-input-]:not(:checked) + *,
-input#delete-convo-input:not(:checked) + *:not(.no-convo-yet),
+input#delete-convo-input:not(:checked) + *:not(.dipsute-popup),
 input[id^=edit-message-input-]:not(:checked) + * {
   background-color: rgba(25, 25, 25, 0);
   visibility: hidden;
