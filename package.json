@@ -4,6 +4,7 @@
   "description": "If anyone read this, this is my FIRST project.\r That mean dont be too harsh on the quality of my code.",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./"
   },
@@ -23,6 +24,7 @@
     "fuse.js": "^6.6.2",
     "html-filter": "^4.3.3",
     "method-override": "^3.0.0",
+    "monero-javascript": "^0.7.4",
     "mongoose": "^6.4.4",
     "nodemailer": "^6.7.5",
     "openpgp": "^5.3.0",
