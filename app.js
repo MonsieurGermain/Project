@@ -36,16 +36,6 @@ const appSetup = async () => {
 
   allDatabaseScanningFunction();
 
-  const walletRpc = await setupMonero({
-    walletRpcAddress: 'http://localhost:28081',
-    username: 'rpc_user',
-    password: 'rpc_pass',
-    walletName: 'test',
-    walletPass: 'test',
-  });
-
-  await walletRpc.addListener(new OutputListener());
-
   passportMiddleware(passport);
 
   const app = express();
