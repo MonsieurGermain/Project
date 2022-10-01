@@ -1,91 +1,76 @@
 /* eslint-disable class-methods-use-this */
 const monerojs = require('monero-javascript');
 
-const config = {
-  walletRpc: undefined,
-  accountIndex: 0,
+const { BigInteger } = monerojs;
+
+const ATOMIC_UNIT = '1000000000000';
+
+// Convert from atomic units to XMR float
+const toFloat = (amount, precision) => {
+  const roundUnit = BigInteger.parse(ATOMIC_UNIT).divide(10 ** precision);
+
+  const floatAmount = BigInteger.parse(amount).divide(roundUnit).toJSValue();
+
+  return floatAmount / 10 ** precision;
 };
 
-class OutputListener extends monerojs.MoneroWalletListener {
-  onOutputReceived(output) {
-    let amount = output.getAmount().toString();
-    let txHash = output.getTx().getHash();
-    let isConfirmed = output.getTx().isConfirmed();
-    let isLocked = output.getTx().isLocked();
-
-    console.log('Output received', {
-      amount,
-      txHash,
-      isConfirmed,
-      isLocked,
-    });
-  }
-}
-
-const getBalance = async () => {
-  const { walletRpc, accountIndex } = config;
-
-  walletRpc.getBalance(accountIndex);
-};
-
-const getPaymentAddress = async (paymentId) => {
-  const { walletRpc, accountIndex } = config;
-
-  const address = await walletRpc.getAddress(accountIndex);
-
-  return walletRpc.getIntegratedAddress(address, paymentId);
-};
-
-const checkPayment = async (paymentId) => {
-  console.log('Not defined yet!', paymentId);
-};
-
-const createTransaction = async () => {
-  console.log('Not defined yet!');
-};
-
-const relayTransaction = async () => {
-  console.log('Not defined yet!');
-};
-
-const setupMonero = async ({
-  walletRpcAddress,
-  username,
-  password,
-  walletName,
-  walletPass,
-  accountIndex = 0,
-}) => {
-  config.accountIndex = accountIndex;
-
-  config.walletRpc = await monerojs.connectToWalletRpc(
-    walletRpcAddress,
+const connectToMonero = async ({ address, username, password }) => {
+  const walletRpc = await monerojs.connectToWalletRpc(
+    address,
     username,
     password,
   );
 
-  // Create or open wallet
+  return walletRpc;
+};
 
+const connectToWallet = async ({ walletRpc, walletName, walletPass }) => {
   try {
-    await config.walletRpc.createWallet({
+    const wallet = await walletRpc.createWallet({
       path: walletName,
       password: walletPass,
     });
+
+    return wallet;
   } catch (err) {
-    console.log(err, 'err');
+    console.log('err', err);
 
-    await config.walletRpc.openWallet(walletName, walletPass);
+    const wallet = await walletRpc.openWallet(walletName, walletPass);
+
+    return wallet;
   }
+};
 
-  return config.walletRpc;
+const getAccount = async ({ walletRpc }) => {
+  const account = await walletRpc.getAccount(0);
+
+  return account;
+};
+
+const createAccount = async ({ walletRpc }) => {
+  const account = await walletRpc.createAccount();
+
+  return account;
+};
+
+const createOrGetAccount = async ({ walletRpc }) => {
+  try {
+    const account = await createAccount({ walletRpc });
+
+    return account;
+  } catch (err) {
+    const account = await getAccount({ walletRpc });
+
+    return account;
+  }
 };
 
 module.exports = {
-  setupMonero,
-  OutputListener,
-  getBalance,
-  checkPayment,
-  getPaymentAddress,
-  createTransaction,
-  relayTransaction,
+  ATOMIC_UNIT,
+  toFloat,
+  connectToMonero,
+  connectToWallet,
+  getAccount,
+  createAccount,
+  createOrGetAccount,
 };

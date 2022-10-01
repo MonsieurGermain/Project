@@ -27,6 +27,7 @@ module.exports = {
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     'no-param-reassign': 0,
     'linebreak-style': 0,
+    'no-underscore-dangle': 0,
   },
 };
 /* eslint  */
