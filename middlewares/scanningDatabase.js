@@ -1,7 +1,10 @@
+/* eslint-disable no-await-in-loop */
+
 const Conversation = require('../models/conversation');
-const Order = require('../models/order');
+const { OrderModel } = require('../models/order');
 const User = require('../models/user');
 const Product = require('../models/product');
+const { ORDER_STATUS } = require('../constants/orderStatus');
 
 async function deleteExpiredMessage() {
   const date = Date.now();
@@ -27,20 +30,23 @@ async function deleteExpiredMessage() {
 }
 
 async function hasOrderBeenPaid() {
-  const orders = await Order.find({ orderStatus: 'awaitingPayment' });
+  const orders = await OrderModel.find({
+    orderStatus: ORDER_STATUS.AWAITING_PAYMENT,
+  });
 
   for (let i = 0; i < orders.length; i++) {
-    orders[i].continueOrder();
-    orders[i].save();
+    orders[i].checkPaid();
   }
 }
 
 // Refund if paid
 async function handleOrderWithExpiredTimer() {
-  const orders = await Order.find({ timeUntilUpdate: { $lt: Date.now() } });
+  const orders = await OrderModel.find({
+    timeUntilUpdate: { $lt: Date.now() },
+  });
 
   for (let i = 0; i < orders.length; i++) {
-    if (orders[i].orderStatus !== 'finalized') orders[i].expiredOrder();
+    if (orders[i].orderStatus !== ORDER_STATUS.FINALIZED) orders[i].expiredOrder();
     else orders[i].applyPrivacyMeasure();
 
     orders[i].save();
@@ -66,16 +72,18 @@ async function findAndendSales() {
 
 function allDatabaseScanningFunction() {
   setInterval(() => {
-    console.log('1min');
-    hasOrderBeenPaid();
-  }, 60 * 1000); // 1 min
-
-  setInterval(() => {
     console.log('5min');
     deleteExpiredMessage();
     handleOrderWithExpiredTimer();
     findAndendSales();
   }, 5 * 60 * 1000); // 5min
+
+  // increased payment check time to 1h since payment check will be done by webhook
+  // this is to prevent the case where the webhook is not called
+  setInterval(() => {
+    console.log('1h');
+    hasOrderBeenPaid();
+  }, 60 * 60 * 1000); // 1h
 
   setInterval(() => {
     console.log('1day');

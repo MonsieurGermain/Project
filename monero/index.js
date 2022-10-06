@@ -48,11 +48,13 @@ const connectToWallet = async ({ walletRpc, name, pass }) => {
 
     return wallet;
   } catch (err) {
-    console.log('err', err);
+    if (err.message.includes('Wallet already exists')) {
+      const wallet = await walletRpc.openWallet(name, pass);
 
-    const wallet = await walletRpc.openWallet(name, pass);
+      return wallet;
+    }
 
-    return wallet;
+    throw err;
   }
 };
 

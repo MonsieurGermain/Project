@@ -98,6 +98,18 @@ const OrderSchema = new Schema({
     disputeWinner: String,
     disputeReason: String,
   },
+  orderChat: [
+    {
+      sender: {
+        type: String,
+        required: true,
+      },
+      message: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 setOrderMethodsToSchema(OrderSchema);

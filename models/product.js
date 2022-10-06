@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const Order = require('./order');
+const { OrderModel } = require('./order');
 const Review = require('./review');
 const { deleteImage } = require('../middlewares/filesUploads');
 
@@ -161,7 +161,7 @@ productSchema.methods.changeSlug = async function (title, vendor) {
   //    users[i].save()
   // }
 
-  const orders = await Order.find({ product_slug: oldSlug });
+  const orders = await OrderModel.find({ product_slug: oldSlug });
   for (let i = 0; i < orders.length; i++) {
     orders[i].changeOrderProductSlug(newSlug);
   }
@@ -186,7 +186,7 @@ productSchema.methods.deleteProduct = async function () {
   // }
 
   // Order
-  const orders = await Order.find({ product_slug: this.slug });
+  const orders = await OrderModel.find({ product_slug: this.slug });
   for (let i = 0; i < orders.length; i++) {
     orders[i].deleteOrder();
   }
@@ -212,8 +212,14 @@ productSchema.methods.startSales = function (salesPrice, salesDuration) {
   this.sales_end = Date.now() + 86400000 * salesDuration;
 };
 
-productSchema.statics.findOneOrCreateNew = async function (productSlug, productVendor) {
-  const product = await this.findOne({ slug: productSlug, vendor: productVendor });
+productSchema.statics.findOneOrCreateNew = async function (
+  productSlug,
+  productVendor,
+) {
+  const product = await this.findOne({
+    slug: productSlug,
+    vendor: productVendor,
+  });
 
   if (product) return product;
   return new this();

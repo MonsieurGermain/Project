@@ -29,20 +29,20 @@
           <div class="d-md-flex mb-3 filter-wrap">
             <select class="form-select me-4 mb-2 mb-md-0" name="status" id="status" style="min-width: 240px;" required>
               <option value="all" <% if (!query.status) { %> selected <% } %>>All status</option>
-              <option value="awaitingInformation" <% if (query.status === 'awaitingInformation') { %> selected <% } %>>Awaiting
+              <option value="AWAITING_INFORMATION" <% if (query.status === 'AWAITING_INFORMATION') { %> selected <% } %>>Awaiting
                 Information</option>
-              <option value="awaitingPayment" <% if (query.status === 'awaitingPayment') { %> selected <% } %>>
+              <option value="AWAITING_PAYMENT" <% if (query.status === 'AWAITING_PAYMENT') { %> selected <% } %>>
                 Awaiting Payment</option>
-              <option value="awaitingShipping" <% if (query.status === 'awaitingShipping') { %> selected <% } %>>
+              <option value="AWAITING_SHIPMENT" <% if (query.status === 'AWAITING_SHIPMENT') { %> selected <% } %>>
                 Awaiting Shipment</option>
-              <option value="shipped" <% if (query.status === 'shipped') { %> selected <% } %>>Shipped</option>
-              <option value="recieved" <% if (query.status === 'recieved') { %> selected <% } %>>Recieved</option>
-              <option value="finalized" <% if (query.status === 'finalized') { %> selected <% } %>>Finalized</option>
-              <option value="rejected" <% if (query.status === 'rejected') { %> selected <% } %>>Rejected</option>
-              <option value="expired" <% if (query.status === 'expired') { %> selected <% } %>>Expired</option>
-              <option value="disputeInProgress" <% if (query.status === 'disputeInProgress') { %> selected <% } %>>Dispute
+              <option value="SHIPPED" <% if (query.status === 'SHIPPED') { %> selected <% } %>>Shipped</option>
+              <option value="RECEIVED" <% if (query.status === 'RECEIVED') { %> selected <% } %>>Recieved</option>
+              <option value="FINALIZED" <% if (query.status === 'FINALIZED') { %> selected <% } %>>Finalized</option>
+              <option value="REJECTED" <% if (query.status === 'REJECTED') { %> selected <% } %>>Rejected</option>
+              <option value="EXPIRED" <% if (query.status === 'EXPIRED') { %> selected <% } %>>Expired</option>
+              <option value="DISPUTE_IN_PROGRESS" <% if (query.status === 'DISPUTE_IN_PROGRESS') { %> selected <% } %>>Dispute
                 in Progress</option>
-              <option value="disputed" <% if (query.status === 'disputed') { %> selected <% } %>>Disputed</option>
+              <option value="DISPUTED" <% if (query.status === 'DISPUTED') { %> selected <% } %>>Disputed</option>
             </select>
 
             <% if (authuser.authorization === 'vendor') { %>
@@ -142,7 +142,7 @@
                     </a>
                   </span>
 
-                  <% if (orders.results[i].orderStatus === 'disputeInProgress') { %>
+                  <% if (orders.results[i].orderStatus === 'DISPUTE_IN_PROGRESS') { %>
                   <span class="me-5 mb-2">
                     <p class="mb-0">Admin:</p>
                     <p class="mb-0"><%= orders.results[i].disputesSettings?.disputeAdmin ? orders.results[i].disputesSettings.disputeAdmin : 'Awaiting Admin...'%></p>
@@ -205,7 +205,7 @@
                     </p>
                   </span>
 
-                  <% if (orders.results[i].orderStatus === 'awaitingShipping') { %>
+                  <% if (orders.results[i].orderStatus === 'AWAITING_SHIPMENT') { %>
 
                   <div class="d-flex align-items-center button-group ms-auto mt-3">
 

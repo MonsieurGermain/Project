@@ -17,9 +17,7 @@ global.siteSettings = {
 const router = require('./routes');
 const passportMiddleware = require('./middlewares/passport');
 const { connectToMonero, connectToWallet, getAccount } = require('./monero');
-const { Escrow } = require('./monero/Escrow');
-
-const escrowService = new Escrow();
+const { escrowService } = require('./monero/Escrow');
 
 const appSetup = async () => {
   console.log('Connecting to database...');
@@ -45,7 +43,9 @@ const appSetup = async () => {
     pass: 'test_wallet_pass',
   });
 
-  const account = await getAccount();
+  const account = await getAccount({
+    walletRpc,
+  });
 
   escrowService.setUpEscrow(walletRpc, wallet, account);
   allDatabaseScanningFunction();
@@ -99,5 +99,3 @@ const appSetup = async () => {
 };
 
 appSetup();
-
-module.exports = { escrowService };

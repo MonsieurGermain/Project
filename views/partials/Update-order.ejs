@@ -4,7 +4,7 @@
 <% if (order.formatedTimer) { %>
     <p class="m-0 mt-2">Time Left: <b><%=order.formatedTimer%></b></p>
 <% } %>
-<%  if (order.status === 'disputeInProgress') { %>
+<%  if (order.status === 'DISPUTE_IN_PROGRESS') { %>
     <% if (!order.disputesSettings.disputeAdmin) { %>
         <p class="m-0"><b>Waiting for an Admin</b></p>
     <% } else { %>
@@ -14,19 +14,19 @@
 
 <hr class="mt-3 mb-4">
 
-<%if (order.status === 'finalized') {%>
+<%if (order.status === 'FINALIZED') {%>
     <p class="mb-0">This Order has been Finalized</p>
 <%}%>
 
 
 <%if (authuser.username === order.vendor) {%>
-    <%if (order.orderStatus === 'awaitingInformation') {%>
+    <%if (order.orderStatus === 'AWAITING_INFORMATION') {%>
         <p class="mt-4">Awaiting Buyer Informations</p>
     <%}%>
-    <%if (order.orderStatus === 'awaitingPayment') {%>
+    <%if (order.orderStatus === 'AWAITING_PAYMENT') {%>
         <p class="mt-4">Awaiting Buyer Payment</p>
     <%}%>
-    <%if (order.orderStatus === 'awaitingShipping') {%>
+    <%if (order.orderStatus === 'AWAITING_SHIPMENT') {%>
         <form action="/update-order/<%=order.id%>" method="POST">
             <button class="btn btn-warning" type="submit" name="status" value="next" style="width: 80%;">I have shipped the Product</button>
         </form>
@@ -42,33 +42,33 @@
         </div>
         
     <%}%>
-    <%if (order.orderStatus === 'shipped') {%>
+    <%if (order.orderStatus === 'SHIPPED') {%>
         <p class="mt-4">Awaiting for the Buyer to Recieve the Product</p>
     <%}%>
-    <%if (order.orderStatus === 'rejected') {%>
+    <%if (order.orderStatus === 'REJECTED') {%>
         <p class="mt-4">You have rejected this Order</p>
     <%}%>
-    <%if (order.orderStatus === 'recieved') {%>
+    <%if (order.orderStatus === 'RECEIVED') {%>
         <p class="mt-4">Awaiting for the Buyer to Finalize the Order</p>
     <%}%>
-    <%if (order.orderStatus === 'finalized') {%>
+    <%if (order.orderStatus === 'FINALIZED') {%>
         <p class="mt-4">We have sent you your Money</p>
     <%}%>
 <%}%>
 
 
 <%if (authuser.username !== order.vendor) {%>
-    <%if (order.orderStatus === 'awaitingInformation') {%>
+    <%if (order.orderStatus === 'AWAITING_INFORMATION') {%>
         <p class="mb-0">We are Waiting for your Information</p>
         <a class="mt-1 mb-4 mb-0" href="/submit-info/<%=order.id%>">Click Here</a>
     <%}%>
-    <%if (order.orderStatus === 'awaitingPayment') {%>
+    <%if (order.orderStatus === 'AWAITING_PAYMENT') {%>
         <p class="mb-0">Waiting for your Payment...</p>
     <%}%>
-    <%if (order.orderStatus === 'awaitingShipping') {%>
+    <%if (order.orderStatus === 'AWAITING_SHIPMENT') {%>
         <p class="mt-4">Waiting for the Vendor to ship the Product</p>
     <%}%>
-    <%if (order.orderStatus === 'shipped') {%>
+    <%if (order.orderStatus === 'SHIPPED') {%>
         <form action="/update-order/<%=order.id%>" method="POST">
             <button class="btn btn-success" type="submit" name="status" value="next" style="width: 80%;">I have recieved the Product</button>
         </form>
@@ -89,7 +89,7 @@
         </div>
             
     <%}%>
-    <%if (order.orderStatus === 'recieved') {%>
+    <%if (order.orderStatus === 'RECEIVED') {%>
         <form action="/update-order/<%=order.id%>?" method="POST">
             <button class="btn btn-success" type="submit" name="status" value="next" style="width: 80%;">Everything is good, finalize this order</button>
         </form>
@@ -104,7 +104,7 @@
         </div>
 
     <%}%>
-    <%if (order.orderStatus === 'rejected') {%>
+    <%if (order.orderStatus === 'REJECTED') {%>
         <p class="mb-2">This Order as been Cancelled by the Vendor</p>
         <p class="mb-0 fw-bold">Reason of Cancellation:</p>
         <p class="mb-3 fs-sm"><%=order.cancellationReason%></p>
@@ -112,7 +112,7 @@
 <%}%>
 
 
-<%if (order.orderStatus === 'disputeInProgress') {%>
+<%if (order.orderStatus === 'DISPUTE_IN_PROGRESS') {%>
     <% if (authuser.username === order.disputesSettings?.disputeAdmin) { %>
         <p>Decide who is right or wrong here</p>
         <p><b>Chat with the vendor and username using the Order chat</b></p>
@@ -155,7 +155,7 @@
 <%}%>
 
 
-<%if (order.orderStatus === 'disputed') {%>
+<%if (order.orderStatus === 'DISPUTED') {%>
     <p class="mb-2">This Dipsute has been settle</p>
 
     <p class="mb-0">The Winner of this Dispute is : 

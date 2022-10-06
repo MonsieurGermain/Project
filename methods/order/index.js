@@ -1,13 +1,54 @@
+const { BigInteger } = require('monero-javascript');
 const {
   formatUsernameWithSettings,
   formatTimer,
   sanitizeHTML,
 } = require('../../middlewares/function');
 
+const { escrowService } = require('../../monero/Escrow');
 const { ORDER_STATUS } = require('../../constants/orderStatus');
 const {
   BUYER_PRIVATE_INFO_DELETION,
 } = require('../../constants/buyerPrivateInfoDeletion');
+const { EscrowModel, ESCROW_STATUS } = require('../../models/escrow');
+
+const PRIVATE_INFO_DELETION_MAP = {
+  [BUYER_PRIVATE_INFO_DELETION.NEVER]: -1,
+  [BUYER_PRIVATE_INFO_DELETION.INSTANTLY]: 0,
+  [BUYER_PRIVATE_INFO_DELETION.DAY]: 1,
+  [BUYER_PRIVATE_INFO_DELETION.THREE_DAYS]: 3,
+  [BUYER_PRIVATE_INFO_DELETION.WEEK]: 7,
+  [BUYER_PRIVATE_INFO_DELETION.MONTH]: 30,
+};
+
+async function checkPaid() {
+  const escrow = await EscrowModel.findOne({ orderId: this._id });
+  if (!escrow) throw Error('Escrow Not Found');
+
+  const transactions = await escrowService.checkIncomingTransactionByAddress(
+    this.orderMoneroAddress,
+  );
+
+  const trxAmount = transactions.reduce((acc, trx) => {
+    const amount = trx.getAmount();
+
+    return acc.add(amount);
+  }, BigInteger.ZERO);
+
+  if (trxAmount.compare(escrow.amountAtomic) >= 0) {
+    // only when all amount is received we change status
+    // if user sends less than amount user can send again (we support partial payments)
+    escrow.set({
+      status: ESCROW_STATUS.RECEIVED,
+      statusDate: new Date(),
+    });
+
+    this.orderStatus = ORDER_STATUS.AWAITING_SHIPMENT;
+    await this.save();
+
+    await escrow.save();
+  }
+}
 
 function applyPrivacyMeasure() {
   switch (this.settings.buyerPrivateInfoDeletion) {
@@ -20,7 +61,11 @@ function applyPrivacyMeasure() {
       break;
     default:
       this.settings.buyerPrivateInfoDeletion = BUYER_PRIVATE_INFO_DELETION.INSTANTLY;
-      this.timeUntilUpdate = this.settings.buyerPrivateInfoDeletion * 24 * 60 * 60 * 1000; // 1 days
+      this.timeUntilUpdate = PRIVATE_INFO_DELETION_MAP[this.settings.buyerPrivateInfoDeletion]
+        * 24
+        * 60
+        * 60
+        * 1000; // 1 days
   }
 }
 
@@ -61,6 +106,8 @@ function continueOrder(username) {
       break;
     case ORDER_STATUS.AWAITING_PAYMENT:
       // Escrow Make that Switch
+      console.log('????');
+
       this.orderStatus = ORDER_STATUS.AWAITING_SHIPMENT;
       this.calculateTimer(3 * 24 * 60 * 60 * 1000); // 3 days
       break;
@@ -72,10 +119,10 @@ function continueOrder(username) {
       break;
     case ORDER_STATUS.SHIPPED:
       this.isBuyer(username);
-      this.orderStatus = ORDER_STATUS.RECIEVED;
+      this.orderStatus = ORDER_STATUS.RECEIVED;
       this.calculateTimer(2 * 24 * 60 * 60 * 1000); // 2 days
       break;
-    case ORDER_STATUS.RECIEVED:
+    case ORDER_STATUS.RECEIVED:
       this.isBuyer(username);
       this.finalizeOrder();
   }
@@ -84,14 +131,12 @@ function continueOrder(username) {
 function deleteBuyerInformation() {
   this.buyerInformation = undefined;
   this.settings.buyerPrivateInfoDeletion = undefined;
-
-  // save?
 }
 
 function expiredOrder() {
   switch (this.orderStatus) {
     case ORDER_STATUS.SHIPPED:
-    case ORDER_STATUS.RECIEVED:
+    case ORDER_STATUS.RECEIVED:
       this.continueOrder(this.buyer);
       break;
     case ORDER_STATUS.AWAITING_INFORMATION:
@@ -107,7 +152,7 @@ function expiredOrder() {
   }
 }
 
-function finalize() {
+function finalizeOrder() {
   this.orderStatus = ORDER_STATUS.FINALIZED;
 
   this.applyPrivacyMeasure();
@@ -130,7 +175,7 @@ function startDispute(username, reason) {
 
   switch (this.orderStatus) {
     case ORDER_STATUS.SHIPPED:
-    case ORDER_STATUS.RECIEVED:
+    case ORDER_STATUS.RECEIVED:
       this.isBuyer(username);
       this.orderStatus = ORDER_STATUS.DISPUTE_IN_PROGRESS;
       this.timeUntilUpdate = undefined;
@@ -167,10 +212,13 @@ function forceDeleteOrder(username) {
       this.deleteOrder();
       break;
     case ORDER_STATUS.SHIPPED:
-    case ORDER_STATUS.RECIEVED:
+    case ORDER_STATUS.RECEIVED:
     case ORDER_STATUS.FINALIZED:
-      if (this.vendor === username) this.refundOrder();
-      else this.finalizeOrder();
+      if (this.vendor === username) {
+        this.refundOrder();
+      } else {
+        this.finalizeOrder();
+      }
       this.deleteOrder();
       break;
     default:
@@ -224,8 +272,8 @@ function hideBuyerIdentity() {
 
 function addRedirectLink(username) {
   if (this.buyer === username) {
-    if (this.orderStatus === 'awaitingInformation') this.redirectLink = `/submit-info/${this.id}`;
-    else if (this.orderStatus === 'awaitingPayment') this.redirectLink = `/pay/${this.id}`;
+    if (this.orderStatus === ORDER_STATUS.AWAITING_INFORMATION) this.redirectLink = `/submit-info/${this.id}`;
+    else if (this.orderStatus === ORDER_STATUS.AWAITING_PAYMENT) this.redirectLink = `/pay/${this.id}`;
     else this.redirectLink = `/order-resume/${this.id}`;
   } else {
     this.redirectLink = `/order-resume/${this.id}`;
@@ -287,9 +335,26 @@ function formatFinalPrice(price) {
 }
 
 function calculateTotalOrderPrice() {
-  const pricePerProduct = this.orderDetails.basePrice
-      + (this.orderDetails.selection1Price || 0)
-      + this.orderDetails.selection2Price || 0;
+  let pricePerProduct = this.orderDetails.basePrice;
+
+  if (
+    this.orderDetails.chosenSelection1
+    && this.orderDetails.chosenSelection1.selectedChoice
+    && this.orderDetails.chosenSelection1.selectedChoice.choicePrice
+  ) {
+    pricePerProduct
+      += this.orderDetails.chosenSelection1.selectedChoice.choicePrice;
+  }
+
+  if (
+    this.orderDetails.chosenSelection2
+    && this.orderDetails.chosenSelection2.selectedChoice
+    && this.orderDetails.chosenSelection2.selectedChoice.choicePrice
+  ) {
+    pricePerProduct
+      += this.orderDetails.chosenSelection2.selectedChoice.choicePrice;
+  }
+
   const priceWithQuantity = pricePerProduct * this.orderDetails.quantity;
 
   let shippingOptionPrice = 0;
@@ -345,8 +410,9 @@ const setOrderMethodsToSchema = (orderSchema) => {
     continueOrder,
     deleteBuyerInformation,
     expiredOrder,
-    finalize,
+    finalizeOrder,
     refund,
+    checkPaid,
     resetTimer,
     startDispute,
     orderIsExpired,

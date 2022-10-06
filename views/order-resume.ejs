@@ -71,7 +71,7 @@
           <hr class="my-4">
 
 
-          <%if (order.orderStatus === 'finalized' || order.orderStatus === 'recieved') {%>
+          <%if (order.orderStatus === 'FINALIZED' || order.orderStatus === 'RECEIVED') {%>
           <div class="card card-deep-shadow px-4 py-4">
             <%if (!order.settings.leftReview && authuser.username !== order.vendor) {%>
             <div class="hide-send-message-input">
@@ -318,7 +318,7 @@
 
 
 
-            <% if (!order.canDelete || order.orderStatus !== 'finalized' && authuser.username !== order.vendor && authuser.username !== order.admin) {%>
+            <% if (!order.canDelete || order.orderStatus !== 'FINALIZED' && authuser.username !== order.vendor && authuser.username !== order.admin) {%>
 
                 <hr class="my-4">
                 <div class="card card-deep-shadow px-4 py-4">
@@ -335,7 +335,7 @@
 
                 <div class="order-advanced-settings">
 
-                  <% if (authuser.username !== order.vendor && authuser.username !== order.admin && order.orderStatus !== 'finalized') { %>
+                  <% if (authuser.username !== order.vendor && authuser.username !== order.admin && order.orderStatus !== 'FINALIZED') { %>
                   <form action="/update-privacy-order/<%=order.id%>" method="POST">
 
                       <div class="mt-3">
@@ -381,18 +381,18 @@
                       <p class="fs-xs opacity-70 my-0 mb-2">You have chosen this settings when you have created this order</p>
                       <p class="fs-xs opacity-70 my-0 mb-2 text-danger">Changing This Setting to "Default" will reveal your real username to the Vendor</p>
                       <select name="privacyType" class="form-select mb-4" id="buyerPrivateInfoDeletion">
-                          <option value="DEFAULT"
-                          <% if (order.settings.privacyType === 'DEFAULT') { %>
+                          <option value="default"
+                          <% if (order.settings.privacyType === 'default') { %>
                               selected
                           <% } %>
                           > Default</option> 
-                          <option value="SEMI_HIDDEN"
-                          <% if (order.settings.privacyType === 'SEMI_HIDDEN') { %>
+                          <option value="semi-hidden"
+                          <% if (order.settings.privacyType === 'semi-hidden') { %>
                               selected
                           <% } %>
                           > Partialy Hide your Username</option>
-                          <option value="HIDDEN"
-                          <% if (order.settings.privacyType === 'HIDDEN') { %>
+                          <option value="hidden"
+                          <% if (order.settings.privacyType === 'hidden') { %>
                               selected
                           <% } %>
                           > Entirely Hide your Username</option>
@@ -405,7 +405,7 @@
                   </form>
                   <% } %>
 
-                  <% if (!order.canDelete && authuser.username !== order.vendor && authuser.username !== order.admin && order.orderStatus !== 'finalized') { %>
+                  <% if (!order.canDelete && authuser.username !== order.vendor && authuser.username !== order.admin && order.orderStatus !== 'FINALIZED') { %>
                     <hr class="my-3">
                   <% }  %>
 

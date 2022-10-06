@@ -14,7 +14,7 @@ const ProductModel = require('../../models/product');
 const { createOrder } = require('./create');
 const { updateOrder } = require('./update');
 const { orderResume } = require('./resume');
-const { payOrder } = require('./pay');
+const { payPage } = require('./pay');
 const { updatePrivacy } = require('./updatePrivacy');
 const { sendChatToOrder } = require('./chat');
 const { getOrderInfo } = require('./getInfo');
@@ -38,7 +38,7 @@ const productMiddleware = async (req, res, next) => {
 router.get('/orders', [isAuth, sanitizeQuerys], getOrders);
 router.get('/order/:slug', [isAuth, sanitizeParams], getOrder);
 router.get('/order-resume/:id', [isAuth, sanitizeParams], orderResume);
-router.get('/pay/:id', [isAuth, sanitizeParams], payOrder);
+router.get('/pay/:id', [isAuth, sanitizeParams], payPage);
 
 router.post('/filter-orders', [isAuth, sanitizeQuerys], filterOrders);
 router.post(

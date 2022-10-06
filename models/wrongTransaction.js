@@ -18,10 +18,6 @@ const WrongTransactionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  address: {
-    type: String,
-    required: true,
-  },
   transactionType: {
     type: String,
     enum: Object.values(TRANSACTION_TYPES),

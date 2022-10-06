@@ -1,4 +1,4 @@
-const { escrowService } = require('../../app');
+/* eslint-disable global-require */
 const {
   BUYER_PRIVATE_INFO_DELETION,
 } = require('../../constants/buyerPrivateInfoDeletion');
@@ -7,6 +7,7 @@ const { ORDER_STATUS } = require('../../constants/orderStatus');
 const { OrderModel } = require('../../models/order');
 const UserModel = require('../../models/user');
 const { getExchangeRate } = require('../../monero/index');
+const { escrowService } = require('../../monero/Escrow');
 
 async function getVendorMoneroAddress(vendorUsername) {
   const vendor = await UserModel.findOne({ username: vendorUsername });
@@ -76,19 +77,7 @@ const createOrder = async (req, res) => {
       },
     });
 
-    order.calculateTotalOrderPrice(
-      order.orderDetails.basePrice,
-      order.orderDetails.quantity,
-      order.orderDetails.chosenShippingOption
-        ? order.orderDetails.chosenShippingOption.optionPrice
-        : 0,
-      order.orderDetails.chosenSelection1
-        ? order.orderDetails.chosenSelection1.selectedChoice.choicePrice
-        : 0,
-      order.orderDetails.chosenSelection2
-        ? order.orderDetails.chosenSelection2.selectedChoice.choicePrice
-        : 0,
-    );
+    order.calculateTotalOrderPrice();
 
     if (order.orderDetails.totalPrice < 1) throw new Error('Each orders need to cost at least 1$');
 

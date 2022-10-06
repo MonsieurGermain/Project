@@ -80,7 +80,7 @@ class Escrow {
       throw new Error('Integrated address failed to generate!');
     }
 
-    const escrow = new EscrowModel({
+    const escrow = await EscrowModel.create({
       paymentId,
       orderId,
       paymentAddress: integratedAddress,
@@ -91,7 +91,7 @@ class Escrow {
       statusDate: new Date(),
     });
 
-    await escrow.save();
+    return escrow;
   }
 
   async checkIncomingTransactionByAddress(address) {
@@ -124,35 +124,12 @@ class Escrow {
     return transaction;
   }
 
-  async onInputReceived(escrow) {
-    const { paymentAddress } = escrow;
-
-    const transactions = await this.checkIncomingTransactionByAddress(
-      paymentAddress,
-    );
-
-    const trxAmount = transactions.reduce((acc, trx) => {
-      const amount = trx.getAmount();
-
-      return acc.add(amount);
-    }, BigInteger.ZERO);
-
-    const { amountAtomic } = escrow;
-
-    if (trxAmount.compare(amountAtomic) >= 0) {
-      escrow.set({
-        status: ESCROW_STATUS.RECEIVED,
-        statusDate: new Date(),
-      });
-
-      await escrow.save();
-    }
-  }
-
   // only refund incoming wrong transactions
   // it includes payment received on released or canceled escrow, or wrong address etc.
   // needed paymentProof aka txKey to refund
-  async refundWrongTransaction({ txKey, txHash, refundAddress }) {
+  async refundWrongTransaction({
+    txKey, txHash, sentAddress, refundAddress,
+  }) {
     const wrongTransaction = await WrongTransactionModel.findOne({
       txHash,
     });
@@ -164,7 +141,7 @@ class Escrow {
     const check = await this.walletRpc.checkTxKey(
       txHash,
       txKey,
-      wrongTransaction.address,
+      sentAddress,
     );
 
     if (!check || !check.isGood) {
@@ -300,4 +277,4 @@ class Escrow {
   }
 }
 
-module.exports = { Escrow };
+module.exports = { Escrow, escrowService: new Escrow() };

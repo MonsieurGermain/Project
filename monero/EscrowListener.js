@@ -1,6 +1,8 @@
 /* eslint-disable class-methods-use-this */
 const { MoneroWalletListener, BigInteger } = require('monero-javascript');
+const { ORDER_STATUS } = require('../constants/orderStatus');
 const { EscrowModel, ESCROW_STATUS } = require('../models/escrow');
+const { OrderModel } = require('../models/order');
 const {
   WrongTransactionModel,
   WRONG_TRANSACTION_TYPES,
@@ -14,7 +16,6 @@ class EscrowListener extends MoneroWalletListener {
     this.escrow = escrow;
   }
 
-  // when someone sends money to the escrow address
   async onOutputReceived(input) {
     console.log('Output received!');
     console.log(input);
@@ -24,17 +25,19 @@ class EscrowListener extends MoneroWalletListener {
     const isConfirmed = tx.isConfirmed();
     const isRelayed = tx.isRelayed();
     const isFailed = tx.isFailed();
-    const address = input.getAddress();
 
     if (!isConfirmed || !isRelayed || isFailed) {
+      // transaction is not confirmed yet
+      // it will called again when it is confirmed
       return;
     }
 
     const paymentId = tx.getPaymentId();
 
     if (!paymentId) {
+      // transaction is not related to escrow
+      // saving transaction just in case someone wanted to refund
       await WrongTransactionModel.create({
-        address,
         transactionType: TRANSACTION_TYPES.INCOMING,
         txHash: tx.getHash(),
         type: WRONG_TRANSACTION_TYPES.BAD_PAYMENT_ID,
@@ -49,7 +52,6 @@ class EscrowListener extends MoneroWalletListener {
 
     if (!escrow) {
       await WrongTransactionModel.create({
-        address,
         transactionType: TRANSACTION_TYPES.INCOMING,
         txHash: tx.getHash(),
         type: WRONG_TRANSACTION_TYPES.BAD_PAYMENT_ID,
@@ -62,7 +64,6 @@ class EscrowListener extends MoneroWalletListener {
 
     if (status === ESCROW_STATUS.RELEASED) {
       await WrongTransactionModel.create({
-        address,
         transactionType: TRANSACTION_TYPES.INCOMING,
         txHash: tx.getHash(),
         type: WRONG_TRANSACTION_TYPES.ALREADY_RELEASED,
@@ -73,7 +74,6 @@ class EscrowListener extends MoneroWalletListener {
 
     if (status === ESCROW_STATUS.CANCELLED) {
       await WrongTransactionModel.create({
-        address,
         transactionType: TRANSACTION_TYPES.INCOMING,
         txHash: tx.getHash(),
         type: WRONG_TRANSACTION_TYPES.ALREADY_CANCELLED,
@@ -92,12 +92,24 @@ class EscrowListener extends MoneroWalletListener {
     }, BigInteger.ZERO);
 
     if (trxAmount.compare(amountAtomic) >= 0) {
+      // only when all amount is received we change status
+      // if user sends less than amount user can send again (we support partial payments)
       escrow.set({
         status: ESCROW_STATUS.RECEIVED,
         statusDate: new Date(),
       });
 
-      // you can change order status here
+      const order = await OrderModel.findOne({
+        _id: escrow.orderId,
+      });
+
+      if (order) {
+        order.set({
+          orderStatus: ORDER_STATUS.AWAITING_SHIPMENT,
+        });
+
+        await order.save();
+      }
 
       await escrow.save();
     }
@@ -110,7 +122,6 @@ class EscrowListener extends MoneroWalletListener {
     const isConfirmed = tx.isConfirmed();
     const isRelayed = tx.isRelayed();
     const isFailed = tx.isFailed();
-    const address = output.getAddress();
 
     if (!isConfirmed || !isRelayed || isFailed) {
       return;
@@ -120,9 +131,9 @@ class EscrowListener extends MoneroWalletListener {
       releaseTxHash: hash,
     });
 
-    if (!escrow) { // just in case
+    if (!escrow) {
+      // just in case
       await WrongTransactionModel.create({
-        address,
         transactionType: TRANSACTION_TYPES.OUTGOING,
         txHash: hash,
         type: WRONG_TRANSACTION_TYPES.UNAUTHORIZED,
@@ -130,9 +141,9 @@ class EscrowListener extends MoneroWalletListener {
       return;
     }
 
-    if (escrow.status !== ESCROW_STATUS.RELEASING) { // just in case
+    if (escrow.status !== ESCROW_STATUS.RELEASING) {
+      // just in case
       await WrongTransactionModel.create({
-        address,
         transactionType: TRANSACTION_TYPES.OUTGOING,
         txHash: hash,
         type: WRONG_TRANSACTION_TYPES.BAD_ESCROW_STATUS,
@@ -144,8 +155,6 @@ class EscrowListener extends MoneroWalletListener {
       status: ESCROW_STATUS.RELEASED,
       statusDate: new Date(),
     });
-
-    // you can change order status here
 
     await escrow.save();
   }

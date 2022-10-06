@@ -1,7 +1,7 @@
 const ORDER_PRIVACY_TYPE = {
-  DEFAULT: 'DEFAULT',
-  SEMI_HIDDEN: 'SEMI_HIDDEN',
-  HIDDEN: 'HIDDEN',
+  DEFAULT: 'default',
+  SEMI_HIDDEN: 'semi-hidden',
+  HIDDEN: 'hidden',
 };
 
 module.exports = { ORDER_PRIVACY_TYPE };

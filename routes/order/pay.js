@@ -1,7 +1,7 @@
 const { ORDER_STATUS } = require('../../constants/orderStatus');
 const { OrderModel } = require('../../models/order');
 
-const payOrder = async (req, res) => {
+const payPage = async (req, res) => {
   try {
     const { user } = req;
 
@@ -18,4 +18,4 @@ const payOrder = async (req, res) => {
   }
 };
 
-module.exports = { payOrder };
+module.exports = { payPage };
