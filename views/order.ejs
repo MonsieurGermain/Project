@@ -129,16 +129,16 @@
                 <div class="card-body px-3 px-md-4 py-4">
                   
                   <p class="mb-2">Privacy Settings</p>
-                  <input class='form-check-input' type="radio" name="privacyType" id="default" value="default" required>
+                  <input class='form-check-input' type="radio" name="privacyType" id="default" value="DEFAULT" required>
                   <label class='form-check-label ms-1 mb-1' for="default">Default <span class="opacity-70">(Not
                       Recommended)</span></label><br>
 
-                  <input class='form-check-input' type="radio" name="privacyType" id="semi-hidden" value="semi-hidden" required
+                  <input class='form-check-input' type="radio" name="privacyType" id="semi-hidden" value="SEMI_HIDDEN" required
                     checked>
                   <label class='form-check-label ms-1 mb-1' for="semi-hidden">Semi-Hidden</label><br>
 
                   <% if (product.allow_hidden) { %>
-                  <input class='form-check-input' type="radio" name="privacyType" id="Hidden" value="hidden" required>
+                  <input class='form-check-input' type="radio" name="privacyType" id="Hidden" value="HIDDEN" required>
                   <label class='form-check-label ms-1 mb-1' for="Hidden">Hidden</label><br>
                   <% } %>
 

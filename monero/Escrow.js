@@ -17,7 +17,7 @@ class Escrow {
 
   escrowListener;
 
-  constructor(walletRpc, wallet, account) {
+  async setUpEscrow(walletRpc, wallet, account) {
     if (!walletRpc) {
       throw new Error('Wallet RPC is required!');
     }
@@ -38,9 +38,6 @@ class Escrow {
     this.accountIndex = account.getIndex();
     this.address = account.getPrimaryAddress();
     this.escrowListener = new EscrowListener(this);
-  }
-
-  async setUpEscrow() {
     this.walletRpc.addListener(this.escrowListener);
   }
 
@@ -58,7 +55,7 @@ class Escrow {
     return unlockedBalance;
   }
 
-  async createEscrow({ amount, releaseAddress }) {
+  async createEscrow({ amount, orderId, releaseAddress }) {
     if (!amount || amount <= 0) {
       throw new Error('Amount is required!');
     }
@@ -85,6 +82,7 @@ class Escrow {
 
     const escrow = new EscrowModel({
       paymentId,
+      orderId,
       paymentAddress: integratedAddress,
       releaseAddress,
       amount,

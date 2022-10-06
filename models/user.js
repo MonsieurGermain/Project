@@ -94,7 +94,10 @@ const userSchema = new mongoose.Schema({
   settings: {
     type: settingsSchema,
     default: {
-      messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false,
+      messageExpiring: 7,
+      privateInfoExpiring: 7,
+      deleteEmptyConversation: true,
+      recordSeeingMessage: false,
     },
     required: true,
   },
@@ -179,7 +182,9 @@ userSchema.methods.deleteUser = async function () {
   }
 
   // Report
-  const reports = await Report.find({ $or: [{ reference_id: this.username }, { username: this.username }] });
+  const reports = await Report.find({
+    $or: [{ reference_id: this.username }, { username: this.username }],
+  });
   for (let i = 0; i < reports.length; i++) {
     reports[i].deleteReport();
   }
@@ -191,7 +196,9 @@ userSchema.methods.deleteUser = async function () {
   }
 
   // 2 Step Verification
-  const stepVerification = await StepVerification.find({ username: this.username });
+  const stepVerification = await StepVerification.find({
+    username: this.username,
+  });
   for (let i = 0; i < stepVerification.length; i++) {
     stepVerification[i].deleteStepVerification();
   }

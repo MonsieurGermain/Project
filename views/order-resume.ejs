@@ -342,33 +342,33 @@
                           <label class="form-label mb-2" for="buyerPrivateInfoDeletion">Delete my Private Information after :</label>
                           <p class="fs-xs opacity-70 my-0 mb-2">Here you can decide how many time after the finalization of your order do you want us to delete your private information</p>
                           <select name="buyerPrivateInfoDeletion" class="form-select mb-4" id="buyerPrivateInfoDeletion">
-                            <option value="never"
-                              <% if (!order.settings.buyerPrivateInfoDeletion) { %>
+                            <option value="NEVER"
+                              <% if (order.settings.buyerPrivateInfoDeletion === "NEVER") { %>
                                  selected
                               <% } %>
                               >Never</option> 
-                              <option value="-1"
-                              <% if (order.settings.buyerPrivateInfoDeletion === -1) { %>
+                              <option value="INSTANTLY"
+                              <% if (order.settings.buyerPrivateInfoDeletion === "INSTANTLY") { %>
                                   selected
                               <% } %>
                               >Instantly</option> 
-                              <option value="1"
-                              <% if (order.settings.buyerPrivateInfoDeletion === 1) { %>
+                              <option value="DAY"
+                              <% if (order.settings.buyerPrivateInfoDeletion === "DAY") { %>
                                   selected
                               <% } %>
                               >1 days</option> 
-                              <option value="3"
-                              <% if (order.settings.buyerPrivateInfoDeletion === 3) { %>
+                              <option value="THREE_DAYS"
+                              <% if (order.settings.buyerPrivateInfoDeletion === "THREE_DAYS") { %>
                                   selected
                               <% } %>
                               >3 days</option> 
-                              <option value="7"
-                              <% if (order.settings.buyerPrivateInfoDeletion === 7) { %>
+                              <option value="WEEK"
+                              <% if (order.settings.buyerPrivateInfoDeletion === "WEEK") { %>
                                   selected
                               <% } %>
                               >1 weeks</option> 
-                              <option value="30"
-                              <% if (order.settings.buyerPrivateInfoDeletion === 30) { %>
+                              <option value="MONTH"
+                              <% if (order.settings.buyerPrivateInfoDeletion === "MONTH") { %>
                                   selected
                               <% } %>
                               >≈ 1 months (30days)</option> 
@@ -381,18 +381,18 @@
                       <p class="fs-xs opacity-70 my-0 mb-2">You have chosen this settings when you have created this order</p>
                       <p class="fs-xs opacity-70 my-0 mb-2 text-danger">Changing This Setting to "Default" will reveal your real username to the Vendor</p>
                       <select name="privacyType" class="form-select mb-4" id="buyerPrivateInfoDeletion">
-                          <option value="default"
-                          <% if (order.settings.privacyType === 'default') { %>
+                          <option value="DEFAULT"
+                          <% if (order.settings.privacyType === 'DEFAULT') { %>
                               selected
                           <% } %>
                           > Default</option> 
-                          <option value="semi-hidden"
-                          <% if (order.settings.privacyType === 'semi-hidden') { %>
+                          <option value="SEMI_HIDDEN"
+                          <% if (order.settings.privacyType === 'SEMI_HIDDEN') { %>
                               selected
                           <% } %>
                           > Partialy Hide your Username</option>
-                          <option value="hidden"
-                          <% if (order.settings.privacyType === 'hidden') { %>
+                          <option value="HIDDEN"
+                          <% if (order.settings.privacyType === 'HIDDEN') { %>
                               selected
                           <% } %>
                           > Entirely Hide your Username</option>

@@ -16,6 +16,11 @@ const EscrowSchema = new Schema({
     required: true,
     unique: true,
   },
+  orderId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Order',
+    required: true,
+  },
   retryCount: {
     type: Number,
     default: 0,

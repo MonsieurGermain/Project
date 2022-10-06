@@ -1,0 +1,7 @@
+const ORDER_PRIVACY_TYPE = {
+  DEFAULT: 'DEFAULT',
+  SEMI_HIDDEN: 'SEMI_HIDDEN',
+  HIDDEN: 'HIDDEN',
+};
+
+module.exports = { ORDER_PRIVACY_TYPE };

@@ -1,7 +1,15 @@
+const { ORDER_PRIVACY_TYPE } = require('../constants/orderPrivacyType');
 const { isMoneroAddress, isEmail, isPgpKeys } = require('./function');
 
 // Vars
-const bannedUsername = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
+const bannedUsername = [
+  'admin',
+  'admins',
+  'system',
+  'systems',
+  'hidden',
+  'anonymous',
+];
 const conversationType = ['default', 'semi-hidden', 'hidden'];
 const possibleRating = ['1', '2', '3', '4', '5'];
 const countryList = ['United-State', 'Canada'];
@@ -11,7 +19,11 @@ function filterEmpty(value) {
   return value.filter((element) => element);
 }
 
-function validateNumber(value, inputName, { min = 1, max = 1e6, isRequired = true } = {}) {
+function validateNumber(
+  value,
+  inputName,
+  { min = 1, max = 1e6, isRequired = true } = {},
+) {
   value = parseFloat(value);
 
   if (!isRequired && !value) return undefined;
@@ -19,12 +31,20 @@ function validateNumber(value, inputName, { min = 1, max = 1e6, isRequired = tru
   if (typeof value !== 'number' || isNaN(value)) throw new Error(`Invalid ${inputName} Data Type`);
 
   if (isRequired && !value) throw new Error(`The ${inputName} fields is Required`);
-  if (value > max || value < min) throw new Error(`The ${inputName} can have a value ranging from ${min} to ${max}`);
+  if (value > max || value < min) {
+    throw new Error(
+      `The ${inputName} can have a value ranging from ${min} to ${max}`,
+    );
+  }
 
   return value;
 }
 
-function ValidateText(value, inputName, { minlength = 3, maxlength = 50, isRequired = true } = {}) {
+function ValidateText(
+  value,
+  inputName,
+  { minlength = 3, maxlength = 50, isRequired = true } = {},
+) {
   if (!isRequired && !value) return undefined;
 
   if (typeof value !== 'string') throw new Error(`Invalid ${inputName} Data Type`);
@@ -33,7 +53,9 @@ function ValidateText(value, inputName, { minlength = 3, maxlength = 50, isRequi
 
   if (isRequired && !value) throw new Error(`The ${inputName} fields is Required`);
   if (value.length > maxlength || value.length < minlength) {
-    throw new Error(`The ${inputName} need to be within ${minlength} to ${maxlength} characters longs`);
+    throw new Error(
+      `The ${inputName} need to be within ${minlength} to ${maxlength} characters longs`,
+    );
   }
   return value;
 }
@@ -84,13 +106,21 @@ function makeSelectionChoice(selectionOption, selectionPrice, selectionNum) {
       );
       if (!selectionPrice[i]) selectionPrice[i] = 0;
 
-      selectionChoices[i] = { choice_name: selectionOption[i], choice_price: selectionPrice[i] };
+      selectionChoices[i] = {
+        choice_name: selectionOption[i],
+        choice_price: selectionPrice[i],
+      };
     }
   }
   return selectionChoices;
 }
 
-function createSelection(selectionName, selectionOption, selectionPrice, selectionNum) {
+function createSelection(
+  selectionName,
+  selectionOption,
+  selectionPrice,
+  selectionNum,
+) {
   selectionName = ValidateText(
     selectionName,
     `Selection Name #${selectionNum}`,
@@ -99,7 +129,11 @@ function createSelection(selectionName, selectionOption, selectionPrice, selecti
 
   if (!selectionName) return undefined;
 
-  const selectionChoice = makeSelectionChoice(selectionOption, selectionPrice, selectionNum);
+  const selectionChoice = makeSelectionChoice(
+    selectionOption,
+    selectionPrice,
+    selectionNum,
+  );
 
   if (!selectionChoice.length) return undefined;
 
@@ -110,10 +144,16 @@ function createSelection(selectionName, selectionOption, selectionPrice, selecti
 function sanitizeLoginInput(req, res, next) {
   try {
     // Username
-    req.body.username = ValidateText(req.body.username, 'Username', { minlength: 1, maxlength: 25 });
+    req.body.username = ValidateText(req.body.username, 'Username', {
+      minlength: 1,
+      maxlength: 25,
+    });
 
     // Password
-    req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 });
+    req.body.password = ValidateText(req.body.password, 'Password', {
+      minlength: 8,
+      maxlength: 200,
+    });
 
     next();
   } catch (e) {
@@ -124,11 +164,17 @@ function sanitizeLoginInput(req, res, next) {
 function sanitizeRegisterInput(req, res, next) {
   try {
     // Username
-    req.body.username = ValidateText(req.body.username, 'Username', { minlength: 1, maxlength: 25 });
+    req.body.username = ValidateText(req.body.username, 'Username', {
+      minlength: 1,
+      maxlength: 25,
+    });
     if (bannedUsername.includes(req.body.username.toLowerCase())) throw new Error('You cannot use this Username');
 
     // Password
-    req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 });
+    req.body.password = ValidateText(req.body.password, 'Password', {
+      minlength: 8,
+      maxlength: 200,
+    });
 
     // Confirm Password
     req.body.confirmPassword = ValidateText(
@@ -147,14 +193,19 @@ function sanitizeRegisterInput(req, res, next) {
 function sanitizeConversationInput(req, res, next) {
   try {
     // Message
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 2, maxlength: 1000 });
+    req.body.message = ValidateText(req.body.message, 'Message', {
+      minlength: 2,
+      maxlength: 1000,
+    });
 
     // Conversation Type
     if (!conversationType.includes(req.body.type)) throw new Error('Invalid Conversation Type');
 
     req.body.timestamps = req.body.timestamps ? true : undefined;
 
-    if (![undefined, 'noPgp', 'ownPgp', 'otherPgp'].includes(req.body.pgpSettings)) {
+    if (
+      ![undefined, 'noPgp', 'ownPgp', 'otherPgp'].includes(req.body.pgpSettings)
+    ) {
       throw new Error('Invalid Pgp Settings');
     }
 
@@ -171,7 +222,10 @@ function sanitizeConversationInput(req, res, next) {
 }
 function sanitizeMessageInput(req, res, next) {
   try {
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 2, maxlength: 1000 });
+    req.body.message = ValidateText(req.body.message, 'Message', {
+      minlength: 2,
+      maxlength: 1000,
+    });
     next();
   } catch (e) {
     res.redirect('/404');
@@ -180,7 +234,10 @@ function sanitizeMessageInput(req, res, next) {
 
 function sanitizeReviewInput(req, res, next) {
   try {
-    req.body.review = ValidateText(req.body.review, 'Review', { minlength: 5, maxlength: 5000 });
+    req.body.review = ValidateText(req.body.review, 'Review', {
+      minlength: 5,
+      maxlength: 5000,
+    });
 
     if (!possibleRating.includes(req.body.note)) throw new Error();
 
@@ -194,13 +251,17 @@ function sanitizeReviewInput(req, res, next) {
 
 function sanitizeProfileInput(req, res, next) {
   try {
-    req.body.job = ValidateText(req.body.job, 'Job', { minlength: 0, maxlength: 100, isRequired: false });
+    req.body.job = ValidateText(req.body.job, 'Job', {
+      minlength: 0,
+      maxlength: 100,
+      isRequired: false,
+    });
 
-    req.body.description = ValidateText(
-      req.body.description,
-      'Description',
-      { minlength: 0, maxlength: 3000, isRequired: false },
-    );
+    req.body.description = ValidateText(req.body.description, 'Description', {
+      minlength: 0,
+      maxlength: 3000,
+      isRequired: false,
+    });
 
     if (req.body.achievement) {
       req.body.achievement = filterEmpty(req.body.achievement);
@@ -234,13 +295,23 @@ function sanitizeProfileInput(req, res, next) {
 function sanitizeProductInput(req, res, next) {
   try {
     // Title
-    req.body.title = ValidateText(req.body.title, 'Title', { minlength: 5, maxlength: 250 });
+    req.body.title = ValidateText(req.body.title, 'Title', {
+      minlength: 5,
+      maxlength: 250,
+    });
 
     // Description
-    req.body.description = ValidateText(req.body.description, 'Description', { minlength: 10, maxlength: 20000 });
+    req.body.description = ValidateText(req.body.description, 'Description', {
+      minlength: 10,
+      maxlength: 20000,
+    });
 
     // Message
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 0, maxlength: 1000, isRequired: false });
+    req.body.message = ValidateText(req.body.message, 'Message', {
+      minlength: 0,
+      maxlength: 1000,
+      isRequired: false,
+    });
 
     // Allow Hidden
     req.body.allowHidden = req.body.allowHidden ? true : undefined;
@@ -285,70 +356,111 @@ function sanitizeProductInput(req, res, next) {
 
     // Custom Monero Address
     req.body.customMoneroAddress = req.body.customMoneroAddress
-      ? isMoneroAddress(req.body.customMoneroAddress, 'Custom') : undefined;
+      ? isMoneroAddress(req.body.customMoneroAddress, 'Custom')
+      : undefined;
 
     // Availble Quantity
-    req.body.qtySettings = validateNumber(
-      req.body.qtySettings,
-      'Available',
-      { min: 1, max: 1000, isRequired: false },
-    );
+    req.body.qtySettings = validateNumber(req.body.qtySettings, 'Available', {
+      min: 1,
+      max: 1000,
+      isRequired: false,
+    });
 
     req.body.max_order = validateNumber(
       req.body.max_order,
       'Maximun per Order',
-      { min: 1, max: req.body.qtySettings ? req.body.qtySettings : 1000, isRequired: false },
+      {
+        min: 1,
+        max: req.body.qtySettings ? req.body.qtySettings : 1000,
+        isRequired: false,
+      },
     );
 
     // Quantity Settings
-    req.body.qtySettings = { available_qty: req.body.qtySettings, max_order: req.body.max_order };
+    req.body.qtySettings = {
+      available_qty: req.body.qtySettings,
+      max_order: req.body.max_order,
+    };
 
     // Shipping Option
-    req.body.shippingOptions = validateShippingOption(req.body.describe_ship, req.body.price_ship);
+    req.body.shippingOptions = validateShippingOption(
+      req.body.describe_ship,
+      req.body.price_ship,
+    );
 
     // Selection #1
-    req.body.selection1 = createSelection(req.body.selection_1_name, req.body.se_1_des, req.body.se_1_price, 1);
+    req.body.selection1 = createSelection(
+      req.body.selection_1_name,
+      req.body.se_1_des,
+      req.body.se_1_price,
+      1,
+    );
 
     // Selection #2
-    req.body.selection2 = createSelection(req.body.selection_2_name, req.body.se_2_des, req.body.se_2_price, 2);
+    req.body.selection2 = createSelection(
+      req.body.selection_2_name,
+      req.body.se_2_des,
+      req.body.se_2_price,
+      2,
+    );
 
     // Price
     req.body.price = validateNumber(req.body.price, 'Price');
 
     if (req.product.salesPrice && req.product.price !== req.body.price) {
-      throw new Error('You cant change the Price of your Product while it is still on sale');
+      throw new Error(
+        'You cant change the Price of your Product while it is still on sale',
+      );
     }
 
-    req.body.salesPrice = validateNumber(
-      req.body.salesPrice,
-      'Sales Price',
-      { min: 1, max: req.body.price - 1, isRequired: false },
-    );
+    req.body.salesPrice = validateNumber(req.body.salesPrice, 'Sales Price', {
+      min: 1,
+      max: req.body.price - 1,
+      isRequired: false,
+    });
 
     req.body.salesDuration = req.body.salesDuration
-      ? validateNumber(req.body.salesDuration, 'Sales Duration', { min: 1, max: 30, isRequired: false }) : 1;
+      ? validateNumber(req.body.salesDuration, 'Sales Duration', {
+        min: 1,
+        max: 30,
+        isRequired: false,
+      })
+      : 1;
 
     if (req.product.salesPrice) {
       if (req.product.salesPrice !== req.body.salesPrice) {
-        throw new Error('You cant change the Price of your Sales while on Sales');
+        throw new Error(
+          'You cant change the Price of your Sales while on Sales',
+        );
       }
       if (req.product.salesDuration !== req.body.salesDuration) {
-        throw new Error('You cant change the Duration of your Sales while on Sales');
+        throw new Error(
+          'You cant change the Duration of your Sales while on Sales',
+        );
       }
       req.body.stopSales = !!req.body.stopSales;
     }
 
     if (req.body.deleteAdditionnalImg) {
-      if (typeof (req.body.deleteAdditionnalImg) === 'string') {
-        if (req.body.deleteAdditionnalImg !== '1' && req.body.deleteAdditionnalImg !== '2') {
+      if (typeof req.body.deleteAdditionnalImg === 'string') {
+        if (
+          req.body.deleteAdditionnalImg !== '1'
+          && req.body.deleteAdditionnalImg !== '2'
+        ) {
           throw new Error('Invalid Image to Delete');
         }
         req.body.deleteAdditionnalImg = [req.body.deleteAdditionnalImg];
       } else {
-        if (req.body.deleteAdditionnalImg[0] !== '1' && req.body.deleteAdditionnalImg[0] !== '2') {
+        if (
+          req.body.deleteAdditionnalImg[0] !== '1'
+          && req.body.deleteAdditionnalImg[0] !== '2'
+        ) {
           throw new Error('Invalid Image to Delete');
         }
-        if (req.body.deleteAdditionnalImg[1] !== '1' && req.body.deleteAdditionnalImg[1] !== '2') {
+        if (
+          req.body.deleteAdditionnalImg[1] !== '1'
+          && req.body.deleteAdditionnalImg[1] !== '2'
+        ) {
           throw new Error('Invalid Image to Delete');
         }
       }
@@ -370,10 +482,16 @@ function sanitizeProductInput(req, res, next) {
 function sanitizeChangePassword(req, res, next) {
   try {
     // Old Password
-    req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 });
+    req.body.password = ValidateText(req.body.password, 'Password', {
+      minlength: 8,
+      maxlength: 200,
+    });
 
     // New Password
-    req.body.newPassword = ValidateText(req.body.newPassword, 'New Password', { minlength: 8, maxlength: 200 });
+    req.body.newPassword = ValidateText(req.body.newPassword, 'New Password', {
+      minlength: 8,
+      maxlength: 200,
+    });
 
     // Confirm Password
     req.body.confirmPassword = ValidateText(
@@ -394,7 +512,10 @@ function sanitizeVerificationCode(req, res, next) {
   try {
     const lengths = req.query.type === 'email' ? [9, 9] : [9, 300];
 
-    req.body.code = ValidateText(req.body.code, 'Code', { minlength: lengths[0], maxlength: lengths[1] });
+    req.body.code = ValidateText(req.body.code, 'Code', {
+      minlength: lengths[0],
+      maxlength: lengths[1],
+    });
 
     next();
   } catch (e) {
@@ -409,7 +530,10 @@ function validateContactUs(req, res, next) {
 
     if (!['feedback', 'bug', 'help', 'other'].includes(req.body.reason)) throw new Error('Invalid Reason');
 
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 10, maxlength: 3000 });
+    req.body.message = ValidateText(req.body.message, 'Message', {
+      minlength: 10,
+      maxlength: 3000,
+    });
 
     if (req.body.email) {
       if (!isEmail(req.body.email)) throw new Error('The Email field must be a valid Email');
@@ -424,10 +548,17 @@ function validateContactUs(req, res, next) {
 
 function validateResolveReport(req, res, next) {
   try {
-    req.body.message = ValidateText(req.body.message, 'Message to the vendor', { minlength: 10, maxlength: 3000 });
+    req.body.message = ValidateText(req.body.message, 'Message to the vendor', {
+      minlength: 10,
+      maxlength: 3000,
+    });
 
     if (req.body.banReason) {
-      req.body.banReason = ValidateText(req.body.banReason, 'Reason of Banning', { minlength: 10, maxlength: 3000 });
+      req.body.banReason = ValidateText(
+        req.body.banReason,
+        'Reason of Banning',
+        { minlength: 10, maxlength: 3000 },
+      );
     } else {
       req.body.banReason = undefined;
     }
@@ -444,11 +575,19 @@ function validateReports(req, res, next) {
   try {
     req.body.username = req.body.username ? req.user.username : undefined;
 
-    if (!['scam', 'blackmail', 'information', 'other'].includes(req.body.reason)) throw new Error('Invalid Reason');
+    if (
+      !['scam', 'blackmail', 'information', 'other'].includes(req.body.reason)
+    ) throw new Error('Invalid Reason');
 
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 10, maxlength: 3000 });
+    req.body.message = ValidateText(req.body.message, 'Message', {
+      minlength: 10,
+      maxlength: 3000,
+    });
 
-    req.params.id = ValidateText(req.params.id, 'Id', { minlength: 3, maxlength: 200 });
+    req.params.id = ValidateText(req.params.id, 'Id', {
+      minlength: 3,
+      maxlength: 200,
+    });
 
     next();
   } catch (e) {
@@ -473,7 +612,9 @@ function isShippingOptionValid(shippingOption, availableShippingOption) {
 
 function isSelectionValid(selectedSelection, availableSelection) {
   for (let i = 0; i < availableSelection.selection_choices.length; i++) {
-    if (selectedSelection === availableSelection.selection_choices[i].choice_name) {
+    if (
+      selectedSelection === availableSelection.selection_choices[i].choice_name
+    ) {
       return {
         selectionName: availableSelection.selection_name,
         selectedChoice: {
@@ -500,15 +641,16 @@ async function sanitizeOrderCustomization(req, res, next) {
     if (req.user.username === req.product.vendor) throw new Error('You cant Buy Your Own Product');
     if (req.product.available_qty == 0) throw new Error('This Product is Sold Out');
 
-    if (!['default', 'semi-hidden', 'hidden'].includes(req.body.privacyType)) throw new Error('Invalid Privacy Settings');
+    if (!Object.values(ORDER_PRIVACY_TYPE).includes(req.body.privacyType)) throw new Error('Invalid Privacy Settings');
 
     if (!req.body.quantity) req.body.quantity = 1;
     else {
-      req.body.quantity = validateNumber(
-        req.body.quantity,
-        'Quantity',
-        { max: maxQuantity(req.product.qty_settings.max_order, req.product.qty_settings.available_qty) },
-      );
+      req.body.quantity = validateNumber(req.body.quantity, 'Quantity', {
+        max: maxQuantity(
+          req.product.qty_settings.max_order,
+          req.product.qty_settings.available_qty,
+        ),
+      });
     }
 
     // Shipping Option
@@ -553,7 +695,7 @@ function isObject(value) {
 
 function sanitizeInput(value) {
   if (!value) throw new Error();
-  if (typeof (value) !== 'string') throw new Error();
+  if (typeof value !== 'string') throw new Error();
   if (value.length > 250) throw new Error();
 }
 
@@ -569,7 +711,7 @@ function sanitizeObject(object) {
 
 function sanitizeQuerys(req, res, next) {
   try {
-    if (req.query)sanitizeObject(req.query);
+    if (req.query) sanitizeObject(req.query);
 
     next();
   } catch (e) {
@@ -580,7 +722,7 @@ function sanitizeQuerys(req, res, next) {
 
 function sanitizeParams(req, res, next) {
   try {
-    if (req.params)sanitizeObject(req.params);
+    if (req.params) sanitizeObject(req.params);
 
     next();
   } catch (e) {

@@ -4,7 +4,6 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
 const methodOverride = require('method-override');
-const { setupMonero, OutputListener } = require('./monero');
 require('dotenv').config();
 
 const {
@@ -15,25 +14,40 @@ global.siteSettings = {
   autoPromote: true,
 };
 
-const HOME_ROUTER = require('./routes/home');
-const LOGIN_ROUTER = require('./routes/login');
-const PROFILE = require('./routes/profile');
-const PRODUCTS = require('./routes/products');
-const ERROR = require('./routes/404');
-const MESSAGE = require('./routes/message');
-const ORDER = require('./routes/order');
-const REVIEW = require('./routes/review');
-const SETTINGS = require('./routes/settings');
-const ADMIN = require('./routes/admin');
-const DOCUMENTATION = require('./routes/documentation');
+const router = require('./routes');
 const passportMiddleware = require('./middlewares/passport');
+const { connectToMonero, connectToWallet, getAccount } = require('./monero');
+const { Escrow } = require('./monero/Escrow');
+
+const escrowService = new Escrow();
 
 const appSetup = async () => {
+  console.log('Connecting to database...');
+
   await mongoose.connect('mongodb://localhost:27017/project', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
+  console.log('Connected to database');
+  console.log('Connecting to Monero Wallet RPC...');
 
+  const walletRpc = await connectToMonero({
+    address: 'http://localhost:28081',
+    username: 'rpc_user',
+    password: 'rpc_pass',
+  });
+
+  console.log('Connected to Monero Wallet RPC');
+
+  const wallet = await connectToWallet({
+    walletRpc,
+    name: 'test_wallet',
+    pass: 'test_wallet_pass',
+  });
+
+  const account = await getAccount();
+
+  escrowService.setUpEscrow(walletRpc, wallet, account);
   allDatabaseScanningFunction();
 
   passportMiddleware(passport);
@@ -73,17 +87,7 @@ const appSetup = async () => {
     next();
   });
 
-  app.use('/', HOME_ROUTER);
-  app.use('/', LOGIN_ROUTER);
-  app.use('/', PROFILE);
-  app.use('/', PRODUCTS);
-  app.use('/', ERROR);
-  app.use('/', MESSAGE);
-  app.use('/', ORDER);
-  app.use('/', REVIEW);
-  app.use('/', SETTINGS);
-  app.use('/', ADMIN);
-  app.use('/', DOCUMENTATION);
+  app.use(router);
 
   app.all('*', (req, res) => {
     res.render('404page');
@@ -95,3 +99,5 @@ const appSetup = async () => {
 };
 
 appSetup();
+
+module.exports = { escrowService };

@@ -1,9 +1,24 @@
 /* eslint-disable class-methods-use-this */
+const fetch = require('node-fetch');
 const monerojs = require('monero-javascript');
 
 const { BigInteger } = monerojs;
 
 const ATOMIC_UNIT = '1000000000000';
+
+const getExchangeRate = async () => {
+  const response = await fetch(
+    'https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD',
+  );
+
+  if (response.status !== 200) {
+    throw new Error('Error getting exchange rate');
+  }
+
+  const data = await response.json();
+
+  return data.USD;
+};
 
 // Convert from atomic units to XMR float
 const toFloat = (amount, precision) => {
@@ -24,18 +39,18 @@ const connectToMonero = async ({ address, username, password }) => {
   return walletRpc;
 };
 
-const connectToWallet = async ({ walletRpc, walletName, walletPass }) => {
+const connectToWallet = async ({ walletRpc, name, pass }) => {
   try {
     const wallet = await walletRpc.createWallet({
-      path: walletName,
-      password: walletPass,
+      path: name,
+      password: pass,
     });
 
     return wallet;
   } catch (err) {
     console.log('err', err);
 
-    const wallet = await walletRpc.openWallet(walletName, walletPass);
+    const wallet = await walletRpc.openWallet(name, pass);
 
     return wallet;
   }
@@ -73,4 +88,5 @@ module.exports = {
   getAccount,
   createAccount,
   createOrGetAccount,
+  getExchangeRate,
 };

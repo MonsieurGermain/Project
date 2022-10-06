@@ -5,13 +5,17 @@ const Product = require('../models/product');
 
 async function deleteExpiredMessage() {
   const date = Date.now();
-  const conversationWithOldMessages = await Conversation.find({ 'messages.expire_at': { $lt: date } });
+  const conversationWithOldMessages = await Conversation.find({
+    'messages.expire_at': { $lt: date },
+  });
 
   for (let i = 0; i < conversationWithOldMessages.length; i++) {
     conversationWithOldMessages[i].deleteMessageWithDate(date);
 
     if (!conversationWithOldMessages[i].messages.length) {
-      const sender1 = await User.findOne({ username: conversationWithOldMessages[i].sender_1 });
+      const sender1 = await User.findOne({
+        username: conversationWithOldMessages[i].sender_1,
+      });
 
       if (!sender1 || sender1.settings.deleteEmptyConversation) {
         conversationWithOldMessages[i].deleteConversation();
@@ -64,19 +68,19 @@ function allDatabaseScanningFunction() {
   setInterval(() => {
     console.log('1min');
     hasOrderBeenPaid();
-  }, 60000); // 1 min
+  }, 60 * 1000); // 1 min
 
   setInterval(() => {
     console.log('5min');
     deleteExpiredMessage();
     handleOrderWithExpiredTimer();
     findAndendSales();
-  }, 300000); // 5min
+  }, 5 * 60 * 1000); // 5min
 
   setInterval(() => {
     console.log('1day');
     deleteInactiveUser();
-  }, 86400000); // 1day
+  }, 24 * 60 * 60 * 1000); // 1day
 }
 
 module.exports = { allDatabaseScanningFunction };
