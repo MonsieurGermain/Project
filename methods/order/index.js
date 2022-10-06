@@ -29,8 +29,8 @@ async function checkPaid() {
     this.orderMoneroAddress,
   );
 
-  const trxAmount = transactions.reduce((acc, trx) => {
-    const amount = trx.getAmount();
+  const trxAmount = transactions.reduce((acc, transaction) => {
+    const { amount } = transaction;
 
     return acc.add(amount);
   }, BigInteger.ZERO);
@@ -44,6 +44,7 @@ async function checkPaid() {
     });
 
     this.orderStatus = ORDER_STATUS.AWAITING_SHIPMENT;
+    this.calculateTimer(3 * 24 * 60 * 60 * 1000); // 3 days
     await this.save();
 
     await escrow.save();
@@ -104,13 +105,6 @@ function continueOrder(username) {
       this.orderStatus = ORDER_STATUS.AWAITING_PAYMENT;
       this.calculateTimer(6 * 60 * 60 * 1000); // 6 hours
       break;
-    case ORDER_STATUS.AWAITING_PAYMENT:
-      // Escrow Make that Switch
-      console.log('????');
-
-      this.orderStatus = ORDER_STATUS.AWAITING_SHIPMENT;
-      this.calculateTimer(3 * 24 * 60 * 60 * 1000); // 3 days
-      break;
     case ORDER_STATUS.AWAITING_SHIPMENT:
       this.isVendor(username);
       this.orderStatus = ORDER_STATUS.SHIPPED;
@@ -155,11 +149,19 @@ function expiredOrder() {
 function finalizeOrder() {
   this.orderStatus = ORDER_STATUS.FINALIZED;
 
+  this.releasePayment();
   this.applyPrivacyMeasure();
 }
 
-function refund() {
+function refundOrder() {
   // ...
+}
+
+async function releasePayment() {
+  const escrow = await EscrowModel.findOne({ orderId: this._id });
+  if (!escrow) throw Error('Escrow Not Found');
+
+  await escrowService.releaseEscrow(escrow);
 }
 
 function resetTimer() {
@@ -411,7 +413,7 @@ const setOrderMethodsToSchema = (orderSchema) => {
     deleteBuyerInformation,
     expiredOrder,
     finalizeOrder,
-    refund,
+    refundOrder,
     checkPaid,
     resetTimer,
     startDispute,
@@ -432,6 +434,7 @@ const setOrderMethodsToSchema = (orderSchema) => {
     isAdmin,
     isBuyerOrVendor,
     isBuyerOrVendorOrAdmin,
+    releasePayment,
   };
 };
 

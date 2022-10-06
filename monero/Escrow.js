@@ -1,8 +1,8 @@
 const { MoneroIncomingTransfer, BigInteger } = require('monero-javascript');
-const { ATOMIC_UNIT, toFloat } = require('.');
-const { EscrowListener } = require('./EscrowListener');
+const { toFloat } = require('.');
 const { EscrowModel, ESCROW_STATUS } = require('../models/escrow');
 const { WrongTransactionModel } = require('../models/wrongTransaction');
+const { EscrowListener } = require('./EscrowListener');
 
 class Escrow {
   walletRpc;
@@ -80,13 +80,15 @@ class Escrow {
       throw new Error('Integrated address failed to generate!');
     }
 
+    const amountAtomic = BigInteger.parse(`${amount}*10^12`).toString();
+
     const escrow = await EscrowModel.create({
       paymentId,
       orderId,
       paymentAddress: integratedAddress,
       releaseAddress,
       amount,
-      amountAtomic: new BigInteger(amount).multiply(ATOMIC_UNIT).toString(),
+      amountAtomic,
       status: ESCROW_STATUS.PENDING,
       statusDate: new Date(),
     });
@@ -105,16 +107,18 @@ class Escrow {
 
         return transaction.isIncoming();
       })
-      .map((transaction) => transaction.getTx())
-      .filter(
-        (transaction) => transaction.isConfirmed()
-          && transaction.isRelayed()
-          && !transaction.isFailed(),
-      );
+      .map((transaction) => ({
+        tx: transaction.getTx(),
+        amount: transaction.getAmount(),
+      }))
+      .filter((transaction) => {
+        const { tx } = transaction;
+        return tx.isConfirmed() && tx.isRelayed() && !tx.isFailed();
+      });
   }
 
   async createTransaction({ amount, address }) {
-    const transaction = await this.walletRpc.createTransaction({
+    const transaction = await this.walletRpc.createTx({
       accountIndex: this.accountIndex,
       address,
       amount,
@@ -138,11 +142,7 @@ class Escrow {
       throw new Error('Wrong transaction not found!');
     }
 
-    const check = await this.walletRpc.checkTxKey(
-      txHash,
-      txKey,
-      sentAddress,
-    );
+    const check = await this.walletRpc.checkTxKey(txHash, txKey, sentAddress);
 
     if (!check || !check.isGood) {
       throw new Error('Wrong transaction key!');
@@ -168,7 +168,7 @@ class Escrow {
       address: refundAddress,
     });
 
-    await this.walletRpc.relayTx(refundTransaction.getHash());
+    await this.walletRpc.relayTx(refundTransaction);
 
     await wrongTransaction.remove();
   }
@@ -223,7 +223,7 @@ class Escrow {
       address: refundAddress,
     });
 
-    await this.walletRpc.relayTx(refundTransaction.getHash());
+    await this.walletRpc.relayTx(refundTransaction);
 
     escrow.set({
       status: ESCROW_STATUS.REFUNDED,
@@ -243,7 +243,9 @@ class Escrow {
         status: ESCROW_STATUS.RETRYING,
         statusDate: new Date(),
       });
-      // TODO: need to add retry logic (maybe with cron job)
+
+      await escrow.save();
+
       throw new Error('Insufficient unlocked balance! Try again later.');
     }
 
@@ -254,7 +256,7 @@ class Escrow {
 
     const fee = transaction.getFee();
 
-    const releaseAmount = amountAtomic.subtract(fee).toString();
+    const releaseAmount = BigInteger.parse(amountAtomic).subtract(fee).toString();
 
     const releaseTransaction = await this.createTransaction({
       amount: releaseAmount,
@@ -273,7 +275,7 @@ class Escrow {
 
     await escrow.save();
 
-    await this.walletRpc.relayTx(releaseTransaction.getHash());
+    await this.walletRpc.relayTx(releaseTransaction);
   }
 }
 

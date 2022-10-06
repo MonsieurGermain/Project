@@ -70,6 +70,11 @@ async function findAndendSales() {
   }
 }
 
+// try to release failed escrow release (due to locked balance)
+async function retryEscrowRelease() {
+  //
+}
+
 function allDatabaseScanningFunction() {
   setInterval(() => {
     console.log('5min');
@@ -83,6 +88,7 @@ function allDatabaseScanningFunction() {
   setInterval(() => {
     console.log('1h');
     hasOrderBeenPaid();
+    retryEscrowRelease();
   }, 60 * 60 * 1000); // 1h
 
   setInterval(() => {

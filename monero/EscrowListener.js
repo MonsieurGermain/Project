@@ -1,8 +1,8 @@
+/* eslint-disable global-require */
 /* eslint-disable class-methods-use-this */
 const { MoneroWalletListener, BigInteger } = require('monero-javascript');
 const { ORDER_STATUS } = require('../constants/orderStatus');
 const { EscrowModel, ESCROW_STATUS } = require('../models/escrow');
-const { OrderModel } = require('../models/order');
 const {
   WrongTransactionModel,
   WRONG_TRANSACTION_TYPES,
@@ -85,8 +85,8 @@ class EscrowListener extends MoneroWalletListener {
       paymentAddress,
     );
 
-    const trxAmount = transactions.reduce((acc, trx) => {
-      const amount = trx.getAmount();
+    const trxAmount = transactions.reduce((acc, transaction) => {
+      const { amount } = transaction;
 
       return acc.add(amount);
     }, BigInteger.ZERO);
@@ -99,15 +99,17 @@ class EscrowListener extends MoneroWalletListener {
         statusDate: new Date(),
       });
 
+      const { OrderModel } = require('../models/order');
+
       const order = await OrderModel.findOne({
         _id: escrow.orderId,
       });
 
-      if (order) {
+      if (order && order.orderStatus === ORDER_STATUS.AWAITING_PAYMENT) {
         order.set({
           orderStatus: ORDER_STATUS.AWAITING_SHIPMENT,
         });
-
+        order.calculateTimer(3 * 24 * 60 * 60 * 1000); // 3 days
         await order.save();
       }
 
