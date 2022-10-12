@@ -77,10 +77,6 @@ app.use('/', SETTINGS);
 app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
 
-const x = undefined;
-
-console.log(parseFloat(x));
-
 app.listen('3000', () => {
   console.log('Server running on port 3000');
 });
