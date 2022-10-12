@@ -3,11 +3,8 @@ const HtmlFilter = require('html-filter');
 
 function randomListOfWords(number) {
   const randomSentence = randomWords(number);
-  let mergedWord = randomSentence[0];
-  for (let i = 1; i < randomSentence.length; i++) {
-    mergedWord += ` ${randomSentence[i]}`;
-  }
-  return mergedWord;
+
+  return randomSentence.join(' ');
 }
 
 function getAllowedCharacters(allowedCharacters) {

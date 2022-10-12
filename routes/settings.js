@@ -6,31 +6,47 @@ const User = require('../models/user');
 const Product = require('../models/product');
 const Conversation = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
-const { sanitizeChangePassword, sanitizeQuerys, sanitizeParamsQuerys } = require('../middlewares/validation');
 const {
-  paginatedResults, randomListOfWords, isEmail, isPgpKeys, isMoneroAddress, generateRandomString,
-} = require('../middlewares/function');
-
-router.get(
-  '/settings',
-  isAuth,
+  sanitizeChangePassword,
   sanitizeQuerys,
-  async (req, res) => {
-    try {
-      if (![undefined, 'security', 'privacy', 'payment', 'saved'].includes(req.query.section)) throw new Error('Invalid Section Query');
+  sanitizeParamsQuerys,
+} = require('../middlewares/validation');
+const {
+  paginatedResults,
+  randomListOfWords,
+  isEmail,
+  isPgpKeys,
+  isMoneroAddress,
+  generateRandomString,
+} = require('../middlewares/function');
+const { sendVerificationCode } = require('../utils/email');
+const { encrypt } = require('../utils/pgp');
 
-      const { user } = req;
+router.get('/settings', isAuth, sanitizeQuerys, async (req, res) => {
+  try {
+    if (
+      ![undefined, 'security', 'privacy', 'payment', 'saved'].includes(
+        req.query.section,
+      )
+    ) throw new Error('Invalid Section Query');
 
-      let paginatedProducts;
-      if (req.query.section === 'saved') paginatedProducts = await paginatedResults(Product, { slug: { $in: user.saved_product }, status: 'online' }, { page: req.query.productPage, limit: 24 });
+    const { user } = req;
 
-      res.render('settings', { user, paginatedProducts });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
+    let paginatedProducts;
+    if (req.query.section === 'saved') {
+      paginatedProducts = await paginatedResults(
+        Product,
+        { slug: { $in: user.saved_product }, status: 'online' },
+        { page: req.query.productPage, limit: 24 },
+      );
     }
-  },
-);
+
+    res.render('settings', { user, paginatedProducts });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/404');
+  }
+});
 
 router.post('/add-xmr-address', isAuth, async (req, res) => {
   try {
@@ -38,7 +54,9 @@ router.post('/add-xmr-address', isAuth, async (req, res) => {
 
     const moneroAddress = isMoneroAddress(req.body.vendorMoneroAddress, '');
 
-    const successMessage = user.moneroAddress ? 'Monero Address Successfully Changed' : 'Monero Address Successfully Added';
+    const successMessage = user.moneroAddress
+      ? 'Monero Address Successfully Changed'
+      : 'Monero Address Successfully Added';
 
     user.vendorMoneroAddress = moneroAddress;
 
@@ -54,9 +72,14 @@ router.post('/add-xmr-address', isAuth, async (req, res) => {
 router.post('/add-xmr-refund-address', isAuth, async (req, res) => {
   try {
     const { user } = req;
-    const moneroRefundAddress = isMoneroAddress(req.body.xmrRefundAddress, 'Refund');
+    const moneroRefundAddress = isMoneroAddress(
+      req.body.xmrRefundAddress,
+      'Refund',
+    );
 
-    const successMessage = user.moneroRefundAddress ? 'Monero Address Successfully Changed' : 'Monero Address Successfully Added';
+    const successMessage = user.moneroRefundAddress
+      ? 'Monero Address Successfully Changed'
+      : 'Monero Address Successfully Added';
 
     user.xmrRefundAddress = moneroRefundAddress;
 
@@ -78,7 +101,10 @@ router.post('/delete-address', isAuth, sanitizeQuerys, async (req, res) => {
       case 'personal':
         user.vendorMoneroAddress = undefined;
         await user.offlineAllUserProducts();
-        req.flash('warning', 'Your Monero Address as been Deleted, all of your Product with no Custom Monero Address are now Offline');
+        req.flash(
+          'warning',
+          'Your Monero Address as been Deleted, all of your Product with no Custom Monero Address are now Offline',
+        );
         break;
       case 'refund':
         user.xmrRefundAddress = undefined;
@@ -114,11 +140,20 @@ router.post('/add-pgp', isAuth, async (req, res) => {
     user.pgp_keys = pgp.trim();
     user.verifiedPgpKeys = undefined;
     user.pgp_keys_verification_words = randomListOfWords(12);
-    user.pgp_keys_verification_words_encrypted = user.pgp_keys_verification_words; // Encrypt It with user pgp
+
+    const encryptedVerificationWords = await encrypt(
+      user.pgp_keys,
+      user.pgp_keys_verification_words,
+    );
+
+    user.pgp_keys_verification_words_encrypted = encryptedVerificationWords;
 
     await user.save();
 
-    req.flash('success', 'A new Pgp Keys as Been added, you just need Verify it');
+    req.flash(
+      'success',
+      'A new Pgp Keys as Been added, you just need Verify it',
+    );
     res.redirect('/settings?section=security');
   } catch (e) {
     req.flash('error', e.message);
@@ -133,7 +168,9 @@ router.post('/delete-pgp', isAuth, async (req, res) => {
     user.verifiedPgpKeys = undefined;
     user.pgp_keys_verification_words = undefined;
     user.pgp_keys_verification_words_encrypted = undefined;
-    user.settings.step_verification = user.settings.step_verification === 'pgp' ? undefined : user.settings.step_verification;
+    user.settings.step_verification = user.settings.step_verification === 'pgp'
+      ? undefined
+      : user.settings.step_verification;
 
     await updateConversationPgp(user.username, undefined);
 
@@ -151,7 +188,13 @@ router.post('/verify-pgp', isAuth, async (req, res) => {
     const { user } = req;
     const { pgpVerification } = req.body;
 
-    if (!pgpVerification || pgpVerification !== user.pgp_keys_verification_words) throw new Error('Invalid Code... try Again');
+    if (!pgpVerification) {
+      throw new Error('Invalid Code... try Again');
+    }
+
+    if (pgpVerification.trim() !== user.pgp_keys_verification_words.trim()) {
+      throw new Error('Invalid Code... try Again');
+    }
 
     user.verifiedPgpKeys = user.pgp_keys;
     user.pgp_keys = undefined;
@@ -177,12 +220,12 @@ router.post('/add-email', isAuth, async (req, res) => {
     if (!isEmail(email)) throw new Error('This Email Address is Invalid');
 
     user.email = email;
-
     user.email_verification_code = generateRandomString(6, 'number');
 
     // Send Email Containning Verification Code
     console.log(`The Verification Code is: ${user.email_verification_code}`);
 
+    await sendVerificationCode(user.email, user.email_verification_code);
     await user.save();
 
     req.flash('success', 'Email Address Successfully Added');
@@ -198,7 +241,9 @@ router.post('/delete-email', isAuth, async (req, res) => {
 
     user.email = undefined;
     user.email_verification_code = undefined;
-    user.settings.step_verification = user.settings.step_verification === 'email' ? undefined : user.settings.step_verification;
+    user.settings.step_verification = user.settings.step_verification === 'email'
+      ? undefined
+      : user.settings.step_verification;
 
     await user.save();
 
@@ -214,7 +259,11 @@ router.post('/confirm-email', isAuth, async (req, res) => {
     const { user } = req;
     const confirmationCode = req.body.confirmation_code.trim();
 
-    if (typeof (confirmationCode) !== 'string' || confirmationCode.length !== 6 || user.email_verification_code !== confirmationCode) throw new Error('Invalid Confirmation Code, try Again');
+    if (
+      typeof confirmationCode !== 'string'
+      || confirmationCode.length !== 6
+      || user.email_verification_code !== confirmationCode
+    ) throw new Error('Invalid Confirmation Code, try Again');
 
     user.email_verification_code = undefined;
 
@@ -235,7 +284,7 @@ router.post('/resend-email-verification', isAuth, async (req, res) => {
 
     user.email_verification_code = generateRandomString(6, 'number');
 
-    console.log(user.email_verification_code);
+    await sendVerificationCode(user.email, user.email_verification_code);
 
     // Resend Email with new Confirmation Code
 
@@ -251,14 +300,22 @@ router.post('/resend-email-verification', isAuth, async (req, res) => {
 router.post('/enable-2fa', isAuth, async (req, res) => {
   try {
     const { user } = req;
-    const { stepVerification } = req.body;
+    const { step_verification: stepVerification } = req.body;
 
     switch (stepVerification) {
       case 'email':
-        if (user.email_verification_code || !user.email) throw new Error('You need to add/verify your Email address to be able to do that');
+        if (user.email_verification_code || !user.email) {
+          throw new Error(
+            'You need to add/verify your Email address to be able to do that',
+          );
+        }
         break;
       case 'pgp':
-        if (!user.verifiedPgpKeys) throw new Error('You need to add/verify your Pgp key to be able to do that');
+        if (!user.verifiedPgpKeys) {
+          throw new Error(
+            'You need to add/verify your Pgp key to be able to do that',
+          );
+        }
         break;
       default:
         throw new Error('Invalid 2 Step Verification');
@@ -291,24 +348,29 @@ router.post('/remove-2fa', isAuth, async (req, res) => {
   }
 });
 
-router.put('/change-password', isAuth, sanitizeChangePassword, async (req, res) => {
-  try {
-    const { user } = req;
-    const { password, newPassword } = req.body;
+router.put(
+  '/change-password',
+  isAuth,
+  sanitizeChangePassword,
+  async (req, res) => {
+    try {
+      const { user } = req;
+      const { password, newPassword } = req.body;
 
-    if (!bcrypt.compareSync(password, user.password)) throw new Error('Invalid Password');
+      if (!bcrypt.compareSync(password, user.password)) throw new Error('Invalid Password');
 
-    user.password = await bcrypt.hash(newPassword, 10);
+      user.password = await bcrypt.hash(newPassword, 10);
 
-    await user.save();
+      await user.save();
 
-    req.flash('success', 'Password Successfully Changed');
-    res.redirect('/settings?section=security');
-  } catch (e) {
-    req.flash('error', e.message);
-    res.redirect('/settings?section=security');
-  }
-});
+      req.flash('success', 'Password Successfully Changed');
+      res.redirect('/settings?section=security');
+    } catch (e) {
+      req.flash('error', e.message);
+      res.redirect('/settings?section=security');
+    }
+  },
+);
 
 router.delete('/delete-user', isAuth, async (req, res) => {
   try {
@@ -325,7 +387,11 @@ router.delete('/delete-user', isAuth, async (req, res) => {
 router.post('/conversation-settings', isAuth, async (req, res) => {
   try {
     const { user } = req;
-    const { autoDeleteConversation, deleteEmptyConversation, recordSeeingMessage } = req.body;
+    const {
+      autoDeleteConversation,
+      deleteEmptyConversation,
+      recordSeeingMessage,
+    } = req.body;
 
     if (!['never', '1', '3', '7', '30'].includes(autoDeleteConversation)) throw new Error('Invalid Value');
     if (!['true', 'false'].includes(deleteEmptyConversation)) throw new Error('Invalid Value');
@@ -368,7 +434,9 @@ router.post('/account-settings', isAuth, async (req, res) => {
     if (!['never', '7', '14', '30', '365'].includes(autoDeleteAccount)) throw new Error('Invalid Value');
 
     user.settings.userExpiring = autoDeleteAccount !== 'never' ? autoDeleteAccount : undefined;
-    user.expire_at = user.settings.userExpiring ? user.settings.userExpiring * 86400000 + Date.now() : undefined;
+    user.expire_at = user.settings.userExpiring
+      ? user.settings.userExpiring * 86400000 + Date.now()
+      : undefined;
 
     await user.save();
 
@@ -408,23 +476,30 @@ router.post('/reset-privacy', isAuth, sanitizeQuerys, async (req, res) => {
   }
 });
 
-router.post('/saved_product/:slug', isAuth, sanitizeParamsQuerys, async (req, res) => {
-  try {
-    const { url } = req.query;
+router.post(
+  '/saved_product/:slug',
+  isAuth,
+  sanitizeParamsQuerys,
+  async (req, res) => {
+    try {
+      const { url } = req.query;
 
-    await Product.findOne({ slug: req.params.slug }).orFail(new Error('Invalid Product Slug'));
+      await Product.findOne({ slug: req.params.slug }).orFail(
+        new Error('Invalid Product Slug'),
+      );
 
-    const user = await User.findOne({ username: req.user.username });
+      const user = await User.findOne({ username: req.user.username });
 
-    user.Add_Remove_Saved_Product(req.params.slug);
+      user.Add_Remove_Saved_Product(req.params.slug);
 
-    await user.save();
+      await user.save();
 
-    res.redirect(url ? `${url}` : '/settings?section=saved&productPage=1');
-  } catch (e) {
-    console.log(e);
-    res.redirect('/404');
-  }
-});
+      res.redirect(url ? `${url}` : '/settings?section=saved&productPage=1');
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
 
 module.exports = router;

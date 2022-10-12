@@ -18,7 +18,9 @@
               <p class="text-center text-xl-start my-0 pb-3"><b>Didnt recieve the Email ?</b><a class="ms-2" href="/login">Log In Again</a></p>
             <% } else { %> 
               <p class="text-center text-xl-start pb-4 mt-3 mb-0">Please Decrypt this Phrase to verify your Identity</p>
-              <p><%=query.encrypted%></p>
+              <p>
+                <pre disabled><%=atob(query.encrypted)%></pre>
+              </p>
             <% } %>
 
 

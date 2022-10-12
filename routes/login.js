@@ -8,8 +8,17 @@ const User = require('../models/user');
 const StepVerification = require('../models/2step-verification');
 const { generateRandomName } = require('../middlewares/filesUploads');
 const { isntAuth } = require('../middlewares/authentication');
-const { sanitizeLoginInput, sanitizeRegisterInput, sanitizeVerificationCode } = require('../middlewares/validation');
-const { generateRandomString, randomListOfWords } = require('../middlewares/function');
+const {
+  sanitizeLoginInput,
+  sanitizeRegisterInput,
+  sanitizeVerificationCode,
+} = require('../middlewares/validation');
+const {
+  generateRandomString,
+  randomListOfWords,
+} = require('../middlewares/function');
+
+const { send2FACode, encrypt } = require('../utils');
 
 function generateAccountDetailsFlashMessage(username, password) {
   return `
@@ -32,10 +41,12 @@ function generateAccountPassword(passwordType, typedPassword) {
     case 'generate-password':
       return generateRandomString(24);
     case 'choose-password':
-      if (!typedPassword || typeof (typedPassword) !== 'string') throw new Error('The Password fields is Required');
+      if (!typedPassword || typeof typedPassword !== 'string') throw new Error('The Password fields is Required');
       typedPassword = typedPassword.trim();
       if (typedPassword.length < 8 || typedPassword.length > 200) {
-        throw new Error('The Password need to be within 8 to 200 characters longs');
+        throw new Error(
+          'The Password need to be within 8 to 200 characters longs',
+        );
       }
       return typedPassword;
   }
@@ -45,27 +56,54 @@ function createProfilePicture(name) {
   const randomImgName = generateRandomName(name, 17);
   const imgPath = `/userImg/${randomImgName}`;
 
-  copyFile('./public/default/default-profile-pic.png', `./uploads${imgPath}`, (err) => {
-    if (err) throw err;
-  });
+  copyFile(
+    './public/default/default-profile-pic.png',
+    `./uploads${imgPath}`,
+    (err) => {
+      if (err) throw err;
+    },
+  );
 
   return imgPath;
 }
 
-async function create2StepVerification(username, type) {
-  StepVerification.deleteMany({ username });
+async function create2StepVerification(
+  username,
+  type,
+  { email, pgpPublicKey },
+) {
+  await StepVerification.deleteMany({ username });
+
+  if (type === 'email') {
+    const code = generateRandomString(9, 'number');
+
+    const stepVerification = new StepVerification({
+      username,
+      type,
+      code,
+    });
+    await stepVerification.save();
+
+    send2FACode(email, code).catch((err) => {
+      console.log('Failed to send mail', err);
+    });
+
+    return `/2fa?type=${type}`;
+  }
+
+  const code = randomListOfWords(12);
+  const encryptedCode = await encrypt(pgpPublicKey, code);
 
   const stepVerification = new StepVerification({
     username,
     type,
-    code: type === 'email' ? generateRandomString(9, 'number') : randomListOfWords(12),
+    code,
+    encrypted_code: Buffer.from(encryptedCode).toString('base64'),
   });
-
-  stepVerification.encrypted_code = type === 'email' ? undefined : stepVerification.code;
 
   await stepVerification.save();
 
-  return `/2fa?type=${type}${type === 'email' ? '' : `&encrypted=${stepVerification.encrypted_code}`}`;
+  return `/2fa?type=${type}&encrypted=${stepVerification.encrypted_code}`;
 }
 
 router.get('/login', isntAuth, (req, res) => {
@@ -86,10 +124,17 @@ router.post(
       if (!bcrypt.compareSync(password, user.password)) throw new Error('Username or Password Invalid');
 
       user.settings.userExpiring ? user.updateInactiveDate() : undefined;
-      user.save();
+      await user.save();
 
-      if (user.settings.step_verification) res.redirect(await create2StepVerification(user.username, user.settings.step_verification));
-      else {
+      if (user.settings.step_verification) {
+        res.redirect(
+          await create2StepVerification(
+            user.username,
+            user.settings.step_verification,
+            { email: user.email, pgpPublicKey: user.verifiedPgpKeys },
+          ),
+        );
+      } else {
         req.user_toAuth = user;
         next();
       }
@@ -99,7 +144,10 @@ router.post(
       res.redirect('/login');
     }
   },
-  passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
+  passport.authenticate('local', {
+    failureRedirect: '/login',
+    failureFlash: true,
+  }),
   (req, res) => {
     if (req.user.authorization !== 'admin') res.redirect('/');
     else res.redirect('/disputes?disputesPage=1');
@@ -122,7 +170,9 @@ router.post(
   sanitizeVerificationCode,
   async (req, res, next) => {
     try {
-      const stepVerification = await StepVerification.findOne({ code: req.body.code }).orFail(new Error('Oops... Code Invalid, try Again'));
+      const stepVerification = await StepVerification.findOne({
+        code: req.body.code,
+      }).orFail(new Error('Oops... Code Invalid, try Again'));
 
       req.user_toAuth = stepVerification.username;
       // Provent Passport Missing credentials Error
@@ -134,10 +184,17 @@ router.post(
       next();
     } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/2fa?type=${req.query.type}${req.query.encrypted ? `&encrypted=${req.query.encrypted}` : ''}`);
+      res.redirect(
+        `/2fa?type=${req.query.type}${
+          req.query.encrypted ? `&encrypted=${req.query.encrypted}` : ''
+        }`,
+      );
     }
   },
-  passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
+  passport.authenticate('local', {
+    failureRedirect: '/login',
+    failureFlash: true,
+  }),
   (req, res) => {
     if (req.user.authorization === 'admin') res.redirect('/disputes?disputesPage=1');
     else res.redirect('/');
@@ -194,13 +251,20 @@ router.post('/generate-account', isntAuth, async (req, res) => {
       password: bcrypt.hashSync(userPassword, 11),
       img_path: createProfilePicture(username),
       settings: {
-        userExpiring: 14, messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false,
+        userExpiring: 14,
+        messageExpiring: 7,
+        privateInfoExpiring: 7,
+        deleteEmptyConversation: true,
+        recordSeeingMessage: false,
       },
     });
 
     await user.save();
 
-    req.flash('success', generateAccountDetailsFlashMessage(user.username, userPassword));
+    req.flash(
+      'success',
+      generateAccountDetailsFlashMessage(user.username, userPassword),
+    );
     res.redirect('/login');
   } catch (e) {
     console.log(e);
