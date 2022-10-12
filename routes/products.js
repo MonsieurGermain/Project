@@ -74,9 +74,10 @@ router.get('/products', sanitizeQuerys, async (req, res) => {
 
     const { search, productPage } = req.query;
 
+    console.log(search);
+
     if (search) {
       const productFused = fusedProduct.search(search);
-      console.log(productFused);
       productsFuzzy = productFused.map(({ item }) => item);
     }
     const paginatedProducts = await paginatedResults(

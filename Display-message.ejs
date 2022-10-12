@@ -1,0 +1,92 @@
+<div>
+<% if (authuser.id === selectedConversation.users[selectedConversation.messages[i].sender].user.id) { %>
+  <div class="message-entry message-entry--own">
+    <div class="position-relative py-2 px-3">
+      <div class="message-text" style="border-top-left-radius: 0.5rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;">
+  
+<% } else { %>  
+  <div class="message-entry">
+    
+    <% if (i === 0 || selectedConversation.messages[i].sender !== selectedConversation.messages[i - 1].sender) { %>
+      <img src="<%=selectedConversation.users[selectedConversation.messages[i].sender].user.img_path%>" class="smedium-rc rounded-circle" width="40" alt="<%=selectedConversation.users[selectedConversation.messages[i].sender].user.username%>"/>
+      <div class="position-relative d-flex align-items-center py-2 px-3 ms-2">
+    <% } else { %> 
+      <div class="position-relative py-2 px-3" style="margin-left: 3.5rem;">
+    <% } %>
+    
+    <div class="message-text" style="border-top-right-radius: 0.5rem; border-bottom-right-radius: 0.5rem; border-bottom-left-radius: 0.5rem;"></div>
+<% } %>
+
+<% if (typeof selectedConversation.messages[i].reply === 'number') { %>
+  <div>
+    <span class="fs-sm opacity-90">““<%= selectedConversation.messages[selectedConversation.messages[i].reply].content%>””</span>
+    <hr>
+  </div>
+<% } %>
+<div>
+  <span><%= selectedConversation.messages[i].content%></span>
+</div>
+
+
+<% if (authuser.id === selectedConversation.users[selectedConversation.messages[i].sender].user.id) { %>
+  
+<% if (i === selectedConversation.messages.length - 1 && selectedConversation.messages[i].viewedMessage) { %>
+  <p class="position-absolute fs-sm text-primary m-0" style="left: 0px; bottom: -25px">
+    <%- include ("../../../public/assets/img/icons/check-double.svg") %>
+    Read
+</p>
+<% } %>
+
+<% if (selectedConversation.messages.length - 15 < i ) { %>
+<input id="delete-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+<%- include('../Popup/Delete-popup', {checkboxInputId:"delete-message-input-"+ i, action : "/delete-message/" + selectedConversation.id + "/" + i, method: "POST", text: "message", confirm_text: "Delete", cancel_text: "Cancel"}) %>
+
+<label for="delete-message-input-<%=i%>" class="delete-message-button btn">
+  <i class="bx bx-trash-alt"></i>
+</label>
+<% } %>
+
+
+<% if (selectedConversation.messages.length - 10 < i ) { %>
+  <input id="edit-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+  <%- include('../Popup/EditMessage-popup', {checkboxInputId:"edit-message-input-"+ i, action : "/edit-message/" +  selectedConversation.id + "/" + i, currentMessage: selectedConversation.messages[i].content}) %>
+
+  <label for="edit-message-input-<%=i%>" class="delete-message-button b-edit btn me-4">
+    <i class='bx bxs-edit' style="color:black;"></i>
+</label>
+<% } %>
+
+</div>
+<% } else { %>
+
+
+
+  <% if (i === selectedConversation.messages.length - 1 && selectedConversation.messages[i].viewedMessage) { %>
+
+    <p class="fs-sm text-primary ms-1 position-absolute m-0" style="right: 0px;bottom: -25px;">
+      <%- include ("../../../public/assets/img/icons/check-double.svg") %>
+      Read
+  </p>
+  <% } %>
+
+
+<% if (selectedConversation.messages.length - 10 < i ) { %>
+<input id="reply-message-input-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
+<%- include('../Popup/Reply-popup', {
+  checkboxInputId:"reply-message-input-"+ i,
+  i
+  }) %>
+
+<label for="reply-message-input-<%=i%>" class="delete-message-button b-edit btn me-4">
+  <i class='bx bx-reply'></i>
+</label>
+<% } %>
+
+<% } %>
+
+
+</div>
+</div> 
+</div>
+
+

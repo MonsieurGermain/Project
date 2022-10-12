@@ -6,7 +6,12 @@ const User = require('../models/user');
 const Product = require('../models/product');
 const Conversation = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
-const { sanitizeChangePassword, sanitizeQuerys, sanitizeParamsQuerys } = require('../middlewares/validation');
+const {
+  sanitizeChangePassword,
+  sanitizeQuerys,
+  sanitizeParamsQuerys,
+  validateMessageSettings,
+} = require('../middlewares/validation');
 const {
   paginatedResults, randomListOfWords, isEmail, isPgpKeys, isMoneroAddress, generateRandomString,
 } = require('../middlewares/function');
@@ -108,8 +113,8 @@ async function updateConversationPgp(username, newPgp) {
 router.post('/add-pgp', isAuth, async (req, res) => {
   try {
     const { user } = req;
+
     const pgp = isPgpKeys(req.body.pgp);
-    if (!pgp) throw new Error('Invalid Pgp Keys');
 
     user.pgp_keys = pgp.trim();
     user.verifiedPgpKeys = undefined;
@@ -322,21 +327,35 @@ router.delete('/delete-user', isAuth, async (req, res) => {
   }
 });
 
-router.post('/conversation-settings', isAuth, async (req, res) => {
+router.post('/conversation-settings', isAuth, validateMessageSettings, async (req, res) => {
   try {
     const { user } = req;
-    const { autoDeleteConversation, deleteEmptyConversation, recordSeeingMessage } = req.body;
+    const {
+      conversationUsername,
+      conversationPgp,
+      messageExpiryDate,
+      convoExpiryDate,
+      includeTimestamps,
+      messageView,
+      deleteEmpty,
+      customUsername,
+      customPgp,
+    } = req.body;
 
-    if (!['never', '1', '3', '7', '30'].includes(autoDeleteConversation)) throw new Error('Invalid Value');
-    if (!['true', 'false'].includes(deleteEmptyConversation)) throw new Error('Invalid Value');
-    if (!['true', 'false'].includes(recordSeeingMessage)) throw new Error('Invalid Value');
+    user.settings.messageSettings.conversationUsername = conversationUsername;
+    user.settings.messageSettings.conversationPgp = conversationPgp;
+    user.settings.messageSettings.messageExpiryDate = messageExpiryDate;
+    user.settings.messageSettings.convoExpiryDate = convoExpiryDate;
+    user.settings.messageSettings.includeTimestamps = includeTimestamps || undefined;
+    user.settings.messageSettings.messageView = messageView || undefined;
+    user.settings.messageSettings.deleteEmpty = deleteEmpty || undefined;
 
-    user.settings.messageExpiring = autoDeleteConversation !== 'never' ? autoDeleteConversation : undefined;
-    user.settings.deleteEmptyConversation = deleteEmptyConversation === 'true';
-    user.settings.recordSeeingMessage = recordSeeingMessage === 'true';
+    user.settings.messageSettings.customUsername = customUsername || undefined;
+    user.settings.messageSettings.customPgp = customPgp || undefined;
 
     await user.save();
 
+    req.flash('success', 'Default Conversation Settings successfully changed');
     res.redirect('/settings?section=privacy');
   } catch (e) {
     console.log(e);
@@ -354,6 +373,7 @@ router.post('/order-settings', isAuth, async (req, res) => {
 
     await user.save();
 
+    req.flash('success', 'Order Settings successfully changed');
     res.redirect('/settings?section=privacy');
   } catch (e) {
     console.log(e);
@@ -372,6 +392,7 @@ router.post('/account-settings', isAuth, async (req, res) => {
 
     await user.save();
 
+    req.flash('success', 'Account Settings successfully changed');
     res.redirect('/settings?section=privacy');
   } catch (e) {
     console.log(e);
@@ -387,9 +408,13 @@ router.post('/reset-privacy', isAuth, sanitizeQuerys, async (req, res) => {
 
     switch (type) {
       case 'conversation':
-        user.settings.messageExpiring = 7;
-        user.settings.deleteEmptyConversation = true;
-        user.settings.recordSeeingMessage = false;
+        user.settings.messageSettings.conversationUsername = 'ownUsername';
+        user.settings.messageSettings.conversationPgp = 'showPgp';
+        user.settings.messageSettings.messageExpiryDate = 7;
+        user.settings.messageSettings.convoExpiryDate = 180;
+        user.settings.messageSettings.includeTimestamps = false;
+        user.settings.messageSettings.messageView = false;
+        user.settings.messageSettings.deleteEmpty = true;
         break;
       case 'conversation':
         user.settings.userExpiring = undefined;

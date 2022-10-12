@@ -2,19 +2,14 @@
 <div class="popup-dialog">
    <div class="rounded p-3">
    <div class="text pt-2 pb-3">
-      <% if (text === 'conversation') { %>
-         <p class="mb-0">Are you sure that you wish to delete this conversation?</p>
+         <p class="mb-0">Are you sure that you wish to delete this <%=text%>?</p>
          <p class="fs-sm opacity-70 mb-0">This Action is Irreversible</p>
-      <% } else if (text === "message") { %>
-         <p class="mb-0">Are you sure that you wish to delete this Message?</p>
-         <p class="fs-sm opacity-70 mb-0">This Action is Irreversible</p>
-      <% } %>
    </div>
       <div class="buttons mt-4">
-         <form action="<%=action%>" method="<%=method%>">
-            <button type="submit" class="confirm-button btn btn-primary"><%=confirm_text%></button>
+         <form action="<%=action%>" method="POST">
+            <button type="submit" class="confirm-button btn btn-primary">Delete</button>
          </form>
-         <label for="<%=checkboxInputId%>" class="btn btn-danger cancel-button"><%=cancel_text%></label>
+         <label for="<%=checkboxInputId%>" class="btn btn-danger cancel-button">Cancel</label>
       </div>
   </div>
    <label for="<%=checkboxInputId%>" class="popup-close"></label>

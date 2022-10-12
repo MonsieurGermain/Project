@@ -4,21 +4,12 @@ const User = require('../models/user');
 const Product = require('../models/product');
 
 async function deleteExpiredMessage() {
-  const date = Date.now();
-  const conversationWithOldMessages = await Conversation.find({ 'messages.expire_at': { $lt: date } });
+  const dateNow = Date.now();
+  const converstionWithExpiredMessage = await Conversation.find({ 'messages.expireAt': { $lt: dateNow } });
 
-  for (let i = 0; i < conversationWithOldMessages.length; i++) {
-    conversationWithOldMessages[i].deleteMessageWithDate(date);
-
-    if (!conversationWithOldMessages[i].messages.length) {
-      const sender1 = await User.findOne({ username: conversationWithOldMessages[i].sender_1 });
-
-      if (!sender1 || sender1.settings.deleteEmptyConversation) {
-        conversationWithOldMessages[i].deleteConversation();
-      } else conversationWithOldMessages[i].save();
-    } else {
-      conversationWithOldMessages[i].save();
-    }
+  for (let i = 0; i < converstionWithExpiredMessage.length; i++) {
+    converstionWithExpiredMessage[i].deleteExpiredMessage(dateNow);
+    converstionWithExpiredMessage[i].emptyMessage();
   }
 }
 
@@ -28,6 +19,15 @@ async function hasOrderBeenPaid() {
   for (let i = 0; i < orders.length; i++) {
     orders[i].continueOrder();
     orders[i].save();
+  }
+}
+
+async function deleteExpiredConversation() {
+  const dateNow = Date.now();
+  const expiredConversation = await Conversation.find({ 'settings.convoExpiryDate': { $lt: dateNow } });
+
+  for (let i = 0; i < expiredConversation.length; i++) {
+    expiredConversation[i].deleteConversation();
   }
 }
 
@@ -63,18 +63,19 @@ async function findAndendSales() {
 function allDatabaseScanningFunction() {
   setInterval(() => {
     console.log('1min');
+    deleteExpiredMessage();
     hasOrderBeenPaid();
   }, 60000); // 1 min
 
   setInterval(() => {
     console.log('5min');
-    deleteExpiredMessage();
     handleOrderWithExpiredTimer();
     findAndendSales();
   }, 300000); // 5min
 
   setInterval(() => {
     console.log('1day');
+    deleteExpiredConversation();
     deleteInactiveUser();
   }, 86400000); // 1day
 }

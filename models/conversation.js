@@ -1,206 +1,274 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const { format } = require('date-fns');
-const { formatUsernameWithSettings } = require('../middlewares/function');
 
-const settingsSchema = new mongoose.Schema({
-  type: {
+const usersSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Types.ObjectId,
+    ref: 'User',
+  },
+  userId: {
     type: String,
     required: true,
-    default: 'default',
   },
-  timestamps: {
-    type: Boolean,
-    default: false,
+  conversationUsername: {
+    type: String,
   },
-  includePgp: {
-    type: Boolean,
+  conversationPgp: {
+    type: String,
+  },
+  messageExpiryDate: {
+    type: String,
   },
 });
 
-const messageSchema = new mongoose.Schema({
-  sender: {
-    type: String,
-    required: true,
-    minlength: 3,
-    maxlength: 50,
-  },
-  message: {
-    type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 10000,
+const settingsSchema = new mongoose.Schema({
+  includeTimestamps: {
+    type: Boolean,
   },
   messageView: {
     type: Boolean,
   },
-  timestamps: {
-    type: Date,
-    required: false,
+  deleteEmpty: {
+    type: Boolean,
   },
-  expire_at: {},
+  conversationPassword: {
+    type: String,
+  },
+  daysUntilExpiring: {
+    type: Number,
+  },
+  convoExpiryDate: {
+    type: Number,
+  },
 });
 
 const conversationSchema = new mongoose.Schema({
-  sender_1: {
-    type: String,
-    maxlength: 50,
-    minlength: 3,
-    ref: 'User',
+  users: [usersSchema],
+  messages: {
+    type: Array,
     required: true,
   },
-  sender_2: {
-    type: String,
-    maxlength: 50,
-    minlength: 3,
-    ref: 'User',
-    required: true,
-  },
-  sender1_Img: {
-    type: String,
-    required: true,
-  },
-  sender2_Img: {
-    type: String,
-    required: true,
-  },
-  sender1_Pgp: {
-    type: String,
-  },
-  sender2_Pgp: {
-    type: String,
-  },
-  messages: [messageSchema],
-
   settings: {
     type: settingsSchema,
   },
 });
 
-function createNewMessage(Message, Sender, sender1, conversationSettings, userSettings) {
-  const newMessage = {
-    sender: sender1 === Sender ? formatUsernameWithSettings(Sender, conversationSettings.type) : Sender,
-    message: Message.trim(),
-  };
+function findUserIndex(users, senderId) {
+  const userIndex = users.map((singleUser) => singleUser.userId).indexOf(senderId);
 
-  if (conversationSettings.timestamps) {
-    newMessage.timestamps = format(new Date(), 'HH:mm LLLL dd yyyy'); // Add timestamp
-  }
+  if (userIndex === -1) throw Error('Invalid Sender');
 
-  if (userSettings.recordSeeingMessage && conversationSettings.type === 'default') {
-    newMessage.messageView = false; // Saw Message
-  }
-
-  if (userSettings.messageExpiring) newMessage.expire_at = Date.now() + userSettings.messageExpiring * 86400000;
-
-  return newMessage;
+  return userIndex;
 }
 
-// Add
-conversationSchema.methods.Add_New_Message = function (Message, fromUser, userSettings) {
-  this.messages.push(createNewMessage(Message, fromUser, this.sender_1, this.settings, userSettings));
-  return this;
-};
-
-function canCRUDMessage(messageSender, conversationSender1, conversationSender2, userUsername) {
-  if (conversationSender1 === userUsername) {
-    if (messageSender !== conversationSender1) return true;
-  } else if (conversationSender2 === userUsername) {
-    if (messageSender === conversationSender2) return true;
-  }
+function canCrudMessage(users, userId) {
+  if (users !== userId) throw Error('Forbidden');
 }
 
-conversationSchema.methods.editMessage = async function (messageId, newMessage, userUsername) {
-  for (let i = 0; i < this.messages.length; i++) {
-    if (this.messages[i].id === messageId) {
-      if (canCRUDMessage(
-        this.messages[i].sender,
-        this.sender_1,
-        this.sender_2,
-        userUsername,
-      )) {
-        this.messages[i].message = newMessage;
-      }
-      break;
-    }
+function expireAtMessage(dayUntilExpiring) {
+  return Date.now() + 86400000 * dayUntilExpiring;
+}
+
+function findLastTimestamp(messages) {
+  for (let i = messages.length; i >= 0; i--) {
+    if (messages[i]?.type === 'timestamp') return messages[i];
   }
-};
+  return undefined;
+}
 
-// Delete
-conversationSchema.methods.deleteConversation = async function () {
-  await this.delete();
-};
+conversationSchema.methods.seeingMessage = async function (userId) {
+  if (!this.settings.messageView) return;
 
-conversationSchema.methods.deleteMessageWithDate = async function (date) {
-  this.messages = this.messages.filter((message) => message.expire_at > date);
-};
+  const indexLastMessage = this.messages.length - 1;
 
-conversationSchema.methods.deleteMessageWithId = async function (messageId, userUsername) {
-  const indexOfMessage = this.messages.map((message) => message.id).indexOf(messageId);
+  if (this.users[this.messages[indexLastMessage]?.sender]?.userId === userId) return;
+  if (this.messages[indexLastMessage]?.viewedMessage !== false) return;
 
-  if (canCRUDMessage(
-    this.messages[indexOfMessage].sender,
-    this.sender_1,
-    this.sender_2,
-    userUsername,
-  )) {
-    this.messages.splice(indexOfMessage, 1);
-  }
-};
+  this.messages[indexLastMessage].viewedMessage = true;
 
-conversationSchema.methods.sawMessages = async function (userUsername) {
-  for (let i = 0; i < this.messages.length; i++) {
-    if (this.messages[i].messageView === false && this.messages[i].sender !== userUsername) {
-      this.messages[i].messageView = true;
-    }
-  }
+  this.markModified('messages');
   await this.save();
 };
 
-conversationSchema.methods.updateNewPgp = async function (username, newPgp) {
-  if (username === this.sender_1) {
-    if (this.settings.pgpSettings) {
-      this.sender1_Pgp = newPgp;
+conversationSchema.methods.addUser = function (userId, conversationUsername, conversationPgp, { addUserId = true } = {}) {
+  this.users.push({
+    user: addUserId ? userId : undefined,
+    userId,
+    conversationUsername,
+    conversationPgp,
+  });
+};
+
+conversationSchema.methods.updateUserSettings = function (userId, messageExpiryDate, conversationPgp) {
+  const indexUser = findUserIndex(this.users, userId);
+
+  this.users[indexUser].messageExpiryDate = messageExpiryDate || undefined;
+  this.users[indexUser].conversationPgp = conversationPgp || undefined;
+};
+
+conversationSchema.methods.updateConversationSettings = function (includeTimestamps, messageView, deleteEmpty, convoExpiryDate) {
+  if (!this.settings) this.settings = {};
+
+  this.settings.includeTimestamps = includeTimestamps;
+  this.settings.messageView = messageView;
+  this.settings.deleteEmpty = deleteEmpty;
+  this.settings.daysUntilExpiring = this.settings.conversationPassword && (!convoExpiryDate || convoExpiryDate < 3) ? 3 : convoExpiryDate;
+
+  this.updateConvoExpiryDate();
+};
+
+conversationSchema.methods.addConversationPassword = async function (plainTextPassword) {
+  this.settings.conversationPassword = await bcrypt.hash(plainTextPassword, 12);
+};
+
+conversationSchema.methods.addTimeStamp = function () {
+  if (this.settings.includeTimestamps) {
+    const lastTimeStamp = findLastTimestamp(this.messages);
+
+    if (!lastTimeStamp || Date.now() - lastTimeStamp.millisecondsTimestamp > 600000) { // 10 min
+      this.messages.push({
+        type: 'timestamp',
+        timestamp: format(new Date(), 'HH:mm dd LLLL yyyy'),
+        millisecondsTimestamp: Date.now(),
+      });
     }
-  } else {
-    this.sender2_Pgp = newPgp;
+  }
+};
+
+conversationSchema.methods.removeUpdateReply = function (msgPosition, positionToShift) {
+  for (let i = 0; i < this.messages.length; i++) {
+    if (this.messages[i].reply == msgPosition) delete this.messages[i].reply;
+    if (this.messages[i].reply >= msgPosition) this.messages[i].reply += -positionToShift;
+  }
+};
+
+conversationSchema.methods.updateConvoExpiryDate = function () {
+  if (this.settings.daysUntilExpiring) {
+    this.settings.convoExpiryDate = expireAtMessage(this.settings.daysUntilExpiring);
+  }
+};
+
+conversationSchema.methods.addMessageExpiryDate = function (msgPosition, messageExpiryDate) {
+  if (messageExpiryDate && messageExpiryDate !== 'never') this.messages[msgPosition].expireAt = expireAtMessage(messageExpiryDate);
+};
+
+conversationSchema.methods.addReply = function (msgPosition, repliedMsgPosition) {
+  if (repliedMsgPosition !== false) this.messages[msgPosition].reply = repliedMsgPosition;
+};
+
+conversationSchema.methods.addMessageView = function (msgPosition) {
+  if (this.settings.messageView === true) this.messages[msgPosition].viewedMessage = false;
+};
+
+conversationSchema.methods.createNewMessage = function (content, sender, expiringInDays, { reply = false } = {}) {
+  if (this.messages.length >= 1000) throw Error('Message Limit Reached');
+
+  const senderIndex = findUserIndex(this.users, sender);
+
+  this.addTimeStamp();
+
+  this.messages.push({
+    content,
+    type: 'msg',
+    sender: senderIndex,
+  });
+
+  const msgPosition = this.messages.length - 1;
+
+  this.addMessageExpiryDate(msgPosition, this.users[senderIndex].messageExpiryDate || expiringInDays);
+  this.addReply(msgPosition, reply);
+  this.addMessageView(msgPosition);
+
+  this.updateConvoExpiryDate();
+};
+
+conversationSchema.methods.editMessage = function (content, messagePosition, userId) {
+  canCrudMessage(this.users[this.messages[messagePosition].sender]?.userId, userId);
+
+  this.messages[messagePosition].content = content;
+  this.markModified('messages');
+
+  this.updateConvoExpiryDate();
+};
+
+conversationSchema.methods.emptyMessage = function () {
+  if (this.settings.deleteEmpty) {
+    if (!this.messages.length || !this.messages.map((message) => message.type).includes('msg')) {
+      this.deleteConversation();
+      return;
+    }
   }
 
   this.save();
 };
 
-// Search
-conversationSchema.static('isConversationExisting', async function (username1, username2, conversationType) {
-  let query;
-  if (conversationType === 'default') {
-    query = {
-      $or: [
-        { sender_1: username1, sender_2: username2 },
-        { sender_1: username2, sender_2: username1 },
-      ],
-      'settings.type': conversationType,
-    };
-  } else {
-    query = {
-      sender_1: username1,
-      sender_2: username2,
-      'settings.type': conversationType,
-    };
+conversationSchema.methods.deleteMessage = function (msgPosition, userId, checkIfEmpty = true) {
+  canCrudMessage(this.users[this.messages[msgPosition].sender]?.userId, userId);
+
+  let deleteModifier = this.messages[msgPosition - 1]?.type === 'timestamp' ? 1 : 0;
+
+  this.removeUpdateReply(msgPosition, 1 + deleteModifier);
+
+  this.messages.splice(msgPosition - deleteModifier, 1 + deleteModifier);
+
+  if (checkIfEmpty) this.emptyMessage();
+};
+
+conversationSchema.methods.deleteExpiredMessage = function (date) {
+  for (let i = 0; i < this.messages.length; i++) {
+    if (this.messages[i].expireAt <= date) this.deleteMessage(i, undefined, false);
+  }
+};
+
+conversationSchema.methods.deleteConversation = async function () {
+  await this.delete();
+};
+
+conversationSchema.statics.findAllConversationWithId = async function (ids, populate) {
+  const conversations = [];
+
+  if (ids) {
+    for (let i = 0; i < ids.length; i++) {
+      conversations.push(this.findById(ids[i].convoId).populate(populate));
+    }
   }
 
-  const conversation = await this.findOne(query);
-  return conversation;
-});
+  const returnedConversation = await Promise.all(conversations);
 
-conversationSchema.static('findAllUserConversations', async function (username) {
-  const conversations = await this.find({ $or: [{ sender_1: username }, { sender_2: username }] });
+  return returnedConversation.filter((elem) => elem);
+};
+
+conversationSchema.statics.findAllConversationOfUser = async function (userId, { populate, hiddenConversationsId } = {}) {
+  const conversations = await Promise.all([
+    await this.findAllConversationWithId(hiddenConversationsId, populate),
+    await this.find({ users: { $elemMatch: { user: userId } } }).populate(populate),
+  ]);
+
+  const returnedConversation = conversations[1];
+
+  for (let i = 0; i < conversations[0].length; i++) {
+    returnedConversation.unshift(conversations[0][i]);
+  }
+
+  return returnedConversation;
+};
+
+conversationSchema.statics.findConversationExist = async function (userId, id) {
+  const conversations = await this.find({
+    $and: [
+      { 'users.userId': userId },
+      { 'users.userId': id },
+    ],
+  });
+
   return conversations;
-});
+};
 
-conversationSchema.statics.findByIdVerifyIfPartOfConversation = async function (conversationId, username) {
-  const conversation = await this.findById(conversationId);
+conversationSchema.statics.findConversationWithId = async function (id, populate) {
+  const conversation = this.findOne({ 'users.userId': id }).populate(populate);
 
-  if (username === conversation.sender_1 || username === conversation.sender_2) return conversation;
-  throw new Error();
+  return conversation;
 };
 
 module.exports = mongoose.model('Conversation', conversationSchema);

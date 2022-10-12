@@ -22,23 +22,53 @@ const reviewSchema = new mongoose.Schema({
   },
 });
 
-const settingsSchema = new mongoose.Schema({
-  messageExpiring: {
+const messageSettingsSchema = new mongoose.Schema({
+  conversationUsername: {
+    type: String,
+  },
+  conversationPgp: {
+    type: String,
+  },
+  customPgp: {
+    type: String,
+  },
+  customUsername: {
+    type: String,
+  },
+  messageExpiryDate: {
     type: Number,
+  },
+  convoExpiryDate: {
+    type: Number,
+  },
+  includeTimestamps: {
+    type: Boolean,
+  },
+  messageView: {
+    type: Boolean,
+  },
+  deleteEmpty: {
+    type: Boolean,
+  },
+});
+
+const settingsSchema = new mongoose.Schema({
+  messageSettings: {
+    type: messageSettingsSchema,
+    default: {
+      conversationUsername: 'customUsername',
+      conversationPgp: 'showPgp',
+      messageExpiryDate: 7,
+      convoExpiryDate: 180,
+      deleteEmpty: true,
+    },
+    required: true,
   },
   privateInfoExpiring: {
     type: Number,
   },
   userExpiring: {
     type: Number,
-  },
-  deleteEmptyConversation: {
-    type: Boolean,
-    required: true,
-  },
-  recordSeeingMessage: {
-    type: Boolean,
-    required: true,
   },
   currency: {
     type: String,
@@ -94,7 +124,10 @@ const userSchema = new mongoose.Schema({
   settings: {
     type: settingsSchema,
     default: {
-      messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false,
+      messageExpiring: 7,
+      privateInfoExpiring: 7,
+      deleteEmptyConversation: true,
+      recordSeeingMessage: false,
     },
     required: true,
   },

@@ -11,7 +11,7 @@
     <%- include('partials/Popup/Report-popup', { checkboxInputId: "report-vendor-" + vendor.username,  method: "POST", action: '/report/' + vendor.username, type: "vendor"}) %>
 
     <input type="checkbox" class="d-none" id="contact-checkbox">
-    <%- include('partials/Popup/SendMessage-popup', {Reciver: vendor.username, checkboxInputId: 'contact-checkbox'}) %>
+    <%- include('partials/Popup/SendMessage-popup', {Reciever: vendor.id, checkboxInputId: 'contact-checkbox'}) %>
     
     <section class="container profile-container pt-5" style="max-width: 1520px;">
       <!-- Breadcrumb -->
@@ -51,7 +51,7 @@
       <div class="row">
 
         <aside class="col-lg-4 col-md-4 pb-5">
-          <div class="position-sticky" style="top: 70px;">
+          <div class="" style="top: 70px;">
             <div class="card card-body card-deep-shadow border-0 text-center">
               <img src="<%=vendor.img_path%>" class="d-block big-rc rounded-circle mx-auto mb-3" width="162"
                 height="162" alt="<%=vendor.username%>">

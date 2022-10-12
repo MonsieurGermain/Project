@@ -9,7 +9,7 @@ const StepVerification = require('../models/2step-verification');
 const { generateRandomName } = require('../middlewares/filesUploads');
 const { isntAuth } = require('../middlewares/authentication');
 const { sanitizeLoginInput, sanitizeRegisterInput, sanitizeVerificationCode } = require('../middlewares/validation');
-const { generateRandomString, randomListOfWords } = require('../middlewares/function');
+const { generateRandomString, randomListOfWords, generateAccountUsername } = require('../middlewares/function');
 
 function generateAccountDetailsFlashMessage(username, password) {
   return `
@@ -17,14 +17,6 @@ function generateAccountDetailsFlashMessage(username, password) {
    <p class="mb-0">Password: <b>${password}</b></p>
    <p class="fs-xs mb-0"> <b>Save this somewhere safe</b></p>
    `;
-}
-
-function generateAccountUsername() {
-  let result = '';
-  for (let i = 0; i < 4; i++) {
-    result += ` ${generateRandomString(4, 'letterAndnumber')}`;
-  }
-  return result.trim();
 }
 
 function generateAccountPassword(passwordType, typedPassword) {
@@ -156,7 +148,7 @@ router.post('/register', isntAuth, sanitizeRegisterInput, async (req, res) => {
 
     const user = new User({
       username,
-      password: bcrypt.hashSync(password, 11),
+      password: bcrypt.hashSync(password, 12),
       img_path: createProfilePicture('default-profile-pic.png'),
     });
 
@@ -191,7 +183,7 @@ router.post('/generate-account', isntAuth, async (req, res) => {
 
     const user = new User({
       username: generateAccountUsername(),
-      password: bcrypt.hashSync(userPassword, 11),
+      password: bcrypt.hashSync(userPassword, 12),
       img_path: createProfilePicture(username),
       settings: {
         userExpiring: 14, messageExpiring: 7, privateInfoExpiring: 7, deleteEmptyConversation: true, recordSeeingMessage: false,
@@ -210,6 +202,8 @@ router.post('/generate-account', isntAuth, async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+  delete req.session.hiddenConversationsId;
+
   req.logOut();
   res.redirect('/');
 });

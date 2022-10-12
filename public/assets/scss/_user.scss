@@ -631,6 +631,7 @@ input[id^='delete-order-']:not(:checked)+* {
    opacity: 0;
 }
 
+
 input[id^='delete-message-input-']:not(:checked)+*,
 input#delete-convo-input:not(:checked)+*:not(.dipsute-popup),
 input[id^='edit-message-input-']:not(:checked)+* {
@@ -638,6 +639,19 @@ input[id^='edit-message-input-']:not(:checked)+* {
    visibility: hidden;
    opacity: 0;
 }
+
+input[id^='reply-message-input-']:not(:checked)+* {
+   background-color: rgba(25, 25, 25, 0);
+   visibility: hidden;
+   opacity: 0;
+}
+
+input[id='change-settings']:not(:checked)+* {
+   background-color: rgba(25, 25, 25, 0);
+   visibility: hidden;
+   opacity: 0;
+}
+
 
 input[id='user-pgp-keys']:not(:checked)+* {
    background-color: rgba(25, 25, 25, 0);
@@ -1766,4 +1780,3 @@ input[id='advanced-settings']:checked+*>svg {
    pointer-events: visible;
    opacity: 100%;
 }
-

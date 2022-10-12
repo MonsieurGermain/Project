@@ -1,4 +1,9 @@
-const { isMoneroAddress, isEmail, isPgpKeys } = require('./function');
+const {
+  isMoneroAddress,
+  isEmail,
+  isPgpKeys,
+  generateAccountUsername,
+} = require('./function');
 
 // Vars
 const bannedUsername = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
@@ -110,7 +115,7 @@ function createSelection(selectionName, selectionOption, selectionPrice, selecti
 function sanitizeLoginInput(req, res, next) {
   try {
     // Username
-    req.body.username = ValidateText(req.body.username, 'Username', { minlength: 1, maxlength: 25 });
+    req.body.username = ValidateText(req.body.username, 'Username', { minlength: 4, maxlength: 25 });
 
     // Password
     req.body.password = ValidateText(req.body.password, 'Password', { minlength: 8, maxlength: 200 });
@@ -124,7 +129,7 @@ function sanitizeLoginInput(req, res, next) {
 function sanitizeRegisterInput(req, res, next) {
   try {
     // Username
-    req.body.username = ValidateText(req.body.username, 'Username', { minlength: 1, maxlength: 25 });
+    req.body.username = ValidateText(req.body.username, 'Username', { minlength: 4, maxlength: 25 });
     if (bannedUsername.includes(req.body.username.toLowerCase())) throw new Error('You cannot use this Username');
 
     // Password
@@ -144,23 +149,34 @@ function sanitizeRegisterInput(req, res, next) {
     res.redirect(req.url);
   }
 }
+
 function sanitizeConversationInput(req, res, next) {
   try {
     // Message
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 2, maxlength: 1000 });
+    req.body.content = ValidateText(req.body.content, 'Message', { minlength: 2, maxlength: 1000 });
 
-    // Conversation Type
-    if (!conversationType.includes(req.body.type)) throw new Error('Invalid Conversation Type');
-
-    req.body.timestamps = req.body.timestamps ? true : undefined;
-
-    if (![undefined, 'noPgp', 'ownPgp', 'otherPgp'].includes(req.body.pgpSettings)) {
-      throw new Error('Invalid Pgp Settings');
+    switch (req.user.settings.messageSettings.conversationUsername) {
+      case 'ownUsername':
+        req.body.conversationUsername = undefined;
+        break;
+      case 'generateRandom':
+        req.body.conversationUsername = generateAccountUsername();
+        break;
+      case 'customUsername':
+        req.body.conversationUsername = ValidateText(req.body.customUsername, 'Custom Username', { minlength: 4, maxlength: 25 });
+        break;
     }
 
-    if (req.body.otherPgpKeys) {
-      req.body.otherPgpKeys = isPgpKeys(req.body.otherPgpKeys);
-      if (!req.body.otherPgpKeys) throw new Error('The other Pgp Keys you provided is Invalid');
+    switch (req.user.settings.messageSettings.conversationPgp) {
+      case 'showPgp':
+        req.body.conversationPgp = undefined;
+        break;
+      case 'dontShowPgp':
+        req.body.conversationPgp = 'dontShowPgp';
+        break;
+      case 'customPgp':
+        req.body.conversationPgp = isPgpKeys(req.body.customPgp);
+        break;
     }
 
     next();
@@ -169,12 +185,92 @@ function sanitizeConversationInput(req, res, next) {
     res.redirect(`/profile/${req.params.username}?productPage=1&reviewPage=1`);
   }
 }
-function sanitizeMessageInput(req, res, next) {
+
+function sanitizeHiddenConversationInput(req, res, next) {
   try {
-    req.body.message = ValidateText(req.body.message, 'Message', { minlength: 2, maxlength: 1000 });
+    req.body.content = ValidateText(req.body.content, 'Message', { minlength: 2, maxlength: 1000 });
+    req.body.conversationId = ValidateText(req.body.conversationId, 'Conversation Id', { minlength: 30, maxlength: 200 });
+    req.body.conversationPassword = ValidateText(req.body.conversationPassword, 'Conversation Password', { minlength: 8, maxlength: 200 });
+    req.body.confirmConversationPassword = ValidateText(req.body.confirmConversationPassword, 'Retyped Conversation Password', { minlength: 8, maxlength: 200 });
+
+    if (req.body.conversationPassword !== req.body.confirmConversationPassword) throw Error('The Conversation Password Doesnt match');
+
+    req.body.conversationUsername = req.body.conversationUsername ? ValidateText(req.body.conversationUsername, 'Conversation Username', { minlength: 4, maxlength: 25 }) : generateAccountUsername();
+
+    if (req.body.conversationPgp) req.body.conversationPgp = isPgpKeys(req.body.conversationPgp);
+    else {
+      switch (req.user.settings.messageSettings.conversationPgp) {
+        case 'showPgp':
+          req.body.conversationPgp = req.user.verifiedPgpKeys;
+          break;
+        default:
+          req.body.conversationPgp = 'dontShowPgp';
+          break;
+      }
+    }
+
+    if (!['3', '7', '30', '180', '365'].includes(req.body.convoExpiryDate)) throw Error('Invalid Inactive Conversation Delete Value');
+    if (!['never', '1', '3', '7', '30'].includes(req.body.messageExpiryDate)) throw Error('Invalid Mesasge Expiry Value');
+
     next();
   } catch (e) {
-    res.redirect('/404');
+    req.flash('error', e.message);
+    res.redirect(`/create-hidden-conversation?id=${req.params.id}`);
+  }
+}
+
+function validateSectionCommand(input, splitedInput, { arrayLength = 3, hasPosition = true } = {}) {
+  splitedInput[1] = parseFloat(splitedInput[1]);
+
+  if (splitedInput.length !== arrayLength) return ['msg', input];
+  if (hasPosition) {
+    if (isNaN(splitedInput[1]) || typeof splitedInput[1] !== 'number' || splitedInput[1] < 0) return ['msg', input];
+  }
+
+  const returnedCommand = [splitedInput[0].toLowerCase(), splitedInput[1]];
+  splitedInput[2] ? returnedCommand[2] = splitedInput[2] : undefined;
+
+  return returnedCommand;
+}
+
+function extractCommand(input) {
+  const splitedContent = input.split('/');
+
+  if (splitedContent.length === 1) return ['msg', input];
+
+  splitedContent[0] = splitedContent[0].toLowerCase();
+
+  if (splitedContent[0] === 'msg') return ['msg', splitedContent[2]];
+  if (splitedContent[0] === 'delete') return validateSectionCommand(input, splitedContent, { arrayLength: 2 });
+  if (['edit', 'reply'].includes(splitedContent[0])) return validateSectionCommand(input, splitedContent);
+
+  return ['msg', input];
+}
+
+function sanitizeMessageInput(req, res, next) {
+  try {
+    req.query.msgIndex = parseFloat(req.query.msgIndex);
+
+    if (!isNaN(req.query.msgIndex)) {
+      switch (req.query.action) {
+        case 'edit':
+        case 'reply':
+          req.body.content = `${req.query.action}/${req.query.msgIndex}/${req.body.content}`;
+          break;
+        case 'delete':
+          req.body.content = `${req.query.action}/${req.query.msgIndex}`;
+          break;
+      }
+    }
+
+    // COMMAND/POSITION/*Content
+    req.body.content = ValidateText(req.body.content, 'Message', { minlength: 2, maxlength: 1000 });
+
+    req.body.command = extractCommand(req.body.content);
+
+    next();
+  } catch (e) {
+    res.redirect('/messages#bottom');
   }
 }
 
@@ -601,8 +697,85 @@ function sanitizeParamsQuerys(req, res, next) {
   }
 }
 
+function validateMessageSettings(req, res, next) {
+  try {
+    req.body.includeTimestamps = !!req.body.includeTimestamps;
+    req.body.messageView = !!req.body.messageView;
+    req.body.deleteEmpty = !!req.body.deleteEmpty;
+
+    if (!['generateRandom', 'customUsername', 'ownUsername'].includes(req.body.conversationUsername)) throw Error('Invalid Conversation Username Value');
+    if (!['showPgp', 'dontShowPgp', 'customPgp'].includes(req.body.conversationPgp)) throw Error('Invalid Conversation Pgp Value');
+    if (!['', '1', '3', '7', '30'].includes(req.body.messageExpiryDate)) throw Error('Invalid Conversation Message Expiring Value');
+    if (!req.body.messageExpiryDate) req.body.messageExpiryDate = undefined;
+
+    if (!['', '3', '7', '30', '180', '360'].includes(req.body.convoExpiryDate)) throw Error('Invalid Conversation Expiring Value');
+    if (!req.body.convoExpiryDate) req.body.convoExpiryDate = undefined;
+
+    req.body.customUsername = req.body.customUsername && req.body.conversationUsername === 'customUsername' ? ValidateText(req.body.customUsername, 'Custom Username', { minlength: 4, maxlength: 25 }) : undefined;
+    req.body.customPgp = req.body.customPgp && req.body.conversationPgp === 'customPgp' ? isPgpKeys(req.body.customPgp) : undefined;
+
+    next();
+  } catch (e) {
+    console.log(e);
+    req.flash('error', e.message);
+    res.redirect('/settings?section=privacy');
+  }
+}
+function changeUserSettingsConversation(req, res, next) {
+  try {
+    if (!['never', '1', '3', '7', '30'].includes(req.body.messageExpiryDate)) throw Error('Invalid Conversation Message Expiring Value');
+
+    if (!['showPgp', 'dontShowPgp', 'customPgp'].includes(req.body.conversationPgp)) throw Error('Invalid Conversation Pgp Value');
+
+    if (req.body.conversationPgp === 'customPgp') {
+      if (req.body.customPgp) req.body.conversationPgp = isPgpKeys(req.body.customPgp);
+      else if (req.user?.settings.messageSettings.customPgp) req.body.conversationPgp = req.user.settings.messageSettings.customPgp;
+    }
+
+    next();
+  } catch (e) {
+    console.log(e);
+    res.redirect(`messages?id=${req.params.id}#bottom`);
+  }
+}
+function changeSettingsConversation(req, res, next) {
+  try {
+    req.body.includeTimestamps = req.body.includeTimestamps ? true : undefined;
+    req.body.messageView = req.body.messageView ? true : undefined;
+    req.body.deleteEmpty = req.body.deleteEmpty ? true : undefined;
+
+    if (!['', '3', '7', '30', '180', '365'].includes(req.body.convoExpiryDate)) throw Error('Invalid Conversation Expiring Value');
+
+    next();
+  } catch (e) {
+    console.log(e);
+    res.redirect(`messages?id=${req.params.id}#bottom`);
+  }
+}
+
+function sanitizeSearchInput(req, res, next) {
+  try {
+    req.body.search = ValidateText(req.body.search, 'Search Input', { minlength: 2, maxlength: 500 });
+
+    const splitedSearch = req.body.search.split(' ');
+
+    if (splitedSearch.length === 2) req.body.searchInput = splitedSearch;
+    else req.body.searchInput = [req.body.search, undefined];
+
+    next();
+  } catch (e) {
+    console.log(e);
+    res.redirect(`messages?id=${req.params.id}#bottom`);
+  }
+}
+
 module.exports = {
   isObject,
+  sanitizeSearchInput,
+  changeUserSettingsConversation,
+  sanitizeHiddenConversationInput,
+  changeSettingsConversation,
+  validateMessageSettings,
   sanitizeQuerys,
   sanitizeParams,
   sanitizeParamsQuerys,

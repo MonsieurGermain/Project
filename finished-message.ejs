@@ -15,19 +15,19 @@
               <div class="messages-heading"> <h1 class="h3 mb-0 px-4 py-3">Messages </h1>
                 <label for="change-messages"><%- include ("../public/assets/img/icons/close-cross.svg") %></label>
               </div>
-               <form class="search-messages px-4" action="/search-conversation" method="POST">
+               <form class="search-messages px-4" action="/search-messages" method="POST">
                 <div>
                   <button type="submit">
                       <i class="bx bx-search-alt fs-xl text-light"></i> 
                   </button>
                 </div>
              
-                <input type="search" name="search" style="min-width: 90%;" placeholder="Search for a Conversation" required>
+                <input type="search" name="search" maxlength="100" placeholder="Search" required>
                 <input type="submit" hidden/>
               </form>
               <div class="contact-list">
                 <% for(let i = conversations.length - 1; i >= 0; i--) { %>
-                  <% const otherUser = authuser.id === conversations[i].users[1].userId ? 0 : 1 %> 
+                  <% const otherUser = authuser.id === conversations[i].users[0].user.id ? 1 : 0 %> 
 
                   <%- include('partials/Display_Data/Display-active-conversation', {
                     i : i,
@@ -51,30 +51,7 @@
                   </div>
                 <% } else { %> 
                 <!-- Header -->
-                <% const otherUser = authuser.id === selectedConversation.users[1].userId ? 0 : 1 %> 
-                <% let otherUserUsername = !selectedConversation.users[otherUser].user ? selectedConversation.users[otherUser].userId : selectedConversation.users[otherUser].conversationUsername || selectedConversation.users[otherUser].user.username%>
-                <% let otherUserImgPath = !selectedConversation.users[otherUser].user ||  selectedConversation.users[otherUser].conversationUsername ? '/default/default-profile-pic.png' : selectedConversation.users[otherUser].user.img_path%>
-
-
-                <input id="delete-convo-input" type="checkbox" hidden></input>
-                <%- include('partials/Popup/Delete-popup', {
-                  checkboxInputId:"delete-convo-input", 
-                  action : "/delete-conversation/" + selectedConversation.id,
-                  text: "conversation", 
-                  }) %>
-
-                <input id="user-pgp-keys" type="checkbox" hidden></input>
-                <%- include('partials/Popup/PgpKeys-popup', {
-                  checkboxInputId:"user-pgp-keys",
-                  otherUser: selectedConversation.users[otherUser]
-                }) %>
-
-                <input id="change-settings" type="checkbox" hidden></input>
-                <%- include('partials/Popup/Change-settings', {
-                  checkboxInputId:"change-settings",
-                  yourPosition: otherUser === 1 ? 0 : 1
-                  }) %>
-
+                <% const otherUser = authuser.id === selectedConversation.users[0].user.id ? 1 : 0 %>
 
                 <div class="messages-header px-3">
                     <div class="change-convo me-2">
@@ -83,15 +60,13 @@
                             <%- include ("../public/assets/img/icons/change-person.svg") %>
                         </label>
                     </div>
-                    
-
 
                     <div class="chat-user">
-                        <a href="/profile/<%=otherUserUsername%>?productPage=1&reviewPage=1" class="mb-0 mx-0">
-                            <img src="<%=otherUserImgPath%>" class="medium-rc rounded-circle" width="40" alt="<%=otherUserUsername%>">
+                        <a href="/profile/<%=selectedConversation.users[otherUser].conversationUsername || selectedConversation.users[otherUser].user.username%>?productPage=1&reviewPage=1" class="mb-0 mx-0">
+                            <img src="<%=selectedConversation.users[otherUser].conversationUsername ? '/default/default-profile-pic.png' : selectedConversation.users[otherUser].user.img_path%>" class="medium-rc rounded-circle" width="40" alt="<%=selectedConversation.users[otherUser].user.username%>">
                         </a>
                         <div class="name-and-type">
-                            <a href="/profile/<%=otherUserUsername%>?productPage=1&reviewPage=1" class="mb-0 mx-0"><%= otherUserUsername %></a>
+                            <a href="/profile/<%=selectedConversation.users[otherUser].conversationUsername || selectedConversation.users[otherUser].user.username%>?productPage=1&reviewPage=1" class="mb-0 mx-0"><%= selectedConversation.users[otherUser].conversationUsername || selectedConversation.users[otherUser].user.username %></a>
                             <div>
                                 <p class="fs-sm opacity-70 m-0"><span>Your Username:
                                     </span><%=selectedConversation.users[otherUser === 0 ? 1 : 0].conversationUsername || selectedConversation.users[otherUser === 0 ? 1 : 0].user.username%></p>
@@ -101,18 +76,34 @@
                     </div>
 
 
+
                     <div class="delete-button-container">
+
+
+                      <input id="user-pgp-keys" type="checkbox" hidden></input>
+                      <%- include('partials/Popup/PgpKeys-popup', {
+                        checkboxInputId:"user-pgp-keys",
+                        otherUser: selectedConversation.users[otherUser]
+                    }) %>
       
-                        <label for="user-pgp-keys" class="btn btn-outline-white me-3 user-pgp-keys" title="See Other User Pgp Key">
+                        <label for="user-pgp-keys" class="btn btn-outline-white me-3 user-pgp-keys">
                             <i class='bx bxs-key fs-xl'></i>
                         </label>
 
+                          <input id="change-settings" type="checkbox" hidden></input>
+                          <%- include('partials/Popup/Change-settings', {
+                            checkboxInputId:"change-settings",
+                            yourPosition: otherUser === 1 ? 0 : 1
+                            }) %>
           
-                          <label for="change-settings" class="btn btn-outline-white me-3 user-pgp-keys" title="Conversation Settings">
+                          <label for="change-settings" class="btn btn-outline-white me-3 user-pgp-keys">
                             <i class='bx bx-cog fs-xl'></i>
                         </label>
+
+                        <input id="delete-convo-input" type="checkbox" hidden></input>
+                        <%- include('partials/Popup/Delete-popup', {checkboxInputId:"delete-convo-input", action : "/delete-conversation/" + selectedConversation.id, method: "POST", text: "conversation", confirm_text: "Delete", cancel_text: "Cancel"}) %>
                         
-                        <label for="delete-convo-input" class="btn btn-outline-danger" title="Delete this Conversation">
+                        <label for="delete-convo-input" class="btn btn-outline-danger">
                             <i class="bx bx-trash-alt fs-xl"></i>
                         </label>
 
@@ -124,12 +115,7 @@
                     <% for(let i = 0; i < selectedConversation.messages.length ; i++) {%>
 
                       <% if (selectedConversation.messages[i].type === 'msg') { %>
-                        <%- include('partials/Display_Data/Display-message', { 
-                          i,
-                          otherUser,
-                          otherUserUsername,
-                          otherUserImgPath
-                        }) %>
+                        <%- include('partials/Display_Data/Display-message', { i }) %>
                       <% } %>
                       <% if (selectedConversation.messages[i].type === 'timestamp') { %>
                         <div class="timestamp">
@@ -151,9 +137,11 @@
                 </div>
                 <% } %>
             </div>
-            </div>
 
             </div>
           </div>
+        </div>
+      
+      </div>
     </section>
     </html>
