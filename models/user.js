@@ -161,6 +161,10 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  notification: {
+    type: Array,
+    maxlength: 100,
+  },
   expire_at: {
     type: Number,
   },

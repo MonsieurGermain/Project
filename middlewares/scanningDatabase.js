@@ -62,9 +62,9 @@ async function findAndendSales() {
 
 function allDatabaseScanningFunction() {
   setInterval(() => {
-    console.log('1min');
     deleteExpiredMessage();
     hasOrderBeenPaid();
+    console.log('1min');
   }, 60000); // 1 min
 
   setInterval(() => {

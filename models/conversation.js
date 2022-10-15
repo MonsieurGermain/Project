@@ -203,8 +203,8 @@ conversationSchema.methods.emptyMessage = function () {
   this.save();
 };
 
-conversationSchema.methods.deleteMessage = function (msgPosition, userId, checkIfEmpty = true) {
-  canCrudMessage(this.users[this.messages[msgPosition].sender]?.userId, userId);
+conversationSchema.methods.deleteMessage = function (msgPosition, userId, checkIfEmpty = true, canCRUD = true) {
+  if (canCRUD) canCrudMessage(this.users[this.messages[msgPosition].sender]?.userId, userId);
 
   let deleteModifier = this.messages[msgPosition - 1]?.type === 'timestamp' ? 1 : 0;
 
@@ -217,7 +217,7 @@ conversationSchema.methods.deleteMessage = function (msgPosition, userId, checkI
 
 conversationSchema.methods.deleteExpiredMessage = function (date) {
   for (let i = 0; i < this.messages.length; i++) {
-    if (this.messages[i].expireAt <= date) this.deleteMessage(i, undefined, false);
+    if (this.messages[i].expireAt <= date) this.deleteMessage(i, undefined, false, false);
   }
 };
 
