@@ -4,6 +4,8 @@ function isAuth(req, res, next) {
   }
 
   console.log('You need to login');
+
+  req.session.previousUrl = req.url;
   res.redirect('/login');
 }
 

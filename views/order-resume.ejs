@@ -35,7 +35,7 @@
           <div class="position-sticky top-0 pt-5">
             <div class="pt-5">
               <div class="card p-3 text-center card-deep-shadow">
-                <%- include('partials/Update-order') %>
+                <%- include('partials/orderUpdate', { ORDER: order }) %>
 
                 <div class="text-start">
                   <p class="h6 mb-0">Send XMR PRICE to this address</p>
@@ -66,7 +66,7 @@
         <!-- Content -->
         <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
 
-          <%- include('partials/Display_Data/Product-card', {product: product}) %>
+          <%- include('partials/product-card', {product: product}) %>
 
           <hr class="my-4">
 

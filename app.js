@@ -77,6 +77,10 @@ app.use('/', SETTINGS);
 app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
 
+const x = 'szvsfdsfsdf';
+
+console.log(x.slice(0, 5));
+
 app.listen('3000', () => {
   console.log('Server running on port 3000');
 });

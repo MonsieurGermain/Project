@@ -7,8 +7,10 @@ async function deleteExpiredMessage() {
   const dateNow = Date.now();
   const converstionWithExpiredMessage = await Conversation.find({ 'messages.expireAt': { $lt: dateNow } });
 
+  console.log(converstionWithExpiredMessage);
+
   for (let i = 0; i < converstionWithExpiredMessage.length; i++) {
-    converstionWithExpiredMessage[i].deleteExpiredMessage(dateNow);
+    converstionWithExpiredMessage[i].deleteExpiredMessage({ dateNow });
     converstionWithExpiredMessage[i].emptyMessage();
   }
 }
@@ -25,6 +27,8 @@ async function hasOrderBeenPaid() {
 async function deleteExpiredConversation() {
   const dateNow = Date.now();
   const expiredConversation = await Conversation.find({ 'settings.convoExpiryDate': { $lt: dateNow } });
+
+  console.log(expiredConversation);
 
   for (let i = 0; i < expiredConversation.length; i++) {
     expiredConversation[i].deleteConversation();

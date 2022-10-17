@@ -1,0 +1,46 @@
+<% if (SELECTED) { %>
+  <label for="change-messages">
+    <a href="/messages?id=<%= CONVERSATION.id %>#bottom" class="selected-convo position-relative d-flex align-items-start text-decoration-none pe-none py-3 px-4">
+      <div class="position-absolute top-0 start-0 bg-primary w-3 h-100"></div>
+<% } else { %> 
+  <a href="/messages?id=<%= CONVERSATION.id %>#bottom" class="d-flex align-items-start text-decoration-none bg-faded-primary-hover py-3 px-4">
+<% } %>
+
+
+<% const DISPLAYED_USERNAME = CONVERSATION.users[OTHER_USER].conversationUsername || CONVERSATION.users[OTHER_USER].user.username %>
+<% const DISPLAYED_IMG_PATH = CONVERSATION.users[OTHER_USER].conversationUsername ? '/default/default-profile-pic.png' : CONVERSATION.users[OTHER_USER].user.img_path %>
+
+
+<img src="<%= DISPLAYED_IMG_PATH %>" class="smedium-rc rounded-circle" alt="<%= DISPLAYED_USERNAME %>">
+<div class="ps-2 ms-1">
+    <div class="mb-1">
+      <h6 class="mb-0 me-2"><%= DISPLAYED_USERNAME %></h6>
+    </div>
+      <p class="convo-snippet fs-sm text-body mb-0">
+        <% if (CONVERSATION.messages.length) { %>
+
+          <% const LAST_MESSAGE = CONVERSATION.messages[CONVERSATION.messages.length - 1] %>
+
+          <% if (LAST_MESSAGE.viewedMessage === false && CONVERSATION.users[LAST_MESSAGE.sender].userId !== authuser.id) { %>
+            <b><%= LAST_MESSAGE.content%></b>
+          <% } else { %> 
+            <%= LAST_MESSAGE.content %>
+          <% } %>
+
+        <% } else { %> 
+          No message
+        <% } %>
+    </p>
+
+    <!-- <div class="position-absolute top-0 end-0 me-3 mt-2">
+        <i class="bx bx-mask fs-xs bg-success p-1" style="border-radius: 50rem; color: #fff;"></i>
+    </div> -->
+
+  </div>
+</a>
+
+<% if (SELECTED) { %>
+</label>
+<% } %>
+
+<div class="contact-divider"></div>

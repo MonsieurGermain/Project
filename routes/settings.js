@@ -9,6 +9,7 @@ const { isAuth } = require('../middlewares/authentication');
 const {
   sanitizeChangePassword,
   sanitizeQuerys,
+  sanitizeParams,
   sanitizeParamsQuerys,
   validateMessageSettings,
 } = require('../middlewares/validation');
@@ -16,26 +17,54 @@ const {
   paginatedResults, randomListOfWords, isEmail, isPgpKeys, isMoneroAddress, generateRandomString,
 } = require('../middlewares/function');
 
-router.get(
-  '/settings',
-  isAuth,
-  sanitizeQuerys,
-  async (req, res) => {
-    try {
-      if (![undefined, 'security', 'privacy', 'payment', 'saved'].includes(req.query.section)) throw new Error('Invalid Section Query');
+router.get('/user/settings/security', isAuth, async (req, res) => {
+  try {
+    res.render('Pages/settingsPages/securityPage');
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/security');
+  }
+});
 
-      const { user } = req;
+router.get('/user/settings/privacy', isAuth, async (req, res) => {
+  try {
+    res.render('Pages/settingsPages/privacyPage');
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/privacy');
+  }
+});
 
-      let paginatedProducts;
-      if (req.query.section === 'saved') paginatedProducts = await paginatedResults(Product, { slug: { $in: user.saved_product }, status: 'online' }, { page: req.query.productPage, limit: 24 });
+router.get('/user/settings/payment', isAuth, async (req, res) => {
+  try {
+    res.render('Pages/settingsPages/paymentPage');
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/payment');
+  }
+});
 
-      res.render('settings', { user, paginatedProducts });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
+router.get('/user/settings/notifications', isAuth, async (req, res) => {
+  try {
+    res.render('Pages/settingsPages/notificationsPage');
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/notification');
+  }
+});
+
+router.get('/user/settings/savedProducts', isAuth, sanitizeQuerys, async (req, res) => {
+  try {
+    const productPage = parseFloat(req.query.productPage) || 1;
+
+    let paginatedProducts = await paginatedResults(Product, { slug: { $in: req.user.saved_product }, status: 'online' }, { page: productPage, limit: 24 });
+
+    res.render('Pages/settingsPages/savedProductsPage', { paginatedProducts });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/savedProducts');
+  }
+});
 
 router.post('/add-xmr-address', isAuth, async (req, res) => {
   try {
@@ -380,6 +409,7 @@ router.post('/order-settings', isAuth, async (req, res) => {
     res.redirect('/404');
   }
 });
+
 router.post('/account-settings', isAuth, async (req, res) => {
   try {
     const { user } = req;
@@ -399,6 +429,7 @@ router.post('/account-settings', isAuth, async (req, res) => {
     res.redirect('/404');
   }
 });
+
 router.post('/reset-privacy', isAuth, sanitizeQuerys, async (req, res) => {
   try {
     const { user } = req;
@@ -449,6 +480,21 @@ router.post('/saved_product/:slug', isAuth, sanitizeParamsQuerys, async (req, re
   } catch (e) {
     console.log(e);
     res.redirect('/404');
+  }
+});
+
+router.post('/delete-notification/:conversationId', isAuth, sanitizeParams, async (req, res) => {
+  try {
+    const { user } = req;
+    const { conversationId } = req.params;
+
+    await user.deleteNotification({ conversationId });
+
+    res.redirect('/user/settings/notifications');
+  } catch (e) {
+    console.log(e);
+    req.flash('error', e.message);
+    res.redirect('/user/settings/notifications');
   }
 });
 

@@ -168,7 +168,7 @@
                 <div class="opacity-80 mb-1">Vendor Rating :</div>
                 <div class="d-flex border-sm-end ">
                   <div class="text-nowrap me-1">
-                    <%- include('partials/Rating', {rating: authuser.review.average_note}) %>
+                    <%- include('partials/components/rating', {rating: authuser.review.average_note}) %>
                   </div>
                   <span class="opacity-70">
                     <span class="opacity-70">(Number reviews)</span>
@@ -498,7 +498,7 @@
 
           <!-- Review Section -->
           <h2 class="h3 mb-4 mt-4">Reviews :</h2>
-          <%- include('partials/Display_Data/Display-reviews', {reviews: reviews, nextPage: [1], padding: 4}) %>
+          <%- include('partials/reviews', {REVIEWS: reviews, NEXTPAGE: [1], PADDING: 4}) %>
 
         </div>
       </div>

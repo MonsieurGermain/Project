@@ -88,11 +88,23 @@
                     </li>
                 </ul>
                 <div class="navbar-right-cluster">
-                    <label for="search-checkbox" class="search-button me-5">
+                    
+                    <% if (!authuser) { %>
+                        <label for="search-checkbox" class="search-button me-5">
+                            <i class="bx bx-search-alt fs-xl nav-link"></i>
+                        </label>
+                    <% } %>
+
+
+                    <% if (authuser) { %>
+                    <label for="search-checkbox" class="search-button">
                         <i class="bx bx-search-alt fs-xl nav-link"></i>
                     </label>
 
-                    <% if (authuser) { %>
+                    <a href="/user/settings/notifications" class="search-button me-3" style="text-decoration: none;">
+                        <i class='bx bxs-bell fs-xl nav-link'></i>
+                    </a>
+    
                     <div class="user-profile-container">
                         <a
                             href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1"
@@ -174,7 +186,7 @@
                                 </li>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a href="/settings?section=saved&productPage=1">
+                                    <a href="/user/settings/savedProducts?productPage=1">
                                         <span>
                                             <i class="bx bx-heart fs-base opacity-60 me-2"></i>
                                             Saved Product
@@ -186,7 +198,7 @@
                                 </li>
                                 <li class="dropdown-divider"></li>
                                 <li>
-                                    <a href="/settings?section=security">
+                                    <a href="/user/settings/security">
                                         <!-- Change Icon -->
                                         <span><i class="bx bx-cog fs-base opacity-60 me-2"></i> Settings</span>
                                     </a>

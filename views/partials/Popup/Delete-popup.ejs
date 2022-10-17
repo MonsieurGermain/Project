@@ -2,15 +2,15 @@
 <div class="popup-dialog">
    <div class="rounded p-3">
    <div class="text pt-2 pb-3">
-         <p class="mb-0">Are you sure that you wish to delete this <%=text%>?</p>
+         <p class="mb-0">Are you sure that you wish to delete this <%=TYPE%>?</p>
          <p class="fs-sm opacity-70 mb-0">This Action is Irreversible</p>
    </div>
       <div class="buttons mt-4">
-         <form action="<%=action%>" method="POST">
+         <form action="<%=ACTION%>" method="POST">
             <button type="submit" class="confirm-button btn btn-primary">Delete</button>
          </form>
-         <label for="<%=checkboxInputId%>" class="btn btn-danger cancel-button">Cancel</label>
+         <label for="<%=CHECKBOX_ID%>" class="btn btn-danger cancel-button">Cancel</label>
       </div>
   </div>
-   <label for="<%=checkboxInputId%>" class="popup-close"></label>
+   <label for="<%=CHECKBOX_ID%>" class="popup-close"></label>
 </div>

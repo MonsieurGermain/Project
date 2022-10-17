@@ -757,7 +757,7 @@ function sanitizeSearchInput(req, res, next) {
   try {
     req.body.search = ValidateText(req.body.search, 'Search Input', { minlength: 2, maxlength: 500 });
 
-    const splitedSearch = req.body.search.split(' ');
+    const splitedSearch = req.body.search.split('/');
 
     if (splitedSearch.length === 2) req.body.searchInput = splitedSearch;
     else req.body.searchInput = [req.body.search, undefined];

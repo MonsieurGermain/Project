@@ -63,9 +63,9 @@
               <% } %>
 
               <div class="text-nowrap me-1 mt-1 mb-3">
-                <%- include('partials/Rating', {rating: vendor.review.average_note}) %>
+                <%- include('partials/components/rating', {rating: vendor.review.average_note}) %>
                 <span class="opacity-70 ms-1">
-                  <%- include('partials/Number-Reviews', {number_reviews: vendor.review.number_review}) %>
+                  <%- include('partials/components/numberReview', {NUMBER_OF_REVIEWS: vendor.review.number_review}) %>
                 </span>
               </div>
 
@@ -152,7 +152,7 @@
           <div class="d-flex flex-wrap align-items-center align-text-center">
             <h3 class="h3 mb-4"><%=vendor.username%> Products:</h3>
             <% if (authuser && vendor.username === authuser.username && authuser.authorization === 'vendor') { %>
-            <a href="/create-product" class="btn btn-primary shadow-primary ms-auto mb-3"><i
+            <a href="/create-product?reviewPage=1" class="btn btn-primary shadow-primary ms-auto mb-3"><i
                 class='bx bx-plus-circle fs-lg me-2'></i> Create Product</a>
             <% } %>
           </div>
@@ -160,7 +160,7 @@
           <% if (!paginatedProducts.results.length) { %>
           <h6 class="mb-4">This Vendor doesnt have any Product</h6>
           <% } else { %>
-          <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3}) %>
+          <%- include('partials/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 3}) %>
           <% } %>
 
           <hr class="my-2">
@@ -168,7 +168,7 @@
           <% if (!paginatedReviews.results.length) { %>
           <h6 class="mb-4">This Vendor doesnt have any Review yet</h6>
           <% } else { %>
-          <%- include('partials/Display_Data/Display-reviews', {reviews: paginatedReviews.results , nextPage: paginatedReviews.nextPage, padding: 5}) %>
+          <%- include('partials/reviews', {REVIEWS: paginatedReviews.results , NEXTPAGE: paginatedReviews.nextPage, PADDING: 5}) %>
           <% } %>
         </div>
 

@@ -37,9 +37,9 @@
                         </p>
                     </div>
                     <div class="d-flex me-3 align-items-center">
-                        <%- include('../Rating', {rating: product.review.average_note}) %>
+                        <%- include('components/rating', {rating: product.review.average_note}) %>
                         <span class="opacity-70">
-                            <%- include('../Number-Reviews', {number_reviews: product.review.number_review}) %>
+                        <%- include('components/numberReview', {NUMBER_OF_REVIEWS: product.review.number_review}) %>
                         </span>
                     </div>
                 </div>

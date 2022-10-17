@@ -161,14 +161,53 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  notification: {
-    type: Array,
-    maxlength: 100,
+  notifications: {
+    type: [{
+      action: {
+        type: String,
+        requried: true,
+      },
+      header: {
+        type: String,
+        requried: true,
+      },
+      content: {
+        type: String,
+        requried: true,
+      },
+    }],
+    maxlength: 75,
   },
   expire_at: {
     type: Number,
   },
 });
+
+userSchema.methods.deleteNotification = async function ({ conversationId }) {
+  const notificationIndex = this.notifications.map((elem) => elem.id).indexOf(conversationId);
+
+  if (notificationIndex === -1) {
+    throw new Error('Invalid Notification Id');
+  }
+
+  this.notifications.splice(notificationIndex, 1);
+
+  await this.save();
+};
+
+userSchema.methods.createNewNotification = async function ({ action, header, content }) {
+  const newNotification = {
+    action,
+    header,
+    content,
+  };
+
+  this.notifications.push(newNotification);
+
+  this.notifications.splice(74, 1); // Delete 100 notification
+
+  await this.save();
+};
 
 userSchema.methods.updateInactiveDate = function () {
   this.expire_at = Date.now() + this.settings.userExpiring * 86400000;

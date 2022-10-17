@@ -10,7 +10,7 @@
   <main class="page-wrapper">
     <label class="clickout-mobile-menu" for="mobile-menu-toggle"></label>
     <div>
-      <%- include('partials/Admin-Sidebar') %>
+      <%- include('partials/sidebar-admin') %>
 
       <!-- Page container -->
       <div class="docs-con pt-5">
@@ -193,7 +193,7 @@
               </article>
               <% } %>
               <div class="mt-5">
-                <%- include('partials/Pagination', {nextPage: reports.nextPage, currentPage: parseInt(query.reportsPage), queryName: 'reportsPage'}) %>
+                <%- include('partials/components/pagination', {nextPage: reports.nextPage, currentPage: parseInt(query.reportsPage), queryName: 'reportsPage'}) %>
               </div>
         </div>
       </div>

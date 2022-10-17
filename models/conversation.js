@@ -77,7 +77,7 @@ function findLastTimestamp(messages) {
   return undefined;
 }
 
-conversationSchema.methods.seeingMessage = async function (userId) {
+conversationSchema.methods.seeingMessage = async function ({ userId }) {
   if (!this.settings.messageView) return;
 
   const indexLastMessage = this.messages.length - 1;
@@ -91,7 +91,9 @@ conversationSchema.methods.seeingMessage = async function (userId) {
   await this.save();
 };
 
-conversationSchema.methods.addUser = function (userId, conversationUsername, conversationPgp, { addUserId = true } = {}) {
+conversationSchema.methods.addUser = function ({
+  userId, conversationUsername, conversationPgp, addUserId = true,
+}) {
   this.users.push({
     user: addUserId ? userId : undefined,
     userId,
@@ -100,14 +102,16 @@ conversationSchema.methods.addUser = function (userId, conversationUsername, con
   });
 };
 
-conversationSchema.methods.updateUserSettings = function (userId, messageExpiryDate, conversationPgp) {
+conversationSchema.methods.updateUserSettings = function ({ userId, messageExpiryDate, conversationPgp }) {
   const indexUser = findUserIndex(this.users, userId);
 
   this.users[indexUser].messageExpiryDate = messageExpiryDate || undefined;
   this.users[indexUser].conversationPgp = conversationPgp || undefined;
 };
 
-conversationSchema.methods.updateConversationSettings = function (includeTimestamps, messageView, deleteEmpty, convoExpiryDate) {
+conversationSchema.methods.updateConversationSettings = function ({
+  includeTimestamps, messageView, deleteEmpty, convoExpiryDate,
+}) {
   if (!this.settings) this.settings = {};
 
   this.settings.includeTimestamps = includeTimestamps;
@@ -118,7 +122,7 @@ conversationSchema.methods.updateConversationSettings = function (includeTimesta
   this.updateConvoExpiryDate();
 };
 
-conversationSchema.methods.addConversationPassword = async function (plainTextPassword) {
+conversationSchema.methods.addConversationPassword = async function ({ plainTextPassword }) {
   this.settings.conversationPassword = await bcrypt.hash(plainTextPassword, 12);
 };
 
@@ -136,7 +140,7 @@ conversationSchema.methods.addTimeStamp = function () {
   }
 };
 
-conversationSchema.methods.removeUpdateReply = function (msgPosition, positionToShift) {
+conversationSchema.methods.removeUpdateReply = function ({ msgPosition, positionToShift }) {
   for (let i = 0; i < this.messages.length; i++) {
     if (this.messages[i].reply == msgPosition) delete this.messages[i].reply;
     if (this.messages[i].reply >= msgPosition) this.messages[i].reply += -positionToShift;
@@ -208,14 +212,14 @@ conversationSchema.methods.deleteMessage = function (msgPosition, userId, checkI
 
   let deleteModifier = this.messages[msgPosition - 1]?.type === 'timestamp' ? 1 : 0;
 
-  this.removeUpdateReply(msgPosition, 1 + deleteModifier);
+  this.removeUpdateReply({ msgPosition, positionToShift: deleteModifier + 1 });
 
   this.messages.splice(msgPosition - deleteModifier, 1 + deleteModifier);
 
   if (checkIfEmpty) this.emptyMessage();
 };
 
-conversationSchema.methods.deleteExpiredMessage = function (date) {
+conversationSchema.methods.deleteExpiredMessage = function ({ date }) {
   for (let i = 0; i < this.messages.length; i++) {
     if (this.messages[i].expireAt <= date) this.deleteMessage(i, undefined, false, false);
   }
@@ -225,7 +229,7 @@ conversationSchema.methods.deleteConversation = async function () {
   await this.delete();
 };
 
-conversationSchema.statics.findAllConversationWithId = async function (ids, populate) {
+conversationSchema.statics.findAllConversationWithId = async function ({ ids, populate }) {
   const conversations = [];
 
   if (ids) {
@@ -239,9 +243,9 @@ conversationSchema.statics.findAllConversationWithId = async function (ids, popu
   return returnedConversation.filter((elem) => elem);
 };
 
-conversationSchema.statics.findAllConversationOfUser = async function (userId, { populate, hiddenConversationsId } = {}) {
+conversationSchema.statics.findAllConversationOfUser = async function ({ userId, populate, ids }) {
   const conversations = await Promise.all([
-    await this.findAllConversationWithId(hiddenConversationsId, populate),
+    await this.findAllConversationWithId({ ids, populate }),
     await this.find({ users: { $elemMatch: { user: userId } } }).populate(populate),
   ]);
 
@@ -254,7 +258,7 @@ conversationSchema.statics.findAllConversationOfUser = async function (userId, {
   return returnedConversation;
 };
 
-conversationSchema.statics.findConversationExist = async function (userId, id) {
+conversationSchema.statics.findConversationExist = async function ({ userId, id }) {
   const conversations = await this.find({
     $and: [
       { 'users.userId': userId },
@@ -265,7 +269,7 @@ conversationSchema.statics.findConversationExist = async function (userId, id) {
   return conversations;
 };
 
-conversationSchema.statics.findConversationWithId = async function (id, populate) {
+conversationSchema.statics.findConversationWithId = async function ({ id, populate }) {
   const conversation = this.findOne({ 'users.userId': id }).populate(populate);
 
   return conversation;

@@ -1,0 +1,165 @@
+<%- include('../../partials/Statics/Head', {page: '- Messages'}) %>
+<body>
+    <main class="page-wrapper messages-view">
+<!-- Fix the Scolling when a lot of conversation are active and when you are in a long conversation -->
+<!-- Make it that the section always take all the screen no matter how much active conversation there are -->
+    <%- include('../../partials/Statics/Navbar') %>
+
+    <section>
+    
+      <div class="row">
+        <div>
+          <input type="checkbox" id="change-messages" hidden/>
+          <div class="messages-container">
+            <div class="contacts">
+              <div class="messages-heading"> <h1 class="h3 mb-0 px-4 py-3">Messages </h1>
+                <label for="change-messages"><%- include ("../../../public/assets/img/icons/close-cross.svg") %></label>
+              </div>
+               <form class="search-messages px-4" action="/search-conversation" method="POST">
+                <div>
+                  <button type="submit">
+                      <i class="bx bx-search-alt fs-xl text-light"></i> 
+                  </button>
+                </div>
+             
+                <input type="search" name="search" style="min-width: 90%;" placeholder="Search for a Conversation" required>
+                <input type="submit" hidden/>
+              </form>
+              <div class="contact-list">
+                <% for(let i = conversations.length - 1; i >= 0; i--) { %>
+
+                  <%- include('../../partials/active-conversation', {
+                    CONVERSATION_INDEX : i,
+                    CONVERSATION: conversations[i], 
+                    OTHER_USER: authuser.id === conversations[i].users[1].userId ? 0 : 1,
+                    SELECTED: conversations[i].id === selectedConversation.id ? true : false,
+                    }) %>
+                <% } %>
+              </div>
+            </div>
+
+
+
+            <div class="chat">
+              <div class="chat-body">
+
+                <% if (!selectedConversation) { %>
+                  <div class="no-convo-yet">
+                    <h6>No Conversation Yet</h6>
+                  </div>
+                <% } else { %> 
+                <!-- Header -->
+                <% const CONVERSATION_ID = selectedConversation.id %>
+                <% const OTHER_USER_POSITION = authuser.id === selectedConversation.users[1].userId ? 0 : 1 %>
+                <% const OTHER_USER_USERNAME =  !selectedConversation.users[OTHER_USER_POSITION].user ? selectedConversation.users[OTHER_USER_POSITION].userId : selectedConversation.users[OTHER_USER_POSITION].conversationUsername || selectedConversation.users[OTHER_USER_POSITION].user.username%>
+                <% const OTHER_USER_IMGPATH = !selectedConversation.users[OTHER_USER_POSITION].user ||  selectedConversation.users[OTHER_USER_POSITION].conversationUsername ? '/default/default-profile-pic.png' : selectedConversation.users[OTHER_USER_POSITION].user.img_path%>
+
+                <input id="delete-convo-input" type="checkbox" hidden></input>
+                <%- include('../../partials/Popup/Delete-popup', {
+                  CHECKBOX_ID:"delete-convo-input", 
+                  ACTION : "/delete-conversation/" + CONVERSATION_ID,
+                  TYPE: "conversation", 
+                  }) %>
+
+                <input id="user-pgp-keys" type="checkbox" hidden></input>
+                <%- include('../../partials/Popup/PgpKeys-popup', {
+                  CHECKBOX_ID:"user-pgp-keys",
+                  otherUser: selectedConversation.users[OTHER_USER_POSITION]
+                }) %>
+
+                <input id="change-settings" type="checkbox" hidden></input>
+                <%- include('../../partials/Popup/Change-settings', {
+                  CHECKBOX_ID:"change-settings",
+                  }) %>
+
+
+                <div class="messages-header px-3">
+                    <div class="change-convo me-2">
+                        <label for="change-messages">
+                            <%- include ("../../../public/assets/img/icons/caret-down.svg") %>
+                            <%- include ("../../../public/assets/img/icons/change-person.svg") %>
+                        </label>
+                    </div>
+                    
+
+
+                    <div class="chat-user">
+                        <a href="/profile/<%=OTHER_USER_USERNAME%>?productPage=1&reviewPage=1" class="mb-0 mx-0">
+                            <img src="<%=OTHER_USER_IMGPATH%>" class="medium-rc rounded-circle" width="40" alt="<%= OTHER_USER_USERNAME %>">
+                        </a>
+                        <div class="name-and-type">
+                            <a href="/profile/<%=OTHER_USER_USERNAME%>?productPage=1&reviewPage=1" class="mb-0 mx-0"><%= OTHER_USER_USERNAME %></a>
+                            <div>
+                                <p class="fs-sm opacity-70 m-0"><span>Your Username:
+                                    </span><%=selectedConversation.users[OTHER_USER_POSITION === 0 ? 1 : 0].conversationUsername || selectedConversation.users[OTHER_USER_POSITION === 0 ? 1 : 0].user.username%></p>
+                            </div>
+                        </div>
+                        <!-- <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div> -->
+                    </div>
+
+
+                    <div class="delete-button-container">
+      
+                        <label for="user-pgp-keys" class="btn btn-outline-white me-3 user-pgp-keys" title="See Other User Pgp Key">
+                            <i class='bx bxs-key fs-xl'></i>
+                        </label>
+
+          
+                          <label for="change-settings" class="btn btn-outline-white me-3 user-pgp-keys" title="Conversation Settings">
+                            <i class='bx bx-cog fs-xl'></i>
+                        </label>
+                        
+                        <label for="delete-convo-input" class="btn btn-outline-danger" title="Delete this Conversation">
+                            <i class="bx bx-trash-alt fs-xl"></i>
+                        </label>
+
+                    </div>
+                </div>
+                <!-- Messages -->
+                <div class="messages-main px-3">
+
+                  <% for(let i = 0; i < selectedConversation.messages.length ; i++) {%>
+
+                    <% if (selectedConversation.messages[i].type === 'msg') { %>
+
+                      <% const MESSAGE_POSITION = i %>
+                      <% const MESSAGE = selectedConversation.messages[i] %>
+                      <% const LASTMESSAGE = selectedConversation.messages[i + 1] ? false : true %>
+                      <% const SHOW_POPUP = selectedConversation.messages[i + 10] ? false : true %>
+
+                      <% if (authuser.id === selectedConversation.users[MESSAGE.sender].userId) { %>
+                        <%- include('../../partials/message-own', { 
+                          MESSAGE, 
+                          LASTMESSAGE,
+                          MESSAGE_POSITION, 
+                          CONVERSATION_ID, 
+                          SHOW_POPUP
+                          }) %>
+
+                      <% } else { %>
+                        <%- include('../../partials/message-other', { 
+                          MESSAGE_POSITION,
+                          MESSAGE,
+                          LASTMESSAGE,
+                          SHOW_POPUP,
+                          CONVERSATION_ID,
+                          OTHER_USER_IMGPATH,
+                          PREVIOUS_MESSAGE: selectedConversation.messages[i - 1],
+                         }) %>
+                      <% } %>
+
+                      <% } else if (selectedConversation.messages[i].type === 'timestamp') { %>
+                        <%-include('../../partials/timestamps', {timestamp: selectedConversation.messages[i].timestamp}) %>
+                      <% } %>
+                    <% } %>
+
+                      <div id="bottom" class="swiper-scrollbar end-0"></div>
+                </div>
+                <%- include('../../partials/send-message') %>
+                <% } %>
+            </div>
+            </div>
+            </div>
+          </div>
+    </section>
+    </html>

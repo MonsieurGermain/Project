@@ -10,7 +10,7 @@
   <main class="page-wrapper">
     <label class="clickout-mobile-menu" for="mobile-menu-toggle"></label>
     <div>
-      <%- include('partials/Admin-Sidebar') %>
+      <%- include('partials/sidebar-admin') %>
 
       <!-- Page container -->
       <div class="docs-con pt-5">
@@ -40,7 +40,6 @@
             <% } %>
 
             <div class="filter-wrap d-lg-flex align-items-center justify-content-between pt-3 mt-lg-2">
-              <h1 class="me-3"></h1>
               <form action="/disputes-filter?adminDispute=<%=query.adminDispute ? true : false%>" method="POST">
                 <div class="d-md-flex mb-3">
                   <select class="form-select me-4 mb-2 mb-md-0" name="reason" style="min-width: 240px;" required>
@@ -150,7 +149,7 @@
               </article>
               <% } %>
               <div class="mt-5">
-                <%- include('partials/Pagination', {nextPage: disputes.nextPage, currentPage: parseInt(query.disputesPage), queryName: 'disputesPage'}) %>
+                <%- include('partials/components/pagination', {nextPage: disputes.nextPage, currentPage: parseInt(query.disputesPage), queryName: 'disputesPage'}) %>
             </div>
         </div>
       </div>

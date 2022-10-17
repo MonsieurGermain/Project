@@ -95,7 +95,7 @@
               <h5 class="fw-medium fs-lg mb-1">Pgp Key</h5>
               <textarea class="form-control" style="min-height: 20rem;"><%=vendor.verifiedPgpKeys%></textarea>
               
-              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="/settings?section=security">Go Here</a></p>
+              <p class="fs-sm mt-3"><b>To Update/Delete your Pgp Key, </b><a href="/user/settings/security">Go Here</a></p>
           </div>
 
           <!-- Spoken Language -->
@@ -129,13 +129,13 @@
             <% if (!paginatedProducts.results.length) { %>
               <h6 class="mb-4">You dont have any Product</h6>
             <% } else { %>
-              <%- include('partials/Display_Data/Display-products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, sepc_col: 3}) %>
+              <%- include('partials/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 3}) %>
             <% } %>
 
 
             <hr class="my-2">
             <h2 class="h3 mb-4 mt-5">Reviews :</h2>
-            <%- include('partials/Display_Data/Display-reviews', {reviews: reviews , nextPage: [1], padding: 5}) %>
+            <%- include('partials/reviews', {REVIEWS: reviews , NEXTPAGE: [1], PADDING: 5}) %>
           </div>
 
         </div>

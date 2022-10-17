@@ -1,18 +1,12 @@
-<%- include('partials/Statics/Head', {page: "- " + 'Register'}) %>
+<%- include('../../partials/Statics/Head', {page: "- " + 'Create Hidden Conversation'}) %>
 
 <body>
   <main class="page-wrapper d-grid" style="place-content: center;">
-      <%- include('partials/Statics/Navbar') %>
+      <%- include('../../partials/Statics/Navbar') %>
       
-      <section class="position-relative h-100 pt-5 pb-4">
+      <section class="position-relative h-100 pt-5 pb-4 mb-5">
         
-        <% if (error.length) { %>
-          <%- include('partials/Flash-message', {message: error, type : 'error'}) %>
-        <% } %>
-        <% if (success.length) { %>
-          <%- include('partials/Flash-message', {message: success, type : 'success'}) %>
-        <% } %>
-
+        <%- include('../../partials/components/flashMessages') %>
 
          <div class="container d-flex flex-wrap justify-content-center align-content-center h-100">
            <div class="w-100 card card-deep-shadow align-self-end p-5" style="max-width: 526px;">
@@ -152,6 +146,9 @@
          
    </section>
      </main>
-
+     
+     <div class="mt-5">
+     <%- include('../../partials/Statics/Footer') %>
+    </div>
   </body>
 </html>

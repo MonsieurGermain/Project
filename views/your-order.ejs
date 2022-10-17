@@ -78,7 +78,7 @@
 
         <% if (orders.results[i].canDelete){ %>
           <input id="delete-order-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-          <%- include('partials/Popup/Delete-order', {checkboxInputId:"delete-order-"+ i, action : "/update-order/" + orders.results[i].id}) %>  
+          <%- include('partials/Popup/Delete-order', {CHECKBOX_ID:"delete-order-"+ i, ACTION : "/update-order/" + orders.results[i].id}) %>  
         <% } %>
 
       <article class="card card-hover border-0 card-deep-shadow overflow-hidden mt-4 
@@ -103,7 +103,7 @@
               <div class="card-body">
                 <div class="d-flex align-items-center mb-3">
                   <p class="mb-1">Status:
-                    <span><%- include('partials/Status-order', {status : orders.results[i].orderStatus}) %></span></p>
+                    <span><%- include('partials/components/orderStatus', {STATUS : orders.results[i].orderStatus}) %></span></p>
                 </div>
                 <h3 class="h4">
                   <a href="<%=orders.results[i].redirectLink%>">
@@ -232,7 +232,7 @@
       </article>
       <% } %>
       <div class="mt-5">
-        <%- include('partials/Pagination', {nextPage: orders.nextPage, currentPage: parseInt(query.ordersPage), queryName: 'ordersPage'}) %>
+        <%- include('partials/components/pagination', {nextPage: orders.nextPage, currentPage: parseInt(query.ordersPage), queryName: 'ordersPage'}) %>
       </div>
       <% } %>
 

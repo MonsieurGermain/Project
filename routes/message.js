@@ -62,6 +62,56 @@ function conversationAlreadyExist(conversations, userId, otherUserId, conversati
   return [new Conversation({}), 0];
 }
 
+// GET PAGE
+router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
+  try {
+    const { user } = req;
+    const id = req.query.id || undefined;
+
+    const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
+
+    let conversations = await Conversation.findAllConversationOfUser({ userId: user.id, populate: 'users.user', ids: hiddenConversationsId });
+
+    const selectedConversation = conversations[getIndexSelectedConversation(conversations, id)];
+
+    if (selectedConversation) {
+      await selectedConversation.seeingMessage({ userId: user.id });
+    }
+
+    res.render('Pages/messagePages/messagesPage', {
+      conversations,
+      selectedConversation,
+    });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/404');
+  }
+});
+
+router.get('/create-hidden-conversation', sanitizeQuerys, async (req, res) => {
+  try {
+    res.render('Pages/messagePages/createHiddenConversationPage', { randomId: generateRandomString(30, 'letterAndnumber') });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/404');
+  }
+});
+
+router.get('/change-user-conversation-settings/:id', isAuth, sanitizeParams, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    req.conversation = await Conversation.findById(id).populate('users.user');
+
+    const { conversation } = req;
+
+    res.render('Pages/messagePages/changeUserSettingsPage', { conversation });
+  } catch (e) {
+    console.log(e);
+    res.redirect(`/messages?id=${req.conversation.id}#bottom`);
+  }
+});
+
 router.post(
   '/create-conversation/:id',
   isAuth,
@@ -87,22 +137,22 @@ router.post(
 
       if (await Conversation.countDocuments({ 'users.userId': user.id }) >= 100) throw new Error('You cant have more than 100 conversation');
 
-      let newConversation = await Conversation.findConversationExist(user.id, id);
+      let newConversation = await Conversation.findConversationExist({ userId: user.id, id });
 
       if (newConversation.filter((conversation) => conversation.users[0].userId === user.id || (!conversation.users[0].conversationUsername && conversation.users[1].userId === user.id)).length >= 5) throw Error('You cant create more than 5 conversation with each user');
 
       let [conversation, userPosition] = conversationAlreadyExist(newConversation, user.id, id, conversationUsername);
 
       if (!conversation.users.length) {
-        conversation.updateConversationSettings(
+        conversation.updateConversationSettings({
           includeTimestamps,
           messageView,
           deleteEmpty,
           convoExpiryDate,
-        );
+        });
 
-        conversation.addUser(user.id, conversationUsername, conversationPgp);
-        conversation.addUser(id);
+        conversation.addUser({ userId: user.id, conversationUsername, conversationPgp });
+        conversation.addUser({ userId: id });
       }
 
       conversation.createNewMessage(content, conversation.users[userPosition].userId, user.settings.messageSettings.messageExpiryDate);
@@ -139,22 +189,22 @@ router.post(
         content, conversationId, conversationPassword, conversationUsername, conversationPgp, convoExpiryDate, messageExpiryDate,
       } = req.body;
 
-      const conversation = await Conversation.findConversationWithId(conversationId);
+      const conversation = await Conversation.findConversationWithId({ id: conversationId });
       if (conversation) throw Error('Invalid Id, Please try a differrent one');
 
       const newHiddenConversation = new Conversation({});
 
-      newHiddenConversation.updateConversationSettings(
-        undefined,
-        undefined,
-        true,
+      newHiddenConversation.updateConversationSettings({
+        deleteEmpty: true,
         convoExpiryDate,
-      );
+      });
 
-      await newHiddenConversation.addConversationPassword(conversationPassword);
+      await newHiddenConversation.addConversationPassword({ conversationPassword });
 
-      newHiddenConversation.addUser(conversationId, conversationUsername, conversationPgp, { addUserId: false });
-      newHiddenConversation.addUser(id);
+      newHiddenConversation.addUser({
+        userId: conversationId, conversationUsername, conversationPgp, addUserId: false,
+      });
+      newHiddenConversation.addUser({ userId: id });
 
       newHiddenConversation.users[0].messageExpiryDate = messageExpiryDate;
 
@@ -224,7 +274,7 @@ router.post('/search-conversation', isAuth, sanitizeSearchInput, async (req, res
   try {
     const { searchInput } = req.body;
 
-    const conversation = await Conversation.findConversationWithId(searchInput[0]);
+    const conversation = await Conversation.findConversationWithId({ id: searchInput[0] });
 
     if (conversation?.settings.conversationPassword) {
       if (!await bcrypt.compare(searchInput[1], conversation.settings.conversationPassword)) throw new Error('Invalid Password');
@@ -242,41 +292,6 @@ router.post('/search-conversation', isAuth, sanitizeSearchInput, async (req, res
   } catch (e) {
     console.log(e);
     res.redirect('/messages#bottom');
-  }
-});
-
-// GET PAGE
-router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
-  try {
-    const { user } = req;
-    const id = req.query.id || undefined;
-
-    const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
-
-    let conversations = await Conversation.findAllConversationOfUser(user.id, { populate: 'users.user', hiddenConversationsId });
-
-    const selectedConversation = conversations[getIndexSelectedConversation(conversations, id)];
-
-    if (selectedConversation) {
-      await selectedConversation.seeingMessage(user.id);
-    }
-
-    res.render('messages', {
-      conversations,
-      selectedConversation,
-    });
-  } catch (e) {
-    console.log(e);
-    res.redirect('/404');
-  }
-});
-
-router.get('/create-hidden-conversation', sanitizeQuerys, async (req, res) => {
-  try {
-    res.render('Create-hidden-conversation', { randomId: generateRandomString(30, 'letterAndnumber') });
-  } catch (e) {
-    console.log(e);
-    res.redirect('/404');
   }
 });
 
@@ -323,32 +338,17 @@ router.post('/change-conversation-settings/:id', isAuth, sanitizeParams, changeS
         convoExpiryDate = !convoExpiryDate || convoExpiryDate < 3 ? 3 : convoExpiryDate || undefined;
       }
 
-      conversation.updateConversationSettings(
+      conversation.updateConversationSettings({
         includeTimestamps,
         messageView,
         deleteEmpty,
         convoExpiryDate,
-      );
+      });
 
       await conversation.emptyMessage();
     }
 
     res.redirect(`/messages?id=${conversation.id}#bottom`);
-  } catch (e) {
-    console.log(e);
-    res.redirect(`/messages?id=${req.conversation.id}#bottom`);
-  }
-});
-
-router.get('/change-user-conversation-settings/:id', isAuth, sanitizeParams, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    req.conversation = await Conversation.findById(id).populate('users.user');
-
-    const { conversation } = req;
-
-    res.render('change-user-conversation-settings', { conversation });
   } catch (e) {
     console.log(e);
     res.redirect(`/messages?id=${req.conversation.id}#bottom`);
@@ -367,11 +367,11 @@ router.post('/change-user-conversation-settings/:id', isAuth, sanitizeParams, ch
     const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
     const userId = conversation.settings.conversationPassword && hiddenConversationsId && hiddenConversationsId.map((elem) => elem.convoId).includes(conversation.id) && conversation.users[1].userId !== user.id ? conversation.users[0].userId : user.id;
 
-    conversation.updateUserSettings(
+    conversation.updateUserSettings({
       userId,
       messageExpiryDate,
       conversationPgp,
-    );
+    });
 
     await conversation.save();
 
