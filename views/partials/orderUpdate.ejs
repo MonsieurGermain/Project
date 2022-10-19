@@ -19,7 +19,7 @@
 <%}%>
 
 
-<%if (ORDER.vendor ==== authuser.username) {%>
+<%if (ORDER.vendor === authuser.username) {%>
     <%if (ORDER.orderStatus === 'awaitingInformation') {%>
         <p class="mt-4">Awaiting Buyer Informations</p>
     <%}%>
@@ -187,8 +187,7 @@
 
 <% if (ORDER.canDelete) { %>
     <input id="delete-order-1" type="checkbox" hidden></input>
-    <%- include('./Popup/Delete-order', {CHECKBOX_ID:"delete-order-1", ACTION : "/update-order/" + ORDER.id}) %>  
-
+    <%- include('./Popup/Delete-popup', {CHECKBOX_ID:"delete-order-1", ACTION : "/update-order/" + ORDER.id, TYPE: 'Order'}) %>  
        <label for="delete-order-1" class="btn btn-primary p-2 mx-auto" style="width: 80%;">
             Delete Order
         </label>

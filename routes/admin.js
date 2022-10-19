@@ -44,6 +44,113 @@ function constructQuery(query) {
   return mongooseQuery;
 }
 
+router.get(
+  '/admin/disputes',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      const { adminDispute, reason } = req.query;
+
+      const query = reason ? { orderStatus: 'disputeInProgress', 'disputesSettings.disputeReason': reason, 'disputesSettings.disputeAdmin': adminDispute ? req.user.username : undefined } : { orderStatus: 'disputeInProgress', 'disputesSettings.disputeAdmin': adminDispute ? req.user.username : undefined };
+
+      const disputes = await paginatedResults(Order, query, { page: req.query.disputesPage, limit: 24, populate: 'product' });
+
+      disputes.results = hideBuyerUsername(disputes.results);
+
+      res.render('Pages/adminPages/dipsutes', { disputes });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/promote-user',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      const users = await paginatedResults(User, { awaiting_promotion: { $exists: true } }, { page: req.query.usersPage, limit: 24 });
+
+      res.render('Pages/adminPages/promote', { users });
+    } catch (e) {
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/feedback',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      if (![undefined, 'feedback', 'bug', 'help', 'other'].includes(req.query.reason)) {
+        throw new Error('Invalid Reason to feedback');
+      }
+      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid Archived Feedback');
+
+      const feedbacks = await paginatedResults(
+        Contactus,
+        constructQuery(req.query),
+        { page: req.query.feedbackPage, limit: 24 },
+      );
+
+      res.render('Pages/adminPages/feedbacks', { feedbacks });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/reports',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) throw new Error('Invalid type to report');
+      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid type to report');
+
+      const query = constructQuery(req.query);
+      query.ban_explanation = { $exists: false };
+
+      const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
+
+      res.render('Pages/adminPages/reports', { reports });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/ban-user',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) {
+        throw new Error('Invalid type to report');
+      }
+
+      const query = constructQuery(req.query);
+      query.ban_explanation = { $exists: true };
+
+      const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
+
+      res.render('Pages/adminPages/ban', { reports });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
 router.post(
   '/report/:id',
   isAuth,
@@ -55,7 +162,7 @@ router.post(
       next();
     } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     }
   },
   async (req, res) => {
@@ -88,27 +195,6 @@ router.post(
 );
 
 // Admin Report
-router.get(
-  '/reports',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) throw new Error('Invalid type to report');
-      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid type to report');
-
-      const query = constructQuery(req.query);
-      query.ban_explanation = { $exists: false };
-
-      const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
-
-      res.render('admin-reports', { reports });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/report-filter',
   isAuth,
@@ -214,28 +300,6 @@ router.post(
 );
 
 // Ban User
-router.get(
-  '/ban-user',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) {
-        throw new Error('Invalid type to report');
-      }
-
-      const query = constructQuery(req.query);
-      query.ban_explanation = { $exists: true };
-
-      const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
-
-      res.render('admin-ban-user', { reports });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/ban-user-filter',
   isAuth,
@@ -300,27 +364,6 @@ router.post(
 );
 
 // Disputes
-router.get(
-  '/disputes',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      const { adminDispute, reason } = req.query;
-
-      const query = reason ? { orderStatus: 'disputeInProgress', 'disputesSettings.disputeReason': reason, 'disputesSettings.disputeAdmin': adminDispute ? req.user.username : undefined } : { orderStatus: 'disputeInProgress', 'disputesSettings.disputeAdmin': adminDispute ? req.user.username : undefined };
-
-      const disputes = await paginatedResults(Order, query, { page: req.query.disputesPage, limit: 24, populate: 'product' });
-
-      disputes.results = hideBuyerUsername(disputes.results);
-
-      res.render('admin-dispute-list', { disputes });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/disputes-filter',
   isAuth,
@@ -397,30 +440,6 @@ router.post(
 );
 
 // Feedback
-router.get(
-  '/feedback',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      if (![undefined, 'feedback', 'bug', 'help', 'other'].includes(req.query.reason)) {
-        throw new Error('Invalid Reason to feedback');
-      }
-      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid Archived Feedback');
-
-      const feedbacks = await paginatedResults(
-        Contactus,
-        constructQuery(req.query),
-        { page: req.query.feedbackPage, limit: 24 },
-      );
-
-      res.render('admin-feedbacks', { feedbacks });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/feedback-filter',
   isAuth,
@@ -477,20 +496,6 @@ router.post(
 );
 
 // Promote
-router.get(
-  '/promote-user',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      const users = await paginatedResults(User, { awaiting_promotion: { $exists: true } }, { page: req.query.usersPage, limit: 24 });
-
-      res.render('admin-promote', { users });
-    } catch (e) {
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/promote-user/:username',
   isAuth,

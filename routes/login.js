@@ -61,7 +61,7 @@ async function create2StepVerification(username, type) {
 }
 
 router.get('/login', isntAuth, (req, res) => {
-  res.render('login');
+  res.render('Pages/authPages/login');
 });
 
 router.post(
@@ -100,7 +100,7 @@ router.post(
 
 router.get('/2fa', isntAuth, async (req, res) => {
   try {
-    res.render('2fa');
+    res.render('Pages/authPages/stepVerification');
   } catch (e) {
     console.log(e);
     req.flash('error', 'An Error as occur Please Try Again');
@@ -137,7 +137,7 @@ router.post(
 );
 
 router.get('/register', isntAuth, (req, res) => {
-  res.render('register');
+  res.render('Pages/authPages/register');
 });
 
 router.post('/register', isntAuth, sanitizeRegisterInput, async (req, res) => {
@@ -164,7 +164,7 @@ router.post('/register', isntAuth, sanitizeRegisterInput, async (req, res) => {
 
 router.get('/generate-account', isntAuth, async (req, res) => {
   try {
-    res.render('generate-account');
+    res.render('Pages/authPages/generateAccount');
   } catch (e) {
     console.log(e);
     req.flash('error', 'Unexpected Error, try again');

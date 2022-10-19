@@ -78,7 +78,7 @@
 
         <% if (orders.results[i].canDelete){ %>
           <input id="delete-order-<%=i%>" type="checkbox" hidden></input> <!-- when checked css shows next element -->
-          <%- include('partials/Popup/Delete-order', {CHECKBOX_ID:"delete-order-"+ i, ACTION : "/update-order/" + orders.results[i].id}) %>  
+          <%- include('partials/Popup/Delete-popup', {CHECKBOX_ID:"delete-order-"+ i, ACTION : "/update-order/" + orders.results[i].id, TYPE: 'Order'}) %>  
         <% } %>
 
       <article class="card card-hover border-0 card-deep-shadow overflow-hidden mt-4 
@@ -126,7 +126,7 @@
                 <div class="d-flex align-items-center flex-wrap order-card-btn-wrap">
                   <span class="me-5 mb-2">
                     <p class="mb-0">Vendor:</p>
-                    <a href="/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1"
+                    <a href="/user/profile/<%=orders.results[i].vendor%>?productPage=1&reviewPage=1"
                       class="d-flex align-items-center fw-bold text-decoration-none me-3">
                       <%= orders.results[i].vendor%>
                     </a>
@@ -136,7 +136,7 @@
                     <p class="mb-0">Buyer:</p>
                     <a class="d-flex align-items-center fw-bold text-decoration-none me-3" href="
                     <% if (orders.results[i].settings.privacyType === 'default') { %>
-                      /profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1
+                      /user/profile/<%=orders.results[i].buyer%>?productPage=1&reviewPage=1
                     <% } %>">
                       <%= orders.results[i].buyer%>
                     </a>

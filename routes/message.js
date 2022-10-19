@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const Conversation = require('../models/conversation');
+const { ConversationModel } = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
 const { generateRandomString } = require('../middlewares/function');
 const {
@@ -59,7 +59,7 @@ function conversationAlreadyExist(conversations, userId, otherUserId, conversati
       }
     }
   }
-  return [new Conversation({}), 0];
+  return [new ConversationModel({}), 0];
 }
 
 // GET PAGE
@@ -70,7 +70,7 @@ router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
 
     const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
 
-    let conversations = await Conversation.findAllConversationOfUser({ userId: user.id, populate: 'users.user', ids: hiddenConversationsId });
+    let conversations = await ConversationModel.findAllConversationOfUser({ userId: user.id, populate: 'users.user', ids: hiddenConversationsId });
 
     const selectedConversation = conversations[getIndexSelectedConversation(conversations, id)];
 
@@ -78,7 +78,7 @@ router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
       await selectedConversation.seeingMessage({ userId: user.id });
     }
 
-    res.render('Pages/messagePages/messagesPage', {
+    res.render('Pages/messagePages/messages', {
       conversations,
       selectedConversation,
     });
@@ -90,7 +90,7 @@ router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
 
 router.get('/create-hidden-conversation', sanitizeQuerys, async (req, res) => {
   try {
-    res.render('Pages/messagePages/createHiddenConversationPage', { randomId: generateRandomString(30, 'letterAndnumber') });
+    res.render('Pages/messagePages/createHiddenConversation', { randomId: generateRandomString(30, 'letterAndnumber') });
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -101,11 +101,11 @@ router.get('/change-user-conversation-settings/:id', isAuth, sanitizeParams, asy
   try {
     const { id } = req.params;
 
-    req.conversation = await Conversation.findById(id).populate('users.user');
+    req.conversation = await ConversationModel.findById(id).populate('users.user');
 
     const { conversation } = req;
 
-    res.render('Pages/messagePages/changeUserSettingsPage', { conversation });
+    res.render('Pages/messagePages/changeUserSettings', { conversation });
   } catch (e) {
     console.log(e);
     res.redirect(`/messages?id=${req.conversation.id}#bottom`);
@@ -120,7 +120,7 @@ router.post(
     if (req.params.id !== req.user.id) next();
     else {
       req.flash('error', 'You cant send a Message to Yourself');
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     }
   },
   sanitizeConversationInput,
@@ -135,9 +135,9 @@ router.post(
       } = req.body;
       const { id } = req.params;
 
-      if (await Conversation.countDocuments({ 'users.userId': user.id }) >= 100) throw new Error('You cant have more than 100 conversation');
+      if (await ConversationModel.countDocuments({ 'users.userId': user.id }) >= 100) throw new Error('You cant have more than 100 conversation');
 
-      let newConversation = await Conversation.findConversationExist({ userId: user.id, id });
+      let newConversation = await ConversationModel.findConversationExist({ userId: user.id, id });
 
       if (newConversation.filter((conversation) => conversation.users[0].userId === user.id || (!conversation.users[0].conversationUsername && conversation.users[1].userId === user.id)).length >= 5) throw Error('You cant create more than 5 conversation with each user');
 
@@ -165,7 +165,7 @@ router.post(
       const user = await User.findById(req.params.id);
 
       req.flash('error', e.message);
-      res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${user.username}?productPage=1&reviewPage=1`);
     }
   },
 );
@@ -178,7 +178,7 @@ router.post(
     if (req.query.id !== req.user.id) next();
     else {
       req.flash('error', 'You cant send a Message to Yourself');
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     }
   },
   sanitizeHiddenConversationInput,
@@ -189,10 +189,10 @@ router.post(
         content, conversationId, conversationPassword, conversationUsername, conversationPgp, convoExpiryDate, messageExpiryDate,
       } = req.body;
 
-      const conversation = await Conversation.findConversationWithId({ id: conversationId });
+      const conversation = await ConversationModel.findConversationWithId({ id: conversationId });
       if (conversation) throw Error('Invalid Id, Please try a differrent one');
 
-      const newHiddenConversation = new Conversation({});
+      const newHiddenConversation = new ConversationModel({});
 
       newHiddenConversation.updateConversationSettings({
         deleteEmpty: true,
@@ -236,7 +236,7 @@ router.post(
     try {
       const { id } = req.params;
 
-      req.conversation = await Conversation.findById(id);
+      req.conversation = await ConversationModel.findById(id);
 
       const { user, conversation } = req;
       const { command } = req.body;
@@ -274,7 +274,7 @@ router.post('/search-conversation', isAuth, sanitizeSearchInput, async (req, res
   try {
     const { searchInput } = req.body;
 
-    const conversation = await Conversation.findConversationWithId({ id: searchInput[0] });
+    const conversation = await ConversationModel.findConversationWithId({ id: searchInput[0] });
 
     if (conversation?.settings.conversationPassword) {
       if (!await bcrypt.compare(searchInput[1], conversation.settings.conversationPassword)) throw new Error('Invalid Password');
@@ -300,7 +300,7 @@ router.post('/delete-conversation/:id', isAuth, sanitizeParams, async (req, res)
   try {
     const { id } = req.params;
 
-    req.conversation = await Conversation.findById(id);
+    req.conversation = await ConversationModel.findById(id);
 
     const { user, conversation } = req;
     const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
@@ -320,7 +320,7 @@ router.post('/change-conversation-settings/:id', isAuth, sanitizeParams, changeS
   try {
     const { id } = req.params;
 
-    req.conversation = await Conversation.findById(id);
+    req.conversation = await ConversationModel.findById(id);
 
     const { user, conversation } = req;
     let {
@@ -359,7 +359,7 @@ router.post('/change-user-conversation-settings/:id', isAuth, sanitizeParams, ch
   try {
     const { id } = req.params;
 
-    req.conversation = await Conversation.findById(id).populate('users.user');
+    req.conversation = await ConversationModel.findById(id).populate('users.user');
 
     const { user, conversation } = req;
     const { messageExpiryDate, conversationPgp } = req.body;

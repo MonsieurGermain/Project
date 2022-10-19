@@ -37,7 +37,7 @@
                     </li>
                     <% if (authuser) { %>
                     <li class="nav-item">
-                        <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1" class="navbar-link"
+                        <a href="/user/profile/<%=authuser.username%>?productPage=1&reviewPage=1" class="navbar-link"
                             >Profile</a
                         >
                     </li>
@@ -107,7 +107,7 @@
     
                     <div class="user-profile-container">
                         <a
-                            href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1"
+                            href="/user/profile/<%=authuser.username%>?productPage=1&reviewPage=1"
                             class="not-mobile-only user-profile-item navbar-link"
                         >
                             <span>
@@ -156,7 +156,7 @@
                         <div class="navbar-dropdown nav-user-dropdown <%=authuser.authorization %>">
                             <ul>
                                 <li>
-                                    <a href="/profile/<%=authuser.username%>?productPage=1&reviewPage=1">
+                                    <a href="/user/profile/<%=authuser.username%>?productPage=1&reviewPage=1">
                                         <span><i class="bx bx-user fs-base opacity-60 me-2"></i> Profile</span>
                                     </a>
                                 </li>

@@ -1,16 +1,19 @@
-const Conversation = require('../models/conversation');
+const { ConversationModel } = require('../models/conversation');
 const Order = require('../models/order');
 const User = require('../models/user');
 const Product = require('../models/product');
 
 async function deleteExpiredMessage() {
   const dateNow = Date.now();
-  const converstionWithExpiredMessage = await Conversation.find({ 'messages.expireAt': { $lt: dateNow } });
+  const converstionWithExpiredMessage = await ConversationModel.find({ 'messages.expireAt': { $lt: dateNow } });
 
-  console.log(converstionWithExpiredMessage);
+  console.log(converstionWithExpiredMessage.messages);
 
   for (let i = 0; i < converstionWithExpiredMessage.length; i++) {
     converstionWithExpiredMessage[i].deleteExpiredMessage({ dateNow });
+
+    console.log(converstionWithExpiredMessage.messages);
+
     converstionWithExpiredMessage[i].emptyMessage();
   }
 }
@@ -26,7 +29,7 @@ async function hasOrderBeenPaid() {
 
 async function deleteExpiredConversation() {
   const dateNow = Date.now();
-  const expiredConversation = await Conversation.find({ 'settings.convoExpiryDate': { $lt: dateNow } });
+  const expiredConversation = await ConversationModel.find({ 'settings.convoExpiryDate': { $lt: dateNow } });
 
   console.log(expiredConversation);
 

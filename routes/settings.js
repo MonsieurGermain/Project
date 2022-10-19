@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const Product = require('../models/product');
-const Conversation = require('../models/conversation');
+const { ConversationModel } = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
 const {
   sanitizeChangePassword,
@@ -19,7 +19,7 @@ const {
 
 router.get('/user/settings/security', isAuth, async (req, res) => {
   try {
-    res.render('Pages/settingsPages/securityPage');
+    res.render('Pages/settingsPages/security');
   } catch (e) {
     console.log(e);
     res.redirect('/user/settings/security');
@@ -28,7 +28,7 @@ router.get('/user/settings/security', isAuth, async (req, res) => {
 
 router.get('/user/settings/privacy', isAuth, async (req, res) => {
   try {
-    res.render('Pages/settingsPages/privacyPage');
+    res.render('Pages/settingsPages/privacy');
   } catch (e) {
     console.log(e);
     res.redirect('/user/settings/privacy');
@@ -37,7 +37,7 @@ router.get('/user/settings/privacy', isAuth, async (req, res) => {
 
 router.get('/user/settings/payment', isAuth, async (req, res) => {
   try {
-    res.render('Pages/settingsPages/paymentPage');
+    res.render('Pages/settingsPages/payment');
   } catch (e) {
     console.log(e);
     res.redirect('/user/settings/payment');
@@ -46,7 +46,7 @@ router.get('/user/settings/payment', isAuth, async (req, res) => {
 
 router.get('/user/settings/notifications', isAuth, async (req, res) => {
   try {
-    res.render('Pages/settingsPages/notificationsPage');
+    res.render('Pages/settingsPages/notifications');
   } catch (e) {
     console.log(e);
     res.redirect('/user/settings/notification');
@@ -59,7 +59,7 @@ router.get('/user/settings/savedProducts', isAuth, sanitizeQuerys, async (req, r
 
     let paginatedProducts = await paginatedResults(Product, { slug: { $in: req.user.saved_product }, status: 'online' }, { page: productPage, limit: 24 });
 
-    res.render('Pages/settingsPages/savedProductsPage', { paginatedProducts });
+    res.render('Pages/settingsPages/savedProducts', { paginatedProducts });
   } catch (e) {
     console.log(e);
     res.redirect('/user/settings/savedProducts');
@@ -132,7 +132,7 @@ router.post('/delete-address', isAuth, sanitizeQuerys, async (req, res) => {
 });
 
 async function updateConversationPgp(username, newPgp) {
-  const conversations = await Conversation.findAllUserConversations(username);
+  const conversations = await ConversationModel.findAllUserConversations(username);
 
   for (let i = 0; i < conversations.length; i++) {
     conversations[i].updateNewPgp(username, newPgp);

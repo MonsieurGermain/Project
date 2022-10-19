@@ -6,7 +6,7 @@ const {
 } = require('./function');
 
 // Vars
-const bannedUsername = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous'];
+const bannedUsername = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous', 'edit'];
 const conversationType = ['default', 'semi-hidden', 'hidden'];
 const possibleRating = ['1', '2', '3', '4', '5'];
 const countryList = ['United-State', 'Canada'];
@@ -182,7 +182,7 @@ function sanitizeConversationInput(req, res, next) {
     next();
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect(`/profile/${req.params.username}?productPage=1&reviewPage=1`);
+    res.redirect(`/user/profile/${req.params.username}?productPage=1&reviewPage=1`);
   }
 }
 
@@ -323,7 +323,7 @@ function sanitizeProfileInput(req, res, next) {
     next();
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/edit-profile?productPage=1&reviewPage=1');
+    res.redirect('/user/profile/edit?productPage=1&reviewPage=1');
   }
 }
 
