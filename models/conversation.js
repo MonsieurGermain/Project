@@ -10,7 +10,7 @@ const usersSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  conversationUsername: {
+  displayUsername: {
     type: String,
   },
   conversationPgp: {
@@ -101,6 +101,4 @@ conversationSchema.statics.findConversationWithId = async function ({ id, popula
 
 setConversationMethodsToSchema(conversationSchema);
 
-const ConversationModel = mongoose.model('Conversation', conversationSchema);
-
-module.exports = { ConversationModel };
+module.exports = mongoose.model('Conversation', conversationSchema);

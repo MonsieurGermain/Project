@@ -5,7 +5,7 @@ const fileUpload = require('express-fileupload');
 const Fuse = require('fuse.js');
 const Product = require('../models/product');
 const Review = require('../models/review');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const { ImageUploadsValidation, uploadsFiles, deleteImage } = require('../middlewares/filesUploads');
 const { isAuth, isVendor } = require('../middlewares/authentication');
 const {
@@ -74,8 +74,6 @@ router.get('/products', sanitizeQuerys, async (req, res) => {
 
     const { search, productPage } = req.query;
 
-    console.log(search);
-
     if (search) {
       const productFused = fusedProduct.search(search);
       productsFuzzy = productFused.map(({ item }) => item);
@@ -105,7 +103,7 @@ router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
 
     if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
 
-    const vendor = await User.findOne({ username: product.vendor });
+    const vendor = await UserModel.findOne({ username: product.vendor });
 
     const paginatedReviews = await paginatedResults(
       Review,

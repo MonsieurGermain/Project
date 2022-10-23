@@ -1,8 +1,8 @@
-<%- include('../../partials/Statics/Head', {page: '- Edit Profile'}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Edit Profile'}) %>
 
   <body>
 
-    <%- include('../../partials/Statics/Navbar') %>
+    <%- include('../../Partials/Statics/Navbar') %>
     <!-- Page wrapper for sticky footer -->
     <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
@@ -23,7 +23,7 @@
                 </nav>
                 
                   <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-                    <%- include('../../partials/components/flashMessages') %>
+                    <%- include('../../Partials/components/flashMessages') %>
                 </div>   
       
       
@@ -127,13 +127,13 @@
             <% if (!paginatedProducts.results.length) { %>
               <h6 class="mb-4">You dont have any Product</h6>
             <% } else { %>
-              <%- include('../../partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 3}) %>
+              <%- include('../../Partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 3}) %>
             <% } %>
 
 
             <hr class="my-2">
             <h2 class="h3 mb-4 mt-5">Reviews :</h2>
-            <%- include('../../partials/render/reviews', {REVIEWS: reviews , NEXTPAGE: [1], PADDING: 5}) %>
+            <%- include('../../Partials/render/reviews', {REVIEWS: reviews , NEXTPAGE: [1], PADDING: 5}) %>
           </div>
 
         </div>
@@ -142,7 +142,7 @@
     </main>
 
     <!-- Footer -->
-    <%- include('../../partials/Statics/Footer') %>
+    <%- include('../../Partials/Statics/Footer') %>
     
   </body>
 </html>

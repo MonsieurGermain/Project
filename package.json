@@ -23,7 +23,7 @@
     "fuse.js": "^6.6.2",
     "html-filter": "^4.3.3",
     "method-override": "^3.0.0",
-    "mongoose": "^6.4.4",
+    "mongoose": "^5.11.15",
     "nodemailer": "^6.7.5",
     "openpgp": "^5.3.0",
     "passport": "^0.5.3",

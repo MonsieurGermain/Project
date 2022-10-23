@@ -1,10 +1,10 @@
-<%- include('../../partials/Statics/Head', {page: '- Saved Product'}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Saved Product'}) %>
 <body>
 
     
         <main class="page-wrapper">
 
-            <%- include('../../partials/Statics/Navbar') %>
+            <%- include('../../Partials/Statics/Navbar') %>
 
           <!-- Breadcrumb -->
 
@@ -26,14 +26,14 @@
 
             <div class="row setting-view">
               
-              <%-include('../../partials/sidebarSettings') %>
+              <%- include('../../Partials/sidebarSettings') %>
   
 
 
                 <div class="col-md-7 pb-5 mb-lg-2 mb-lg-4">
 
                   <div class="mb-3">
-                    <%- include('../../partials/components/flashMessages') %>
+                    <%- include('../../Partials/components/flashMessages') %>
                   </div>   
 
                   <h1 class="h2 pt-xl-1">Saved Product</h1>
@@ -41,7 +41,7 @@
                   <% if (!paginatedProducts.results.length) { %>
                     <h6 style="text-align: center">You dont have any Saved Products</h6>
                   <% } else { %>
-                    <%- include('../../partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 2}) %>
+                    <%- include('../../Partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 2}) %>
                   <% } %>
                   
                 </div>
@@ -54,7 +54,7 @@
     
     
         <!-- Footer -->
-        <%- include('../../partials/Statics/Footer') %>
+        <%- include('../../Partials/Statics/Footer') %>
       </body>
     </html>
     

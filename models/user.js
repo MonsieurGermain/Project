@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
-const Product = require('./product');
-const Conversation = require('./conversation');
-const Review = require('./review');
-const Report = require('./report');
-const Contactus = require('./contactus');
-const StepVerification = require('./2step-verification');
-const { deleteImage } = require('../middlewares/filesUploads');
+const { setUserMethodsToSchema } = require('./methods/user');
 
 const reviewSchema = new mongoose.Schema({
   number_review: {
@@ -23,7 +17,7 @@ const reviewSchema = new mongoose.Schema({
 });
 
 const messageSettingsSchema = new mongoose.Schema({
-  conversationUsername: {
+  displayUsername: {
     type: String,
   },
   conversationPgp: {
@@ -52,11 +46,59 @@ const messageSettingsSchema = new mongoose.Schema({
   },
 });
 
+const notificationsSettingsSchema = new mongoose.Schema({
+  recordNotification: {
+    type: Boolean,
+    default: true,
+    required: false,
+  },
+  expiryDate: {
+    type: Number,
+    default: 7,
+  },
+  sawNotification: {
+    type: Boolean,
+  },
+  sendNotification: {
+    type: {
+      orderStatusChange: {
+        type: Boolean,
+      },
+      newConversation: {
+        type: Boolean,
+      },
+      newMessage: {
+        type: Boolean,
+      },
+      changeConversationSettings: {
+        type: Boolean,
+      },
+      deleteMessage: {
+        type: Boolean,
+      },
+      deleteConversation: {
+        type: Boolean,
+      },
+      newUpdate: {
+        type: Boolean,
+      },
+    },
+    default: {
+      orderStatusChange: true,
+      newConversation: true,
+      changeConversationSettings: true,
+      deleteConversation: true,
+      newUpdate: true,
+    },
+    required: false,
+  },
+});
+
 const settingsSchema = new mongoose.Schema({
   messageSettings: {
     type: messageSettingsSchema,
     default: {
-      conversationUsername: 'customUsername',
+      displayUsername: 'customUsername',
       conversationPgp: 'showPgp',
       messageExpiryDate: 7,
       convoExpiryDate: 180,
@@ -64,8 +106,14 @@ const settingsSchema = new mongoose.Schema({
     },
     required: true,
   },
+  notificationsSettings: {
+    type: notificationsSettingsSchema,
+    default: {},
+    required: false,
+  },
   privateInfoExpiring: {
     type: Number,
+    default: 7,
   },
   userExpiring: {
     type: Number,
@@ -80,7 +128,7 @@ const settingsSchema = new mongoose.Schema({
   },
 });
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   img_path: {
     type: String,
   },
@@ -123,12 +171,7 @@ const userSchema = new mongoose.Schema({
   },
   settings: {
     type: settingsSchema,
-    default: {
-      messageExpiring: 7,
-      privateInfoExpiring: 7,
-      deleteEmptyConversation: true,
-      recordSeeingMessage: false,
-    },
+    default: {},
     required: true,
   },
   job: {
@@ -167,112 +210,26 @@ const userSchema = new mongoose.Schema({
         type: String,
         requried: true,
       },
-      header: {
+      details: {
         type: String,
-        requried: true,
       },
-      content: {
+      unSafeDetails: {
         type: String,
-        requried: true,
+      },
+      sawNotification: {
+        type: Boolean,
+      },
+      expireAt: {
+        type: Number,
       },
     }],
-    maxlength: 75,
+    maxlength: 50,
   },
   expire_at: {
     type: Number,
   },
 });
 
-userSchema.methods.deleteNotification = async function ({ conversationId }) {
-  const notificationIndex = this.notifications.map((elem) => elem.id).indexOf(conversationId);
+setUserMethodsToSchema(UserSchema);
 
-  if (notificationIndex === -1) {
-    throw new Error('Invalid Notification Id');
-  }
-
-  this.notifications.splice(notificationIndex, 1);
-
-  await this.save();
-};
-
-userSchema.methods.createNewNotification = async function ({ action, header, content }) {
-  const newNotification = {
-    action,
-    header,
-    content,
-  };
-
-  this.notifications.push(newNotification);
-
-  this.notifications.splice(74, 1); // Delete 100 notification
-
-  await this.save();
-};
-
-userSchema.methods.updateInactiveDate = function () {
-  this.expire_at = Date.now() + this.settings.userExpiring * 86400000;
-};
-
-userSchema.methods.Add_Remove_Saved_Product = function (id) {
-  if (this.saved_product.includes(id)) this.saved_product = this.saved_product.filter((element) => element !== id);
-  // Remove
-  else this.saved_product.push(id); // Add
-};
-
-userSchema.methods.offlineAllUserProducts = async function () {
-  const userProducts = await Product.find({ vendor: this.username });
-
-  for (let i = 0; i < userProducts.length; i++) {
-    if (!userProducts[i].customMoneroAddress) {
-      userProducts[i].status = 'offline';
-      userProducts[i].save();
-    }
-  }
-};
-
-userSchema.methods.deleteUser = async function () {
-  deleteImage(`./uploads${this.img_path}`);
-
-  // Delete Conversations
-  const conversations = await Conversation.find({
-    $or: [{ sender_1: this.username }, { sender_2: this.username }],
-  });
-
-  for (let i = 0; i < conversations.length; i++) {
-    conversations[i].deleteConversation();
-  }
-
-  // Product
-  const products = await Product.find({ vendor: this.username });
-  for (let i = 0; i < products.length; i++) {
-    products[i].deleteProduct();
-  }
-
-  // Review
-  const review = await Review.find({ sender: this.username });
-  for (let i = 0; i < review.length; i++) {
-    review[i].deleteReview();
-  }
-
-  // Report
-  const reports = await Report.find({ $or: [{ reference_id: this.username }, { username: this.username }] });
-  for (let i = 0; i < reports.length; i++) {
-    reports[i].deleteReport();
-  }
-
-  // Contact Us
-  const contactus = await Contactus.find({ username: this.username });
-  for (let i = 0; i < contactus.length; i++) {
-    contactus[i].deleteContactUs();
-  }
-
-  // 2 Step Verification
-  const stepVerification = await StepVerification.find({ username: this.username });
-  for (let i = 0; i < stepVerification.length; i++) {
-    stepVerification[i].deleteStepVerification();
-  }
-
-  await this.delete();
-};
-
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', UserSchema);

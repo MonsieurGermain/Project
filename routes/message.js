@@ -2,8 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
-const { ConversationModel } = require('../models/conversation');
+const UserModel = require('../models/user');
+const ConversationModel = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
 const { generateRandomString } = require('../middlewares/function');
 const {
@@ -17,6 +17,14 @@ const {
   changeSettingsConversation,
   sanitizeSearchInput,
 } = require('../middlewares/validation');
+
+function isSendingToHimself(req, res, next) {
+  if (req.params.id !== req.user.id) next();
+  else {
+    req.flash('error', 'You cant send a Message to Yourself');
+    res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
+  }
+}
 
 function getIndexSelectedConversation(conversations, conversationId) {
   const index = conversations.map((conversation) => conversation.id).indexOf(conversationId);
@@ -48,13 +56,13 @@ function deleteExpiredUncoveredIds(uncoveredId) {
   return uncoveredId;
 }
 
-function conversationAlreadyExist(conversations, userId, otherUserId, conversationUsername) {
+function conversationAlreadyExist(conversations, userId, otherUserId, displayUsername) {
   for (let i = 0; i < conversations.length; i++) {
-    if (!conversations[i].users[0].conversationUsername && !conversationUsername) {
+    if (!conversations[i].users[0].displayUsername && !displayUsername) {
       if (conversations[i].users[0].userId === userId && conversations[i].users[1].userId === otherUserId) return [conversations[i], 0];
       if (conversations[i].users[1].userId === userId && conversations[i].users[0].userId === otherUserId) return [conversations[i], 1];
     } else if (conversations[i].users[0].userId === userId) {
-      if (conversations[i].users[0].conversationUsername === conversationUsername) {
+      if (conversations[i].users[0].displayUsername === displayUsername) {
         return [conversations[i], 0];
       }
     }
@@ -88,7 +96,7 @@ router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
   }
 });
 
-router.get('/create-hidden-conversation', sanitizeQuerys, async (req, res) => {
+router.get('/create-hidden-conversation', isAuth, sanitizeQuerys, async (req, res) => {
   try {
     res.render('Pages/messagePages/createHiddenConversation', { randomId: generateRandomString(30, 'letterAndnumber') });
   } catch (e) {
@@ -116,13 +124,7 @@ router.post(
   '/create-conversation/:id',
   isAuth,
   sanitizeParams,
-  async (req, res, next) => {
-    if (req.params.id !== req.user.id) next();
-    else {
-      req.flash('error', 'You cant send a Message to Yourself');
-      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
-    }
-  },
+  isSendingToHimself,
   sanitizeConversationInput,
   async (req, res) => {
     try {
@@ -131,19 +133,20 @@ router.post(
         includeTimestamps, messageView, deleteEmpty, convoExpiryDate,
       } = user.settings.messageSettings;
       const {
-        content, conversationUsername, conversationPgp,
+        content, displayUsername, conversationPgp,
       } = req.body;
       const { id } = req.params;
 
-      if (await ConversationModel.countDocuments({ 'users.userId': user.id }) >= 100) throw new Error('You cant have more than 100 conversation');
+      if (await ConversationModel.countDocuments({ 'users.userId': user.id }) >= 300) throw new Error('You cant have more than 100 conversation');
 
       let newConversation = await ConversationModel.findConversationExist({ userId: user.id, id });
 
-      if (newConversation.filter((conversation) => conversation.users[0].userId === user.id || (!conversation.users[0].conversationUsername && conversation.users[1].userId === user.id)).length >= 5) throw Error('You cant create more than 5 conversation with each user');
+      if (newConversation.filter((conversation) => conversation.users[0].userId === user.id || (!conversation.users[0].displayUsername && conversation.users[1].userId === user.id)).length >= 5) throw Error('You cant create more than 5 conversation with each user');
 
-      let [conversation, userPosition] = conversationAlreadyExist(newConversation, user.id, id, conversationUsername);
+      let [conversation, userPosition] = conversationAlreadyExist(newConversation, user.id, id, displayUsername);
 
       if (!conversation.users.length) {
+        const otherUser = await UserModel.findById(id);
         conversation.updateConversationSettings({
           includeTimestamps,
           messageView,
@@ -151,8 +154,10 @@ router.post(
           convoExpiryDate,
         });
 
-        conversation.addUser({ userId: user.id, conversationUsername, conversationPgp });
-        conversation.addUser({ userId: id });
+        conversation.addUser({
+          user, customUsername: displayUsername, conversationPgp, isOriginalSender: true,
+        });
+        conversation.addUser({ user: otherUser });
       }
 
       conversation.createNewMessage(content, conversation.users[userPosition].userId, user.settings.messageSettings.messageExpiryDate);
@@ -162,7 +167,7 @@ router.post(
       res.redirect(`/messages?id=${conversation.id}#bottom`);
     } catch (e) {
       console.log(e);
-      const user = await User.findById(req.params.id);
+      const user = await UserModel.findById(req.params.id);
 
       req.flash('error', e.message);
       res.redirect(`/user/profile/${user.username}?productPage=1&reviewPage=1`);
@@ -174,37 +179,33 @@ router.post(
   '/create-hidden-conversation/:id',
   isAuth,
   sanitizeParams,
-  async (req, res, next) => {
-    if (req.query.id !== req.user.id) next();
-    else {
-      req.flash('error', 'You cant send a Message to Yourself');
-      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
-    }
-  },
+  isSendingToHimself,
   sanitizeHiddenConversationInput,
   async (req, res) => {
     try {
       const { id } = req.params;
+      const { user } = req;
       const {
-        content, conversationId, conversationPassword, conversationUsername, conversationPgp, convoExpiryDate, messageExpiryDate,
+        content, conversationId, conversationPassword, displayUsername, conversationPgp, convoExpiryDate, messageExpiryDate,
       } = req.body;
 
       const conversation = await ConversationModel.findConversationWithId({ id: conversationId });
       if (conversation) throw Error('Invalid Id, Please try a differrent one');
 
       const newHiddenConversation = new ConversationModel({});
+      const otherUser = await UserModel.findById(id);
 
       newHiddenConversation.updateConversationSettings({
         deleteEmpty: true,
         convoExpiryDate,
       });
 
-      await newHiddenConversation.addConversationPassword({ conversationPassword });
+      await newHiddenConversation.addConversationPassword({ plainTextPassword: conversationPassword });
 
       newHiddenConversation.addUser({
-        userId: conversationId, conversationUsername, conversationPgp, addUserId: false,
+        user, customUsername: displayUsername, conversationPgp, isHiddenConverstion: conversationId, isOriginalSender: true,
       });
-      newHiddenConversation.addUser({ userId: id });
+      newHiddenConversation.addUser({ user: otherUser });
 
       newHiddenConversation.users[0].messageExpiryDate = messageExpiryDate;
 

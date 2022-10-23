@@ -2,7 +2,6 @@ const {
   isMoneroAddress,
   isEmail,
   isPgpKeys,
-  generateAccountUsername,
 } = require('./function');
 
 // Vars
@@ -155,17 +154,7 @@ function sanitizeConversationInput(req, res, next) {
     // Message
     req.body.content = ValidateText(req.body.content, 'Message', { minlength: 2, maxlength: 1000 });
 
-    switch (req.user.settings.messageSettings.conversationUsername) {
-      case 'ownUsername':
-        req.body.conversationUsername = undefined;
-        break;
-      case 'generateRandom':
-        req.body.conversationUsername = generateAccountUsername();
-        break;
-      case 'customUsername':
-        req.body.conversationUsername = ValidateText(req.body.customUsername, 'Custom Username', { minlength: 4, maxlength: 25 });
-        break;
-    }
+    if (req.body.displayUsername) req.body.displayUsername = ValidateText(req.body.displayUsername, 'Conversation Username', { minlength: 4, maxlength: 25 });
 
     switch (req.user.settings.messageSettings.conversationPgp) {
       case 'showPgp':
@@ -195,7 +184,7 @@ function sanitizeHiddenConversationInput(req, res, next) {
 
     if (req.body.conversationPassword !== req.body.confirmConversationPassword) throw Error('The Conversation Password Doesnt match');
 
-    req.body.conversationUsername = req.body.conversationUsername ? ValidateText(req.body.conversationUsername, 'Conversation Username', { minlength: 4, maxlength: 25 }) : generateAccountUsername();
+    if (req.body.displayUsername) req.body.displayUsername = ValidateText(req.body.displayUsername, 'Conversation Username', { minlength: 4, maxlength: 25 });
 
     if (req.body.conversationPgp) req.body.conversationPgp = isPgpKeys(req.body.conversationPgp);
     else {
@@ -482,7 +471,7 @@ function sanitizeChangePassword(req, res, next) {
     next();
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   }
 }
 
@@ -703,7 +692,7 @@ function validateMessageSettings(req, res, next) {
     req.body.messageView = !!req.body.messageView;
     req.body.deleteEmpty = !!req.body.deleteEmpty;
 
-    if (!['generateRandom', 'customUsername', 'ownUsername'].includes(req.body.conversationUsername)) throw Error('Invalid Conversation Username Value');
+    if (!['generateRandom', 'customUsername', 'ownUsername'].includes(req.body.displayUsername)) throw Error('Invalid Conversation Username Value');
     if (!['showPgp', 'dontShowPgp', 'customPgp'].includes(req.body.conversationPgp)) throw Error('Invalid Conversation Pgp Value');
     if (!['', '1', '3', '7', '30'].includes(req.body.messageExpiryDate)) throw Error('Invalid Conversation Message Expiring Value');
     if (!req.body.messageExpiryDate) req.body.messageExpiryDate = undefined;
@@ -711,14 +700,14 @@ function validateMessageSettings(req, res, next) {
     if (!['', '3', '7', '30', '180', '360'].includes(req.body.convoExpiryDate)) throw Error('Invalid Conversation Expiring Value');
     if (!req.body.convoExpiryDate) req.body.convoExpiryDate = undefined;
 
-    req.body.customUsername = req.body.customUsername && req.body.conversationUsername === 'customUsername' ? ValidateText(req.body.customUsername, 'Custom Username', { minlength: 4, maxlength: 25 }) : undefined;
+    req.body.customUsername = req.body.customUsername && req.body.displayUsername === 'customUsername' ? ValidateText(req.body.customUsername, 'Custom Username', { minlength: 4, maxlength: 25 }) : undefined;
     req.body.customPgp = req.body.customPgp && req.body.conversationPgp === 'customPgp' ? isPgpKeys(req.body.customPgp) : undefined;
 
     next();
   } catch (e) {
     console.log(e);
     req.flash('error', e.message);
-    res.redirect('/settings?section=privacy');
+    res.redirect('/user/settings/privacy');
   }
 }
 function changeUserSettingsConversation(req, res, next) {
@@ -769,10 +758,39 @@ function sanitizeSearchInput(req, res, next) {
   }
 }
 
+function validateNotificationSettings(req, res, next) {
+  try {
+    console.log(req.body);
+
+    req.body.recordNotification = req.body.recordNotification ? true : undefined;
+
+    if (req.body.recordNotification) {
+      req.body.sawNotification = req.body.sawNotification ? true : undefined;
+      if (!['', '1', '3', '7', '30', '-1', undefined].includes(req.body.expiryDateNotification)) throw Error('Invalid Notification Expiring Value');
+
+      req.body.sendNotification = {
+        orderStatusChange: !!req.body.orderStatusChange,
+        newConversation: !!req.body.newConversation,
+        newMessage: !!req.body.newMessage,
+        changeConversationSettings: !!req.body.changeConversationSettings,
+        deleteMessage: !!req.body.deleteMessage,
+        deleteConversation: !!req.body.deleteConversation,
+        newUpdate: !!req.body.newUpdate,
+      };
+    }
+
+    next();
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/privacy');
+  }
+}
+
 module.exports = {
   isObject,
   sanitizeSearchInput,
   changeUserSettingsConversation,
+  validateNotificationSettings,
   sanitizeHiddenConversationInput,
   changeSettingsConversation,
   validateMessageSettings,

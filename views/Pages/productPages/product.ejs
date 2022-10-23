@@ -1,4 +1,4 @@
-<%- include('../../partials/Statics/Head', {page: "- " + product.title}) %>
+<%- include('../../Partials/Statics/Head', {page: "- " + product.title}) %>
 
 
 <!-- Body -->
@@ -9,7 +9,7 @@
   <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
   <main class="page-wrapper">
 
-    <%- include('../../partials/Statics/Navbar') %>
+    <%- include('../../Partials/Statics/Navbar') %>
 
     <!-- Hero -->
     <section class="pt-2 mb-4">
@@ -50,10 +50,10 @@
         <div class="d-sm-flex ">
           <div class="d-flex border-sm-end pe-sm-3 me-sm-3 mb-2 mb-sm-0">
             <div class="text-nowrap me-1">
-              <%- include('../../partials/components/rating', {rating: product.review.average_note}) %>
+              <%- include('../../Partials/components/rating', {rating: product.review.average_note}) %>
             </div>
             <span class="opacity-70">
-              <%- include('../../partials/components/numberReview', {NUMBER_OF_REVIEWS: product.review.number_review}) %>
+              <%- include('../../Partials/components/numberReview', {NUMBER_OF_REVIEWS: product.review.number_review}) %>
             </span>
           </div>
         </div>
@@ -172,10 +172,10 @@
                 <div class="opacity-80 mb-1">Vendor Rating :</div>
                 <div class="d-flex flex-row border-sm-end ">
                   <div class="text-nowrap me-1">
-                    <%- include('../../partials/components/rating', {rating: vendor.review.average_note}) %>
+                    <%- include('../../Partials/components/rating', {rating: vendor.review.average_note}) %>
                   </div>
                   <span class="opacity-70">
-                    <%- include('../../partials/components/numberReview', {NUMBER_OF_REVIEWS: vendor.review.number_review}) %>
+                    <%- include('../../Partials/components/numberReview', {NUMBER_OF_REVIEWS: vendor.review.number_review}) %>
                   </span>
                 </div>
               </div>
@@ -293,7 +293,7 @@
           <% if (!paginatedReviews.results.length) { %>
           <p>This Product Doesnt have any Review Yet</p>
           <% } else { %>
-          <%- include('../../partials/render/reviews', {REVIEWS: paginatedReviews.results , NEXTPAGE: paginatedReviews.nextPage, PADDING: 4}) %>
+          <%- include('../../Partials/render/reviews', {REVIEWS: paginatedReviews.results , NEXTPAGE: paginatedReviews.nextPage, PADDING: 4}) %>
           <% } %>
 
         </div>
@@ -304,7 +304,7 @@
 
 
   <!-- Footer -->
-  <%- include('../../partials/Statics/Footer') %>
+  <%- include('../../Partials/Statics/Footer') %>
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const Order = require('../models/order');
 const Report = require('../models/report');
 const Product = require('../models/product');
@@ -17,11 +17,11 @@ async function getResolveReportDocuments(type, id) {
     product;
   switch (type) {
     case 'vendor':
-      user = await User.findOne({ username: id });
+      user = await UserModel.findOne({ username: id });
       break;
     case 'product':
       product = await Product.findOne({ slug: id });
-      user = await User.findOne({ username: product.vendor });
+      user = await UserModel.findOne({ username: product.vendor });
       break;
     default:
       throw new Error('Invalid Type');
@@ -72,7 +72,7 @@ router.get(
   sanitizeQuerys, // isAdmin,
   async (req, res) => {
     try {
-      const users = await paginatedResults(User, { awaiting_promotion: { $exists: true } }, { page: req.query.usersPage, limit: 24 });
+      const users = await paginatedResults(UserModel, { awaiting_promotion: { $exists: true } }, { page: req.query.usersPage, limit: 24 });
 
       res.render('Pages/adminPages/promote', { users });
     } catch (e) {
@@ -169,7 +169,7 @@ router.post(
     try {
       if (!['vendor', 'product'].includes(req.query.type)) throw new Error('Invalid type to report');
 
-      req.query.type === 'vendor' ? await User.findOne({ username: req.params.id }).orFail(new Error()) : await Product.findOne({ slug: req.params.id }).orFail(new Error()); // Check if the Object that is being reported Exists
+      req.query.type === 'vendor' ? await UserModel.findOne({ username: req.params.id }).orFail(new Error()) : await Product.findOne({ slug: req.params.id }).orFail(new Error()); // Check if the Object that is being reported Exists
 
       const { type, url } = req.query;
       const { id } = req.params;
@@ -502,7 +502,7 @@ router.post(
   sanitizeParamsQuerys, // isAdmin,
   async (req, res) => {
     try {
-      const user = await User.findOne({ username: req.params.username }).orFail(new Error());
+      const user = await UserModel.findOne({ username: req.params.username }).orFail(new Error());
 
       user.awaiting_promotion = undefined;
       user.authorization = req.query.decline ? 'buyer' : 'vendor';

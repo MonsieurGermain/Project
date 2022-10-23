@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 const Order = require('../models/order');
-const User = require('../models/user');
+const UserModel = require('../models/user');
+
 const { isAuth } = require('../middlewares/authentication');
 const {
   sanitizeOrderCustomization,
@@ -17,7 +18,7 @@ const {
 } = require('../middlewares/function');
 
 async function getUserVerifiedPgpKeys(username) {
-  const vendor = await User.findOne({ username }, 'verifiedPgpKeys');
+  const vendor = await UserModel.findOne({ username }, 'verifiedPgpKeys');
   return vendor.verifiedPgpKeys;
 }
 
@@ -28,7 +29,7 @@ router.get('/order/:slug', isAuth, sanitizeParams, async (req, res) => {
 
     if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
 
-    const vendor = await User.findOne({ username: product.vendor });
+    const vendor = await UserModel.findOne({ username: product.vendor });
 
     res.render('order', { product, vendor });
   } catch (e) {
@@ -37,7 +38,7 @@ router.get('/order/:slug', isAuth, sanitizeParams, async (req, res) => {
 });
 
 async function getVendorMoneroAddress(vendorUsername) {
-  const vendor = await User.findOne({ username: vendorUsername });
+  const vendor = await UserModel.findOne({ username: vendorUsername });
 
   if (vendor.vendorMoneroAddress) return vendor.vendorMoneroAddress;
   throw new Error('Order rejected, because the Vendor doesnt have any monero address.');

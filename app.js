@@ -9,10 +9,18 @@ require('dotenv').config();
 const app = express();
 require('./middlewares/passport')(passport);
 
-mongoose.connect('mongodb://localhost:27017/project', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const connectDatabase = async () => {
+  await mongoose.connect('mongodb://localhost:27017/project', {
+    useCreateIndex: true,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    family: 4, // Use IPv4, skip trying IPv6
+  });
+
+  console.log('Connected to database');
+};
+
+connectDatabase();
 
 app.set('view engine', 'ejs');
 app.use(express.json());
@@ -49,10 +57,6 @@ global.siteSettings = {
   autoPromote: true,
 };
 
-const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
-
-allDatabaseScanningFunction();
-
 const HOME_ROUTER = require('./routes/home');
 const LOGIN_ROUTER = require('./routes/login');
 const PROFILE = require('./routes/profile');
@@ -76,6 +80,10 @@ app.use('/', REVIEW);
 app.use('/', SETTINGS);
 app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
+
+const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
+
+allDatabaseScanningFunction();
 
 app.all('*', (req, res) => {
   res.render('Pages/docsErrorPages/404');

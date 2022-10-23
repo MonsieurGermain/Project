@@ -11,8 +11,8 @@
     <% } %>
 
     <% const OTHER_USER = authuser.id === CONVERSATION.users[1].userId ? 0 : 1 %>
-    <% const DISPLAYED_USERNAME = CONVERSATION.users[OTHER_USER].conversationUsername || CONVERSATION.users[OTHER_USER].user.username %>
-    <% const DISPLAYED_IMG_PATH = CONVERSATION.users[OTHER_USER].conversationUsername ? '/default/default-profile-pic.png' : CONVERSATION.users[OTHER_USER].user.img_path %>  
+    <% const DISPLAYED_USERNAME = CONVERSATION.users[OTHER_USER].displayUsername || CONVERSATION.users[OTHER_USER].user.username %>
+    <% const DISPLAYED_IMG_PATH = CONVERSATION.users[OTHER_USER].displayUsername ? '/default/default-profile-pic.png' : CONVERSATION.users[OTHER_USER].user.img_path %>  
 
 
     <img src="<%= DISPLAYED_IMG_PATH %>" class="smedium-rc rounded-circle" alt="<%= DISPLAYED_USERNAME %>">

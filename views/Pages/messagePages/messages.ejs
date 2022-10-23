@@ -1,9 +1,9 @@
-<%- include('../../partials/Statics/Head', {page: '- Messages'}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Messages'}) %>
 <body>
     <main class="page-wrapper messages-view">
 <!-- Fix the Scolling when a lot of conversation are active and when you are in a long conversation -->
 <!-- Make it that the section always take all the screen no matter how much active conversation there are -->
-    <%- include('../../partials/Statics/Navbar') %>
+    <%- include('../../Partials/Statics/Navbar') %>
 
     <section>
     
@@ -27,7 +27,7 @@
               </form>
               <div class="contact-list">
 
-                <%- include('../../partials/render/activeConversations', { ACTIVE_CONVERSATIONS: conversations, SELECTED_CONVERSATION_ID: selectedConversation.id}) %>
+                <%- include('../../Partials/render/activeConversations', { ACTIVE_CONVERSATIONS: conversations, SELECTED_CONVERSATION_ID: selectedConversation?.id || undefined}) %>
 
               </div>
             </div>
@@ -44,24 +44,24 @@
                 <% } else { %> 
                 <!-- Header -->
                 <% const OTHER_USER_POSITION = authuser.id === selectedConversation.users[1].userId ? 0 : 1 %>
-                <% const OTHER_USER_USERNAME =  !selectedConversation.users[OTHER_USER_POSITION].user ? selectedConversation.users[OTHER_USER_POSITION].userId : selectedConversation.users[OTHER_USER_POSITION].conversationUsername || selectedConversation.users[OTHER_USER_POSITION].user.username%>
-                <% const OTHER_USER_IMGPATH = !selectedConversation.users[OTHER_USER_POSITION].user ||  selectedConversation.users[OTHER_USER_POSITION].conversationUsername ? '/default/default-profile-pic.png' : selectedConversation.users[OTHER_USER_POSITION].user.img_path%>
+                <% const OTHER_USER_USERNAME =  !selectedConversation.users[OTHER_USER_POSITION].user ? selectedConversation.users[OTHER_USER_POSITION].userId : selectedConversation.users[OTHER_USER_POSITION].displayUsername || selectedConversation.users[OTHER_USER_POSITION].user.username%>
+                <% const OTHER_USER_IMGPATH = !selectedConversation.users[OTHER_USER_POSITION].user ||  selectedConversation.users[OTHER_USER_POSITION].displayUsername ? '/default/default-profile-pic.png' : selectedConversation.users[OTHER_USER_POSITION].user.img_path%>
 
                 <input id="delete-convo-input" type="checkbox" hidden></input>
-                <%- include('../../partials/Popup/Delete-popup', {
+                <%- include('../../Partials/Popup/Delete-popup', {
                   CHECKBOX_ID:"delete-convo-input", 
                   ACTION : "/delete-conversation/" + selectedConversation.id,
                   TYPE: "conversation", 
                   }) %>
 
                 <input id="user-pgp-keys" type="checkbox" hidden></input>
-                <%- include('../../partials/Popup/PgpKeys-popup', {
+                <%- include('../../Partials/Popup/PgpKeys-popup', {
                   CHECKBOX_ID:"user-pgp-keys",
                   otherUser: selectedConversation.users[OTHER_USER_POSITION]
                 }) %>
 
                 <input id="change-settings" type="checkbox" hidden></input>
-                <%- include('../../partials/Popup/Change-settings', {
+                <%- include('../../Partials/Popup/Change-settings', {
                   CHECKBOX_ID:"change-settings",
                   }) %>
 
@@ -84,7 +84,7 @@
                             <a href="/user/profile/<%=OTHER_USER_USERNAME%>?productPage=1&reviewPage=1" class="mb-0 mx-0"><%= OTHER_USER_USERNAME %></a>
                             <div>
                                 <p class="fs-sm opacity-70 m-0"><span>Your Username:
-                                    </span><%=selectedConversation.users[OTHER_USER_POSITION === 0 ? 1 : 0].conversationUsername || selectedConversation.users[OTHER_USER_POSITION === 0 ? 1 : 0].user.username%></p>
+                                    </span><%=selectedConversation.users[OTHER_USER_POSITION === 0 ? 1 : 0].displayUsername || selectedConversation.users[OTHER_USER_POSITION === 0 ? 1 : 0].user.username%></p>
                             </div>
                         </div>
                         <!-- <div class="bg-success rounded-circle" style="width: 8px; height: 8px;"></div> -->
@@ -111,11 +111,11 @@
                 <!-- Messages -->
                 <div class="messages-main px-3">
 
-                  <%- include('../../partials/render/messages', {CONVERSATION: selectedConversation, OTHER_USER_IMGPATH}) %>
+                  <%- include('../../Partials/render/messages', {CONVERSATION: selectedConversation, OTHER_USER_IMGPATH}) %>
                   <div id="bottom" class="swiper-scrollbar end-0"></div>
 
                 </div>
-                <%- include('../../partials/sendMessageForm') %>
+                <%- include('../../Partials/sendMessageForm') %>
                 <% } %>
             </div>
             </div>

@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { copyFile } = require('fs');
 const fileUpload = require('express-fileupload');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const Product = require('../models/product');
 const Review = require('../models/review');
 const { ImageUploadsValidation, uploadsFiles } = require('../middlewares/filesUploads');
@@ -68,7 +68,7 @@ router.get('/user/profile/edit', isAuth, sanitizeQuerys, async (req, res) => {
 
 router.get('/user/profile/:username', sanitizeParamsQuerys, async (req, res) => {
   try {
-    const vendor = await User.findOne({ username: req.params.username }).orFail('This User doesnt Exist');
+    const vendor = await UserModel.findOne({ username: req.params.username }).orFail('This User doesnt Exist');
     vendor.description = sanitizeHTML(vendor.description);
 
     const productQuery = req.user?.username === req.params.username ? { vendor: vendor.username } : { vendor: vendor.username, status: 'online' };

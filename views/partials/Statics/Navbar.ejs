@@ -101,8 +101,16 @@
                         <i class="bx bx-search-alt fs-xl nav-link"></i>
                     </label>
 
+
                     <a href="/user/settings/notifications" class="search-button me-3" style="text-decoration: none;">
+                        <div class="position-relative">
                         <i class='bx bxs-bell fs-xl nav-link'></i>
+                        <% if (authuser.notifications[0]?.sawNotification === false) { %>
+                        <div class="position-absolute top-0 end-0" style="margin-right: 15px; margin-top: 8px;">
+                            <div class="bg-primary p-1" style="border-radius: 25rem;"></div>
+                        </div>
+                        <% } %>
+                    </div>
                     </a>
     
                     <div class="user-profile-container">

@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const { format } = require('date-fns');
+const { sendNotification } = require('../../middlewares/scanningDatabase');
+const { generateAccountUsername } = require('../../middlewares/function');
 
 function findUserIndex(users, senderId) {
   const userIndex = users.map((singleUser) => singleUser.userId).indexOf(senderId);
@@ -18,7 +20,7 @@ function expireAtMessage(dayUntilExpiring) {
 }
 
 function findLastTimestamp(messages) {
-  for (let i = messages.length; i >= 0; i--) {
+  for (let i = messages.length - 1; i >= 0; i--) {
     if (messages[i]?.type === 'timestamp') return messages[i];
   }
   return undefined;
@@ -38,15 +40,29 @@ async function seeingMessage({ userId }) {
   await this.save();
 }
 
-function addUser({
-  userId, conversationUsername, conversationPgp, addUserId = true,
+function displayUsername({
+  userUsername, userSettings, customUsername, isHiddenConverstion, isOriginalSender,
 }) {
-  this.users.push({
-    user: addUserId ? userId : undefined,
-    userId,
-    conversationUsername,
+  if (!isOriginalSender) return userUsername;
+  if (isHiddenConverstion) return customUsername || generateAccountUsername();
+  if (userSettings === 'generateRandom') return generateAccountUsername();
+  if (userSettings === 'customUsername') return customUsername || generateAccountUsername();
+  return userUsername;
+}
+
+function addUser({
+  user, customUsername, conversationPgp, isHiddenConverstion = false, isOriginalSender = false,
+}) {
+  const newUser = {
+    user: isHiddenConverstion ? undefined : user.id,
+    userId: isHiddenConverstion || user.id,
+    displayUsername: displayUsername({
+      userUsername: user.username, userSettings: user.settings.messageSettings.displayUsername, customUsername, isHiddenConverstion, isOriginalSender,
+    }),
     conversationPgp,
-  });
+  };
+
+  this.users.push(newUser);
 }
 
 function updateUserSettings({ userId, messageExpiryDate, conversationPgp }) {
@@ -112,7 +128,7 @@ function addMessageView(msgPosition) {
   if (this.settings.messageView === true) this.messages[msgPosition].viewedMessage = false;
 }
 
-function createNewMessage(content, sender, expiringInDays, { reply = false } = {}) {
+function createNewMessage(content, sender, expiringInDays, { reply = false, sendNotif = true } = {}) {
   if (this.messages.length >= 1000) throw Error('Message Limit Reached');
 
   const senderIndex = findUserIndex(this.users, sender);
@@ -132,6 +148,15 @@ function createNewMessage(content, sender, expiringInDays, { reply = false } = {
   this.addMessageView(msgPosition);
 
   this.updateConvoExpiryDate();
+
+  if (sendNotif) {
+    const otherUserIndex = senderIndex === 0 ? 1 : 0;
+    sendNotification({
+      userId: this.users[otherUserIndex].userId,
+      notificationType: 'newMessage',
+      notificationData: [this.users[senderIndex].displayUsername, this.id, content.length > 75 ? `${content.splice(0, 75)}...` : content],
+    });
+  }
 }
 
 function editMessage(content, messagePosition, userId) {

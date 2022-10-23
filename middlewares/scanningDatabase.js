@@ -1,19 +1,56 @@
-const { ConversationModel } = require('../models/conversation');
 const Order = require('../models/order');
-const User = require('../models/user');
 const Product = require('../models/product');
+const ConversationModel = require('../models/conversation');
 
-async function deleteExpiredMessage() {
+const UserModel = require('../models/user');
+
+console.log(UserModel);
+
+async function sendNotification({ userId, notificationType, notificationData }) {
+  if (!userId || !notificationType) return console.log('Missing Information');
+
+  const foundUser = await UserModel.findById(userId);
+
+  if (!foundUser) return console.log('No User Found');
+
+  if (foundUser.settings.notificationsSettings.sendNotification[notificationType]) {
+    foundUser.createNewNotification({ notificationType, notificationData });
+  }
+}
+
+async function deleteExpiredNotifications() {
+  const dateNow = Date.now();
+  const userExpiredNotifications = await UserModel.find({ $and: [{ 'notifications.expireAt': { $lt: dateNow } }, { 'notifications.expireAt': { $gt: -1 } }] });
+
+  for (let i = 0; i < userExpiredNotifications.length; i++) {
+    userExpiredNotifications[i].deleteExpiredNotifications(dateNow);
+    userExpiredNotifications[i].save();
+  }
+}
+
+async function deleteInactiveUser() {
+  const users = await UserModel.find({ expire_at: { $lt: Date.now() } });
+
+  for (let i = 0; i < users.length; i++) {
+    users[i].deleteUser();
+  }
+}
+
+async function deleteExpiredConversation() {
+  const dateNow = Date.now();
+  const expiredConversation = await ConversationModel.find({ 'settings.convoExpiryDate': { $lt: dateNow } });
+
+  for (let i = 0; i < expiredConversation.length; i++) {
+    expiredConversation[i].deleteConversation();
+  }
+}
+
+async function deleteExpiredMessages() {
   const dateNow = Date.now();
   const converstionWithExpiredMessage = await ConversationModel.find({ 'messages.expireAt': { $lt: dateNow } });
 
-  console.log(converstionWithExpiredMessage.messages);
-
   for (let i = 0; i < converstionWithExpiredMessage.length; i++) {
     converstionWithExpiredMessage[i].deleteExpiredMessage({ dateNow });
-
-    console.log(converstionWithExpiredMessage.messages);
-
     converstionWithExpiredMessage[i].emptyMessage();
   }
 }
@@ -24,17 +61,6 @@ async function hasOrderBeenPaid() {
   for (let i = 0; i < orders.length; i++) {
     orders[i].continueOrder();
     orders[i].save();
-  }
-}
-
-async function deleteExpiredConversation() {
-  const dateNow = Date.now();
-  const expiredConversation = await ConversationModel.find({ 'settings.convoExpiryDate': { $lt: dateNow } });
-
-  console.log(expiredConversation);
-
-  for (let i = 0; i < expiredConversation.length; i++) {
-    expiredConversation[i].deleteConversation();
   }
 }
 
@@ -50,14 +76,6 @@ async function handleOrderWithExpiredTimer() {
   }
 }
 
-async function deleteInactiveUser() {
-  const users = await User.find({ expire_at: { $lt: Date.now() } });
-
-  for (let i = 0; i < users.length; i++) {
-    users[i].deleteUser();
-  }
-}
-
 async function findAndendSales() {
   const products = await Product.find({ sales_end: { $lt: Date.now() } });
 
@@ -69,7 +87,8 @@ async function findAndendSales() {
 
 function allDatabaseScanningFunction() {
   setInterval(() => {
-    deleteExpiredMessage();
+    deleteExpiredNotifications();
+    deleteExpiredMessages();
     hasOrderBeenPaid();
     console.log('1min');
   }, 60000); // 1 min
@@ -87,4 +106,4 @@ function allDatabaseScanningFunction() {
   }, 86400000); // 1day
 }
 
-module.exports = { allDatabaseScanningFunction };
+module.exports = { allDatabaseScanningFunction, sendNotification };

@@ -1,6 +1,6 @@
-<%- include('../../partials/Statics/Head', {page: query.search ? "- " + query.search : "- Search"}) %>
+<%- include('../../Partials/Statics/Head', {page: query.search ? "- " + query.search : "- Search"}) %>
 <body>
-    <%- include('../../partials/Statics/Navbar') %>
+    <%- include('../../Partials/Statics/Navbar') %>
 
 <main class="page-wrapper">
 <section class="container product-container pt-5"  style="max-width: 1520px;">
@@ -40,7 +40,7 @@
       </form>
     </div>
       <% if (paginatedProducts.results.length) { %>
-        <%- include('../../partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 4 }) %>
+        <%- include('../../Partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 4 }) %>
       <% } else { %>
         <h3 class="me-3">No Products found...</h3>
       <% } %>
@@ -69,6 +69,6 @@
 
 </section>
 </main>
-<%- include('../../partials/Statics/Footer') %>
+<%- include('../../Partials/Statics/Footer') %>
 </body>
 </html>

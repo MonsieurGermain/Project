@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { copyFile } = require('fs');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const StepVerification = require('../models/2step-verification');
 const { generateRandomName } = require('../middlewares/filesUploads');
 const { isntAuth } = require('../middlewares/authentication');
@@ -72,7 +72,7 @@ router.post(
     try {
       const { username, password } = req.body;
 
-      const user = await User.findOne({ username });
+      const user = await UserModel.findOne({ username });
 
       if (!user) throw new Error('Username or Password Invalid');
       if (!bcrypt.compareSync(password, user.password)) throw new Error('Username or Password Invalid');
@@ -144,9 +144,9 @@ router.post('/register', isntAuth, sanitizeRegisterInput, async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (await User.findOne({ username })) throw new Error('This Username is Already Taken');
+    if (await UserModel.findOne({ username })) throw new Error('This Username is Already Taken');
 
-    const user = new User({
+    const user = new UserModel({
       username,
       password: bcrypt.hashSync(password, 12),
       img_path: createProfilePicture('default-profile-pic.png'),
@@ -177,11 +177,11 @@ router.post('/generate-account', isntAuth, async (req, res) => {
 
     const username = generateAccountUsername();
 
-    if (await User.findOne({ username })) throw new Error('This Username is Already Taken');
+    if (await UserModel.findOne({ username })) throw new Error('This Username is Already Taken');
 
     const userPassword = generateAccountPassword(passwordSettings, password);
 
-    const user = new User({
+    const user = new UserModel({
       username: generateAccountUsername(),
       password: bcrypt.hashSync(userPassword, 12),
       img_path: createProfilePicture(username),

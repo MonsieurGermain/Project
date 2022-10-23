@@ -1,17 +1,17 @@
-<%- include('../../partials/Statics/Head', {page: "- " + vendor.username}) %>
+<%- include('../../Partials/Statics/Head', {page: "- " + vendor.username}) %>
 
 <body>
-  <%- include('../../partials/Statics/Navbar') %>
+  <%- include('../../Partials/Statics/Navbar') %>
   <!-- Page wrapper for sticky footer -->
   <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
   <main class="page-wrapper">
 
     <input id="report-vendor-<%=vendor.username%>" type="checkbox" hidden></input>
     <!-- when checked css shows next element -->
-    <%- include('../../partials/Popup/Report-popup', { checkboxInputId: "report-vendor-" + vendor.username,  method: "POST", action: '/report/' + vendor.username, type: "vendor"}) %>
+    <%- include('../../Partials/Popup/Report-popup', { checkboxInputId: "report-vendor-" + vendor.username,  method: "POST", action: '/report/' + vendor.username, type: "vendor"}) %>
 
     <input type="checkbox" class="d-none" id="contact-checkbox">
-    <%- include('../../partials/Popup/SendMessage-popup', {Reciever: vendor.id, checkboxInputId: 'contact-checkbox'}) %>
+    <%- include('../../Partials/Popup/SendMessage-popup', {Reciever: vendor.id, checkboxInputId: 'contact-checkbox'}) %>
     
     <section class="container profile-container pt-5" style="max-width: 1520px;">
       <!-- Breadcrumb -->
@@ -28,7 +28,7 @@
       </nav>
 
       <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
-        <%- include('../../partials/components/flashMessages') %>
+        <%- include('../../Partials/components/flashMessages') %>
       </div>
 
       <div class="d-flex pt-3 py-sm-4 pt-lg-4">
@@ -50,9 +50,9 @@
               <% } %>
 
               <div class="text-nowrap me-1 mt-1 mb-3">
-                <%- include('../../partials/components/rating', {rating: vendor.review.average_note}) %>
+                <%- include('../../Partials/components/rating', {rating: vendor.review.average_note}) %>
                 <span class="opacity-70 ms-1">
-                  <%- include('../../partials/components/numberReview', {NUMBER_OF_REVIEWS: vendor.review.number_review}) %>
+                  <%- include('../../Partials/components/numberReview', {NUMBER_OF_REVIEWS: vendor.review.number_review}) %>
                 </span>
               </div>
 
@@ -147,7 +147,7 @@
           <% if (!paginatedProducts.results.length) { %>
           <h6 class="mb-4">This Vendor doesnt have any Product</h6>
           <% } else { %>
-          <%- include('../../partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 3}) %>
+          <%- include('../../Partials/render/products', { products: paginatedProducts.results , nextPage: paginatedProducts.nextPage, COLUMN_NB: 3}) %>
           <% } %>
 
           <hr class="my-2">
@@ -155,7 +155,7 @@
           <% if (!paginatedReviews.results.length) { %>
           <h6 class="mb-4">This Vendor doesnt have any Review yet</h6>
           <% } else { %>
-          <%- include('../../partials/render/reviews', {REVIEWS: paginatedReviews.results , NEXTPAGE: paginatedReviews.nextPage, PADDING: 5}) %>
+          <%- include('../../Partials/render/reviews', {REVIEWS: paginatedReviews.results , NEXTPAGE: paginatedReviews.nextPage, PADDING: 5}) %>
           <% } %>
         </div>
 
@@ -164,7 +164,7 @@
   </main>
 
   <!-- Footer -->
-  <%- include('../../partials/Statics/Footer') %>
+  <%- include('../../Partials/Statics/Footer') %>
 </body>
 
 </html>

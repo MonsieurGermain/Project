@@ -1,12 +1,12 @@
-<%- include('../../partials/Statics/Head', {page: "- " + 'Create Hidden Conversation'}) %>
+<%- include('../../Partials/Statics/Head', {page: "- " + 'Create Hidden Conversation'}) %>
 
 <body>
   <main class="page-wrapper d-grid" style="place-content: center;">
-      <%- include('../../partials/Statics/Navbar') %>
+      <%- include('../../Partials/Statics/Navbar') %>
       
       <section class="position-relative h-100 pt-5 pb-4 mb-5">
         
-        <%- include('../../partials/components/flashMessages') %>
+        <%- include('../../Partials/components/flashMessages') %>
 
          <div class="container d-flex flex-wrap justify-content-center align-content-center h-100">
            <div class="w-100 card card-deep-shadow align-self-end p-5" style="max-width: 526px;">
@@ -48,7 +48,7 @@
                 <div class="">
                   <label for="password" class="form-label fs-base mb-0">Conversation Username</label>
                   <p class="fs-xs opacity-80 mb-1">If you leave this field empty, we will generate a random one for you</p>
-                  <input type="text" id="password" class="form-control form-control-lg" name="conversationUsername" minlength="3" maxlength="25" value="<%=authuser?.settings.messageSettings.customUsername%>" placeholder="Type your Conversation Username...">
+                  <input type="text" id="password" class="form-control form-control-lg" name="displayUsername" minlength="3" maxlength="25" value="<%=authuser?.settings.messageSettings.customUsername%>" placeholder="Type your Conversation Username...">
                   <div class="d-flex">
                     <p class="ms-auto"><a class="fs-xs" href="/docs/style-text">Learn More</a></p>
                   </div>
@@ -148,7 +148,7 @@
      </main>
      
      <div class="mt-5">
-     <%- include('../../partials/Statics/Footer') %>
+     <%- include('../../Partials/Statics/Footer') %>
     </div>
   </body>
 </html>

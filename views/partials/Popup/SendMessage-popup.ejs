@@ -3,12 +3,12 @@
       <form action="/create-conversation/<%=Reciever%>" method="POST">
          <h5 class="mb-4">Contact <%=vendor.username%></h5>
 
-         <% if (authuser?.settings.messageSettings.conversationUsername === 'customUsername') { %>
+         <% if (authuser?.settings.messageSettings.displayUsername === 'customUsername') { %>
             <label class="form-check-label" for="customUsername">Choose your Custom Username</label>
-            <input class="form-control mt-1" name="customUsername" id="customUsername" placeholder="Enter Custom Username" value="<%=authuser.settings.messageSettings.customUsername%>" required>   
+            <input class="form-control mt-1" name="displayUsername" id="customUsername" placeholder="Enter Custom Username" value="<%=authuser.settings.messageSettings.customUsername%>" required>   
          <% } %>
 
-         <% if (authuser?.settings.messageSettings.conversationUsername === 'customUsername' && authuser?.settings.messageSettings.conversationPgp === 'customPgp') { %>
+         <% if (authuser?.settings.messageSettings.displayUsername === 'customUsername' && authuser?.settings.messageSettings.conversationPgp === 'customPgp') { %>
             <hr class="my-3" />
          <% } %>
 
@@ -17,7 +17,7 @@
             <textarea class="form-control mt-1" name="customPgp" id="customPgp" placeholder="Enter Custom Pgp" minlength="2" maxlength="1000" required><%-authuser.settings.messageSettings.customPgp%></textarea>
          <% } %>
 
-         <% if (authuser?.settings.messageSettings.conversationUsername === 'customUsername' || authuser?.settings.messageSettings.conversationPgp === 'customPgp') { %>
+         <% if (authuser?.settings.messageSettings.displayUsername === 'customUsername' || authuser?.settings.messageSettings.conversationPgp === 'customPgp') { %>
             <hr class="my-3" />
          <% } %>
 

@@ -1,10 +1,10 @@
-<%- include('../../partials/Statics/Head', {page: '- Notifications'}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Notifications'}) %>
 <body>
 
     
         <main class="page-wrapper">
 
-            <%- include('../../partials/Statics/Navbar') %>
+            <%- include('../../Partials/Statics/Navbar') %>
 
           <!-- Breadcrumb -->
 
@@ -26,24 +26,22 @@
 
             <div class="row setting-view">
               
-              <%-include('../../partials/sidebarSettings') %>
+              <%-include('../../Partials/sidebarSettings') %>
   
 
               
               <div class="col-md-8 pb-5 mb-lg-2 mb-lg-4"> 
 
                   <div class="mb-3">
-                    <%- include('../../partials/components/flashMessages') %>
+                    <%- include('../../Partials/components/flashMessages') %>
                   </div>   
 
                   <h1 class="h2 pt-xl-1">Notifications</h1>
 
-                  <% if (!authuser.notifications.length) { %>
+                  <% if (!userNotifications.length) { %>
                     <h6 class="mt-5" style="text-align: center">You dont have any Notifications</h6>
-                  <% } %>
-
-                  <% for(let i = authuser.notifications.length - 1; i > -1; i--) { %>
-                    <%-include('../../partials/render/notifications', {NOTIFICATIONS: authuser.notifications[i]}) %>
+                  <% } else { %> 
+                    <%- include('../../Partials/render/notifications', {NOTIFICATIONS: userNotifications}) %>
                   <% } %>
 
                 </div>
@@ -56,7 +54,7 @@
     
     
         <!-- Footer -->
-        <%- include('../../partials/Statics/Footer') %>
+        <%- include('../../Partials/Statics/Footer') %>
       </body>
     </html>
     

@@ -1,7 +1,7 @@
-<%- include('../../partials/Statics/Head', {page: '- Disputes List'}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Disputes List'}) %>
 
 <body class="documentation-view">
-  <%- include('../../partials/Statics/Navbar') %>
+  <%- include('../../Partials/Statics/Navbar') %>
   <!-- Page wrapper for sticky footer -->
   <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
   <input id="mobile-menu-toggle" type="checkbox" hidden />
@@ -10,7 +10,7 @@
   <main class="page-wrapper">
     <label class="clickout-mobile-menu" for="mobile-menu-toggle"></label>
     <div>
-      <%- include('../../partials/sidebarAdmin') %>
+      <%- include('../../Partials/sidebarAdmin') %>
 
       <!-- Page container -->
       <div class="docs-con pt-5">
@@ -18,7 +18,7 @@
         <div class="container-fluid container pt-4 pt-lg-5 pb-2 pb-lg-4">
 
                   <div class="pt-3 pb-4 py-sm-4 pt-lg-4">
-                    <%- include('../../partials/components/flashMessages') %>
+                    <%- include('../../Partials/components/flashMessages') %>
                 </div>   
 
             <% if (query.adminDispute) { %>
@@ -142,11 +142,11 @@
               </article>
               <% } %>
               <div class="mt-5">
-                <%- include('../../partials/components/pagination', {nextPage: disputes.nextPage, currentPage: parseInt(query.disputesPage), queryName: 'disputesPage'}) %>
+                <%- include('../../Partials/components/pagination', {nextPage: disputes.nextPage, currentPage: parseInt(query.disputesPage), queryName: 'disputesPage'}) %>
             </div>
         </div>
       </div>
     </div>
   </main>
-  <%- include('../../partials/Statics/Footer') %>
+  <%- include('../../Partials/Statics/Footer') %>
 </body>
