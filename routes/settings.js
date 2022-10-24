@@ -124,7 +124,7 @@ router.post('/notifications-settings', isAuth, validateNotificationSettings, asy
   try {
     const { user } = req;
     const {
-      recordNotification, expiryDateNotification, sawNotification, sendNotification,
+      recordNotification, expiryDateNotification, seen, sendNotification,
     } = req.body;
 
     let flashMessage;
@@ -134,7 +134,7 @@ router.post('/notifications-settings', isAuth, validateNotificationSettings, asy
 
       user.settings.notificationsSettings.recordNotification = recordNotification;
       user.settings.notificationsSettings.expiryDate = expiryDateNotification;
-      user.settings.notificationsSettings.sawNotification = sawNotification;
+      user.settings.notificationsSettings.seen = seen;
       user.settings.notificationsSettings.sendNotification = sendNotification;
     } else {
       flashMessage = 'Notification successfully disabled';

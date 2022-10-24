@@ -5,13 +5,6 @@ const Report = require('../report');
 const Product = require('../product');
 const Review = require('../review');
 const { deleteImage } = require('../../middlewares/filesUploads');
-const { notificationsTypes } = require('../../constants/notifications');
-
-function expireAtNotifications(days) {
-  if (!days) return;
-  if (days < 0) return -1;
-  return Date.now() + 86400000 * days;
-}
 
 function deleteNotification({ notificationId }) {
   const notificationIndex = this.notifications.map((elem) => elem.id).indexOf(notificationId);
@@ -27,7 +20,7 @@ function deleteNotification({ notificationId }) {
 function sawNotification() {
   for (let i = 0; i < this.notifications.length; i++) {
     if (!this.notifications[i]) continue;
-    if (this.notifications[i].sawNotification === false) this.notifications[i].sawNotification = true;
+    if (this.notifications[i].seen === false) this.notifications[i].seen = true;
   }
 }
 
@@ -41,24 +34,6 @@ function deleteOnSeeNotification() {
   for (let i = this.notifications.length - 1; i > -1; i--) {
     if (this.notifications[i]?.expireAt === -1) this.notifications.splice(i, 1);
   }
-}
-
-function createNewNotification({ notificationType, notificationData }) {
-  const { action, details } = notificationsTypes[notificationType](notificationData);
-
-  const userSettings = this.settings.notificationsSettings;
-
-  const newNotification = {
-    action,
-    details,
-    sawNotification: userSettings.sawNotification ? false : undefined,
-    expireAt: expireAtNotifications(this.settings.notificationsSettings.expiryDate),
-  };
-
-  this.notifications.unshift(newNotification);
-  this.notifications.splice(this.authorization === 'buyer' ? 49 : 500, 1); // Delete 50 notification
-
-  this.save();
 }
 
 function updateInactiveDate() {
@@ -133,7 +108,6 @@ const setUserMethodsToSchema = (userSchema) => {
     deleteExpiredNotifications,
     deleteOnSeeNotification,
     deleteNotification,
-    createNewNotification,
     updateInactiveDate,
     addRemoveSavedProducts,
     offlineAllUserProducts,

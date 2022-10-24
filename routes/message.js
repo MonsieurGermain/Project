@@ -160,7 +160,11 @@ router.post(
         conversation.addUser({ user: otherUser });
       }
 
-      conversation.createNewMessage(content, conversation.users[userPosition].userId, user.settings.messageSettings.messageExpiryDate);
+      conversation.createNewMessage({
+        content,
+        sender: conversation.users[userPosition].userId,
+        expiringInDays: user.settings.messageSettings.messageExpiryDate,
+      });
 
       await conversation.save();
 
@@ -209,7 +213,11 @@ router.post(
 
       newHiddenConversation.users[0].messageExpiryDate = messageExpiryDate;
 
-      newHiddenConversation.createNewMessage(content, conversationId, messageExpiryDate);
+      newHiddenConversation.createNewMessage({
+        content,
+        sender: conversationId,
+        expiringInDays: messageExpiryDate,
+      });
 
       await newHiddenConversation.save();
 
@@ -246,13 +254,22 @@ router.post(
 
       switch (command[0]) {
         case 'msg':
-          conversation.createNewMessage(command[1], userId, user.settings.messageSettings.messageExpiryDate);
+          conversation.createNewMessage({
+            content: command[1],
+            sender: userId,
+            expiringInDays: user.settings.messageSettings.messageExpiryDate,
+          });
           break;
         case 'edit':
           conversation.editMessage(command[2], command[1], userId);
           break;
         case 'reply':
-          conversation.createNewMessage(command[2], userId, user.settings.messageSettings.messageExpiryDate, { reply: command[1] });
+          conversation.createNewMessage({
+            content: command[2],
+            sender: userId,
+            expiringInDays: user.settings.messageSettings.messageExpiryDate,
+            reply: command[1],
+          });
           break;
         case 'delete':
           conversation.deleteMessage(command[1], userId);

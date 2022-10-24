@@ -654,7 +654,7 @@ function sanitizeObject(object) {
 
 function sanitizeQuerys(req, res, next) {
   try {
-    if (req.query)sanitizeObject(req.query);
+    if (req.query) sanitizeObject(req.query);
 
     next();
   } catch (e) {
@@ -665,7 +665,7 @@ function sanitizeQuerys(req, res, next) {
 
 function sanitizeParams(req, res, next) {
   try {
-    if (req.params)sanitizeObject(req.params);
+    if (req.params) sanitizeObject(req.params);
 
     next();
   } catch (e) {
@@ -760,12 +760,10 @@ function sanitizeSearchInput(req, res, next) {
 
 function validateNotificationSettings(req, res, next) {
   try {
-    console.log(req.body);
-
     req.body.recordNotification = req.body.recordNotification ? true : undefined;
 
     if (req.body.recordNotification) {
-      req.body.sawNotification = req.body.sawNotification ? true : undefined;
+      req.body.seen = req.body.seen ? true : undefined;
       if (!['', '1', '3', '7', '30', '-1', undefined].includes(req.body.expiryDateNotification)) throw Error('Invalid Notification Expiring Value');
 
       req.body.sendNotification = {

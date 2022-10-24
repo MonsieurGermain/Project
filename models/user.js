@@ -56,7 +56,7 @@ const notificationsSettingsSchema = new mongoose.Schema({
     type: Number,
     default: 7,
   },
-  sawNotification: {
+  seen: {
     type: Boolean,
   },
   sendNotification: {
@@ -207,17 +207,14 @@ const UserSchema = new mongoose.Schema({
   notifications: {
     type: [
       {
-        action: {
+        type: {
           type: String,
           requried: true,
         },
-        details: {
-          type: String,
+        data: {
+          type: Array,
         },
-        unSafeDetails: {
-          type: String,
-        },
-        sawNotification: {
+        seen: {
           type: Boolean,
         },
         expireAt: {

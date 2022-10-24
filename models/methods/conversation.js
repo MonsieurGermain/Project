@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const { format } = require('date-fns');
-const sendNotification = require('../../middlewares/sendNotification');
 const { generateAccountUsername } = require('../../middlewares/function');
 
 function findUserIndex(users, senderId) {
@@ -128,7 +127,9 @@ function addMessageView(msgPosition) {
   if (this.settings.messageView === true) this.messages[msgPosition].viewedMessage = false;
 }
 
-function createNewMessage(content, sender, expiringInDays, { reply = false, sendNotif = true } = {}) {
+function createNewMessage({
+  content, sender, expiringInDays, reply = false,
+}) {
   if (this.messages.length >= 1000) throw Error('Message Limit Reached');
 
   const senderIndex = findUserIndex(this.users, sender);
@@ -146,17 +147,7 @@ function createNewMessage(content, sender, expiringInDays, { reply = false, send
   this.addMessageExpiryDate(msgPosition, this.users[senderIndex].messageExpiryDate || expiringInDays);
   this.addReply(msgPosition, reply);
   this.addMessageView(msgPosition);
-
   this.updateConvoExpiryDate();
-
-  if (sendNotif) {
-    const otherUserIndex = senderIndex === 0 ? 1 : 0;
-    sendNotification({
-      userId: this.users[otherUserIndex].userId,
-      notificationType: 'newMessage',
-      notificationData: [this.users[senderIndex].displayUsername, this.id, content.length > 75 ? `${content.splice(0, 75)}...` : content],
-    });
-  }
 }
 
 function editMessage(content, messagePosition, userId) {
