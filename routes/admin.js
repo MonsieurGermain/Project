@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const { OrderModel } = require('../models/order');
 const Report = require('../models/report');
 const Product = require('../models/product');
@@ -24,11 +24,11 @@ async function getResolveReportDocuments(type, id) {
   let product;
   switch (type) {
     case 'vendor':
-      user = await User.findOne({ username: id });
+      user = await UserModel.findOne({ username: id });
       break;
     case 'product':
       product = await Product.findOne({ slug: id });
-      user = await User.findOne({ username: product.vendor });
+      user = await UserModel.findOne({ username: product.vendor });
       break;
     default:
       throw new Error('Invalid Type');
@@ -54,6 +54,113 @@ function constructQuery(query) {
   return mongooseQuery;
 }
 
+router.get(
+  '/admin/disputes',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      const { adminDispute, reason } = req.query;
+
+      const query = reason ? { orderStatus: 'disputeInProgress', 'disputesSettings.disputeReason': reason, 'disputesSettings.disputeAdmin': adminDispute ? req.user.username : undefined } : { orderStatus: 'disputeInProgress', 'disputesSettings.disputeAdmin': adminDispute ? req.user.username : undefined };
+
+      const disputes = await paginatedResults(OrderModel, query, { page: req.query.disputesPage, limit: 24, populate: 'product' });
+
+      disputes.results = hideBuyerUsername(disputes.results);
+
+      res.render('Pages/adminPages/dipsutes', { disputes });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/promote-user',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      const users = await paginatedResults(UserModel, { awaiting_promotion: { $exists: true } }, { page: req.query.usersPage, limit: 24 });
+
+      res.render('Pages/adminPages/promote', { users });
+    } catch (e) {
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/feedback',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      if (![undefined, 'feedback', 'bug', 'help', 'other'].includes(req.query.reason)) {
+        throw new Error('Invalid Reason to feedback');
+      }
+      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid Archived Feedback');
+
+      const feedbacks = await paginatedResults(
+        Contactus,
+        constructQuery(req.query),
+        { page: req.query.feedbackPage, limit: 24 },
+      );
+
+      res.render('Pages/adminPages/feedbacks', { feedbacks });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/reports',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) throw new Error('Invalid type to report');
+      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid type to report');
+
+      const query = constructQuery(req.query);
+      query.ban_explanation = { $exists: false };
+
+      const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
+
+      res.render('Pages/adminPages/reports', { reports });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
+router.get(
+  '/admin/ban-user',
+  isAuth,
+  sanitizeQuerys, // isAdmin,
+  async (req, res) => {
+    try {
+      if (![undefined, 'scam', 'blackmail', 'information', 'other'].includes(req.query.reason)) {
+        throw new Error('Invalid type to report');
+      }
+
+      const query = constructQuery(req.query);
+      query.ban_explanation = { $exists: true };
+
+      const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
+
+      res.render('Pages/adminPages/ban', { reports });
+    } catch (e) {
+      console.log(e);
+      res.redirect('/404');
+    }
+  },
+);
+
 router.post(
   '/report/:id',
   isAuth,
@@ -65,7 +172,7 @@ router.post(
       next();
     } catch (e) {
       req.flash('error', e.message);
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     }
   },
   async (req, res) => {
@@ -73,7 +180,7 @@ router.post(
       if (!['vendor', 'product'].includes(req.query.type)) throw new Error('Invalid type to report');
 
       req.query.type === 'vendor'
-        ? await User.findOne({ username: req.params.id }).orFail(new Error())
+        ? await UserModel.findOne({ username: req.params.id }).orFail(new Error())
         : await Product.findOne({ slug: req.params.id }).orFail(new Error()); // Check if the Object that is being reported Exists
 
       const { type, url } = req.query;
@@ -103,34 +210,6 @@ router.post(
 );
 
 // Admin Report
-router.get(
-  '/reports',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      if (
-        ![undefined, 'scam', 'blackmail', 'information', 'other'].includes(
-          req.query.reason,
-        )
-      ) throw new Error('Invalid type to report');
-      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid type to report');
-
-      const query = constructQuery(req.query);
-      query.ban_explanation = { $exists: false };
-
-      const reports = await paginatedResults(Report, query, {
-        page: req.query.reportsPage,
-        limit: 24,
-      });
-
-      res.render('admin-reports', { reports });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/report-filter',
   isAuth,
@@ -150,8 +229,7 @@ router.post(
       }
 
       res.redirect(
-        `/reports?reportsPage=1${reason !== 'all' ? `&reason=${reason}` : ''}${
-          archived !== 'all' ? `&archived=${archived}` : ''
+        `/reports?reportsPage=1${reason !== 'all' ? `&reason=${reason}` : ''}${archived !== 'all' ? `&archived=${archived}` : ''
         }`,
       );
     } catch (e) {
@@ -174,10 +252,8 @@ router.post(
 
       req.flash('success', 'Report Successfully Archived/Unarchived');
       res.redirect(
-        `/reports?reportsPage=${
-          req.query.reportsPage ? req.query.reportsPage : '1'
-        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${
-          req.query.archived ? `&archived=${req.query.archived}` : ''
+        `/reports?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'
+        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${req.query.archived ? `&archived=${req.query.archived}` : ''
         }`,
       );
     } catch (e) {
@@ -198,10 +274,8 @@ router.post(
 
       req.flash('success', 'Report Successfully Dismissed');
       res.redirect(
-        `/reports?reportsPage=${
-          req.query.reportsPage ? req.query.reportsPage : '1'
-        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${
-          req.query.archived ? `&archived=${req.query.archived}` : ''
+        `/reports?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'
+        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${req.query.archived ? `&archived=${req.query.archived}` : ''
         }`,
       );
     } catch (e) {
@@ -249,10 +323,8 @@ router.post(
 
       req.flash('success', flashMessage);
       res.redirect(
-        `/reports?reportsPage=${
-          req.query.reportsPage ? req.query.reportsPage : '1'
-        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${
-          req.query.archived ? `&archived=${req.query.archived}` : ''
+        `/reports?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'
+        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${req.query.archived ? `&archived=${req.query.archived}` : ''
         }`,
       );
     } catch (e) {
@@ -263,35 +335,6 @@ router.post(
 );
 
 // Ban User
-router.get(
-  '/ban-user',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      if (
-        ![undefined, 'scam', 'blackmail', 'information', 'other'].includes(
-          req.query.reason,
-        )
-      ) {
-        throw new Error('Invalid type to report');
-      }
-
-      const query = constructQuery(req.query);
-      query.ban_explanation = { $exists: true };
-
-      const reports = await paginatedResults(Report, query, {
-        page: req.query.reportsPage,
-        limit: 24,
-      });
-
-      res.render('admin-ban-user', { reports });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/ban-user-filter',
   isAuth,
@@ -311,8 +354,7 @@ router.post(
       }
 
       res.redirect(
-        `/ban-user?reportsPage=1${reason !== 'all' ? `&reason=${reason}` : ''}${
-          archived !== 'all' ? `&archived=${archived}` : ''
+        `/ban-user?reportsPage=1${reason !== 'all' ? `&reason=${reason}` : ''}${archived !== 'all' ? `&archived=${archived}` : ''
         }`,
       );
     } catch (e) {
@@ -333,8 +375,7 @@ router.post(
 
       req.flash('success', 'Ban Request Successfully Dismissed');
       res.redirect(
-        `/ban-user?reportsPage=${
-          req.query.reportsPage ? req.query.reportsPage : '1'
+        `/ban-user?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'
         }${req.query.reason ? `&reason=${req.query.reason}` : ''}}`,
       );
     } catch (e) {
@@ -361,8 +402,7 @@ router.post(
 
       req.flash('success', 'User Successfully Banned');
       res.redirect(
-        `/ban-user?reportsPage=${
-          req.query.reportsPage ? req.query.reportsPage : '1'
+        `/ban-user?reportsPage=${req.query.reportsPage ? req.query.reportsPage : '1'
         }${req.query.reason ? `&reason=${req.query.reason}` : ''}`,
       );
     } catch (e) {
@@ -373,44 +413,6 @@ router.post(
 );
 
 // Disputes
-router.get(
-  '/disputes',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      const { adminDispute, reason } = req.query;
-
-      const query = reason
-        ? {
-          orderStatus: 'DISPUTE_IN_PROGRESS',
-          'disputesSettings.disputeReason': reason,
-          'disputesSettings.disputeAdmin': adminDispute
-            ? req.user.username
-            : undefined,
-        }
-        : {
-          orderStatus: 'DISPUTE_IN_PROGRESS',
-          'disputesSettings.disputeAdmin': adminDispute
-            ? req.user.username
-            : undefined,
-        };
-
-      const disputes = await paginatedResults(OrderModel, query, {
-        page: req.query.disputesPage,
-        limit: 24,
-        populate: 'product',
-      });
-
-      disputes.results = hideBuyerUsername(disputes.results);
-
-      res.render('admin-dispute-list', { disputes });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/disputes-filter',
   isAuth,
@@ -424,8 +426,7 @@ router.post(
       ) throw Error('Invalid Reason');
 
       res.redirect(
-        `/disputes?disputesPage=1${
-          req.body.reason !== 'all' ? `&reason=${req.body.reason}` : ''
+        `/disputes?disputesPage=1${req.body.reason !== 'all' ? `&reason=${req.body.reason}` : ''
         }${req.query.adminDispute === 'true' ? '&adminDispute=true' : ''}`,
       );
     } catch (e) {
@@ -497,34 +498,6 @@ router.post(
 );
 
 // Feedback
-router.get(
-  '/feedback',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      if (
-        ![undefined, 'feedback', 'bug', 'help', 'other'].includes(
-          req.query.reason,
-        )
-      ) {
-        throw new Error('Invalid Reason to feedback');
-      }
-      if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid Archived Feedback');
-
-      const feedbacks = await paginatedResults(
-        Contactus,
-        constructQuery(req.query),
-        { page: req.query.feedbackPage, limit: 24 },
-      );
-
-      res.render('admin-feedbacks', { feedbacks });
-    } catch (e) {
-      console.log(e);
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/feedback-filter',
   isAuth,
@@ -537,8 +510,7 @@ router.post(
       if (!['all', 'true', 'false'].includes(archived)) throw new Error('Invalid Archived Feedback');
 
       res.redirect(
-        `/feedback?feedbackPage=1${
-          reason !== 'all' ? `&reason=${reason}` : ''
+        `/feedback?feedbackPage=1${reason !== 'all' ? `&reason=${reason}` : ''
         }${archived !== 'all' ? `&archived=${archived}` : ''}`,
       );
     } catch (e) {
@@ -562,10 +534,8 @@ router.post(
       await feedback.save();
 
       res.redirect(
-        `/feedback?feedbackPage=${
-          req.query.feedbackPage ? req.query.feedbackPage : '1'
-        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${
-          req.query.archived ? `&archived=${req.query.archived}` : ''
+        `/feedback?feedbackPage=${req.query.feedbackPage ? req.query.feedbackPage : '1'
+        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${req.query.archived ? `&archived=${req.query.archived}` : ''
         }`,
       );
     } catch (e) {
@@ -587,10 +557,8 @@ router.post(
       await feedback.deleteContactUs();
 
       res.redirect(
-        `/feedback?feedbackPage=${
-          req.query.feedbackPage ? req.query.feedbackPage : '1'
-        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${
-          req.query.archived ? `&archived=${req.query.archived}` : ''
+        `/feedback?feedbackPage=${req.query.feedbackPage ? req.query.feedbackPage : '1'
+        }${req.query.reason ? `&reason=${req.query.reason}` : ''}${req.query.archived ? `&archived=${req.query.archived}` : ''
         }`,
       );
     } catch (e) {
@@ -601,31 +569,13 @@ router.post(
 );
 
 // Promote
-router.get(
-  '/promote-user',
-  isAuth,
-  sanitizeQuerys, // isAdmin,
-  async (req, res) => {
-    try {
-      const users = await paginatedResults(
-        User,
-        { awaiting_promotion: { $exists: true } },
-        { page: req.query.usersPage, limit: 24 },
-      );
-
-      res.render('admin-promote', { users });
-    } catch (e) {
-      res.redirect('/404');
-    }
-  },
-);
 router.post(
   '/promote-user/:username',
   isAuth,
   sanitizeParamsQuerys, // isAdmin,
   async (req, res) => {
     try {
-      const user = await User.findOne({ username: req.params.username }).orFail(
+      const user = await UserModel.findOne({ username: req.params.username }).orFail(
         new Error(),
       );
 

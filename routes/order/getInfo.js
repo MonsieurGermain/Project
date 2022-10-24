@@ -22,7 +22,7 @@ const getOrderInfo = async (req, res) => {
 
     const vendorPgpKeys = await getUserVerifiedPgpKeys(order.vendor);
 
-    res.render('submit-info', { order, product: order.product, vendorPgpKeys });
+    res.render('Pages/orderPages/submit-info', { order, product: order.product, vendorPgpKeys });
   } catch (e) {
     console.log(e);
     res.redirect('/404');

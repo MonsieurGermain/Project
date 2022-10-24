@@ -2,9 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 const Review = require('../models/review');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const { OrderModel } = require('../models/order');
-
 const { isAuth } = require('../middlewares/authentication');
 const {
   sanitizeReviewInput,
@@ -29,11 +28,7 @@ router.post(
       const { username } = req.user;
       const { note, type } = req.body;
 
-      console.log(req.body);
-
-      const order = await OrderModel.findById(req.params.id).populate(
-        'product',
-      );
+      const order = await OrderModel.findById(req.params.id).populate('product');
       order.isBuyer(username);
 
       const { product } = order;
@@ -50,8 +45,8 @@ router.post(
 
       product.review = updateRating(product.review, review.note);
 
-      const user = await User.findOne({ username: order.vendor });
-      console.log(user);
+      const user = await UserModel.findOne({ username: order.vendor });
+
       user.review = updateRating(user.review, review.note);
 
       user.save();

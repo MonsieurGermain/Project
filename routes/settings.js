@@ -2,49 +2,156 @@ const express = require('express');
 
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const Product = require('../models/product');
-const Conversation = require('../models/conversation');
+const ConversationModel = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
 const {
   sanitizeChangePassword,
   sanitizeQuerys,
+  sanitizeParams,
   sanitizeParamsQuerys,
+  validateMessageSettings,
+  validateNotificationSettings,
 } = require('../middlewares/validation');
 const {
-  paginatedResults,
-  randomListOfWords,
-  isEmail,
-  isPgpKeys,
-  isMoneroAddress,
-  generateRandomString,
+  paginatedResults, randomListOfWords, isEmail, isPgpKeys, isMoneroAddress, generateRandomString,
 } = require('../middlewares/function');
 const { sendVerificationCode } = require('../utils/email');
 const { encrypt } = require('../utils/pgp');
 
-router.get('/settings', isAuth, sanitizeQuerys, async (req, res) => {
+router.get('/user/settings/security', isAuth, async (req, res) => {
   try {
-    if (
-      ![undefined, 'security', 'privacy', 'payment', 'saved'].includes(
-        req.query.section,
-      )
-    ) throw new Error('Invalid Section Query');
+    res.render('Pages/settingsPages/security');
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/security');
+  }
+});
 
+router.get('/user/settings/privacy', isAuth, async (req, res) => {
+  try {
+    const notificationChoices = [
+      {
+        name: 'orderStatusChange',
+        text: 'When the status of one of your order change',
+      },
+      {
+        name: 'newConversation',
+        text: 'When a new Conversation is created with you',
+      },
+      {
+        name: 'newMessage',
+        text: 'When a user send you a new Message',
+      },
+      {
+        name: 'changeConversationSettings',
+        text: 'When a user Change the settings of a conversation that you are in',
+      },
+      {
+        name: 'deleteMessage',
+        text: 'When a user Delete one of his message in a conversation with you',
+      },
+      {
+        name: 'deleteConversation',
+        text: 'When a user Delete a conversation with you',
+      },
+      {
+        name: 'newUpdate',
+        text: 'When the site recieve a new update',
+      },
+    ];
+    res.render('Pages/settingsPages/privacy', { notificationChoices });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/privacy');
+  }
+});
+
+router.get('/user/settings/payment', isAuth, async (req, res) => {
+  try {
+    res.render('Pages/settingsPages/payment');
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/payment');
+  }
+});
+
+router.get('/user/settings/notifications', isAuth, async (req, res) => {
+  try {
     const { user } = req;
 
-    let paginatedProducts;
-    if (req.query.section === 'saved') {
-      paginatedProducts = await paginatedResults(
-        Product,
-        { slug: { $in: user.saved_product }, status: 'online' },
-        { page: req.query.productPage, limit: 24 },
-      );
-    }
+    res.render('Pages/settingsPages/notifications', { userNotifications: user.notifications });
 
-    res.render('settings', { user, paginatedProducts });
+    user.deleteOnSeeNotification();
+    user.sawNotification();
+    user.save();
   } catch (e) {
     console.log(e);
     res.redirect('/404');
+  }
+});
+
+router.get('/user/settings/savedProducts', isAuth, sanitizeQuerys, async (req, res) => {
+  try {
+    const productPage = parseFloat(req.query.productPage) || 1;
+
+    let paginatedProducts = await paginatedResults(Product, { slug: { $in: req.user.saved_product }, status: 'online' }, { page: productPage, limit: 24 });
+
+    res.render('Pages/settingsPages/savedProducts', { paginatedProducts });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/user/settings/savedProducts');
+  }
+});
+
+router.post('/delete-notification/:notificationId', isAuth, sanitizeParams, async (req, res) => {
+  try {
+    const { user } = req;
+    const { notificationId } = req.params;
+
+    user.deleteNotification({ notificationId });
+
+    await user.save();
+
+    res.redirect('/user/settings/notifications');
+  } catch (e) {
+    console.log(e);
+    req.flash('error', e.message);
+    res.redirect('/user/settings/notifications');
+  }
+});
+
+router.post('/notifications-settings', isAuth, validateNotificationSettings, async (req, res) => {
+  try {
+    const { user } = req;
+    const {
+      recordNotification, expiryDateNotification, seen, sendNotification,
+    } = req.body;
+
+    let flashMessage;
+
+    if (recordNotification) {
+      flashMessage = 'Notification Settings Successfully Changed';
+
+      user.settings.notificationsSettings.recordNotification = recordNotification;
+      user.settings.notificationsSettings.expiryDate = expiryDateNotification;
+      user.settings.notificationsSettings.seen = seen;
+      user.settings.notificationsSettings.sendNotification = sendNotification;
+    } else {
+      flashMessage = 'Notification successfully disabled';
+
+      user.settings.notificationsSettings = undefined;
+    }
+
+    await user.save();
+
+    req.flash('success', flashMessage);
+    res.redirect('/user/settings/privacy');
+  } catch (e) {
+    console.log(e);
+    req.flash('error', 'There as been an Error, please try again');
+    res.redirect('/user/settings/privacy');
   }
 });
 
@@ -63,10 +170,10 @@ router.post('/add-xmr-address', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', successMessage);
-    res.redirect('/settings?section=payment');
+    res.redirect('/user/settings/payment');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=payment');
+    res.redirect('/user/settings/payment');
   }
 });
 router.post('/add-xmr-refund-address', isAuth, async (req, res) => {
@@ -86,10 +193,10 @@ router.post('/add-xmr-refund-address', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', successMessage);
-    res.redirect('/settings?section=payment');
+    res.redirect('/user/settings/payment');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=payment');
+    res.redirect('/user/settings/payment');
   }
 });
 router.post('/delete-address', isAuth, sanitizeQuerys, async (req, res) => {
@@ -116,15 +223,15 @@ router.post('/delete-address', isAuth, sanitizeQuerys, async (req, res) => {
 
     await user.save();
 
-    res.redirect('/settings?section=payment');
+    res.redirect('/user/settings/payment');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=payment');
+    res.redirect('/user/settings/payment');
   }
 });
 
 async function updateConversationPgp(username, newPgp) {
-  const conversations = await Conversation.findAllUserConversations(username);
+  const conversations = await ConversationModel.findAllUserConversations(username);
 
   for (let i = 0; i < conversations.length; i++) {
     conversations[i].updateNewPgp(username, newPgp);
@@ -134,8 +241,8 @@ async function updateConversationPgp(username, newPgp) {
 router.post('/add-pgp', isAuth, async (req, res) => {
   try {
     const { user } = req;
+
     const pgp = isPgpKeys(req.body.pgp);
-    if (!pgp) throw new Error('Invalid Pgp Keys');
 
     user.pgp_keys = pgp.trim();
     user.verifiedPgpKeys = undefined;
@@ -150,14 +257,11 @@ router.post('/add-pgp', isAuth, async (req, res) => {
 
     await user.save();
 
-    req.flash(
-      'success',
-      'A new Pgp Keys as Been added, you just need Verify it',
-    );
-    res.redirect('/settings?section=security');
+    req.flash('success', 'A new Pgp Keys as Been added, you just need Verify it');
+    res.redirect('/user/settings/security');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   }
 });
 router.post('/delete-pgp', isAuth, async (req, res) => {
@@ -177,7 +281,7 @@ router.post('/delete-pgp', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Pgp Keys Successfully Deleted');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -205,7 +309,7 @@ router.post('/verify-pgp', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Pgp Successfully Verified');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -229,10 +333,10 @@ router.post('/add-email', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Email Address Successfully Added');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   }
 });
 router.post('/delete-email', isAuth, async (req, res) => {
@@ -248,7 +352,7 @@ router.post('/delete-email', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Email Address Successfully Deleted');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -270,10 +374,10 @@ router.post('/confirm-email', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Email Successfully Verified');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   }
 });
 router.post('/resend-email-verification', isAuth, async (req, res) => {
@@ -291,9 +395,9 @@ router.post('/resend-email-verification', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Verifaction Code Resended');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   }
 });
 
@@ -326,10 +430,10 @@ router.post('/enable-2fa', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', '2 Step Verification Successfully Activated');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   }
 });
 router.post('/remove-2fa', isAuth, async (req, res) => {
@@ -341,7 +445,7 @@ router.post('/remove-2fa', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', '2 Step Verification Successfully Removed');
-    res.redirect('/settings?section=security');
+    res.redirect('/user/settings/security');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -364,10 +468,10 @@ router.put(
       await user.save();
 
       req.flash('success', 'Password Successfully Changed');
-      res.redirect('/settings?section=security');
+      res.redirect('/user/settings/security');
     } catch (e) {
       req.flash('error', e.message);
-      res.redirect('/settings?section=security');
+      res.redirect('/user/settings/security');
     }
   },
 );
@@ -384,26 +488,36 @@ router.delete('/delete-user', isAuth, async (req, res) => {
   }
 });
 
-router.post('/conversation-settings', isAuth, async (req, res) => {
+router.post('/conversation-settings', isAuth, validateMessageSettings, async (req, res) => {
   try {
     const { user } = req;
     const {
-      autoDeleteConversation,
-      deleteEmptyConversation,
-      recordSeeingMessage,
+      displayUsername,
+      conversationPgp,
+      messageExpiryDate,
+      convoExpiryDate,
+      includeTimestamps,
+      messageView,
+      deleteEmpty,
+      customUsername,
+      customPgp,
     } = req.body;
 
-    if (!['never', '1', '3', '7', '30'].includes(autoDeleteConversation)) throw new Error('Invalid Value');
-    if (!['true', 'false'].includes(deleteEmptyConversation)) throw new Error('Invalid Value');
-    if (!['true', 'false'].includes(recordSeeingMessage)) throw new Error('Invalid Value');
+    user.settings.messageSettings.displayUsername = displayUsername;
+    user.settings.messageSettings.conversationPgp = conversationPgp;
+    user.settings.messageSettings.messageExpiryDate = messageExpiryDate;
+    user.settings.messageSettings.convoExpiryDate = convoExpiryDate;
+    user.settings.messageSettings.includeTimestamps = includeTimestamps || undefined;
+    user.settings.messageSettings.messageView = messageView || undefined;
+    user.settings.messageSettings.deleteEmpty = deleteEmpty || undefined;
 
-    user.settings.messageExpiring = autoDeleteConversation !== 'never' ? autoDeleteConversation : undefined;
-    user.settings.deleteEmptyConversation = deleteEmptyConversation === 'true';
-    user.settings.recordSeeingMessage = recordSeeingMessage === 'true';
+    user.settings.messageSettings.customUsername = customUsername || undefined;
+    user.settings.messageSettings.customPgp = customPgp || undefined;
 
     await user.save();
 
-    res.redirect('/settings?section=privacy');
+    req.flash('success', 'Default Conversation Settings successfully changed');
+    res.redirect('/user/settings/privacy');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -420,12 +534,14 @@ router.post('/order-settings', isAuth, async (req, res) => {
 
     await user.save();
 
-    res.redirect('/settings?section=privacy');
+    req.flash('success', 'Order Settings successfully changed');
+    res.redirect('/user/settings/privacy');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
   }
 });
+
 router.post('/account-settings', isAuth, async (req, res) => {
   try {
     const { user } = req;
@@ -440,28 +556,47 @@ router.post('/account-settings', isAuth, async (req, res) => {
 
     await user.save();
 
-    res.redirect('/settings?section=privacy');
+    req.flash('success', 'Account Settings successfully changed');
+    res.redirect('/user/settings/privacy');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
   }
 });
+
 router.post('/reset-privacy', isAuth, sanitizeQuerys, async (req, res) => {
   try {
     const { user } = req;
     const { type } = req.query;
 
-    if (!['conversation', 'order', 'account'].includes(type)) throw new Error('Invalid Value');
+    if (!['conversation', 'order', 'account', 'notifications'].includes(type)) throw new Error('Invalid Value');
 
     switch (type) {
       case 'conversation':
-        user.settings.messageExpiring = 7;
-        user.settings.deleteEmptyConversation = true;
-        user.settings.recordSeeingMessage = false;
+        user.settings.messageSettings.displayUsername = 'ownUsername';
+        user.settings.messageSettings.conversationPgp = 'showPgp';
+        user.settings.messageSettings.messageExpiryDate = 7;
+        user.settings.messageSettings.convoExpiryDate = 180;
+        user.settings.messageSettings.includeTimestamps = false;
+        user.settings.messageSettings.messageView = false;
+        user.settings.messageSettings.deleteEmpty = true;
         break;
       case 'conversation':
         user.settings.userExpiring = undefined;
         user.expire_at = undefined;
+        break;
+      case 'notifications':
+        user.settings.notificationsSettings = {
+          recordNotification: true,
+          expiryDate: 7,
+          sentNotification: {
+            orderStatusChange: true,
+            newConversation: true,
+            changeConversationSettings: true,
+            deleteConversation: true,
+            siteUpdate: true,
+          },
+        };
         break;
       default:
         user.settings.privateInfoExpiring = 7;
@@ -469,7 +604,7 @@ router.post('/reset-privacy', isAuth, sanitizeQuerys, async (req, res) => {
 
     await user.save();
 
-    res.redirect('/settings?section=privacy');
+    res.redirect('/user/settings/privacy');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -488,9 +623,9 @@ router.post(
         new Error('Invalid Product Slug'),
       );
 
-      const user = await User.findOne({ username: req.user.username });
+      const user = await UserModel.findOne({ username: req.user.username });
 
-      user.Add_Remove_Saved_Product(req.params.slug);
+      user.addRemoveSavedProducts(req.params.slug);
 
       await user.save();
 

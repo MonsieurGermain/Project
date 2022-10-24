@@ -6,13 +6,13 @@ const { validateContactUs } = require('../middlewares/validation');
 
 // User Docs
 router.get('/news', async (req, res) => {
-  res.render('news');
+  res.render('Pages/docsErrorPages/news');
 });
 router.get('/docs', async (req, res) => {
-  res.render('documentation');
+  res.render('Pages/docsErrorPages/documentation');
 });
 router.get('/contactus', async (req, res) => {
-  res.render('contactUs');
+  res.render('Pages/docsErrorPages/contactUs');
 });
 router.post('/contactus', validateContactUs, async (req, res) => {
   try {

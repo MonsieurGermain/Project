@@ -11,7 +11,7 @@ const getOrder = async (req, res) => {
 
     const vendor = await UserModel.findOne({ username: product.vendor });
 
-    res.render('order', { product, vendor });
+    res.render('Pages/orderPages/order', { product, vendor });
   } catch (e) {
     res.redirect('/404');
   }

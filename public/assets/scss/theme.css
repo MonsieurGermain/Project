@@ -16312,6 +16312,18 @@ input[id^=edit-message-input-]:not(:checked) + * {
   opacity: 0;
 }
 
+input[id^=reply-message-input-]:not(:checked) + * {
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
+input[id=change-settings]:not(:checked) + * {
+  background-color: rgba(25, 25, 25, 0);
+  visibility: hidden;
+  opacity: 0;
+}
+
 input[id=user-pgp-keys]:not(:checked) + * {
   background-color: rgba(25, 25, 25, 0);
   visibility: hidden;

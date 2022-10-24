@@ -5,7 +5,7 @@ const fileUpload = require('express-fileupload');
 const Fuse = require('fuse.js');
 const Product = require('../models/product');
 const Review = require('../models/review');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const { ImageUploadsValidation, uploadsFiles, deleteImage } = require('../middlewares/filesUploads');
 const { isAuth, isVendor } = require('../middlewares/authentication');
 const {
@@ -76,7 +76,6 @@ router.get('/products', sanitizeQuerys, async (req, res) => {
 
     if (search) {
       const productFused = fusedProduct.search(search);
-      console.log(productFused);
       productsFuzzy = productFused.map(({ item }) => item);
     }
     const paginatedProducts = await paginatedResults(
@@ -86,7 +85,7 @@ router.get('/products', sanitizeQuerys, async (req, res) => {
       productsFuzzy,
     );
 
-    res.render('products', { paginatedProducts });
+    res.render('Pages/productPages/products', { paginatedProducts });
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -104,7 +103,7 @@ router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
 
     if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
 
-    const vendor = await User.findOne({ username: product.vendor });
+    const vendor = await UserModel.findOne({ username: product.vendor });
 
     const paginatedReviews = await paginatedResults(
       Review,
@@ -115,7 +114,7 @@ router.get('/product/:slug', sanitizeParamsQuerys, async (req, res) => {
     product.description = sanitizeHTML(product.description);
     product.timerEndSales = timerEndOfSales(product.sales_end);
 
-    res.render('product-single', { product, vendor, paginatedReviews });
+    res.render('Pages/productPages/product', { product, vendor, paginatedReviews });
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -170,7 +169,7 @@ router.get(
         },
       ];
 
-      res.render('product-create', { product, reviews });
+      res.render('Pages/productPages/createProduct', { product, reviews });
     } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -193,7 +192,7 @@ router.post(
 
       next();
     } catch (e) {
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     }
   },
   sanitizeProductInput,
@@ -278,11 +277,11 @@ router.post(
         req.flash('success', `${successMessage}`);
       }
 
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     } catch (e) {
       console.log(e);
       req.flash('error', e.message);
-      res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
     }
   },
 );
@@ -297,10 +296,10 @@ router.delete('/delete-product/:slug', isAuth, sanitizeParams, async (req, res) 
     await product.deleteProduct();
 
     req.flash('success', 'Product Successfully Deleted');
-    res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+    res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
   } catch (e) {
     console.log(e);
-    res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+    res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
   }
 });
 

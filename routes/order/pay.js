@@ -12,7 +12,7 @@ const payPage = async (req, res) => {
       throw Error('Invalid Order Status');
     }
 
-    res.render('pay', { order });
+    res.render('Pages/orderPages/pay', { order });
   } catch (e) {
     res.redirect('/404');
   }

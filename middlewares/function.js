@@ -137,9 +137,9 @@ function isEmail(email) {
 }
 
 function isPgpKeys(pgpKeys) {
-  if (!pgpKeys || typeof (pgpKeys) !== 'string') return undefined;
+  if (!pgpKeys || typeof (pgpKeys) !== 'string') throw Error('Invalid Pgp Keys Data Type');
   pgpKeys = pgpKeys.trim();
-  if (pgpKeys.length > 10000 || pgpKeys.length < 1) return undefined;
+  if (pgpKeys.length > 10000 || pgpKeys.length < 1) throw Error('Invalid Pgp Keys Length');
 
   return pgpKeys;
 }
@@ -175,7 +175,16 @@ function timerEndOfSales(salesTimer) {
   return `${daysLeft}${hoursLeft}`;
 }
 
+function generateAccountUsername() {
+  let result = '';
+  for (let i = 0; i < 4; i++) {
+    result += ` ${generateRandomString(4, 'letterAndnumber')}`;
+  }
+  return result.trim();
+}
+
 module.exports = {
+  generateAccountUsername,
   formatTimer,
   timerEndOfSales,
   generateRandomString,

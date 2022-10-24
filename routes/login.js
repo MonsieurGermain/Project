@@ -4,20 +4,12 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { copyFile } = require('fs');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const StepVerification = require('../models/2step-verification');
 const { generateRandomName } = require('../middlewares/filesUploads');
 const { isntAuth } = require('../middlewares/authentication');
-const {
-  sanitizeLoginInput,
-  sanitizeRegisterInput,
-  sanitizeVerificationCode,
-} = require('../middlewares/validation');
-const {
-  generateRandomString,
-  randomListOfWords,
-} = require('../middlewares/function');
-
+const { sanitizeLoginInput, sanitizeRegisterInput, sanitizeVerificationCode } = require('../middlewares/validation');
+const { generateRandomString, randomListOfWords, generateAccountUsername } = require('../middlewares/function');
 const { send2FACode, encrypt } = require('../utils');
 
 function generateAccountDetailsFlashMessage(username, password) {
@@ -26,14 +18,6 @@ function generateAccountDetailsFlashMessage(username, password) {
    <p class="mb-0">Password: <b>${password}</b></p>
    <p class="fs-xs mb-0"> <b>Save this somewhere safe</b></p>
    `;
-}
-
-function generateAccountUsername() {
-  let result = '';
-  for (let i = 0; i < 4; i++) {
-    result += ` ${generateRandomString(4, 'letterAndnumber')}`;
-  }
-  return result.trim();
 }
 
 function generateAccountPassword(passwordType, typedPassword) {
@@ -107,7 +91,7 @@ async function create2StepVerification(
 }
 
 router.get('/login', isntAuth, (req, res) => {
-  res.render('login');
+  res.render('Pages/authPages/login');
 });
 
 router.post(
@@ -118,7 +102,7 @@ router.post(
     try {
       const { username, password } = req.body;
 
-      const user = await User.findOne({ username });
+      const user = await UserModel.findOne({ username });
 
       if (!user) throw new Error('Username or Password Invalid');
       if (!bcrypt.compareSync(password, user.password)) throw new Error('Username or Password Invalid');
@@ -156,7 +140,7 @@ router.post(
 
 router.get('/2fa', isntAuth, async (req, res) => {
   try {
-    res.render('2fa');
+    res.render('Pages/authPages/stepVerification');
   } catch (e) {
     console.log(e);
     req.flash('error', 'An Error as occur Please Try Again');
@@ -185,8 +169,7 @@ router.post(
     } catch (e) {
       req.flash('error', e.message);
       res.redirect(
-        `/2fa?type=${req.query.type}${
-          req.query.encrypted ? `&encrypted=${req.query.encrypted}` : ''
+        `/2fa?type=${req.query.type}${req.query.encrypted ? `&encrypted=${req.query.encrypted}` : ''
         }`,
       );
     }
@@ -202,18 +185,18 @@ router.post(
 );
 
 router.get('/register', isntAuth, (req, res) => {
-  res.render('register');
+  res.render('Pages/authPages/register');
 });
 
 router.post('/register', isntAuth, sanitizeRegisterInput, async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (await User.findOne({ username })) throw new Error('This Username is Already Taken');
+    if (await UserModel.findOne({ username })) throw new Error('This Username is Already Taken');
 
-    const user = new User({
+    const user = new UserModel({
       username,
-      password: bcrypt.hashSync(password, 11),
+      password: bcrypt.hashSync(password, 12),
       img_path: createProfilePicture('default-profile-pic.png'),
     });
 
@@ -229,7 +212,7 @@ router.post('/register', isntAuth, sanitizeRegisterInput, async (req, res) => {
 
 router.get('/generate-account', isntAuth, async (req, res) => {
   try {
-    res.render('generate-account');
+    res.render('Pages/authPages/generateAccount');
   } catch (e) {
     console.log(e);
     req.flash('error', 'Unexpected Error, try again');
@@ -242,13 +225,13 @@ router.post('/generate-account', isntAuth, async (req, res) => {
 
     const username = generateAccountUsername();
 
-    if (await User.findOne({ username })) throw new Error('This Username is Already Taken');
+    if (await UserModel.findOne({ username })) throw new Error('This Username is Already Taken');
 
     const userPassword = generateAccountPassword(passwordSettings, password);
 
-    const user = new User({
+    const user = new UserModel({
       username: generateAccountUsername(),
-      password: bcrypt.hashSync(userPassword, 11),
+      password: bcrypt.hashSync(userPassword, 12),
       img_path: createProfilePicture(username),
       settings: {
         userExpiring: 14,
@@ -274,6 +257,8 @@ router.post('/generate-account', isntAuth, async (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
+  delete req.session.hiddenConversationsId;
+
   req.logOut();
   res.redirect('/');
 });

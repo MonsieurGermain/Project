@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { copyFile } = require('fs');
 const fileUpload = require('express-fileupload');
-const User = require('../models/user');
+const UserModel = require('../models/user');
 const Product = require('../models/product');
 const Review = require('../models/review');
 const { ImageUploadsValidation, uploadsFiles } = require('../middlewares/filesUploads');
@@ -12,28 +12,8 @@ const { sanitizeProfileInput, sanitizeQuerys, sanitizeParamsQuerys } = require('
 const { sanitizeHTML, paginatedResults } = require('../middlewares/function');
 
 // Route
-router.get('/profile/:username', sanitizeParamsQuerys, async (req, res) => {
-  try {
-    const vendor = await User.findOne({ username: req.params.username }).orFail('This User doesnt Exist');
-    vendor.description = sanitizeHTML(vendor.description);
 
-    const productQuery = req.user?.username === req.params.username ? { vendor: vendor.username } : { vendor: vendor.username, status: 'online' };
-    const paginatedProducts = await paginatedResults(Product, productQuery, { page: req.query.productPage });
-
-    const paginatedReviews = await paginatedResults(
-      Review,
-      { vendor: vendor.username },
-      { page: req.query.reviewPage },
-    );
-
-    res.render('profile', { vendor, paginatedProducts, paginatedReviews });
-  } catch (e) {
-    console.log(e);
-    res.redirect('/404');
-  }
-});
-
-router.get('/edit-profile', isAuth, sanitizeQuerys, async (req, res) => {
+router.get('/user/profile/edit', isAuth, sanitizeQuerys, async (req, res) => {
   try {
     const { user } = req;
     const paginatedProducts = await paginatedResults(
@@ -80,8 +60,29 @@ router.get('/edit-profile', isAuth, sanitizeQuerys, async (req, res) => {
       },
     ];
 
-    res.render('profile-edit', { vendor: user, reviews, paginatedProducts });
+    res.render('Pages/profilePages/editProfile', { vendor: user, reviews, paginatedProducts });
   } catch (e) {
+    res.redirect('/404');
+  }
+});
+
+router.get('/user/profile/:username', sanitizeParamsQuerys, async (req, res) => {
+  try {
+    const vendor = await UserModel.findOne({ username: req.params.username }).orFail('This User doesnt Exist');
+    vendor.description = sanitizeHTML(vendor.description);
+
+    const productQuery = req.user?.username === req.params.username ? { vendor: vendor.username } : { vendor: vendor.username, status: 'online' };
+    const paginatedProducts = await paginatedResults(Product, productQuery, { page: req.query.productPage });
+
+    const paginatedReviews = await paginatedResults(
+      Review,
+      { vendor: vendor.username },
+      { page: req.query.reviewPage },
+    );
+
+    res.render('Pages/profilePages/profile', { vendor, paginatedProducts, paginatedReviews });
+  } catch (e) {
+    console.log(e);
     res.redirect('/404');
   }
 });
@@ -90,7 +91,7 @@ router.put(
   '/edit-profile',
   isAuth,
   fileUpload({ createParentPath: true }),
-  ImageUploadsValidation({ max: 1, errorUrl: '/edit-profile' }),
+  ImageUploadsValidation({ max: 1, errorUrl: '/user/profile/edit' }),
   sanitizeProfileInput,
   async (req, res) => {
     try {
@@ -109,7 +110,7 @@ router.put(
       await user.save();
 
       req.flash('success', 'Profile Successfully Edited');
-      res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
+      res.redirect(`/user/profile/${user.username}?productPage=1&reviewPage=1`);
     } catch (e) {
       console.log(e);
       res.redirect('/404');
@@ -128,7 +129,7 @@ router.get('/reset-profile-picture', isAuth, async (req, res) => {
     await user.save();
 
     req.flash('success', 'Profile Picture Successfully Reseted');
-    res.redirect('/edit-profile?productPage=1&reviewPage=1');
+    res.redirect('/user/profile/edit?productPage=1&reviewPage=1');
   } catch (e) {
     console.log(e);
     res.redirect('/404');
@@ -147,10 +148,10 @@ router.post('/awaiting-promotion', isAuth, async (req, res) => {
     user.save();
 
     req.flash('success', 'You submission to become a Vendor as been send');
-    res.redirect(`/profile/${user.username}?productPage=1&reviewPage=1`);
+    res.redirect(`/user/${user.username}?productPage=1&reviewPage=1`);
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+    res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
   }
 });
 

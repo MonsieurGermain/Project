@@ -13,6 +13,11 @@ module.exports = {
   rules: {
     eqeqeq: 0,
     radix: 0,
+    'no-continue': 0,
+    'no-multi-assign': 0,
+    'prefer-destructuring': 0,
+    'dot-notation': 0,
+    'for-direction': 0,
     'no-console': 0,
     'prefer-const': 0,
     'no-unused-expressions': 0,

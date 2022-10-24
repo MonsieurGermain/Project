@@ -4,6 +4,8 @@ function isAuth(req, res, next) {
   }
 
   console.log('You need to login');
+
+  req.session.previousUrl = req.url;
   res.redirect('/login');
 }
 
@@ -21,7 +23,7 @@ function isBuyer(req, res, next) {
   }
 
   console.log('You need to be a buyer to perform this action');
-  res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+  res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
 }
 
 function isVendor(req, res, next) {
@@ -30,7 +32,7 @@ function isVendor(req, res, next) {
   }
 
   console.log('You need to be a Vendor to perform this action');
-  res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`);
+  res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
 }
 
 function isAdmin(req, res, next) {
@@ -39,7 +41,7 @@ function isAdmin(req, res, next) {
   }
 
   console.log('You need to be an Admin to perform this action');
-  res.redirect(`/profile/${req.user.username}?productPage=1&reviewPage=1`); // change that
+  res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`); // change that
 }
 
 module.exports = {

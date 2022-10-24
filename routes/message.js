@@ -1,74 +1,237 @@
 const express = require('express');
 
 const router = express.Router();
-const Conversation = require('../models/conversation');
-const User = require('../models/user');
+const bcrypt = require('bcrypt');
+const UserModel = require('../models/user');
+const ConversationModel = require('../models/conversation');
 const { isAuth } = require('../middlewares/authentication');
+const { generateRandomString } = require('../middlewares/function');
 const {
-  sanitizeConversationInput, sanitizeMessageInput, sanitizeParams, sanitizeQuerys,
+  sanitizeConversationInput,
+  changeUserSettingsConversation,
+  sanitizeHiddenConversationInput,
+  sanitizeMessageInput,
+  sanitizeParams,
+  sanitizeQuerys,
+  sanitizeParamsQuerys,
+  changeSettingsConversation,
+  sanitizeSearchInput,
 } = require('../middlewares/validation');
-const { formatUsernameWithSettings } = require('../middlewares/function');
 
-async function getOtherUserData(username) {
-  const userData = await User.findOne({ username }, { img_path: 1, verifiedPgpKeys: 1 });
-  return [userData.img_path, userData.verifiedPgpKeys];
+function isSendingToHimself(req, res, next) {
+  if (req.params.id !== req.user.id) next();
+  else {
+    req.flash('error', 'You cant send a Message to Yourself');
+    res.redirect(`/user/profile/${req.user.username}?productPage=1&reviewPage=1`);
+  }
 }
 
+function getIndexSelectedConversation(conversations, conversationId) {
+  const index = conversations.map((conversation) => conversation.id).indexOf(conversationId);
+
+  if (index === -1 && !conversations.length) return -1;
+  if (index === -1) return conversations.length - 1;
+  return index;
+}
+
+function canCRUDConveration(conversation, userId) {
+  for (let i = 0; i < conversation.users.length; i++) {
+    if (conversation.users[i].userId === userId) return;
+  }
+  throw Error('You dont have the Permission to do this Action');
+}
+
+function deleteExpiredUncoveredIds(uncoveredId) {
+  if (uncoveredId?.length) {
+    for (let i = 0; i < uncoveredId.length; i++) {
+      if (uncoveredId[i].timeToLive < Date.now()) {
+        uncoveredId.splice(i, 1);
+        i -= 1;
+      } else {
+        uncoveredId[i].timeToLive = Date.now() + 600000;
+      }
+    }
+  }
+
+  return uncoveredId;
+}
+
+function conversationAlreadyExist(conversations, userId, otherUserId, displayUsername) {
+  for (let i = 0; i < conversations.length; i++) {
+    if (!conversations[i].users[0].displayUsername && !displayUsername) {
+      if (conversations[i].users[0].userId === userId && conversations[i].users[1].userId === otherUserId) return [conversations[i], 0];
+      if (conversations[i].users[1].userId === userId && conversations[i].users[0].userId === otherUserId) return [conversations[i], 1];
+    } else if (conversations[i].users[0].userId === userId) {
+      if (conversations[i].users[0].displayUsername === displayUsername) {
+        return [conversations[i], 0];
+      }
+    }
+  }
+  return [new ConversationModel({}), 0];
+}
+
+// GET PAGE
+router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
+  try {
+    const { user } = req;
+    const id = req.query.id || undefined;
+
+    const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
+
+    let conversations = await ConversationModel.findAllConversationOfUser({ userId: user.id, populate: 'users.user', ids: hiddenConversationsId });
+
+    const selectedConversation = conversations[getIndexSelectedConversation(conversations, id)];
+
+    if (selectedConversation) {
+      await selectedConversation.seeingMessage({ userId: user.id });
+    }
+
+    res.render('Pages/messagePages/messages', {
+      conversations,
+      selectedConversation,
+    });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/404');
+  }
+});
+
+router.get('/create-hidden-conversation', isAuth, sanitizeQuerys, async (req, res) => {
+  try {
+    res.render('Pages/messagePages/createHiddenConversation', { randomId: generateRandomString(30, 'letterAndnumber') });
+  } catch (e) {
+    console.log(e);
+    res.redirect('/404');
+  }
+});
+
+router.get('/change-user-conversation-settings/:id', isAuth, sanitizeParams, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    req.conversation = await ConversationModel.findById(id).populate('users.user');
+
+    const { conversation } = req;
+
+    res.render('Pages/messagePages/changeUserSettings', { conversation });
+  } catch (e) {
+    console.log(e);
+    res.redirect(`/messages?id=${req.conversation.id}#bottom`);
+  }
+});
+
 router.post(
-  '/send-message/:username',
+  '/create-conversation/:id',
   isAuth,
   sanitizeParams,
-  (req, res, next) => {
-    if (req.params.username === req.user.username) {
-      req.flash('error', 'You cant send a Message to Yourself');
-      res.redirect(`/profile/${req.params.username}?productPage=1&reviewPage=1`);
-    } else {
-      next();
-    }
-  },
+  isSendingToHimself,
   sanitizeConversationInput,
   async (req, res) => {
     try {
       const { user } = req;
-      const { username } = req.params;
       const {
-        type, timestamps, message, pgpSettings, otherPgpKeys,
+        includeTimestamps, messageView, deleteEmpty, convoExpiryDate,
+      } = user.settings.messageSettings;
+      const {
+        content, displayUsername, conversationPgp,
       } = req.body;
+      const { id } = req.params;
 
-      let conversation = await Conversation.isConversationExisting(user.username, username, type);
+      if (await ConversationModel.countDocuments({ 'users.userId': user.id }) >= 300) throw new Error('You cant have more than 100 conversation');
 
-      if (!conversation) {
-        conversation = new Conversation({
-          sender_1: user.username,
-          sender_2: username,
-          sender1_Img: type === 'default' ? user.img_path : '/default/default-profile-pic.png',
-          settings: {
-            type: type || 'default',
-            timestamps: timestamps ? true : undefined,
-            includePgp: pgpSettings ? true : undefined,
-          },
+      let newConversation = await ConversationModel.findConversationExist({ userId: user.id, id });
+
+      if (newConversation.filter((conversation) => conversation.users[0].userId === user.id || (!conversation.users[0].displayUsername && conversation.users[1].userId === user.id)).length >= 5) throw Error('You cant create more than 5 conversation with each user');
+
+      let [conversation, userPosition] = conversationAlreadyExist(newConversation, user.id, id, displayUsername);
+
+      if (!conversation.users.length) {
+        const otherUser = await UserModel.findById(id);
+        conversation.updateConversationSettings({
+          includeTimestamps,
+          messageView,
+          deleteEmpty,
+          convoExpiryDate,
         });
 
-        switch (pgpSettings) {
-          case 'ownPgp':
-            conversation.sender1_Pgp = req.user.verifiedPgpKeys;
-            break;
-          case 'otherPgp':
-            conversation.sender1_Pgp = otherPgpKeys;
-            break;
-        }
-
-        [conversation.sender2_Img, conversation.sender2_Pgp] = await getOtherUserData(username);
+        conversation.addUser({
+          user, customUsername: displayUsername, conversationPgp, isOriginalSender: true,
+        });
+        conversation.addUser({ user: otherUser });
       }
 
-      conversation.Add_New_Message(message, user.username, user.settings);
+      conversation.createNewMessage({
+        content,
+        sender: conversation.users[userPosition].userId,
+        expiringInDays: user.settings.messageSettings.messageExpiryDate,
+      });
 
       await conversation.save();
 
       res.redirect(`/messages?id=${conversation.id}#bottom`);
     } catch (e) {
       console.log(e);
-      res.redirect('/404');
+      const user = await UserModel.findById(req.params.id);
+
+      req.flash('error', e.message);
+      res.redirect(`/user/profile/${user.username}?productPage=1&reviewPage=1`);
+    }
+  },
+);
+
+router.post(
+  '/create-hidden-conversation/:id',
+  isAuth,
+  sanitizeParams,
+  isSendingToHimself,
+  sanitizeHiddenConversationInput,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { user } = req;
+      const {
+        content, conversationId, conversationPassword, displayUsername, conversationPgp, convoExpiryDate, messageExpiryDate,
+      } = req.body;
+
+      const conversation = await ConversationModel.findConversationWithId({ id: conversationId });
+      if (conversation) throw Error('Invalid Id, Please try a differrent one');
+
+      const newHiddenConversation = new ConversationModel({});
+      const otherUser = await UserModel.findById(id);
+
+      newHiddenConversation.updateConversationSettings({
+        deleteEmpty: true,
+        convoExpiryDate,
+      });
+
+      await newHiddenConversation.addConversationPassword({ plainTextPassword: conversationPassword });
+
+      newHiddenConversation.addUser({
+        user, customUsername: displayUsername, conversationPgp, isHiddenConverstion: conversationId, isOriginalSender: true,
+      });
+      newHiddenConversation.addUser({ user: otherUser });
+
+      newHiddenConversation.users[0].messageExpiryDate = messageExpiryDate;
+
+      newHiddenConversation.createNewMessage({
+        content,
+        sender: conversationId,
+        expiringInDays: messageExpiryDate,
+      });
+
+      await newHiddenConversation.save();
+
+      req.flash('success', `  
+      <p class="mb-0">Hidden Converstion Successfully Created</p>
+      <p class="mb-0">Conversation Id: <b>${conversationId}</b></p>
+      <p class="fs-xs mb-0"> Save this id and your password somewhere safe and dont lose it, or you will lose access to this conversation</p>
+      <a href='/docs/' class="fs-xs">How do I access this conversation ?</a>
+      `);
+      res.redirect(`/create-hidden-conversation?id=${id}`);
+    } catch (e) {
+      console.log(e);
+      req.flash('error', e.message);
+      res.redirect(`/create-hidden-conversation?id=${req.params.id}`);
     }
   },
 );
@@ -76,215 +239,165 @@ router.post(
 router.post(
   '/messages/:id',
   isAuth,
-  sanitizeParams,
+  sanitizeParamsQuerys,
   sanitizeMessageInput,
   async (req, res) => {
     try {
-      const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username);
+      const { id } = req.params;
 
-      conversation.Add_New_Message(req.body.message, req.user.username, req.user.settings);
+      req.conversation = await ConversationModel.findById(id);
+
+      const { user, conversation } = req;
+      const { command } = req.body;
+      const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
+      const userId = conversation.settings.conversationPassword && hiddenConversationsId && hiddenConversationsId.map((elem) => elem.convoId).includes(conversation.id) && conversation.users[1].userId !== user.id ? conversation.users[0].userId : user.id;
+
+      switch (command[0]) {
+        case 'msg':
+          conversation.createNewMessage({
+            content: command[1],
+            sender: userId,
+            expiringInDays: user.settings.messageSettings.messageExpiryDate,
+          });
+          break;
+        case 'edit':
+          conversation.editMessage(command[2], command[1], userId);
+          break;
+        case 'reply':
+          conversation.createNewMessage({
+            content: command[2],
+            sender: userId,
+            expiringInDays: user.settings.messageSettings.messageExpiryDate,
+            reply: command[1],
+          });
+          break;
+        case 'delete':
+          conversation.deleteMessage(command[1], userId);
+
+          res.redirect(`/messages?id=${conversation.id}#bottom`);
+          return;
+      }
 
       await conversation.save();
 
       res.redirect(`/messages?id=${conversation.id}#bottom`);
     } catch (e) {
-      res.redirect('/404');
+      console.log(e);
+      res.redirect(`/messages?id=${req.conversation.id}#bottom`);
     }
   },
 );
 
-router.post('/search-messages', isAuth, async (req, res) => {
+router.post('/search-conversation', isAuth, sanitizeSearchInput, async (req, res) => {
   try {
-    const { search } = req.body;
+    const { searchInput } = req.body;
 
-    if (!search || search.length > 100) res.redirect('/messages#bottom');
+    const conversation = await ConversationModel.findConversationWithId({ id: searchInput[0] });
 
-    res.redirect(`/messages?searchQuery=${search}#bottom`);
-  } catch (e) {
-    res.redirect('/404');
-  }
-});
+    if (conversation?.settings.conversationPassword) {
+      if (!await bcrypt.compare(searchInput[1], conversation.settings.conversationPassword)) throw new Error('Invalid Password');
 
-function putAuthUserAtSender1(conversation, username) {
-  const originalSender1 = formatUsernameWithSettings(conversation.sender_1, conversation.settings.type);
+      const uncoveredConvo = {
+        convoId: conversation.id,
+        timeToLive: Date.now() + 600000, // 10 min
+      };
 
-  if (username === conversation.sender_2) {
-    const savedSender1Img = conversation.sender1_Img;
-    const savedSender1Pgp = conversation.sender1_Pgp;
-
-    conversation.sender_1 = username;
-    conversation.sender_2 = originalSender1;
-
-    conversation.sender1_Img = conversation.sender2_Img;
-    conversation.sender2_Img = savedSender1Img;
-
-    conversation.sender1_Pgp = conversation.sender2_Pgp;
-    conversation.sender2_Pgp = savedSender1Pgp;
-  } else {
-    conversation.sender_1 = originalSender1;
-  }
-
-  return conversation;
-}
-
-async function formatConversations(conversations, username) {
-  for (let i = 0; i < conversations.length; i++) {
-    conversations[i] = putAuthUserAtSender1(conversations[i], username);
-  }
-
-  return conversations;
-}
-
-function getIndexSelectedConversation(conversations, conversationId) {
-  if (!conversations.length) return undefined;
-  if (!conversationId) return conversations.length - 1;
-
-  for (let i = 0; i < conversations.length; i++) {
-    if (conversations[i].id === conversationId) return i;
-  }
-  return undefined;
-}
-
-function createRedirectLink(conversation, username) {
-  if (conversation.sender_1 === username) return `/profile/${conversation.sender_2}?productPage=1&reviewPage=1`;
-  if (conversation.settings.type === 'default') return `/profile/${conversation.sender_1}?productPage=1&reviewPage=1`;
-  return undefined;
-}
-
-function addEditButton(conversation, username) {
-  const whoIsUser = conversation.sender_1 === username
-    ? formatUsernameWithSettings(conversation.sender_1, conversation.settings.type) : conversation.sender_2;
-
-  const addButtonIndex = [];
-
-  for (let i = 0; i < conversation.messages.length; i++) {
-    if (conversation.messages[i].sender === whoIsUser) {
-      addButtonIndex.push(i);
-
-      if (addButtonIndex.length > 5) addButtonIndex.splice(0, 1);
+      if (!req.session.hiddenConversationsId) req.session.hiddenConversationsId = [];
+      req.session.hiddenConversationsId.push(uncoveredConvo);
     }
-  }
-  return addButtonIndex;
-}
-
-async function getSelectedConversationIndex(userConversations, selectedConversationId, username) {
-  const position = getIndexSelectedConversation(userConversations, selectedConversationId);
-
-  if (userConversations[position]) {
-    userConversations[position].editButton = addEditButton(userConversations[position], username);
-    userConversations[position].link = createRedirectLink(userConversations[position], username);
-    if (userConversations[position].settings.type === 'default') {
-      await userConversations[position].sawMessages(username);
-    }
-  }
-
-  return [userConversations, position];
-}
-
-function filterConversationBySearch(userConversations, userUsername, searchQuery) {
-  const filteredConversation = [];
-  searchQuery = searchQuery.toLowerCase();
-
-  for (let i = 0; i < userConversations.length; i++) {
-    if (userConversations[i].settings.type === 'default' || userConversations[i].sender_1 === userUsername) {
-      let otherUser;
-      if (userConversations[i].sender_1 === userUsername) otherUser = userConversations[i].sender_2;
-      else otherUser = userConversations[i].sender_1;
-
-      if (otherUser.toLowerCase().match(searchQuery)) filteredConversation.push(userConversations[i]);
-    }
-  }
-  return filteredConversation;
-}
-
-// GET PAGE
-router.get('/messages', isAuth, sanitizeQuerys, async (req, res) => {
-  try {
-    const { username } = req.user;
-    const id = req.query.id ? req.query.id : undefined;
-    const search = req.query.searchQuery ? req.query.searchQuery : undefined;
-    let selectedConversationIndex;
-
-    let conversations = await Conversation.findAllUserConversations(username);
-
-    if (search) conversations = filterConversationBySearch(conversations, username, search); // Optimize that
-
-    [conversations, selectedConversationIndex] = await getSelectedConversationIndex(conversations, id, username);
-
-    conversations = await formatConversations(conversations, username);
-
-    res.render('messages', {
-      conversations,
-      selected_conversation: conversations[selectedConversationIndex],
-    });
-  } catch (e) {
-    res.redirect('/404');
-  }
-});
-
-router.post('/edit-message/:id/:messageId', isAuth, sanitizeParams, sanitizeMessageInput, async (req, res) => {
-  try {
-    const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username);
-
-    const { message } = req.body;
-    const { messageId } = req.params;
-
-    conversation.editMessage(messageId, message, req.user.username);
-
-    await conversation.save();
 
     res.redirect(`/messages?id=${conversation.id}#bottom`);
   } catch (e) {
-    res.redirect('/404');
+    console.log(e);
+    res.redirect('/messages#bottom');
   }
 });
 
 // DELETE
-router.delete('/delete-conversation/:id', isAuth, sanitizeParams, async (req, res) => {
+router.post('/delete-conversation/:id', isAuth, sanitizeParams, async (req, res) => {
   try {
-    const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, req.user.username);
+    const { id } = req.params;
+
+    req.conversation = await ConversationModel.findById(id);
+
+    const { user, conversation } = req;
+    const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
+    const userId = conversation.settings.conversationPassword && hiddenConversationsId && hiddenConversationsId.map((elem) => elem.convoId).includes(conversation.id) && conversation.users[1].userId !== user.id ? conversation.users[0].userId : user.id;
+
+    canCRUDConveration(conversation, userId);
 
     await conversation.deleteConversation();
 
     res.redirect('/messages#bottom');
   } catch (e) {
-    res.redirect('/404');
+    res.redirect(`/messages?id=${req.conversation.id}#bottom`);
   }
 });
 
-async function getSender1deleteEmptyConversation(username) {
-  const otherUser = await User.findOne({ username });
-  return otherUser.settings.deleteEmptyConversation;
-}
+router.post('/change-conversation-settings/:id', isAuth, sanitizeParams, changeSettingsConversation, async (req, res) => {
+  try {
+    const { id } = req.params;
 
-// Make Prettier ?
-router.delete(
-  '/delete-message/:id/:messageId',
-  isAuth,
-  sanitizeParams,
-  async (req, res) => {
-    try {
-      const { user } = req;
+    req.conversation = await ConversationModel.findById(id);
 
-      const conversation = await Conversation.findByIdVerifyIfPartOfConversation(req.params.id, user.username);
+    const { user, conversation } = req;
+    let {
+      includeTimestamps, messageView, deleteEmpty, convoExpiryDate,
+    } = req.body;
 
-      const { messageId } = req.params;
+    const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
+    const userId = conversation.settings.conversationPassword && hiddenConversationsId && hiddenConversationsId.map((elem) => elem.convoId).includes(conversation.id) && conversation.users[1].userId !== user.id ? conversation.users[0].userId : user.id;
 
-      conversation.deleteMessageWithId(messageId);
+    if (conversation.users[0].userId === userId) {
+      if (conversation.settings.conversationPassword) {
+        includeTimestamps = undefined;
+        messageView = undefined;
+        deleteEmpty = true;
+        convoExpiryDate = !convoExpiryDate || convoExpiryDate < 3 ? 3 : convoExpiryDate || undefined;
+      }
 
-      if (!conversation.messages.length) {
-        const deleteEmptyConversation = conversation.sender_1 === user.username
-          ? user.settings.deleteEmptyConversation : await getSender1deleteEmptyConversation(conversation.sender_1);
+      conversation.updateConversationSettings({
+        includeTimestamps,
+        messageView,
+        deleteEmpty,
+        convoExpiryDate,
+      });
 
-        if (deleteEmptyConversation) await conversation.deleteConversation();
-        else await conversation.save();
-      } else await conversation.save();
-
-      res.redirect(conversation ? `/messages?id=${conversation.id}#bottom` : '/messages#bottom');
-    } catch (e) {
-      res.redirect('/404');
+      await conversation.emptyMessage();
     }
-  },
-);
+
+    res.redirect(`/messages?id=${conversation.id}#bottom`);
+  } catch (e) {
+    console.log(e);
+    res.redirect(`/messages?id=${req.conversation.id}#bottom`);
+  }
+});
+
+router.post('/change-user-conversation-settings/:id', isAuth, sanitizeParams, changeUserSettingsConversation, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    req.conversation = await ConversationModel.findById(id).populate('users.user');
+
+    const { user, conversation } = req;
+    const { messageExpiryDate, conversationPgp } = req.body;
+
+    const hiddenConversationsId = req.session.hiddenConversationsId = deleteExpiredUncoveredIds(req.session.hiddenConversationsId);
+    const userId = conversation.settings.conversationPassword && hiddenConversationsId && hiddenConversationsId.map((elem) => elem.convoId).includes(conversation.id) && conversation.users[1].userId !== user.id ? conversation.users[0].userId : user.id;
+
+    conversation.updateUserSettings({
+      userId,
+      messageExpiryDate,
+      conversationPgp,
+    });
+
+    await conversation.save();
+
+    res.redirect(`/messages?id=${conversation.id}#bottom`);
+  } catch (e) {
+    console.log(e);
+    res.redirect(`/messages?id=${req.conversation.id}#bottom`);
+  }
+});
 
 module.exports = router;

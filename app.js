@@ -4,11 +4,8 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
 const methodOverride = require('method-override');
+const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
 require('dotenv').config();
-
-const {
-  allDatabaseScanningFunction,
-} = require('./middlewares/scanningDatabase');
 
 global.siteSettings = {
   autoPromote: true,
@@ -48,6 +45,7 @@ const appSetup = async () => {
   });
 
   escrowService.setUpEscrow(walletRpc, wallet, account);
+
   allDatabaseScanningFunction();
 
   passportMiddleware(passport);
@@ -90,7 +88,7 @@ const appSetup = async () => {
   app.use(router);
 
   app.all('*', (req, res) => {
-    res.render('404page');
+    res.render('Pages/docsErrorPages/404');
   });
 
   app.listen('3000', () => {

@@ -1,11 +1,5 @@
 const mongoose = require('mongoose');
-const Product = require('./product');
-const Conversation = require('./conversation');
-const Review = require('./review');
-const Report = require('./report');
-const Contactus = require('./contactus');
-const StepVerification = require('./2step-verification');
-const { deleteImage } = require('../middlewares/filesUploads');
+const { setUserMethodsToSchema } = require('./methods/user');
 
 const reviewSchema = new mongoose.Schema({
   number_review: {
@@ -22,23 +16,107 @@ const reviewSchema = new mongoose.Schema({
   },
 });
 
-const settingsSchema = new mongoose.Schema({
-  messageExpiring: {
+const messageSettingsSchema = new mongoose.Schema({
+  displayUsername: {
+    type: String,
+  },
+  conversationPgp: {
+    type: String,
+  },
+  customPgp: {
+    type: String,
+  },
+  customUsername: {
+    type: String,
+  },
+  messageExpiryDate: {
     type: Number,
+  },
+  convoExpiryDate: {
+    type: Number,
+  },
+  includeTimestamps: {
+    type: Boolean,
+  },
+  messageView: {
+    type: Boolean,
+  },
+  deleteEmpty: {
+    type: Boolean,
+  },
+});
+
+const notificationsSettingsSchema = new mongoose.Schema({
+  recordNotification: {
+    type: Boolean,
+    default: true,
+    required: false,
+  },
+  expiryDate: {
+    type: Number,
+    default: 7,
+  },
+  seen: {
+    type: Boolean,
+  },
+  sendNotification: {
+    type: {
+      orderStatusChange: {
+        type: Boolean,
+      },
+      newConversation: {
+        type: Boolean,
+      },
+      newMessage: {
+        type: Boolean,
+      },
+      changeConversationSettings: {
+        type: Boolean,
+      },
+      deleteMessage: {
+        type: Boolean,
+      },
+      deleteConversation: {
+        type: Boolean,
+      },
+      newUpdate: {
+        type: Boolean,
+      },
+    },
+    default: {
+      orderStatusChange: true,
+      newConversation: true,
+      changeConversationSettings: true,
+      deleteConversation: true,
+      newUpdate: true,
+    },
+    required: false,
+  },
+});
+
+const settingsSchema = new mongoose.Schema({
+  messageSettings: {
+    type: messageSettingsSchema,
+    default: {
+      displayUsername: 'customUsername',
+      conversationPgp: 'showPgp',
+      messageExpiryDate: 7,
+      convoExpiryDate: 180,
+      deleteEmpty: true,
+    },
+    required: true,
+  },
+  notificationsSettings: {
+    type: notificationsSettingsSchema,
+    default: {},
+    required: false,
   },
   privateInfoExpiring: {
     type: Number,
+    default: 7,
   },
   userExpiring: {
     type: Number,
-  },
-  deleteEmptyConversation: {
-    type: Boolean,
-    required: true,
-  },
-  recordSeeingMessage: {
-    type: Boolean,
-    required: true,
   },
   currency: {
     type: String,
@@ -50,7 +128,7 @@ const settingsSchema = new mongoose.Schema({
   },
 });
 
-const userSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   img_path: {
     type: String,
   },
@@ -93,12 +171,7 @@ const userSchema = new mongoose.Schema({
   },
   settings: {
     type: settingsSchema,
-    default: {
-      messageExpiring: 7,
-      privateInfoExpiring: 7,
-      deleteEmptyConversation: true,
-      recordSeeingMessage: false,
-    },
+    default: {},
     required: true,
   },
   job: {
@@ -131,79 +204,31 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  notifications: {
+    type: [
+      {
+        type: {
+          type: String,
+          requried: true,
+        },
+        data: {
+          type: Array,
+        },
+        seen: {
+          type: Boolean,
+        },
+        expireAt: {
+          type: Number,
+        },
+      },
+    ],
+    maxlength: 50,
+  },
   expire_at: {
     type: Number,
   },
 });
 
-userSchema.methods.updateInactiveDate = function () {
-  this.expire_at = Date.now() + this.settings.userExpiring * 86400000;
-};
+setUserMethodsToSchema(UserSchema);
 
-userSchema.methods.Add_Remove_Saved_Product = function (id) {
-  if (this.saved_product.includes(id)) this.saved_product = this.saved_product.filter((element) => element !== id);
-  // Remove
-  else this.saved_product.push(id); // Add
-};
-
-userSchema.methods.offlineAllUserProducts = async function () {
-  const userProducts = await Product.find({ vendor: this.username });
-
-  for (let i = 0; i < userProducts.length; i++) {
-    if (!userProducts[i].customMoneroAddress) {
-      userProducts[i].status = 'offline';
-      userProducts[i].save();
-    }
-  }
-};
-
-userSchema.methods.deleteUser = async function () {
-  deleteImage(`./uploads${this.img_path}`);
-
-  // Delete Conversations
-  const conversations = await Conversation.find({
-    $or: [{ sender_1: this.username }, { sender_2: this.username }],
-  });
-
-  for (let i = 0; i < conversations.length; i++) {
-    conversations[i].deleteConversation();
-  }
-
-  // Product
-  const products = await Product.find({ vendor: this.username });
-  for (let i = 0; i < products.length; i++) {
-    products[i].deleteProduct();
-  }
-
-  // Review
-  const review = await Review.find({ sender: this.username });
-  for (let i = 0; i < review.length; i++) {
-    review[i].deleteReview();
-  }
-
-  // Report
-  const reports = await Report.find({
-    $or: [{ reference_id: this.username }, { username: this.username }],
-  });
-  for (let i = 0; i < reports.length; i++) {
-    reports[i].deleteReport();
-  }
-
-  // Contact Us
-  const contactus = await Contactus.find({ username: this.username });
-  for (let i = 0; i < contactus.length; i++) {
-    contactus[i].deleteContactUs();
-  }
-
-  // 2 Step Verification
-  const stepVerification = await StepVerification.find({
-    username: this.username,
-  });
-  for (let i = 0; i < stepVerification.length; i++) {
-    stepVerification[i].deleteStepVerification();
-  }
-
-  await this.delete();
-};
-
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', UserSchema);

@@ -11,7 +11,7 @@ const orderResume = async (req, res) => {
     order.formatTimeLeft();
     order.hideBuyerIdentity();
 
-    res.render('order-resume', { order, product: order.product });
+    res.render('Pages/orderPages/order-resume', { order, product: order.product });
   } catch (e) {
     console.log(e);
     res.redirect('/404');
