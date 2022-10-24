@@ -46,7 +46,7 @@ const getOrders = async (req, res) => {
       order.hideBuyerIdentity();
     });
 
-    res.render('Pages/orderPages/wyour-order', { orders });
+    res.render('Pages/orderPages/your-order', { orders });
   } catch (e) {
     console.log(e);
     res.redirect('/404');

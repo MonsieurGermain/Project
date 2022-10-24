@@ -4,7 +4,7 @@ const {
 } = require('../constants/buyerPrivateInfoDeletion');
 const { ORDER_PRIVACY_TYPE } = require('../constants/orderPrivacyType');
 const { ORDER_STATUS } = require('../constants/orderStatus');
-const { setOrderMethodsToSchema } = require('../methods/order');
+const { setOrderMethodsToSchema } = require('./methods/order');
 
 const { Schema, Types } = mongoose;
 

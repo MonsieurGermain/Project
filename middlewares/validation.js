@@ -233,7 +233,7 @@ function sanitizeHiddenConversationInput(req, res, next) {
     next();
   } catch (e) {
     req.flash('error', e.message);
-    res.redirect(`/create-hidden-conversation?id=${req.params.id}`);
+    res.redirect(`/user/create-hidden-conversation?id=${req.params.id}`);
   }
 }
 
@@ -288,7 +288,7 @@ function sanitizeMessageInput(req, res, next) {
 
     next();
   } catch (e) {
-    res.redirect('/messages#bottom');
+    res.redirect('/user/messages#bottom');
   }
 }
 

@@ -183,6 +183,35 @@ function generateAccountUsername() {
   return result.trim();
 }
 
+function deleteExpiredUncoveredIds(uncoveredId) {
+  if (uncoveredId?.length) {
+    for (let i = 0; i < uncoveredId.length; i++) {
+      if (uncoveredId[i].timeToLive < Date.now()) {
+        uncoveredId.splice(i, 1);
+        i -= 1;
+      } else {
+        uncoveredId[i].timeToLive = Date.now() + 600000;
+      }
+    }
+  }
+  return uncoveredId;
+}
+
+function canCRUDConveration(conversation, userId) {
+  for (let i = 0; i < conversation.users.length; i++) {
+    if (conversation.users[i].userId === userId) return;
+  }
+  throw Error('You dont have the Permission to do this Action');
+}
+
+function constructAdminQuery(query) {
+  const mongooseQuery = {};
+  if (query.reason) mongooseQuery.reason = query.reason;
+  if (query.archived) mongooseQuery.archived = query.archived === 'true' ? { $exists: true } : { $exists: false };
+
+  return mongooseQuery;
+}
+
 module.exports = {
   generateAccountUsername,
   formatTimer,
@@ -195,4 +224,7 @@ module.exports = {
   formatUsernameWithSettings,
   paginatedResults,
   sanitizeHTML,
+  deleteExpiredUncoveredIds,
+  canCRUDConveration,
+  constructAdminQuery,
 };

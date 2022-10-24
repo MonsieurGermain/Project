@@ -9,16 +9,7 @@
       <% const SHOW_POPUP = CONVERSATION.messages[i + 10] ? false : true %>
       <% const CONVERSATION_ID = CONVERSATION.id %>
 
-      <% if (authuser.id === CONVERSATION.users[MESSAGE.sender].userId) { %>
-        <%- include('../components/msg-own', { 
-          MESSAGE, 
-          MESSAGE_POSITION, 
-          LASTMESSAGE,
-          SHOW_POPUP,
-          CONVERSATION_ID, 
-          }) %>
-
-      <% } else { %>
+      <% if (authuser.id !== CONVERSATION.users[MESSAGE.sender].userId) { %>
         <%- include('../components/msg-other', { 
           MESSAGE,
           MESSAGE_POSITION,
@@ -28,6 +19,14 @@
           CONVERSATION_ID,
           PREVIOUS_MESSAGE: CONVERSATION.messages[i - 1],
          }) %>
+      <% } else { %>
+        <%- include('../components/msg-own', { 
+          MESSAGE, 
+          MESSAGE_POSITION, 
+          LASTMESSAGE,
+          SHOW_POPUP,
+          CONVERSATION_ID, 
+          }) %>
       <% } %>
 
       <% } %>

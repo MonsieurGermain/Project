@@ -4,10 +4,10 @@
 
     <% if (SELECTED_CONVERSATION_ID === CONVERSATION.id) { %>
         <label for="change-messages">
-            <a href="/messages?id=<%= CONVERSATION.id %>#bottom" class="selected-convo position-relative d-flex align-items-start text-decoration-none pe-none py-3 px-4">
+            <a href="/user/messages?id=<%= CONVERSATION.id %>#bottom" class="selected-convo position-relative d-flex align-items-start text-decoration-none pe-none py-3 px-4">
               <div class="position-absolute top-0 start-0 bg-primary w-3 h-100"></div>
     <% } else { %>
-        <a href="/messages?id=<%= CONVERSATION.id %>#bottom" class="d-flex align-items-start text-decoration-none bg-faded-primary-hover py-3 px-4">
+        <a href="/user/messages?id=<%= CONVERSATION.id %>#bottom" class="d-flex align-items-start text-decoration-none bg-faded-primary-hover py-3 px-4">
     <% } %>
 
     <% const OTHER_USER = authuser.id === CONVERSATION.users[1].userId ? 0 : 1 %>
