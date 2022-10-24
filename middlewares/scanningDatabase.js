@@ -4,20 +4,6 @@ const ConversationModel = require('../models/conversation');
 
 const UserModel = require('../models/user');
 
-console.log(UserModel);
-
-async function sendNotification({ userId, notificationType, notificationData }) {
-  if (!userId || !notificationType) return console.log('Missing Information');
-
-  const foundUser = await UserModel.findById(userId);
-
-  if (!foundUser) return console.log('No User Found');
-
-  if (foundUser.settings.notificationsSettings.sendNotification[notificationType]) {
-    foundUser.createNewNotification({ notificationType, notificationData });
-  }
-}
-
 async function deleteExpiredNotifications() {
   const dateNow = Date.now();
   const userExpiredNotifications = await UserModel.find({ $and: [{ 'notifications.expireAt': { $lt: dateNow } }, { 'notifications.expireAt': { $gt: -1 } }] });
@@ -106,4 +92,4 @@ function allDatabaseScanningFunction() {
   }, 86400000); // 1day
 }
 
-module.exports = { allDatabaseScanningFunction, sendNotification };
+module.exports = { allDatabaseScanningFunction };

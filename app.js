@@ -4,6 +4,7 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
 const methodOverride = require('method-override');
+const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
 require('dotenv').config();
 
 const app = express();
@@ -80,8 +81,6 @@ app.use('/', REVIEW);
 app.use('/', SETTINGS);
 app.use('/', ADMIN);
 app.use('/', DOCUMENTATION);
-
-const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
 
 allDatabaseScanningFunction();
 

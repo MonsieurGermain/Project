@@ -1,7 +1,7 @@
 const express = require('express');
 
 const router = express.Router();
-// const { sendNotification } = require('../middlewares/scanningDatabase');
+// const sendNotification = require('../middlewares/sendNotification');
 
 router.get('/', async (req, res) => {
   try {

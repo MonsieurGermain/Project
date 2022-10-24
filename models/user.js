@@ -205,24 +205,26 @@ const UserSchema = new mongoose.Schema({
     default: 0,
   },
   notifications: {
-    type: [{
-      action: {
-        type: String,
-        requried: true,
+    type: [
+      {
+        action: {
+          type: String,
+          requried: true,
+        },
+        details: {
+          type: String,
+        },
+        unSafeDetails: {
+          type: String,
+        },
+        sawNotification: {
+          type: Boolean,
+        },
+        expireAt: {
+          type: Number,
+        },
       },
-      details: {
-        type: String,
-      },
-      unSafeDetails: {
-        type: String,
-      },
-      sawNotification: {
-        type: Boolean,
-      },
-      expireAt: {
-        type: Number,
-      },
-    }],
+    ],
     maxlength: 50,
   },
   expire_at: {

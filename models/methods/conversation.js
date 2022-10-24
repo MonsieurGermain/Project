@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const { format } = require('date-fns');
-const { sendNotification } = require('../../middlewares/scanningDatabase');
+const sendNotification = require('../../middlewares/sendNotification');
 const { generateAccountUsername } = require('../../middlewares/function');
 
 function findUserIndex(users, senderId) {
