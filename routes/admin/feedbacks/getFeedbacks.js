@@ -1,6 +1,6 @@
-const Contactus = require('../../models/contactus');
+const { ContactUsModel } = require('../../../models/contactus');
 
-const { paginatedResults, constructAdminQuery } = require('../../middlewares/function');
+const { paginatedResults, constructAdminQuery } = require('../../../middlewares/function');
 
 const getFeedbacks = async (req, res) => {
   try {
@@ -10,7 +10,7 @@ const getFeedbacks = async (req, res) => {
     if (![undefined, 'true', 'false'].includes(req.query.archived)) throw new Error('Invalid Archived Feedback');
 
     const feedbacks = await paginatedResults(
-      Contactus,
+      ContactUsModel,
       constructAdminQuery(req.query),
       { page: req.query.feedbackPage, limit: 24 },
     );

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const { OrderModel } = require('./order');
-const Review = require('./review');
+const { ReviewModel } = require('./review');
 const { deleteImage } = require('../middlewares/filesUploads');
 
 const reviewSchema = new mongoose.Schema({
@@ -166,7 +166,7 @@ productSchema.methods.changeSlug = async function (title, vendor) {
     orders[i].changeOrderProductSlug(newSlug);
   }
 
-  const reviews = await Review.find({ product_slug: oldSlug });
+  const reviews = await ReviewModel.find({ product_slug: oldSlug });
   for (let i = 0; i < reviews.length; i++) {
     reviews[i].changeReviewProductSlug(newSlug);
   }
@@ -192,7 +192,7 @@ productSchema.methods.deleteProduct = async function () {
   }
 
   // Review
-  const reviews = await Review.find({ product_slug: this.slug });
+  const reviews = await ReviewModel.find({ product_slug: this.slug });
   for (let i = 0; i < reviews.length; i++) {
     reviews[i].deleteReview();
   }
@@ -225,4 +225,6 @@ productSchema.statics.findOneOrCreateNew = async function (
   return new this();
 };
 
-module.exports = mongoose.model('Product', productSchema);
+module.exports = {
+  ProductModel: mongoose.model('Product', productSchema),
+};

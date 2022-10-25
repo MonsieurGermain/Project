@@ -1,9 +1,9 @@
-const ConversationModel = require('../conversation');
-const StepVerification = require('../2step-verification');
-const Contactus = require('../contactus');
-const Report = require('../report');
-const Product = require('../product');
-const Review = require('../review');
+const { ConversationModel } = require('../conversation');
+const { StepVerificationModel } = require('../2step-verification');
+const { ContactUsModel } = require('../contactus');
+const { ReportModel } = require('../report');
+const { ProductModel } = require('../product');
+const { ReviewModel } = require('../review');
 const { deleteImage } = require('../../middlewares/filesUploads');
 
 function deleteNotification({ notificationId }) {
@@ -47,7 +47,7 @@ function addRemoveSavedProducts(id) {
 }
 
 async function offlineAllUserProducts() {
-  const userProducts = await Product.find({ vendor: this.username });
+  const userProducts = await ProductModel.find({ vendor: this.username });
 
   for (let i = 0; i < userProducts.length; i++) {
     if (!userProducts[i].customMoneroAddress) {
@@ -70,31 +70,31 @@ async function deleteUser() {
   }
 
   // Product
-  const products = await Product.find({ vendor: this.username });
+  const products = await ProductModel.find({ vendor: this.username });
   for (let i = 0; i < products.length; i++) {
     products[i].deleteProduct();
   }
 
   // Review
-  const review = await Review.find({ sender: this.username });
+  const review = await ReviewModel.find({ sender: this.username });
   for (let i = 0; i < review.length; i++) {
     review[i].deleteReview();
   }
 
   // Report
-  const reports = await Report.find({ $or: [{ reference_id: this.username }, { username: this.username }] });
+  const reports = await ReportModel.find({ $or: [{ reference_id: this.username }, { username: this.username }] });
   for (let i = 0; i < reports.length; i++) {
     reports[i].deleteReport();
   }
 
   // Contact Us
-  const contactus = await Contactus.find({ username: this.username });
+  const contactus = await ContactUsModel.find({ username: this.username });
   for (let i = 0; i < contactus.length; i++) {
     contactus[i].deleteContactUs();
   }
 
   // 2 Step Verification
-  const stepVerification = await StepVerification.find({ username: this.username });
+  const stepVerification = await StepVerificationModel.find({ username: this.username });
   for (let i = 0; i < stepVerification.length; i++) {
     stepVerification[i].deleteStepVerification();
   }

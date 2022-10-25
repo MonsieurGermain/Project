@@ -33,4 +33,6 @@ reportSchema.methods.deleteReport = async function () {
   await this.delete();
 };
 
-module.exports = mongoose.model('Report', reportSchema);
+module.exports = {
+  ReportModel: mongoose.model('Report', reportSchema),
+};

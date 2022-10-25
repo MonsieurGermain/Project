@@ -1,6 +1,6 @@
-const UserModel = require('../../models/user');
-const Product = require('../../models/product');
-const Review = require('../../models/review');
+const { UserModel } = require('../../models/user');
+const { ProductModel } = require('../../models/product');
+const { ReviewModel } = require('../../models/review');
 const { sanitizeHTML, paginatedResults } = require('../../middlewares/function');
 
 const profile = async (req, res) => {
@@ -9,10 +9,10 @@ const profile = async (req, res) => {
     vendor.description = sanitizeHTML(vendor.description);
 
     const productQuery = req.user?.username === req.params.username ? { vendor: vendor.username } : { vendor: vendor.username, status: 'online' };
-    const paginatedProducts = await paginatedResults(Product, productQuery, { page: req.query.productPage });
+    const paginatedProducts = await paginatedResults(ProductModel, productQuery, { page: req.query.productPage });
 
     const paginatedReviews = await paginatedResults(
-      Review,
+      ReviewModel,
       { vendor: vendor.username },
       { page: req.query.reviewPage },
     );

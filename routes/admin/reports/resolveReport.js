@@ -1,6 +1,6 @@
-const Report = require('../../models/report');
-const UserModel = require('../../models/user');
-const Product = require('../../models/product');
+const { ReportModel } = require('../../../models/report');
+const { UserModel } = require('../../../models/user');
+const { ProductModel } = require('../../../models/product');
 
 async function getResolveReportDocuments(type, id) {
   let user;
@@ -10,7 +10,7 @@ async function getResolveReportDocuments(type, id) {
       user = await UserModel.findOne({ username: id });
       break;
     case 'product':
-      product = await Product.findOne({ slug: id });
+      product = await ProductModel.findOne({ slug: id });
       user = await UserModel.findOne({ username: product.vendor });
       break;
     default:
@@ -21,7 +21,7 @@ async function getResolveReportDocuments(type, id) {
 
 const resolveReport = async (req, res) => {
   try {
-    const report = await Report.findById(req.params.id).orFail(new Error());
+    const report = await ReportModel.findById(req.params.id).orFail(new Error());
 
     const { banReason } = req.body; // Why Message ?
 

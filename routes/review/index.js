@@ -1,7 +1,7 @@
 const express = require('express');
 
-const Review = require('../../models/review');
-const UserModel = require('../../models/user');
+const { ReviewModel } = require('../../models/review');
+const { UserModel } = require('../../models/user');
 const { OrderModel } = require('../../models/order');
 const { isAuth } = require('../../middlewares/authentication');
 const {
@@ -32,7 +32,7 @@ router.post(
 
       const { product } = order;
 
-      const review = new Review({
+      const review = new ReviewModel({
         product_slug: product.slug,
         vendor: order.vendor,
         sender: formatUsernameWithSettings(username, type),

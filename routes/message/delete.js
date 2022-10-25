@@ -1,4 +1,4 @@
-const ConversationModel = require('../../models/conversation');
+const { ConversationModel } = require('../../models/conversation');
 
 const { deleteExpiredUncoveredIds, canCRUDConveration } = require('../../middlewares/function');
 

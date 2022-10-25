@@ -1,11 +1,11 @@
-const UserModel = require('../../../models/user');
-const Product = require('../../../models/product');
+const { UserModel } = require('../../../models/user');
+const { ProductModel } = require('../../../models/product');
 
 const saveProduct = async (req, res) => {
   try {
     const { url } = req.query;
 
-    await Product.findOne({ slug: req.params.slug }).orFail(
+    await ProductModel.findOne({ slug: req.params.slug }).orFail(
       new Error('Invalid Product Slug'),
     );
 

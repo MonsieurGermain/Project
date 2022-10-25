@@ -1,8 +1,8 @@
-const Product = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 
 const getCreate = async (req, res) => {
   try {
-    const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username);
+    const product = await ProductModel.findOneOrCreateNew(req.query.slug, req.user.username);
 
     const reviews = [
       {

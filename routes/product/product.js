@@ -1,19 +1,19 @@
-const UserModel = require('../../models/user');
-const Product = require('../../models/product');
-const Review = require('../../models/review');
+const { UserModel } = require('../../models/user');
+const { ProductModel } = require('../../models/product');
+const { ReviewModel } = require('../../models/review');
 
 const { sanitizeHTML, paginatedResults, timerEndOfSales } = require('../../middlewares/function');
 
 const productPage = async (req, res) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug });
+    const product = await ProductModel.findOne({ slug: req.params.slug });
 
     if (product.status === 'offline' && product.vendor !== req.user.username) throw new Error('Product Offline');
 
     const vendor = await UserModel.findOne({ username: product.vendor });
 
     const paginatedReviews = await paginatedResults(
-      Review,
+      ReviewModel,
       { product_slug: product.slug },
       { page: req.query.reviewPage },
     );

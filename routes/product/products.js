@@ -1,9 +1,9 @@
 const Fuse = require('fuse.js');
-const Product = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 const { paginatedResults } = require('../../middlewares/function');
 
 // Create Fuzzy Product Collecion
-let fusedProduct = Product.find({ status: 'online' }).then((products) => {
+let fusedProduct = ProductModel.find({ status: 'online' }).then((products) => {
   const options = {
     threshold: 0.5,
     keys: ['title', 'vendor'],
@@ -12,7 +12,7 @@ let fusedProduct = Product.find({ status: 'online' }).then((products) => {
 });
   // Update Fuzzy Product Collecion
 setInterval(() => {
-  Product.find({ status: 'online' }).then((products) => {
+  ProductModel.find({ status: 'online' }).then((products) => {
     const options = {
       threshold: 0.4,
       keys: ['title', 'vendor'],
@@ -32,7 +32,7 @@ const products = async (req, res) => {
       productsFuzzy = productFused.map(({ item }) => item);
     }
     const paginatedProducts = await paginatedResults(
-      Product,
+      ProductModel,
       { status: 'online' },
       { page: productPage, limit: 24 },
       productsFuzzy,

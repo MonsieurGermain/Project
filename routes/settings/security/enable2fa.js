@@ -1,7 +1,7 @@
 const enable2fa = async (req, res) => {
   try {
     const { user } = req;
-    const { step_verification: stepVerification } = req.body;
+    const { stepVerification } = req.body;
 
     switch (stepVerification) {
       case 'email':

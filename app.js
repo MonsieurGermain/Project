@@ -34,17 +34,17 @@ const appSetup = async () => {
 
   console.log('Connected to Monero Wallet RPC');
 
-  const wallet = await connectToWallet({
-    walletRpc,
-    name: 'test_wallet',
-    pass: 'test_wallet_pass',
-  });
+  // const wallet = await connectToWallet({
+  //   walletRpc,
+  //   name: 'test_wallet',
+  //   pass: 'test_wallet_pass',
+  // });
 
-  const account = await getAccount({
-    walletRpc,
-  });
+  // const account = await getAccount({
+  //   walletRpc,
+  // });
 
-  escrowService.setUpEscrow(walletRpc, wallet, account);
+  // escrowService.setUpEscrow(walletRpc, wallet, account);
 
   allDatabaseScanningFunction();
 

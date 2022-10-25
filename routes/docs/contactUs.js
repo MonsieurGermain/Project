@@ -1,4 +1,4 @@
-const Contactus = require('../../models/contactus');
+const { ContactUsModel } = require('../../models/contactus');
 
 const contactUs = async (req, res) => {
   try {
@@ -6,7 +6,7 @@ const contactUs = async (req, res) => {
       username, email, message, reason,
     } = req.body;
 
-    const contactus = new Contactus({
+    const contactus = new ContactUsModel({
       username: username && req.user.username ? req.user.username : undefined,
       email,
       message,

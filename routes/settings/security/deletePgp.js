@@ -1,4 +1,4 @@
-const ConversationModel = require('../../../models/conversation');
+const { ConversationModel } = require('../../../models/conversation');
 
 async function updateConversationPgp(username, newPgp) {
   const conversations = await ConversationModel.findAllUserConversations(username);

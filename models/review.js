@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserModel = require('./user');
+const { UserModel } = require('./user');
 
 const reviewSchema = new mongoose.Schema({
   product_slug: {
@@ -46,4 +46,6 @@ reviewSchema.methods.deleteReview = async function () {
   await this.delete();
 };
 
-module.exports = mongoose.model('Review', reviewSchema);
+module.exports = {
+  ReviewModel: mongoose.model('Review', reviewSchema),
+};

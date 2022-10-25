@@ -1,4 +1,4 @@
-const Product = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 const { uploadsFiles, deleteImage } = require('../../middlewares/filesUploads');
 
 function uploadsMainProductImage(imgPaths, mainProductImage) {
@@ -67,7 +67,7 @@ const create = async (req, res) => {
     const successMessage = product.title ? 'Product Successfully Edited' : 'Product Successfully Created';
 
     if (product.title !== title) {
-      if (await Product.findOne({ title, vendor: req.user.username })) throw new Error('You cant have the same title for multiple products');
+      if (await ProductModel.findOne({ title, vendor: req.user.username })) throw new Error('You cant have the same title for multiple products');
     }
 
     // price

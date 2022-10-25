@@ -5,7 +5,7 @@ const {
 
 const { ORDER_STATUS } = require('../../constants/orderStatus');
 const { OrderModel } = require('../../models/order');
-const UserModel = require('../../models/user');
+const { UserModel } = require('../../models/user');
 const { getExchangeRate } = require('../../monero/index');
 const { escrowService } = require('../../monero/Escrow');
 

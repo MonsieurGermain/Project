@@ -1,4 +1,4 @@
-const ConversationModel = require('../../models/conversation');
+const { ConversationModel } = require('../../models/conversation');
 const { deleteExpiredUncoveredIds } = require('../../middlewares/function');
 
 const createMessage = async (req, res) => {

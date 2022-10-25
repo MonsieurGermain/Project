@@ -1,6 +1,6 @@
-const { OrderModel } = require('../../models/order');
+const { OrderModel } = require('../../../models/order');
 
-const dispute = async (req, res) => {
+const settleDispute = async (req, res) => {
   try {
     const { id } = req.params;
     const { winner } = req.body;
@@ -33,4 +33,4 @@ const dispute = async (req, res) => {
   }
 };
 
-module.exports = { dispute };
+module.exports = { settleDispute };

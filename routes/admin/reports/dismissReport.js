@@ -1,8 +1,8 @@
-const Report = require('../../models/report');
+const { ReportModel } = require('../../../models/report');
 
 const dismissReport = async (req, res) => {
   try {
-    const report = await Report.findById(req.params.id).orFail(new Error());
+    const report = await ReportModel.findById(req.params.id).orFail(new Error());
 
     await report.deleteReport();
 

@@ -1,8 +1,8 @@
-const Product = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 
 const deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findOne({ slug: req.params.slug, vendor: req.user.username });
+    const product = await ProductModel.findOne({ slug: req.params.slug, vendor: req.user.username });
 
     if (!product) throw new Error('Invalid Slug Params');
 

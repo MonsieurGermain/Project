@@ -1,4 +1,4 @@
-const ConversationModel = require('../../models/conversation');
+const { ConversationModel } = require('../../models/conversation');
 
 const getChangeUserSettings = async (req, res) => {
   try {

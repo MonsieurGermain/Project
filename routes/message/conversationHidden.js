@@ -1,5 +1,5 @@
-const UserModel = require('../../models/user');
-const ConversationModel = require('../../models/conversation');
+const { UserModel } = require('../../models/user');
+const { ConversationModel } = require('../../models/conversation');
 
 const createHiddenConversation = async (req, res) => {
   try {

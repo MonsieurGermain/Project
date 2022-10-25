@@ -1,5 +1,5 @@
-const UserModel = require('../../models/user');
-const { paginatedResults } = require('../../middlewares/function');
+const { UserModel } = require('../../../models/user');
+const { paginatedResults } = require('../../../middlewares/function');
 
 const getPromote = async (req, res) => {
   try {

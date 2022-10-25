@@ -1,5 +1,5 @@
-const Report = require('../../models/report');
-const { paginatedResults, constructAdminQuery } = require('../../middlewares/function');
+const { ReportModel } = require('../../../models/report');
+const { paginatedResults, constructAdminQuery } = require('../../../middlewares/function');
 
 const getReports = async (req, res) => {
   try {
@@ -9,7 +9,7 @@ const getReports = async (req, res) => {
     const query = constructAdminQuery(req.query);
     query.ban_explanation = { $exists: false };
 
-    const reports = await paginatedResults(Report, query, { page: req.query.reportsPage, limit: 24 });
+    const reports = await paginatedResults(ReportModel, query, { page: req.query.reportsPage, limit: 24 });
 
     res.render('Pages/adminPages/reports', { reports });
   } catch (e) {

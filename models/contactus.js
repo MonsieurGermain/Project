@@ -24,4 +24,6 @@ contactusSchema.methods.deleteContactUs = async function () {
   await this.delete();
 };
 
-module.exports = mongoose.model('Contactus', contactusSchema);
+const ContactUsModel = mongoose.model('Contactus', contactusSchema);
+
+module.exports = { ContactUsModel };

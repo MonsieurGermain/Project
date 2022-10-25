@@ -1,5 +1,5 @@
-const UserModel = require('../../models/user');
-const ConversationModel = require('../../models/conversation');
+const { UserModel } = require('../../models/user');
+const { ConversationModel } = require('../../models/conversation');
 
 function conversationAlreadyExist(conversations, userId, otherUserId, displayUsername) {
   for (let i = 0; i < conversations.length; i++) {

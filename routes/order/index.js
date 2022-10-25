@@ -10,7 +10,7 @@ const {
 const { filterOrders } = require('./filter');
 const { getOrders } = require('./list');
 const { getOrder } = require('./get');
-const ProductModel = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 const { createOrder } = require('./create');
 const { updateOrder } = require('./update');
 const { orderResume } = require('./resume');

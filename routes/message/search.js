@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const ConversationModel = require('../../models/order');
+const { ConversationModel } = require('../../models/order');
 
 const search = async (req, res) => {
   try {

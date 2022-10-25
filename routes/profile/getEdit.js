@@ -1,11 +1,11 @@
-const Product = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 const { paginatedResults } = require('../../middlewares/function');
 
 const getEdit = async (req, res) => {
   try {
     const { user } = req;
     const paginatedProducts = await paginatedResults(
-      Product,
+      ProductModel,
       { vendor: user.username },
       { page: req.query.productPage },
     );

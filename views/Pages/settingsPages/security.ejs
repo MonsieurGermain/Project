@@ -202,7 +202,7 @@
                   <h2 class="h5">Enable 2 Step Verification</h2>
                     <form action="/enable-2fa" method="POST">
                       <% if (authuser.email && !authuser.email_verification_code) { %>
-                        <input class='form-check-input' type="radio" name="step_verification" id="email-2fa" value="email" required
+                        <input class='form-check-input' type="radio" name="stepVerification" id="email-2fa" value="email" required
                         <% if (authuser.settings.step_verification === 'email') { %>
                           checked
                         <% } %>>
@@ -212,7 +212,7 @@
                       <% } %>
 
                       <% if (authuser.verifiedPgpKeys) { %>
-                        <input class='form-check-input' type="radio" name="step_verification" id="pgp-2fa" value="pgp" required
+                        <input class='form-check-input' type="radio" name="stepVerification" id="pgp-2fa" value="pgp" required
                         <% if (authuser.settings.step_verification === 'pgp') { %>
                           checked
                         <% } %>>

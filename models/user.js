@@ -231,4 +231,6 @@ const UserSchema = new mongoose.Schema({
 
 setUserMethodsToSchema(UserSchema);
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = {
+  UserModel: mongoose.model('User', UserSchema),
+};

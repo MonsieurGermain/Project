@@ -1,8 +1,8 @@
-const StepVerification = require('../../models/2step-verification');
+const { StepVerificationModel } = require('../../models/2step-verification');
 
 const fa2 = async (req, res, next) => {
   try {
-    const stepVerification = await StepVerification.findOne({
+    const stepVerification = await StepVerificationModel.findOne({
       code: req.body.code,
     }).orFail(new Error('Oops... Code Invalid, try Again'));
 

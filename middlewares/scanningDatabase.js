@@ -1,9 +1,9 @@
 /* eslint-disable no-await-in-loop */
 
-const ConversationModel = require('../models/conversation');
+const { ConversationModel } = require('../models/conversation');
 const { OrderModel } = require('../models/order');
-const UserModel = require('../models/user');
-const Product = require('../models/product');
+const { UserModel } = require('../models/user');
+const { ProductModel } = require('../models/product');
 const { ORDER_STATUS } = require('../constants/orderStatus');
 
 async function deleteExpiredNotifications() {
@@ -68,7 +68,7 @@ async function handleOrderWithExpiredTimer() {
 }
 
 async function findAndendSales() {
-  const products = await Product.find({ sales_end: { $lt: Date.now() } });
+  const products = await ProductModel.find({ sales_end: { $lt: Date.now() } });
 
   for (let i = 0; i < products.length; i++) {
     products[i].endSales();

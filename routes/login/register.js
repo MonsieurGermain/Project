@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const { copyFile } = require('fs');
 
-const UserModel = require('../../models/user');
+const { UserModel } = require('../../models/user');
 
 const { generateRandomName } = require('../../middlewares/filesUploads');
 

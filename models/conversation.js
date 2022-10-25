@@ -101,4 +101,6 @@ conversationSchema.statics.findConversationWithId = async function ({ id, popula
 
 setConversationMethodsToSchema(conversationSchema);
 
-module.exports = mongoose.model('Conversation', conversationSchema);
+module.exports = {
+  ConversationModel: mongoose.model('Conversation', conversationSchema),
+};

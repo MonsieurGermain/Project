@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const UserModel = require('../../models/user');
-const StepVerification = require('../../models/2step-verification');
+const { UserModel } = require('../../models/user');
+const { StepVerificationModel } = require('../../models/2step-verification');
 const { generateRandomString, randomListOfWords } = require('../../middlewares/function');
 const { send2FACode, encrypt } = require('../../utils');
 
@@ -9,12 +9,12 @@ async function create2StepVerification(
   type,
   { email, pgpPublicKey },
 ) {
-  await StepVerification.deleteMany({ username });
+  await StepVerificationModel.deleteMany({ username });
 
   if (type === 'email') {
     const code = generateRandomString(9, 'number');
 
-    const stepVerification = new StepVerification({
+    const stepVerification = new StepVerificationModel({
       username,
       type,
       code,
@@ -31,7 +31,7 @@ async function create2StepVerification(
   const code = randomListOfWords(12);
   const encryptedCode = await encrypt(pgpPublicKey, code);
 
-  const stepVerification = new StepVerification({
+  const stepVerification = new StepVerificationModel({
     username,
     type,
     code,

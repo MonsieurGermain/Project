@@ -1,7 +1,7 @@
 const { ORDER_STATUS } = require('../../constants/orderStatus');
 const { sanitizeHTML } = require('../../middlewares/function');
 const { OrderModel } = require('../../models/order');
-const UserModel = require('../../models/user');
+const { UserModel } = require('../../models/user');
 
 async function getUserVerifiedPgpKeys(username) {
   const vendor = await UserModel.findOne({ username }, 'verifiedPgpKeys');

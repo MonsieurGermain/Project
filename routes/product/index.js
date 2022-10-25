@@ -1,7 +1,7 @@
 const express = require('express');
 
 const fileUpload = require('express-fileupload');
-const Product = require('../../models/product');
+const { ProductModel } = require('../../models/product');
 const { ImageUploadsValidation } = require('../../middlewares/filesUploads');
 const { isAuth, isVendor } = require('../../middlewares/authentication');
 const {
@@ -10,9 +10,9 @@ const {
 
 const getProduct = async (req, res, next) => {
   try {
-    const product = await Product.findOneOrCreateNew(req.query.slug, req.user.username);
+    const product = await ProductModel.findOneOrCreateNew(req.query.slug, req.user.username);
 
-    req.product = product || new Product();
+    req.product = product || new ProductModel();
 
     next();
   } catch (e) {

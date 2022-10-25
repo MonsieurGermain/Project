@@ -24,4 +24,6 @@ StepVerificationSchema.methods.deleteStepVerification = async function () {
   await this.delete();
 };
 
-module.exports = mongoose.model('StepVerification', StepVerificationSchema);
+const StepVerificationModel = mongoose.model('StepVerification', StepVerificationSchema);
+
+module.exports = { StepVerificationModel };

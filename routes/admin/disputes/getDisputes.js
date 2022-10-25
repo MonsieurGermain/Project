@@ -1,5 +1,5 @@
-const { OrderModel } = require('../../models/order');
-const { formatUsernameWithSettings, paginatedResults } = require('../../middlewares/function');
+const { OrderModel } = require('../../../models/order');
+const { formatUsernameWithSettings, paginatedResults } = require('../../../middlewares/function');
 
 function hideBuyerUsername(disputes) {
   for (let i = 0; i < disputes.length; i++) {

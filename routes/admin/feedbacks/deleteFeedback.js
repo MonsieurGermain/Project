@@ -1,14 +1,12 @@
-const Contactus = require('../../models/contactus');
+const { ContactUsModel } = require('../../../models/contactus');
 
-const archiveFeedback = async (req, res) => {
+const deleteFeedback = async (req, res) => {
   try {
-    const feedback = await Contactus.findById(req.params.id).orFail(
+    const feedback = await ContactUsModel.findById(req.params.id).orFail(
       new Error(),
     );
 
-    feedback.archived = feedback.archived ? undefined : true;
-
-    await feedback.save();
+    await feedback.deleteContactUs();
 
     res.redirect(
       `/admin/feedback?feedbackPage=${req.query.feedbackPage ? req.query.feedbackPage : '1'
@@ -21,4 +19,4 @@ const archiveFeedback = async (req, res) => {
   }
 };
 
-module.exports = { archiveFeedback };
+module.exports = { deleteFeedback };
