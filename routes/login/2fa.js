@@ -4,9 +4,9 @@ const fa2 = async (req, res, next) => {
   try {
     const stepVerification = await StepVerificationModel.findOne({
       code: req.body.code,
-    }).orFail(new Error('Oops... Code Invalid, try Again'));
+    }).orFail(new Error('Code Invalid, try Again'));
 
-    req.user_toAuth = stepVerification.username;
+    req.UsertoAuth = stepVerification.username;
     // Provent Passport Missing credentials Error
     req.body.username = 'username';
     req.body.password = 'password';

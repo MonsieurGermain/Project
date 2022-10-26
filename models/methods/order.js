@@ -251,9 +251,6 @@ function hasPermissionToDelete(username) {
       if (this.disputesSettings.disputeWinner === username) this.canDelete = true;
       if (!this.timeUntilUpdate || this.timeUntilUpdate < Date.now()) this.canDelete = true;
       break;
-    case ORDER_STATUS.EXPIRED:
-      this.canDelete = true;
-      break;
   }
 }
 
@@ -331,7 +328,7 @@ function addSiteFee(price) {
 }
 
 function formatFinalPrice(price) {
-  let integerPrice = parseInt(price * 100, 10);
+  const integerPrice = parseInt(price * 100, 10);
 
   return integerPrice / 100;
 }

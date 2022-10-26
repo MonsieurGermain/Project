@@ -173,7 +173,7 @@ function emptyMessage() {
 function deleteMessage(msgPosition, userId, checkIfEmpty = true, canCRUD = true) {
   if (canCRUD) canCrudMessage(this.users[this.messages[msgPosition].sender]?.userId, userId);
 
-  let deleteModifier = this.messages[msgPosition - 1]?.type === 'timestamp' ? 1 : 0;
+  const deleteModifier = this.messages[msgPosition - 1]?.type === 'timestamp' ? 1 : 0;
 
   this.removeUpdateReply({ msgPosition, positionToShift: deleteModifier + 1 });
 

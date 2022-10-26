@@ -66,7 +66,7 @@ function returnedImagePath(filePath) {
 }
 
 function generateRandomName(name) {
-  return `${generateRandomString(17, 'letterAndnumber')}.${getFilesMimetype(name, '.')}`;
+  return `${generateRandomString(17, 'CharInt')}.${getFilesMimetype(name, '.')}`;
 }
 
 function getFilesPath(folderName) {

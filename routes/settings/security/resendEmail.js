@@ -7,7 +7,7 @@ const resendEmail = async (req, res) => {
 
     if (!user.email || !user.email_verification_code) throw new Error();
 
-    user.email_verification_code = generateRandomString(6, 'number');
+    user.email_verification_code = generateRandomString(6, 'Int');
 
     await sendVerificationCode(user.email, user.email_verification_code);
 

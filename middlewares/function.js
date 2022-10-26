@@ -7,21 +7,21 @@ function randomListOfWords(number) {
   return randomSentence.join(' ');
 }
 
-function getAllowedCharacters(allowedCharacters) {
-  if (allowedCharacters === 'letterAndnumber') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  if (allowedCharacters === 'number') return '0123456789';
-  if (allowedCharacters === 'letter') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+function getAllowedCharacters(CharType) {
+  if (CharType === 'CharInt') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  if (CharType === 'Int') return '0123456789';
+  if (CharType === 'Char') return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&';
 }
 
-function generateRandomString(length, allowedCharacters) {
-  allowedCharacters = getAllowedCharacters(allowedCharacters);
+function generateRandomString(length, CharType) {
+  CharType = getAllowedCharacters(CharType);
 
   let result = '';
-  const charactersLength = allowedCharacters.length;
+  const charactersLength = CharType.length;
 
   for (let i = 0; i < length; i++) {
-    result += allowedCharacters.charAt(Math.floor(Math.random() * charactersLength));
+    result += CharType.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
 }
@@ -103,10 +103,18 @@ async function paginatedResults(model, query = {}, { page = 1, limit = 12, popul
 
   // NextPage Creation
   results.nextPage = [page];
+
   if (startIndex > 0) results.nextPage.unshift(page - 1);
   if ((page - 2) * limit > 0) results.nextPage.unshift(page - 2);
+  if ((page - 3) * limit > 0) results.nextPage.unshift(page - 3);
+  if ((page - 4) * limit > 0) results.nextPage.unshift(page - 4);
+  if ((page - 5) * limit > 0) results.nextPage.unshift(page - 5);
+
   if (endIndex < countedDocuments) results.nextPage.push(page + 1);
   if ((page + 1) * limit < countedDocuments) results.nextPage.push(page + 2);
+  if ((page + 2) * limit < countedDocuments) results.nextPage.push(page + 3);
+  if ((page + 3) * limit < countedDocuments) results.nextPage.push(page + 4);
+  if ((page + 4) * limit < countedDocuments) results.nextPage.push(page + 5);
 
   if (paginateArray) {
     results.results = paginateArray.splice(startIndex, endIndex);
@@ -139,7 +147,6 @@ function isEmail(email) {
 function isPgpKeys(pgpKeys) {
   if (!pgpKeys || typeof (pgpKeys) !== 'string') throw Error('Invalid Pgp Keys Data Type');
   pgpKeys = pgpKeys.trim();
-  if (pgpKeys.length > 10000 || pgpKeys.length < 1) throw Error('Invalid Pgp Keys Length');
 
   return pgpKeys;
 }
@@ -154,7 +161,7 @@ function isMoneroAddress(address, addressType) {
   return address;
 }
 
-function timerEndOfSales(salesTimer) {
+function formatSalesTimer(salesTimer) {
   if (!salesTimer || salesTimer > Date.now() + 604800000) return undefined;
 
   let timeLeft = salesTimer - Date.now();
@@ -184,24 +191,19 @@ function generateAccountUsername() {
 }
 
 function deleteExpiredUncoveredIds(uncoveredId) {
+  const dateNow = Date.now();
+
   if (uncoveredId?.length) {
     for (let i = 0; i < uncoveredId.length; i++) {
-      if (uncoveredId[i].timeToLive < Date.now()) {
+      if (uncoveredId[i].timeToLive < dateNow) {
         uncoveredId.splice(i, 1);
         i -= 1;
       } else {
-        uncoveredId[i].timeToLive = Date.now() + 600000;
+        uncoveredId[i].timeToLive = dateNow + 600000;
       }
     }
   }
   return uncoveredId;
-}
-
-function canCRUDConveration(conversation, userId) {
-  for (let i = 0; i < conversation.users.length; i++) {
-    if (conversation.users[i].userId === userId) return;
-  }
-  throw Error('You dont have the Permission to do this Action');
 }
 
 function constructAdminQuery(query) {
@@ -215,7 +217,7 @@ function constructAdminQuery(query) {
 module.exports = {
   generateAccountUsername,
   formatTimer,
-  timerEndOfSales,
+  formatSalesTimer,
   generateRandomString,
   randomListOfWords,
   isMoneroAddress,
@@ -225,6 +227,5 @@ module.exports = {
   paginatedResults,
   sanitizeHTML,
   deleteExpiredUncoveredIds,
-  canCRUDConveration,
   constructAdminQuery,
 };
