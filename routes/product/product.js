@@ -2,7 +2,7 @@ const { UserModel } = require('../../models/user');
 const { ProductModel } = require('../../models/product');
 const { ReviewModel } = require('../../models/review');
 
-const { sanitizeHTML, paginatedResults, timerEndOfSales } = require('../../middlewares/function');
+const { sanitizeHTML, paginatedResults, formatSalesTimer } = require('../../middlewares/function');
 
 const productPage = async (req, res) => {
   try {
@@ -19,7 +19,7 @@ const productPage = async (req, res) => {
     );
 
     product.description = sanitizeHTML(product.description);
-    product.timerEndSales = timerEndOfSales(product.sales_end);
+    product.timerEndSales = formatSalesTimer(product.sales_end);
 
     res.render('Pages/productPages/product', { product, vendor, paginatedReviews });
   } catch (e) {

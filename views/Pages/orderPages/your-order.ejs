@@ -1,4 +1,4 @@
-<%- include('Partials/Statics/Head', {page: query.clientsOrders ? '- Clients Orders' : '- Your Orders' }) %>
+<%- include('../../Partials/Statics/Head', {page: query.clientsOrders ? '- Clients Orders' : '- Your Orders' }) %>
 
   <!-- Body -->
 
@@ -9,7 +9,7 @@
     <main class="page-wrapper">
 
 
-      <%- include('Partials/Statics/Navbar') %>
+      <%- include('../../Partials/Statics/Navbar') %>
 
         <section class="container your-order-container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
 
@@ -110,7 +110,7 @@
                                       <div class="d-flex align-items-center mb-3">
                                         <p class="mb-1">Status:
                                           <span>
-                                            <%- include('Partials/components/orderStatus', {STATUS :
+                                            <%- include('../../Partials/components/orderStatus', {STATUS :
                                               orders.results[i].orderStatus}) %>
                                           </span>
                                         </p>
@@ -263,7 +263,7 @@
                       </article>
                       <% } %>
                         <div class="mt-5">
-                          <%- include('Partials/components/pagination', {nextPage: orders.nextPage, currentPage:
+                          <%- include('../../Partials/components/pagination', {nextPage: orders.nextPage, currentPage:
                             parseInt(query.ordersPage), queryName: 'ordersPage' }) %>
                         </div>
                         <% } %>
@@ -271,7 +271,7 @@
         </section>
 
         <!-- Footer -->
-        <%- include('Partials/Statics/Footer') %>
+        <%- include('../../Partials/Statics/Footer') %>
     </main>
 
 

@@ -9,8 +9,12 @@ const authenticateUser = passport.authenticate('local', {
 });
 
 const redirectUser = (req, res) => {
-  if (req.user.authorization !== 'admin') res.redirect('/');
-  else res.redirect('/disputes?disputesPage=1');
+  if (req.user.authorization === 'admin') return res.redirect('/disputes?disputesPage=1');
+
+  if (!req.session.previousUrl) return res.redirect('/');
+
+  res.redirect(`${req.session.previousUrl}`);
+  delete req.session.previousUrl;
 };
 
 const router = express.Router();

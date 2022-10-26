@@ -4,14 +4,14 @@ const { UserModel } = require('../models/user');
 module.exports = function (passport) {
   passport.use(
     new LocalStrategy({ passReqToCallback: true }, async (req, username, password, done) => {
-      if (!req.user_toAuth) return done(null, false, { message: 'No User to Authenticate' });
+      if (!req.UsertoAuth) return done(null, false, { message: 'No User to Authenticate' });
 
-      if (typeof (req.user_toAuth) === 'string') {
-        req.user_toAuth = await UserModel.findOne({ username: req.user_toAuth });
-        if (!req.user_toAuth) return done(null, false, { message: 'Invalid Username' });
+      if (typeof (req.UsertoAuth) === 'string') {
+        req.UsertoAuth = await UserModel.findOne({ username: req.UsertoAuth });
+        if (!req.UsertoAuth) return done(null, false, { message: 'Invalid Username' });
       }
 
-      return done(null, req.user_toAuth);
+      return done(null, req.UsertoAuth);
     }),
   );
 

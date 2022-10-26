@@ -1,11 +1,11 @@
-<%- include('Partials/Statics/Head', {page: '- Order Details ' + product.title}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Order Details ' + product.title}) %>
 
 <body>
   <!-- Page wrapper for sticky footer -->
   <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
   <main class="page-wrapper">
 
-    <%- include('Partials/Statics/Navbar') %>
+    <%- include('../../Partials/Statics/Navbar') %>
 
     <!-- Hero -->
     <section class="pt-2 pt-lg-3 pb-lg-4">
@@ -35,7 +35,7 @@
           <div class="position-sticky top-0 pt-5">
             <div class="pt-5">
               <div class="card p-3 text-center card-deep-shadow">
-                <%- include('Partials/orderUpdate', { ORDER: order }) %>
+                <%- include('../../Partials/orderUpdate', { ORDER: order }) %>
 
                 <div class="text-start">
                   <p class="h6 mb-0">Send XMR PRICE to this address</p>
@@ -66,7 +66,7 @@
         <!-- Content -->
         <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-5">
 
-          <%- include('Partials/render/productCard', {PRODUCT: product}) %>
+          <%- include('../../Partials/render/productCard', {PRODUCT: product}) %>
 
           <hr class="my-4">
 
@@ -137,7 +137,7 @@
               <span>
                 <p class="h5 mb-0">Buyer Information: </p>
               </span>
-              <%- include("../public/assets/img/icons/caret-down.svg")%>
+              <%- include("../../../public/assets/img/icons/caret-down.svg")%>
             </label>
 
             <div class="buyer-info-container">
@@ -437,7 +437,7 @@
           </div>
     </section>
 
-    <%- include('Partials/Statics/Footer') %>
+    <%- include('../../Partials/Statics/Footer') %>
   </main>
 
 </body>

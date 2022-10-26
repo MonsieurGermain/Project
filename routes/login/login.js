@@ -12,7 +12,7 @@ async function create2StepVerification(
   await StepVerificationModel.deleteMany({ username });
 
   if (type === 'email') {
-    const code = generateRandomString(9, 'number');
+    const code = generateRandomString(9, 'Int');
 
     const stepVerification = new StepVerificationModel({
       username,
@@ -64,7 +64,7 @@ const login = async (req, res, next) => {
         ),
       );
     } else {
-      req.user_toAuth = user;
+      req.UsertoAuth = user;
       next();
     }
   } catch (e) {

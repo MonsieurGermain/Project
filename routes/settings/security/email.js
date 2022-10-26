@@ -9,7 +9,7 @@ const addEmail = async (req, res) => {
     if (!isEmail(email)) throw new Error('This Email Address is Invalid');
 
     user.email = email;
-    user.email_verification_code = generateRandomString(6, 'number');
+    user.email_verification_code = generateRandomString(6, 'Int');
 
     // Send Email Containning Verification Code
     console.log(`The Verification Code is: ${user.email_verification_code}`);

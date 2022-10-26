@@ -1,6 +1,13 @@
 const { ConversationModel } = require('../../models/conversation');
 
-const { deleteExpiredUncoveredIds, canCRUDConveration } = require('../../middlewares/function');
+const { deleteExpiredUncoveredIds } = require('../../middlewares/function');
+
+function canCRUDConveration(conversation, userId) {
+  for (let i = 0; i < conversation.users.length; i++) {
+    if (conversation.users[i].userId === userId) return;
+  }
+  throw Error('You dont have the Permission to do this Action');
+}
 
 const deleteConversation = async (req, res) => {
   try {

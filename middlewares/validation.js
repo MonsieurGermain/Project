@@ -1,12 +1,9 @@
+const { BANNED_USERNAME } = require('../constants/bannedUsername');
 const { ORDER_PRIVACY_TYPE } = require('../constants/orderPrivacyType');
+const { CURRENCY_LIST } = require('../constants/currencyList');
+const { COUNTRY_LIST } = require('../constants/coutryList');
+const { POSSIBLE_RATING } = require('../constants/possibleRating');
 const { isMoneroAddress, isEmail, isPgpKeys } = require('./function');
-
-// Vars
-const bannedUsername = ['admin', 'admins', 'system', 'systems', 'hidden', 'anonymous', 'edit'];
-const conversationType = ['default', 'semi-hidden', 'hidden'];
-const possibleRating = ['1', '2', '3', '4', '5'];
-const countryList = ['United-State', 'Canada'];
-// const category = [];
 
 function filterEmpty(value) {
   return value.filter((element) => element);
@@ -155,7 +152,7 @@ function sanitizeRegisterInput(req, res, next) {
   try {
     // Username
     req.body.username = ValidateText(req.body.username, 'Username', { minlength: 4, maxlength: 25 });
-    if (bannedUsername.includes(req.body.username.toLowerCase())) throw new Error('You cannot use this Username');
+    if (BANNED_USERNAME.includes(req.body.username.toLowerCase())) throw new Error('You cannot use this Username');
 
     // Password
     req.body.password = ValidateText(req.body.password, 'Password', {
@@ -299,9 +296,9 @@ function sanitizeReviewInput(req, res, next) {
       maxlength: 5000,
     });
 
-    if (!possibleRating.includes(req.body.note)) throw new Error();
+    if (!POSSIBLE_RATING.includes(req.body.note)) throw new Error();
 
-    if (!conversationType.includes(req.body.type)) throw new Error();
+    if (!['default', 'semi-hidden', 'hidden'].includes(req.body.type)) throw new Error();
 
     next();
   } catch (e) {
@@ -377,7 +374,10 @@ function sanitizeProductInput(req, res, next) {
     req.body.allowHidden = req.body.allowHidden ? true : undefined;
 
     // Ship From
-    if (!countryList.includes(req.body.shipFrom)) throw new Error('Selected Country Invalid');
+    if (!COUNTRY_LIST.includes(req.body.shipFrom)) throw new Error('Selected Country Invalid');
+
+    //
+    if (!CURRENCY_LIST.includes(req.body.currency)) throw new Error('Selected Currency Invalid');
 
     // Details
     if (req.body.aboutProduct) {
