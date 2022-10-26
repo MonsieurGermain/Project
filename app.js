@@ -4,7 +4,9 @@ const passport = require('passport');
 const session = require('express-session');
 const flash = require('express-flash');
 const methodOverride = require('method-override');
-const { allDatabaseScanningFunction } = require('./middlewares/scanningDatabase');
+const {
+  allDatabaseScanningFunction,
+} = require('./middlewares/scanningDatabase');
 require('dotenv').config();
 
 global.siteSettings = {
@@ -34,17 +36,17 @@ const appSetup = async () => {
 
   console.log('Connected to Monero Wallet RPC');
 
-  // const wallet = await connectToWallet({
-  //   walletRpc,
-  //   name: 'test_wallet',
-  //   pass: 'test_wallet_pass',
-  // });
+  const wallet = await connectToWallet({
+    walletRpc,
+    name: 'test_wallet',
+    pass: 'test_wallet_pass',
+  });
 
-  // const account = await getAccount({
-  //   walletRpc,
-  // });
+  const account = await getAccount({
+    walletRpc,
+  });
 
-  // escrowService.setUpEscrow(walletRpc, wallet, account);
+  escrowService.setUpEscrow(walletRpc, wallet, account);
 
   allDatabaseScanningFunction();
 

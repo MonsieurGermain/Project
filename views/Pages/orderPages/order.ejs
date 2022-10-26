@@ -1,4 +1,4 @@
-<%- include('Partials/Statics/Head', {page: '- Order ' + product.title}) %>
+<%- include('../../Partials/Statics/Head', {page: '- Order ' + product.title}) %>
 
 
 <!-- Body -->
@@ -9,7 +9,7 @@
   <!-- Wraps everything except footer to push footer to the bottom of the page if there is little content -->
     <main class="page-wrapper">
 
-      <%- include('Partials/Statics/Navbar') %>
+      <%- include('../../Partials/Statics/Navbar') %>
 
       <section class="container mt-3 mb-2 mb-md-4 mb-lg-5 pt-lg-2 pb-5">
 
@@ -36,7 +36,7 @@
 
 
         <div class="pt-3 pb-2 py-sm-4 pt-lg-4 align-items-center">
-          <%- include('Partials/components/flashMessages') %>
+          <%- include('../../Partials/components/flashMessages') %>
         </div>
 
 
@@ -53,7 +53,7 @@
         <div class="row">
           <div class="col-xl-8 col-lg-8 col-md-7 order-md-1 mb-4">
 
-            <%- include('Partials/render/productCard', {PRODUCT: product}) %>
+            <%- include('../../Partials/render/productCard', {PRODUCT: product}) %>
 
             <hr class="my-3">
 
@@ -200,7 +200,7 @@
   </form>
 
   <!-- Footer -->
-  <%- include('Partials/Statics/Footer') %>
+  <%- include('../../Partials/Statics/Footer') %>
   </main>
 
 

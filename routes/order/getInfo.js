@@ -16,6 +16,8 @@ const getOrderInfo = async (req, res) => {
 
     order.isBuyer(user.username);
 
+    console.log('###', order.orderStatus);
+
     if (order.orderStatus !== ORDER_STATUS.AWAITING_INFORMATION) throw Error('Invalid Order Status');
 
     if (order.product.message) order.product.message = sanitizeHTML(order.product.message);
