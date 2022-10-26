@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { UserModel } = require('./user');
+// const { UserModel } = require('./user');
 
 const reviewSchema = new mongoose.Schema({
   product_slug: {
@@ -26,6 +26,9 @@ const reviewSchema = new mongoose.Schema({
 
 reviewSchema.methods.Get_Reviewer_Profile_Pic = async function () {
   let user;
+
+  const UserModel = mongoose.model('User');
+
   switch (this.type) {
     case 'default':
       user = await UserModel.findOne({ username: this.sender });
